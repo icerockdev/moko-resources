@@ -1,0 +1,13 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+# ignore all warnings from all pods
+inhibit_all_warnings!
+
+use_frameworks!
+platform :ios, '11.0'
+
+target 'TestProj' do
+  # MultiPlatformLibrary
+  # для корректной установки фреймворка нужно сначала скомпилировать котлин библиотеку - compile-kotlin-framework.sh (в корневой директории репозитория)
+  pod 'MultiPlatformLibrary', :path => '../mpp-library'
+end
