@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="test">test</string>
-    <string name="test2">test2</string>
-    <string name="test3">test3</string>
+    <string name="test2">test 2</string>
+    <string name="test3">test 3</string>
 </resources>

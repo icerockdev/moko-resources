@@ -4,16 +4,17 @@
 
 package dev.icerock.gradle
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec
+import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.konan.target.Family
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -21,51 +22,142 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val multiplatformExtension =
             target.extensions.getByType(KotlinMultiplatformExtension::class)
-        val commonMain =
-            multiplatformExtension.sourceSets.getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
-        val commonResources = commonMain.resources
+        val androidExtension = target.extensions.getByType(LibraryExtension::class)
+        val mrExtension =
+            target.extensions.create<MultiplatformResourcesPluginExtension>("multiplatformResources")
 
-        val strings = commonResources.matching {
-            include("MR/**/strings.xml")
+        target.afterEvaluate {
+            val sourceSets = multiplatformExtension.sourceSets
+            val commonSourceSet =
+                sourceSets.getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
+            val commonResources = commonSourceSet.resources
+
+            val strings = commonResources.matching {
+                include("MR/**/strings.xml")
+            }
+
+            val mainAndroidSet = androidExtension.sourceSets.getByName("main")
+            val manifestFile = mainAndroidSet.manifest.srcFile
+            mainAndroidSet.res.srcDir("build/generated/moko/androidMain/res")
+
+            val androidPackage = getAndroidPackage(manifestFile)
+
+            generateMultiplatformResources(
+                project = target,
+                stringsFileTree = strings,
+                sourceSets = sourceSets.filter { it.name.endsWith("Main") },
+                extension = mrExtension,
+                multiplatformExtension = multiplatformExtension,
+                androidPackage = androidPackage
+            )
         }
-
-        val generatedDir = File(target.buildDir, "generated/moko")
-        val commonGeneratedDir = File(generatedDir, "commonMain")
-
-        commonMain.kotlin.srcDir(commonGeneratedDir)
-
-        val baseStrings = generateStrings(target, strings)
-
-        val mrClass = TypeSpec.objectBuilder("MR")
-            .addModifiers(KModifier.EXPECT)
-            .addType(baseStrings)
-            .build()
-
-        val file = FileSpec.builder("dev.icerock.mobile", "MR")
-            .addType(mrClass)
-            .build()
-        file.writeTo(commonGeneratedDir)
     }
 
-    private fun generateStrings(target: Project, stringsFileTree: FileTree): TypeSpec {
-        val baseStringsFile = stringsFileTree.single { it.parentFile.name == "base" }
-
+    private fun getAndroidPackage(manifestFile: File): String {
         val dbFactory = DocumentBuilderFactory.newInstance()
         val dBuilder = dbFactory.newDocumentBuilder()
-        val doc = dBuilder.parse(baseStringsFile)
+        val doc = dBuilder.parse(manifestFile)
+
+        val manifestNodes = doc.getElementsByTagName("manifest")
+        val manifest = manifestNodes.item(0)
+
+        return manifest.attributes.getNamedItem("package").textContent
+    }
+
+    private fun generateMultiplatformResources(
+        project: Project,
+        stringsFileTree: FileTree,
+        sourceSets: List<KotlinSourceSet>,
+        extension: MultiplatformResourcesPluginExtension,
+        multiplatformExtension: KotlinMultiplatformExtension,
+        androidPackage: String
+    ) {
+        val generatedDir = File(project.buildDir, "generated/moko")
+
+        // language - key - value
+        val languageStrings: Map<LanguageType, Map<KeyType, String>> = loadStrings(stringsFileTree)
+
+        sourceSets.forEach { sourceSet ->
+            val generator = createGenerator(
+                multiplatformExtension = multiplatformExtension,
+                generatedDir = generatedDir,
+                sourceSet = sourceSet,
+                languagesStrings = languageStrings,
+                mrClassPackage = extension.multiplatformResourcesPackage!!,
+                androidRClassPackage = androidPackage
+            )
+
+            generator?.generate()
+        }
+    }
+
+    private fun loadStrings(stringsFileTree: FileTree): Map<LanguageType, Map<KeyType, String>> {
+        return stringsFileTree.associate { file ->
+            val language: LanguageType = file.parentFile.name
+            val strings: Map<KeyType, String> = loadLanguageStrings(file)
+            language to strings
+        }
+    }
+
+    private fun loadLanguageStrings(stringsFile: File): Map<KeyType, String> {
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val doc = dBuilder.parse(stringsFile)
 
         val stringNodes = doc.getElementsByTagName("string")
-        val classBuilder = TypeSpec.objectBuilder("strings")
-
-        val stringResourceClass = ClassName("dev.icerock.moko.resources", "StringResource")
+        val mutableMap = mutableMapOf<KeyType, String>()
 
         for (i in 0 until stringNodes.length) {
             val stringNode = stringNodes.item(i)
             val name = stringNode.attributes.getNamedItem("name").textContent
+            val value = stringNode.textContent
 
-            classBuilder.addProperty(name, stringResourceClass)
+            mutableMap[name] = value
         }
 
-        return classBuilder.build()
+        return mutableMap
+    }
+
+    private fun createGenerator(
+        multiplatformExtension: KotlinMultiplatformExtension,
+        generatedDir: File,
+        sourceSet: KotlinSourceSet,
+        languagesStrings: Map<LanguageType, Map<KeyType, String>>,
+        mrClassPackage: String,
+        androidRClassPackage: String
+    ): Generator? {
+        if (sourceSet.name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
+            return Generator.Common(
+                generatedDir, sourceSet, languagesStrings, mrClassPackage
+            )
+        }
+
+        val target = multiplatformExtension.targets.firstOrNull { target ->
+            val sourceSets = target.compilations.flatMap { it.kotlinSourceSets }
+            sourceSets.any { it == sourceSet }
+        } ?: return null
+
+        return when (target) {
+            is KotlinAndroidTarget -> {
+                Generator.Android(
+                    generatedDir, sourceSet, languagesStrings, mrClassPackage, androidRClassPackage
+                )
+            }
+            is KotlinNativeTarget -> {
+                val family = target.konanTarget.family
+                if (family == Family.IOS) {
+                    Generator.iOS(
+                        generatedDir, sourceSet, languagesStrings, mrClassPackage
+                    )
+                } else {
+                    println("unsupported native family $family")
+                    null
+                }
+            }
+            else -> {
+                println("unsupported target $target")
+                null
+            }
+        }
     }
 }
