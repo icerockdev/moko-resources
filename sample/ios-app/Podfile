@@ -6,8 +6,13 @@ inhibit_all_warnings!
 use_frameworks!
 platform :ios, '11.0'
 
+# workaround for https://github.com/CocoaPods/CocoaPods/issues/8073
+# need for correct invalidate of cache MultiPlatformLibrary.framework
+install! 'cocoapods', :disable_input_output_paths => true
+
 target 'TestProj' do
   # MultiPlatformLibrary
   # для корректной установки фреймворка нужно сначала скомпилировать котлин библиотеку - compile-kotlin-framework.sh (в корневой директории репозитория)
   pod 'MultiPlatformLibrary', :path => '../mpp-library'
+  pod 'MultiPlatformLibraryResources', :git => 'https://github.com/icerockdev/moko-resources.git', :tag => 'release/0.2.0'
 end

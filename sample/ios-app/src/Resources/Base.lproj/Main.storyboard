@@ -28,7 +28,7 @@
         <!--Test-->
         <scene sceneID="B5V-K5-FDE">
             <objects>
-                <viewController id="TTy-86-aNs" customClass="TestViewController" customModule="mokoSampleCore" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="TTy-86-aNs" customClass="TestViewController" customModule="mokoSampleResources" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="gcA-zH-akF"/>
                         <viewControllerLayoutGuide type="bottom" id="gTY-6T-yQv"/>
@@ -36,13 +36,41 @@
                     <view key="view" contentMode="scaleToFill" id="KxK-oh-5KO">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ube-gc-16Y">
+                                <rect key="frame" x="110" y="72" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="IM5-dk-YoT"/>
+                                    <constraint firstAttribute="height" constant="100" id="juJ-fg-W4j"/>
+                                </constraints>
+                            </imageView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ucI-dH-xD1">
+                                <rect key="frame" x="16" y="180" width="288" height="388"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="ucI-dH-xD1" firstAttribute="leading" secondItem="KxK-oh-5KO" secondAttribute="leadingMargin" id="6So-2f-f1p"/>
+                            <constraint firstItem="Ube-gc-16Y" firstAttribute="centerX" secondItem="KxK-oh-5KO" secondAttribute="centerX" id="OiW-o5-Vxr"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ucI-dH-xD1" secondAttribute="trailing" id="am7-fq-7Rn"/>
+                            <constraint firstItem="ucI-dH-xD1" firstAttribute="top" secondItem="Ube-gc-16Y" secondAttribute="bottom" constant="8" id="c0l-6H-3Zi"/>
+                            <constraint firstItem="Ube-gc-16Y" firstAttribute="top" secondItem="gcA-zH-akF" secondAttribute="bottom" constant="8" id="ohz-xd-Wfq"/>
+                            <constraint firstItem="gTY-6T-yQv" firstAttribute="top" secondItem="ucI-dH-xD1" secondAttribute="bottom" id="uUL-qs-aQv"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Test" id="0jM-60-fjM"/>
+                    <connections>
+                        <outlet property="imageView" destination="Ube-gc-16Y" id="iCx-HQ-gln"/>
+                        <outlet property="textView" destination="ucI-dH-xD1" id="VYE-zp-vuP"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jxh-nl-GiI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4296" y="-1482"/>
+            <point key="canvasLocation" x="-4297.5" y="-1482.0422535211267"/>
         </scene>
     </scenes>
 </document>

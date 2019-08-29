@@ -20,7 +20,7 @@ object Versions {
         }
 
         object MultiPlatform {
-            const val mokoResources = "0.1.0"
+            const val mokoResources = "0.2.0"
         }
     }
 }
