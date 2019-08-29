@@ -10,14 +10,14 @@ import dev.icerock.moko.resources.StringResource
 
 actual object MR {
     actual object strings {
-        actual val testString = StringResource(R.string.test_string)
+        actual val testString = StringResource("test_string")
     }
 
     actual object plurals {
-        actual val testPlural = PluralsResource(R.plurals.test_plural)
+        actual val testPlural = PluralsResource("test_plural")
     }
 
     actual object drawables {
-        actual val testDrawable = DrawableResource(R.drawable.test_drawable)
+        actual val testDrawable = DrawableResource("test_image")
     }
 }
