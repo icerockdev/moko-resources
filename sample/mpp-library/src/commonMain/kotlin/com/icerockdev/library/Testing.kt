@@ -12,6 +12,9 @@ object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(
             MR.strings.test.desc(),
+            MR.strings.test2.desc(),
+            MR.strings.test3.desc(),
+            MR.strings.common_name.desc(),
             "some raw string".desc()//,
 //            MR.plurals.testPlural.desc(0),
 //            MR.plurals.testPlural.desc(1),

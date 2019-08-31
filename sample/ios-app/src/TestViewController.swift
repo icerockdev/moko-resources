@@ -16,10 +16,10 @@ class TestViewController: UIViewController {
         super.viewDidLoad()
         
         let testing = Testing()
-        let drawable = testing.getDrawable()
+//        let drawable = testing.getDrawable()
         let strings = testing.getStrings()
         
-        imageView.image = UIImage(named: drawable.assetImageName)
+//        imageView.image = UIImage(named: drawable.assetImageName)
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
     }
 }

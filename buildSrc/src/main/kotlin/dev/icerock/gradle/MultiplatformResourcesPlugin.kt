@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.LibraryExtension
+import dev.icerock.gradle.generator.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
@@ -85,9 +86,19 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 languagesStrings = languageStrings,
                 mrClassPackage = extension.multiplatformResourcesPackage!!,
                 androidRClassPackage = androidPackage
-            )
+            ) ?: return@forEach
 
-            generator?.generate()
+
+            val name = sourceSet.name
+            val genTask = project.task("generateMR$name") {
+                group = "multiplatform"
+
+                doLast {
+                    generator.generate()
+                }
+            }
+
+            generator.configureTasks(project = project, generationTask = genTask)
         }
     }
 
@@ -127,8 +138,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         androidRClassPackage: String
     ): Generator? {
         if (sourceSet.name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
-            return Generator.Common(
-                generatedDir, sourceSet, languagesStrings, mrClassPackage
+            return CommonGenerator(
+                generatedDir = generatedDir,
+                sourceSet = sourceSet,
+                languagesStrings = languagesStrings,
+                mrClassPackage = mrClassPackage
             )
         }
 
@@ -139,15 +153,22 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
         return when (target) {
             is KotlinAndroidTarget -> {
-                Generator.Android(
-                    generatedDir, sourceSet, languagesStrings, mrClassPackage, androidRClassPackage
+                AndroidGenerator(
+                    generatedDir = generatedDir,
+                    sourceSet = sourceSet,
+                    languagesStrings = languagesStrings,
+                    mrClassPackage = mrClassPackage,
+                    androidRClassPackage = androidRClassPackage
                 )
             }
             is KotlinNativeTarget -> {
                 val family = target.konanTarget.family
                 if (family == Family.IOS) {
-                    Generator.iOS(
-                        generatedDir, sourceSet, languagesStrings, mrClassPackage
+                    IosGenerator(
+                        generatedDir = generatedDir,
+                        sourceSet = sourceSet,
+                        languagesStrings = languagesStrings,
+                        mrClassPackage = mrClassPackage
                     )
                 } else {
                     println("unsupported native family $family")
