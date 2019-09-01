@@ -85,8 +85,6 @@ abstract class Generator(
     protected abstract fun getStringsPropertyInitializer(key: String): CodeBlock?
     abstract fun configureTasks(generationTask: Task, project: Project)
 
-    open fun postBuildActions(project: Project, task: Task) {}
-
     protected companion object {
         const val BASE_LANGUAGE = "base"
     }
