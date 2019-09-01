@@ -45,6 +45,7 @@ abstract class Generator(
         val mrClass = TypeSpec.objectBuilder("MR")
             .addModifiers(*getMRClassModifiers())
             .addType(stringsClass)
+            .apply { classMRAdditions(this) }
             .build()
 
         val file = FileSpec.builder(mrClassPackage, "MR")
@@ -79,6 +80,7 @@ abstract class Generator(
     protected open fun getStringsPropertyModifiers(): Array<KModifier> = emptyArray()
     protected open fun getImports(): Array<ClassName> = emptyArray()
     protected open fun generateResources(language: String?, strings: Map<KeyType, String>) {}
+    protected open fun classMRAdditions(classSpec: TypeSpec.Builder) {}
 
     protected abstract fun getStringsPropertyInitializer(key: String): CodeBlock?
     abstract fun configureTasks(generationTask: Task, project: Project)

@@ -1,8 +1,6 @@
 package dev.icerock.gradle.generator
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.*
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
@@ -23,6 +21,8 @@ class IosGenerator(
     mrClassPackage = mrClassPackage
 ) {
     private val resourcesGenerationDir = File(generatedDir, "${sourceSet.name}/res")
+    private val bundleClassName = ClassName("platform.Foundation", "NSBundle")
+    private val bundlePropertyName = "bundle"
 
     init {
         sourceSet.resources.srcDir(resourcesGenerationDir)
@@ -38,16 +38,25 @@ class IosGenerator(
 
     override fun getImports(): Array<ClassName> {
         return super.getImports().plus(
-            ClassName("platform.Foundation", "NSBundle")
+            listOf(
+                bundleClassName,
+                ClassName("platform.objc", "object_getClass")
+            )
         )
     }
 
     override fun getStringsPropertyInitializer(key: String): CodeBlock? {
-        // FIXME read identifier from configs of project
-        // TODO move bundle to companion object
-        val bundle =
-            "NSBundle.bundleWithIdentifier(\"com.icerockdev.library.MultiPlatformLibrary\")!!"
-        return CodeBlock.of("StringResource(resourceId = %S, bundle = $bundle)", key)
+        return CodeBlock.of("StringResource(resourceId = %S, bundle = $bundlePropertyName)", key)
+    }
+
+    override fun classMRAdditions(classSpec: TypeSpec.Builder) {
+        super.classMRAdditions(classSpec)
+
+        classSpec.addProperty(
+            PropertySpec.builder(bundlePropertyName, bundleClassName, KModifier.PRIVATE)
+                .initializer(CodeBlock.of("NSBundle.bundleForClass(object_getClass(this)!!)"))
+                .build()
+        )
     }
 
     override fun generateResources(language: String?, strings: Map<KeyType, String>) {
