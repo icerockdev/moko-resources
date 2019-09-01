@@ -74,6 +74,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         androidPackage: String
     ) {
         val generatedDir = File(project.buildDir, "generated/moko")
+        generatedDir.deleteRecursively()
 
         // language - key - value
         val languageStrings: Map<LanguageType, Map<KeyType, String>> = loadStrings(stringsFileTree)
