@@ -20,6 +20,8 @@
 /* Begin PBXFileReference section */
 		287627FF1F319065007FA12B /* mokoSampleResources.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mokoSampleResources.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45964D362282A1FD00C16658 /* mpp-library */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mpp-library"; path = "../mpp-library"; sourceTree = "<group>"; };
+		45C6BD82231A4C9200701F82 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		45C6BD83231A4C9200701F82 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		45D29F772317A512003A1955 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45D29F792317A512003A1955 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Base; path = Base.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		45D74FCB22BFDDFD00CAB0C8 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
@@ -150,8 +152,9 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				Base,
+				ru,
+				en,
 			);
 			mainGroup = 287627F61F319065007FA12B;
 			productRefGroup = 287628001F319065007FA12B /* Products */;
@@ -235,6 +238,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				45D29F772317A512003A1955 /* Base */,
+				45C6BD82231A4C9200701F82 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -243,6 +247,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				45D29F792317A512003A1955 /* Base */,
+				45C6BD83231A4C9200701F82 /* ru */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
@@ -269,6 +274,7 @@
 		2876280F1F319065007FA12B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CURRENT_PROJECT_VERSION = 0;
 				DEFINES_MODULE = YES;
 				SWIFT_VERSION = 4.0;
@@ -278,6 +284,7 @@
 		287628101F319065007FA12B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CURRENT_PROJECT_VERSION = 0;
 				DEFINES_MODULE = YES;
 				SWIFT_VERSION = 4.0;
