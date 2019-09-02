@@ -1,33 +1,24 @@
-package dev.icerock.gradle.generator
+/*
+ * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package dev.icerock.gradle.generator.strings
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
-class AndroidGenerator(
-    generatedDir: File,
+class AndroidStringsGenerator(
     sourceSet: KotlinSourceSet,
-    languagesStrings: Map<LanguageType, Map<KeyType, String>>,
-    mrClassPackage: String,
+    stringsFileTree: FileTree,
     private val androidRClassPackage: String
-) : Generator(
-    generatedDir = generatedDir,
+) : StringsGenerator(
     sourceSet = sourceSet,
-    languagesStrings = languagesStrings,
-    mrClassPackage = mrClassPackage
+    stringsFileTree = stringsFileTree
 ) {
-    private val resourcesGenerationDir = File(generatedDir, "${sourceSet.name}/res")
-
-    init {
-        sourceSet.resources.srcDir(resourcesGenerationDir)
-    }
-
-    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-
     override fun getStringsClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getStringsPropertyModifiers(): Array<KModifier> = arrayOf(
@@ -39,11 +30,15 @@ class AndroidGenerator(
         return CodeBlock.of("StringResource(R.string.%L)", processedKey)
     }
 
-    override fun getImports(): Array<ClassName> = arrayOf(
+    override fun getImports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
     )
 
-    override fun generateResources(language: String?, strings: Map<KeyType, String>) {
+    override fun generateResources(
+        resourcesGenerationDir: File,
+        language: String?,
+        strings: Map<KeyType, String>
+    ) {
         val valuesDirName = when (language) {
             null -> "values"
             else -> "values-$language"
@@ -69,9 +64,5 @@ class AndroidGenerator(
         stringsFile.writeText(header + "\n")
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
-    }
-
-    override fun configureTasks(generationTask: Task, project: Project) {
-        project.tasks.getByName("preBuild").dependsOn(generationTask)
     }
 }
