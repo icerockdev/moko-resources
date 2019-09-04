@@ -48,7 +48,7 @@ On iOS in addition to Kotlin library exist Pod - add in Podfile
 ```ruby
 pod 'MultiPlatformLibraryResources', :git => 'https://github.com/icerockdev/moko-resources.git', :tag => 'release/0.2.0'
 ```
-**MultiPlatformLibraryResources cocoapod requires that the framework compiled from kotlin be called 
+**MultiPlatformLibraryResources cocoapod requires that the framework compiled from kotlin be named 
 MultiPlatformLibrary and be connected as cocoapod named MultiPlatformLibrary. Example [here](sample/ios-app/Podfile)**
 
 ## Usage
