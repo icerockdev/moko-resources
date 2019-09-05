@@ -24,7 +24,6 @@ object Testing {
     }
 
     fun getDrawable(): DrawableResource {
-        TODO()
-//        return MR.drawables.testDrawable
+        return MR.drawables.test_drawable
     }
 }
