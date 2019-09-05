@@ -11,7 +11,14 @@ import org.gradle.api.tasks.Copy
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+import org.w3c.dom.Node
 import java.io.File
+import java.io.FileWriter
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 
 class IosMRGenerator(
     generatedDir: File,
@@ -65,6 +72,33 @@ class IosMRGenerator(
 
                     from(resourcesGenerationDir)
                     into(framework.outputFile)
+
+                    // set development region in Info.plist for activate Base.lproj usage
+                    doLast {
+                        val infoPList = File(framework.outputFile, "Info.plist")
+
+                        val dbFactory = DocumentBuilderFactory.newInstance()
+                        val dBuilder = dbFactory.newDocumentBuilder()
+                        val doc = dBuilder.parse(infoPList)
+
+                        val rootDict = doc.getElementsByTagName("dict").item(0)
+
+                        rootDict.appendChild(doc.createElement("key").apply {
+                            textContent = "CFBundleDevelopmentRegion"
+                        })
+                        rootDict.appendChild(doc.createElement("string").apply {
+                            textContent = "en"
+                        })
+
+                        val transformerFactory = TransformerFactory.newInstance()
+                        val transformer = transformerFactory.newTransformer()
+                        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+                        val writer = FileWriter(infoPList)
+                        val result = StreamResult(writer)
+
+                        transformer.transform(DOMSource(doc), result)
+                    }
                 }
 
             linkTask.finalizedBy(pack)
