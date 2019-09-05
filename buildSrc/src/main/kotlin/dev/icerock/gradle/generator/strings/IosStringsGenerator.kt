@@ -18,13 +18,11 @@ class IosStringsGenerator(
     sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
 ) {
-    override fun getStringsClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
+    override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getStringsPropertyModifiers(): Array<KModifier> = arrayOf(
-        KModifier.ACTUAL
-    )
+    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getStringsPropertyInitializer(key: String): CodeBlock? {
+    override fun getPropertyInitializer(key: String): CodeBlock? {
         return CodeBlock.of("StringResource(resourceId = %S, bundle = $BUNDLE_PROPERTY_NAME)", key)
     }
 

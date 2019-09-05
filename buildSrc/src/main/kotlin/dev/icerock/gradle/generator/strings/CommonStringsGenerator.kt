@@ -5,11 +5,8 @@
 package dev.icerock.gradle.generator.strings
 
 import com.squareup.kotlinpoet.CodeBlock
-import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
 class CommonStringsGenerator(
     sourceSet: KotlinSourceSet,
@@ -18,5 +15,5 @@ class CommonStringsGenerator(
     sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
 ) {
-    override fun getStringsPropertyInitializer(key: String): CodeBlock? = null
+    override fun getPropertyInitializer(key: String): CodeBlock? = null
 }

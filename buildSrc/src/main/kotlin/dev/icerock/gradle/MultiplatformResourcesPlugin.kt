@@ -5,10 +5,10 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.LibraryExtension
-import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.AndroidMRGenerator
 import dev.icerock.gradle.generator.CommonMRGenerator
 import dev.icerock.gradle.generator.IosMRGenerator
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.plurals.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.plurals.CommonPluralsGenerator
 import dev.icerock.gradle.generator.plurals.IosPluralsGenerator

@@ -19,13 +19,11 @@ class AndroidStringsGenerator(
     sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
 ) {
-    override fun getStringsClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
+    override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getStringsPropertyModifiers(): Array<KModifier> = arrayOf(
-        KModifier.ACTUAL
-    )
+    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getStringsPropertyInitializer(key: String): CodeBlock? {
+    override fun getPropertyInitializer(key: String): CodeBlock? {
         val processedKey = key.replace(".", "_")
         return CodeBlock.of("StringResource(R.string.%L)", processedKey)
     }
