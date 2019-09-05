@@ -22,7 +22,10 @@ abstract class MRGenerator(
     protected val resourcesGenerationDir = File(generatedDir, "${sourceSet.name}/res")
 
     init {
+        sourcesGenerationDir.mkdirs()
         sourceSet.kotlin.srcDir(sourcesGenerationDir)
+
+        resourcesGenerationDir.mkdirs()
         sourceSet.resources.srcDir(resourcesGenerationDir)
     }
 
