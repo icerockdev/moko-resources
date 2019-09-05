@@ -19,9 +19,9 @@ class MainActivity : AppCompatActivity() {
         val strings = Testing.getStrings()
         val text = strings.joinToString("\n") { it.toString(context = this) }
 
-        val drawable = Testing.getDrawable()
+//        val drawable = Testing.getDrawable()
 
-        imageView.setImageResource(drawable.drawableResId)
+//        imageView.setImageResource(drawable.drawableResId)
         textView.text = text
     }
 }
