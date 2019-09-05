@@ -27,7 +27,7 @@ abstract class StringsGenerator(
     }
 
     override fun getClassName(): String {
-        return "string"
+        return "strings"
     }
 
     override fun getPropertyClass(): ClassName {

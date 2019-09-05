@@ -30,7 +30,7 @@ abstract class PluralsGenerator(
     }
 
     override fun getClassName(): String {
-        return "plural"
+        return "plurals"
     }
 
     override fun getPropertyClass(): ClassName {
