@@ -6,4 +6,10 @@ package dev.icerock.gradle
 
 open class MultiplatformResourcesPluginExtension {
     var multiplatformResourcesPackage: String? = null
+        set(value) {
+            field = value
+            onChange?.invoke()
+        }
+
+    internal var onChange: (() -> Unit)? = null
 }

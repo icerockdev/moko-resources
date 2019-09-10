@@ -30,12 +30,25 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val multiplatformExtension =
-            target.extensions.getByType(KotlinMultiplatformExtension::class)
         val mrExtension =
             target.extensions.create<MultiplatformResourcesPluginExtension>("multiplatformResources")
 
+        mrExtension.onChange = {
+            configureGenerators(
+                target = target,
+                mrExtension = mrExtension
+            )
+        }
+    }
+
+    private fun configureGenerators(
+        target: Project,
+        mrExtension: MultiplatformResourcesPluginExtension
+    ) {
         target.afterEvaluate {
+            val multiplatformExtension =
+                target.extensions.getByType(KotlinMultiplatformExtension::class)
+
             val sourceSets = multiplatformExtension.sourceSets
             val commonSourceSet =
                 sourceSets.getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
