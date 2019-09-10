@@ -25,3 +25,7 @@ expect sealed class StringDesc {
 fun String.desc() = StringDesc.Raw(this)
 fun StringResource.desc() = StringDesc.Resource(this)
 fun PluralsResource.desc(number: Int) = StringDesc.Plural(this, number)
+
+operator fun StringDesc.plus(other: StringDesc): StringDesc {
+    return StringDesc.Composition(listOf(this, other))
+}

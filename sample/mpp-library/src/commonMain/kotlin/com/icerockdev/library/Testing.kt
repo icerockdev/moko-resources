@@ -11,16 +11,19 @@ import dev.icerock.moko.resources.desc.desc
 object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(
-            MR.strings.testString.desc(),
+            MR.strings.test.desc(),
+            MR.strings.test2.desc(),
+            MR.strings.test3.desc(),
+            MR.strings.common_name.desc(),
             "some raw string".desc(),
-            MR.plurals.testPlural.desc(0),
-            MR.plurals.testPlural.desc(1),
-            MR.plurals.testPlural.desc(2),
-            MR.plurals.testPlural.desc(3)
+            MR.plurals.test_plural.desc(0),
+            MR.plurals.test_plural.desc(1),
+            MR.plurals.test_plural.desc(2),
+            MR.plurals.test_plural.desc(3)
         )
     }
 
     fun getDrawable(): DrawableResource {
-        return MR.drawables.testDrawable
+        return MR.drawables.test_drawable
     }
 }
