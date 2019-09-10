@@ -58,11 +58,14 @@ actual sealed class StringDesc {
         }
     }
 
-    actual data class Composition actual constructor(val args: List<StringDesc>) : StringDesc() {
+    actual data class Composition actual constructor(val args: List<StringDesc>, val separator: String?) : StringDesc() {
         override fun toLocalizedString(formatter: Formatter): String {
             return StringBuilder().apply {
-                args.forEach {
-                    append(it.toLocalizedString(formatter))
+                args.forEachIndexed { index, stringDesc ->
+                    if(index != 0 && separator != null) {
+                        append(separator)
+                    }
+                    append(stringDesc.toLocalizedString(formatter))
                 }
             }.toString()
         }

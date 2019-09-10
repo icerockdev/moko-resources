@@ -4,4 +4,5 @@
     <string name="test2">test 2</string>
     <string name="test3">test 3</string>
     <string name="common.name">Test Project</string>
+    <string name="format">Test data %d</string>
 </resources>

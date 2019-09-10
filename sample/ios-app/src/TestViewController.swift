@@ -11,6 +11,7 @@ class TestViewController: UIViewController {
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textView: UITextView!
+    @IBOutlet private var stringDescTextView: UITextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,5 +22,7 @@ class TestViewController: UIViewController {
         
         imageView.image = UIImage(named: drawable.assetImageName)
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
+        
+        stringDescTextView.text = testing.getStringDesc().localized()
     }
 }
