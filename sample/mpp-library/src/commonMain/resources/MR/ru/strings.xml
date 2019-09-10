@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="test">тест</string>
+    <string name="test2">тест 2</string>
+    <string name="test3">тест 3</string>
+    <string name="common.name">Тестовый проект</string>
+</resources>
