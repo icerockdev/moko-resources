@@ -45,7 +45,14 @@
                                 </constraints>
                             </imageView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ucI-dH-xD1">
-                                <rect key="frame" x="16" y="180" width="288" height="388"/>
+                                <rect key="frame" x="16" y="180" width="288" height="190"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="NHE-5E-PG4">
+                                <rect key="frame" x="16" y="378" width="288" height="190"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -55,16 +62,21 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="ucI-dH-xD1" firstAttribute="leading" secondItem="KxK-oh-5KO" secondAttribute="leadingMargin" id="6So-2f-f1p"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="NHE-5E-PG4" secondAttribute="trailing" id="Jzj-HF-PZf"/>
                             <constraint firstItem="Ube-gc-16Y" firstAttribute="centerX" secondItem="KxK-oh-5KO" secondAttribute="centerX" id="OiW-o5-Vxr"/>
                             <constraint firstAttribute="trailingMargin" secondItem="ucI-dH-xD1" secondAttribute="trailing" id="am7-fq-7Rn"/>
                             <constraint firstItem="ucI-dH-xD1" firstAttribute="top" secondItem="Ube-gc-16Y" secondAttribute="bottom" constant="8" id="c0l-6H-3Zi"/>
+                            <constraint firstItem="NHE-5E-PG4" firstAttribute="top" secondItem="ucI-dH-xD1" secondAttribute="bottom" constant="8" id="h5v-fF-GIo"/>
+                            <constraint firstItem="NHE-5E-PG4" firstAttribute="leading" secondItem="KxK-oh-5KO" secondAttribute="leadingMargin" id="jKM-u3-qb6"/>
                             <constraint firstItem="Ube-gc-16Y" firstAttribute="top" secondItem="gcA-zH-akF" secondAttribute="bottom" constant="8" id="ohz-xd-Wfq"/>
-                            <constraint firstItem="gTY-6T-yQv" firstAttribute="top" secondItem="ucI-dH-xD1" secondAttribute="bottom" id="uUL-qs-aQv"/>
+                            <constraint firstItem="gTY-6T-yQv" firstAttribute="top" secondItem="NHE-5E-PG4" secondAttribute="bottom" id="sUQ-aM-bLf"/>
+                            <constraint firstItem="NHE-5E-PG4" firstAttribute="height" secondItem="ucI-dH-xD1" secondAttribute="height" id="sjf-GQ-bOC"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Test" id="0jM-60-fjM"/>
                     <connections>
                         <outlet property="imageView" destination="Ube-gc-16Y" id="iCx-HQ-gln"/>
+                        <outlet property="stringDescTextView" destination="NHE-5E-PG4" id="dAt-lx-6ib"/>
                         <outlet property="textView" destination="ucI-dH-xD1" id="VYE-zp-vuP"/>
                     </connections>
                 </viewController>
