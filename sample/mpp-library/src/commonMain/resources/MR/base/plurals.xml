@@ -8,4 +8,12 @@
         <item quantity="many">many</item>
         <item quantity="other">other</item>
     </plural>
+    <plural name="my_plural">
+        <item quantity="zero">no items</item>
+        <item quantity="one">%d item</item>
+        <item quantity="two">%d items</item>
+        <item quantity="few">%d items</item>
+        <item quantity="many">%d items</item>
+        <item quantity="other">%d items</item>
+    </plural>
 </resources>
