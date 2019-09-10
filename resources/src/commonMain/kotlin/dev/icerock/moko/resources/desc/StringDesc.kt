@@ -19,7 +19,7 @@ expect sealed class StringDesc {
     }
 
     class Raw(string: String) : StringDesc
-    class Composition(args: List<StringDesc>) : StringDesc
+    class Composition(args: List<StringDesc>, separator: String? = null) : StringDesc
 }
 
 fun String.desc() = StringDesc.Raw(this)

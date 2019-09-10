@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
 
         val imageView: ImageView = findViewById(R.id.imageView)
         val textView: TextView = findViewById(R.id.textView)
+        val stringDescTextView: TextView = findViewById(R.id.stringDescTextView)
 
         val strings = Testing.getStrings()
         val text = strings.joinToString("\n") { it.toString(context = this) }
@@ -23,5 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         imageView.setImageResource(drawable.drawableResId)
         textView.text = text
+
+        stringDescTextView.text = Testing.getStringDesc().toString(context = this)
     }
 }
