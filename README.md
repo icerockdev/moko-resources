@@ -86,32 +86,20 @@ Next - create in `commonMain/resource/MR/<languageCode>` file `strings.xml` with
 After add of resources we can call gradle sync or execute gradle task `generateMRcommonMain` - this action
  will generate `MR` class contains `MR.strings.my_string` which we can use in `commonMain`:
 ```kotlin
-fun getMyString(): StringResource {
-  return MR.strings.my_string
-}
-```
-`StringResource` is just container for resource key (int from R class on android and string key on ios).
- For simplify getting string from resource we can use `StringDesc`:
-```kotlin
-fun getMyStringDesc(): StringDesc {
+fun getMyString(): StringDesc {
   return StringDesc.Resource(MR.strings.my_string)
 }
 ``` 
 After it we can use our functions on platform side:  
 android:
 ```kotlin
-val resourceId = getMyString().resourceId
-val string1 = resources.getString(resourceId)
-val string2 = getMyStringDesc().toString(context = this)
+val string = getMyString().toString(context = this)
 ```
 ios:
 ```swift
-let resourceId = getMyString().resourceId
-let bundle = getMyString().bundle
-let string1 = NSLocalizedString(resourceId, bundle: bundle)
-let string2 = getMyStringDesc().localized()
+let string = getMyString().localized()
 ```
-on both platforms `string1` and `string2` will be identically.
+Note: `StringDesc` is multiple source container for Strings - in StringDesc may be used resource, or plural, or formatted variants, or raw string. To convert `StringDesc` in `String` on android must be called `toString(context)` (context needed for resources usage), on ios - `localized()`. 
 
 ### Example 2 - use formatted localization string
 Add in `commonMain/resources/MR/base/strings.xml`:
