@@ -4,6 +4,8 @@
 
 package com.icerockdev.library
 
-fun helloWorld() {
-    println("hello world!")
+import dev.icerock.moko.resources.DrawableResource
+
+expect object MRDrawables {
+    val test_drawable: DrawableResource
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="test.plural">
+        <item quantity="zero">ноль</item>
+        <item quantity="one">один</item>
+        <item quantity="two">два</item>
+        <item quantity="few">несколько</item>
+        <item quantity="many">много</item>
+        <item quantity="other">другое</item>
+    </plural>
+</resources>

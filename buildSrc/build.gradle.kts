@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
     `kotlin-dsl`
 }
@@ -10,7 +8,7 @@ repositories {
     jcenter()
     google()
 
-    maven { url = URI("https://dl.bintray.com/icerockdev/plugins") }
+    maven { url = uri("https://dl.bintray.com/icerockdev/plugins") }
 }
 
 dependencies {

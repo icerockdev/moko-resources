@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2B70A10DE02726CA8E6981EB /* Pods_TestProj.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D683A7C91DCD56058C7435 /* Pods_TestProj.framework */; };
-		45D29F7A2317A512003A1955 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 45D29F762317A512003A1955 /* Localizable.strings */; };
-		45D29F7B2317A512003A1955 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 45D29F782317A512003A1955 /* Localizable.stringsdict */; };
 		45D74FCC22BFDDFD00CAB0C8 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D74FCB22BFDDFD00CAB0C8 /* TestViewController.swift */; };
 		45F4791D219463C7003D25FA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45F47912219463C7003D25FA /* LaunchScreen.storyboard */; };
 		45F4791E219463C7003D25FA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45F47914219463C7003D25FA /* Main.storyboard */; };
@@ -20,8 +18,6 @@
 /* Begin PBXFileReference section */
 		287627FF1F319065007FA12B /* mokoSampleResources.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mokoSampleResources.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45964D362282A1FD00C16658 /* mpp-library */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mpp-library"; path = "../mpp-library"; sourceTree = "<group>"; };
-		45D29F772317A512003A1955 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
-		45D29F792317A512003A1955 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Base; path = Base.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		45D74FCB22BFDDFD00CAB0C8 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		45F47913219463C7003D25FA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		45F47915219463C7003D25FA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -91,8 +87,6 @@
 		45F47911219463C7003D25FA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				45D29F762317A512003A1955 /* Localizable.strings */,
-				45D29F782317A512003A1955 /* Localizable.stringsdict */,
 				45F47912219463C7003D25FA /* LaunchScreen.storyboard */,
 				45F47914219463C7003D25FA /* Main.storyboard */,
 			);
@@ -152,6 +146,8 @@
 			knownRegions = (
 				English,
 				Base,
+				ru,
+				en,
 			);
 			mainGroup = 287627F61F319065007FA12B;
 			productRefGroup = 287628001F319065007FA12B /* Products */;
@@ -169,10 +165,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				45F4791E219463C7003D25FA /* Main.storyboard in Resources */,
-				45D29F7A2317A512003A1955 /* Localizable.strings in Resources */,
 				45F4791D219463C7003D25FA /* LaunchScreen.storyboard in Resources */,
 				45F47921219463C7003D25FA /* Assets.xcassets in Resources */,
-				45D29F7B2317A512003A1955 /* Localizable.stringsdict in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,22 +225,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		45D29F762317A512003A1955 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				45D29F772317A512003A1955 /* Base */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		45D29F782317A512003A1955 /* Localizable.stringsdict */ = {
-			isa = PBXVariantGroup;
-			children = (
-				45D29F792317A512003A1955 /* Base */,
-			);
-			name = Localizable.stringsdict;
-			sourceTree = "<group>";
-		};
 		45F47912219463C7003D25FA /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -269,6 +247,7 @@
 		2876280F1F319065007FA12B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CURRENT_PROJECT_VERSION = 0;
 				DEFINES_MODULE = YES;
 				SWIFT_VERSION = 4.0;
@@ -278,6 +257,7 @@
 		287628101F319065007FA12B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CURRENT_PROJECT_VERSION = 0;
 				DEFINES_MODULE = YES;
 				SWIFT_VERSION = 4.0;

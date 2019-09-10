@@ -1,3 +1,7 @@
+/*
+ * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 object Deps {
     object Plugins {
         const val android =
@@ -6,6 +10,8 @@ object Deps {
             "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlin}"
         const val androidExtensions =
             "org.jetbrains.kotlin:kotlin-android-extensions:${Versions.Plugins.androidExtensions}"
+        const val mokoResources =
+            "dev.icerock.moko:resources-generator:${Versions.Plugins.mokoResources}"
     }
 
     object Libs {
@@ -29,6 +35,10 @@ object Deps {
                 iosArm64 = "dev.icerock.moko:resources-iosarm64:${Versions.Libs.MultiPlatform.mokoResources}"
             )
         }
+
+        object Jvm {
+            const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
+        }
     }
 
     val plugins: Map<String, String> = mapOf(
@@ -37,6 +47,7 @@ object Deps {
         "org.jetbrains.kotlin.multiplatform" to Plugins.kotlin,
         "kotlin-kapt" to Plugins.kotlin,
         "kotlin-android" to Plugins.kotlin,
-        "kotlin-android-extensions" to Plugins.androidExtensions
+        "kotlin-android-extensions" to Plugins.androidExtensions,
+        "dev.icerock.mobile.multiplatform-resources" to Plugins.mokoResources
     )
 }
