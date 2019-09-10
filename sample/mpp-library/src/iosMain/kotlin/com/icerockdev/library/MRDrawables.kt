@@ -7,5 +7,5 @@ package com.icerockdev.library
 import dev.icerock.moko.resources.DrawableResource
 
 actual object MRDrawables {
-    actual val test_drawable = DrawableResource("test_image")
+    actual val test_drawable = DrawableResource("test_image") // test_image should be in assets of ios application for now
 }
