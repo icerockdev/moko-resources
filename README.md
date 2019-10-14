@@ -1,12 +1,13 @@
 ![moko-resources](img/logo.png)  
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.3.50-orange)
 
 # Mobile Kotlin resources
-This is a Kotlin MultiPlatform library that provide access to resources on iOS & Android with localization support based on system.
+This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
 
 ## Table of Contents
 - [Features](#features)
 - [Requirements](#requirements)
+- [Versions](#versions)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Samples](#samples)
@@ -15,13 +16,19 @@ This is a Kotlin MultiPlatform library that provide access to resources on iOS &
 - [License](#license)
 
 ## Features
-- **Strings, Plurals, Drawables** resources access from common code;
-- **StringDesc** for lifecycle aware access to resources and unified localization getting on both platforms.
+- **Strings, Plurals, Drawables** to access the corresponding resources from common code;
+- **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms.
 
 ## Requirements
 - Gradle version 5.4.1+
 - Android API 21+
 - iOS version 9.0+
+
+## Versions
+- kotlin 1.3.50
+  - 0.1.0
+  - 0.2.0
+  - 0.3.0
 
 ## Installation
 root build.gradle  
@@ -58,77 +65,76 @@ settings.gradle
 enableFeaturePreview("GRADLE_METADATA")
 ```
 
-On iOS in addition to Kotlin library exist Pod - add in Podfile
+On iOS, in addition to the Kotlin library add Pod in the Podfile.
 ```ruby
 pod 'MultiPlatformLibraryResources', :git => 'https://github.com/icerockdev/moko-resources.git', :tag => 'release/0.2.0'
 ```
-**MultiPlatformLibraryResources cocoapod requires that the framework compiled from kotlin be named 
-MultiPlatformLibrary and be connected as cocoapod named MultiPlatformLibrary. 
-Example [here](sample/ios-app/Podfile).
-To simplify configuration with MultiPlatformFramework you can use [mobile-multiplatform-plugin](https://github.com/icerockdev/mobile-multiplatform-gradle-plugin)**
-`MultiPlatformLibraryResources` cocoapod contains extension `localized` for `StringDesc`.
+**`MultiPlatformLibraryResources` CocoaPod requires that the framework compiled from Kotlin be named 
+`MultiPlatformLibrary` and be connected as a CocoaPod `MultiPlatformLibrary`. 
+[Here](sample/ios-app/Podfile)'s an example.
+To simplify integration with MultiPlatformFramework you can use [mobile-multiplatform-plugin](https://github.com/icerockdev/mobile-multiplatform-gradle-plugin)**.  
+`MultiPlatformLibraryResources` CocoaPod contains an extension `localized` for `StringDesc`.
 
 ## Usage
-### Example 1 - use simple localization string
-First step - create in `commonMain/resources/MR/base` file `strings.xml` with content:
+### Example 1 - simple localization string
+The first step is a create a file `strings.xml` in `commonMain/resources/MR/base` with the following content:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="my_string">My default localization string</string>
 </resources>
 ```
-Next - create in `commonMain/resource/MR/<languageCode>` file `strings.xml` with localized strings. For example we create `commonMain/resource/MR/ru` for russian localization:
+Next - create a file `strings.xml` with localized strings in `commonMain/resource/MR/<languageCode>`. Here's an example of creating `commonMain/resource/MR/ru` for a Russian localization:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="my_string">Моя строка локализации по умолчанию</string>
 </resources>
 ```
-After add of resources we can call gradle sync or execute gradle task `generateMRcommonMain` - this action
- will generate `MR` class contains `MR.strings.my_string` which we can use in `commonMain`:
+After adding the resources we can call a gradle sync or execute a gradle task `generateMRcommonMain`. This will generate a `MR` class containing `MR.strings.my_string`, which we can use in `commonMain`:
 ```kotlin
 fun getMyString(): StringDesc {
   return StringDesc.Resource(MR.strings.my_string)
 }
 ``` 
-After it we can use our functions on platform side:  
-android:
+After this we can use our functions on the platform side:  
+Android:
 ```kotlin
 val string = getMyString().toString(context = this)
 ```
-ios:
+iOS:
 ```swift
 let string = getMyString().localized()
 ```
-Note: `StringDesc` is multiple source container for Strings - in StringDesc may be used resource, or plural, or formatted variants, or raw string. To convert `StringDesc` in `String` on android must be called `toString(context)` (context needed for resources usage), on ios - `localized()`. 
+Note: `StringDesc` is a multiple-source container for Strings: in StringDesc we can use a resource, plurals, formatted variants, or raw string. To convert `StringDesc` to `String` on Android call `toString(context)` (a context is required for the resources usage), on iOS - call `localized()`. 
 
-### Example 2 - use formatted localization string
-Add in `commonMain/resources/MR/base/strings.xml`:
+### Example 2 - formatted localization string
+In `commonMain/resources/MR/base/strings.xml` add:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="my_string_formatted">My format '%s'</string>
 </resources>
 ```
-After it add in other languages localized values like in example 1.
-Next create in `commonMain` function:
+Then add the localized values for other languages like in example #1.
+Now create the followin function in `commonMain`:
 ```kotlin
 fun getMyFormatDesc(input: String): StringDesc {
   return StringDesc.ResourceFormatted(MR.strings.my_string_formatted, input)
 }
 ```
-And just like in example 1 usage on platform side:
-android:
+Now add support on the platform side like in example #1:  
+Android:
 ```kotlin
 val string = getMyFormatDesc("hello").toString(context = this)
 ```
-ios:
+iOS:
 ```swift
 let string = getMyFormatDesc(input: "hello").localized()
 ```
 
-### Example 3 - use plural string
-First step - create in `commonMain/resources/MR/base` file `plurals.xml` with content:
+### Example 3 - plural string
+The first step is to create a file `plurals.xml` in `commonMain/resources/MR/base` with the following content:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
@@ -142,25 +148,25 @@ First step - create in `commonMain/resources/MR/base` file `plurals.xml` with co
     </plural>
 </resources>
 ```
-After it add in other languages localized values like in example 1.
-Next create in `commonMain` function:
+Then add the localized values for other languages like in example #1.  
+Next, create a function in `commonMain`:
 ```kotlin
 fun getMyPluralDesc(quantity: Int): StringDesc {
   return StringDesc.Plural(MR.plurals.my_plural, quantity)
 }
 ```
-And just like in example 1 usage on platform side:
-android:
+Now add support on the platform side like in example #1:  
+Android:
 ```kotlin
 val string = getMyPluralDesc(10).toString(context = this)
 ```
-ios:
+iOS:
 ```swift
 let string = getMyPluralDesc(quantity: 10).localized()
 ```
 
-### Example 4 - use plural formatted string
-First step - create in `commonMain/resources/MR/base` file `plurals.xml` with content:
+### Example 4 - plural formatted string
+The first step is to create file `plurals.xml` in `commonMain/resources/MR/base` with the following content:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
@@ -174,26 +180,26 @@ First step - create in `commonMain/resources/MR/base` file `plurals.xml` with co
     </plural>
 </resources>
 ```
-After it add in other languages localized values like in example 1.
-Next create in `commonMain` function:
+Then add the localized values for other languages like in example #1.  
+Next, create a function in `commonMain`:
 ```kotlin
 fun getMyPluralFormattedDesc(quantity: Int): StringDesc {
   // we pass quantity as selector for correct plural string and for pass quantity as argument for formatting
   return StringDesc.PluralFormatted(MR.plurals.my_plural, quantity, quantity)  
 }
 ```
-And just like in example 1 usage on platform side:
-android:
+And like in example #1, add the platform-side support:  
+Android:
 ```kotlin
 val string = getMyPluralFormattedDesc(10).toString(context = this)
 ```
-ios:
+iOS:
 ```swift
 let string = getMyPluralFormattedDesc(quantity: 10).localized()
 ```
 
 ### Example 5 - pass raw string or resource
-If we already use some resource for placeholder value we can use `StringDesc` for simple change of string source:
+If we already use some resources as a placeholder value, we can use `StringDesc` to change the string source:
 ```kotlin
 fun getUserName(user: User?): StringDesc {
   if(user != null) {
@@ -203,38 +209,38 @@ fun getUserName(user: User?): StringDesc {
   }  
 }
 ```
-And just like in example 1 usage on platform side:
-android:
+And just like in example 1 usage on platform side:  
+Android:
 ```kotlin
 val string1 = getUserName(user).toString(context = this) // we got name from User model
 val string2 = getUserName(null).toString(context = this) // we got name_placeholder from resources
 ```
-ios:
+iOS:
 ```swift
 let string1 = getUserName(user: user).localized() // we got name from User model
 let string2 = getUserName(user: null).localized() // we got name_placeholder from resources
 ```
 
 ## Samples
-More examples can be found in the [sample directory](sample).
+Please see more examples in the [sample directory](sample).
 
 ## Set Up Locally 
-- In [resources directory](resources) contains `resources` library;
-- In [gradle-plugin directory](gradle-plugin) contains gradle plugin with `MR` class generator;
-- In [sample directory](sample) contains samples on android, ios & mpp-library connected to apps;
-- For test changes locally use `:resources:publishToMavenLocal` gradle task, after it samples will use locally published version.
-- For test changes of plugin locally use `:gradle-plugin:publishToMavenLocal` gradle task, after it samples will use locally published version.
+- The [resources directory](resources) contains the `resources` library;
+- The [gradle-plugin directory](gradle-plugin) contains a gradle plugin with a `MR` class generator;
+- The [sample directory](sample) contains sample apps for Android and iOS; plus the mpp-library connected to the apps;
+- For local testing a library use the `:resources:publishToMavenLocal` gradle task - so that sample apps use the locally published version.
+- For local testing a plugin use the `:gradle-plugin:publishToMavenLocal` gradle task so that sample apps will use the locally published version.
 
 ## Contributing
-All development (both new features and bug fixes) is performed in `develop` branch. This way `master` sources always contain sources of the most recently released version. Please send PRs with bug fixes to `develop` branch. Fixes to documentation in markdown files are an exception to this rule. They are updated directly in `master`.
+All development (both new features and bug fixes) is performed in the `develop` branch. This way `master` always contains the sources of the most recently released version. Please send PRs with bug fixes to the `develop` branch. Documentation fixes in the markdown files are an exception to this rule. They are updated directly in `master`.
 
-The `develop` branch is pushed to `master` during release.
+The `develop` branch is pushed to `master` on release.
 
-More detailed guide for contributers see in [contributing guide](CONTRIBUTING.md).
+For more details on contributing please see the [contributing guide](CONTRIBUTING.md).
 
 ## License
         
-    Copyright 2019 IceRock MAG Inc
+    Copyright 2019 IceRock MAG Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
