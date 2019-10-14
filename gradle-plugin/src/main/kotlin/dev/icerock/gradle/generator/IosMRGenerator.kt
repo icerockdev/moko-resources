@@ -7,11 +7,9 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.*
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.tasks.Copy
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
-import org.w3c.dom.Node
 import java.io.File
 import java.io.FileWriter
 import javax.xml.parsers.DocumentBuilderFactory
@@ -66,42 +64,33 @@ class IosMRGenerator(
 
             val framework = linkTask.binary as? Framework ?: return@forEach
 
-            val pack =
-                project.tasks.create(linkTask.name.replace("link", "pack"), Copy::class.java) {
-                    group = "multiplatform"
+            linkTask.doLast {
+                resourcesGenerationDir.copyRecursively(framework.outputFile, overwrite = true)
 
-                    from(resourcesGenerationDir)
-                    into(framework.outputFile)
+                val infoPList = File(framework.outputFile, "Info.plist")
 
-                    // set development region in Info.plist for activate Base.lproj usage
-                    doLast {
-                        val infoPList = File(framework.outputFile, "Info.plist")
+                val dbFactory = DocumentBuilderFactory.newInstance()
+                val dBuilder = dbFactory.newDocumentBuilder()
+                val doc = dBuilder.parse(infoPList)
 
-                        val dbFactory = DocumentBuilderFactory.newInstance()
-                        val dBuilder = dbFactory.newDocumentBuilder()
-                        val doc = dBuilder.parse(infoPList)
+                val rootDict = doc.getElementsByTagName("dict").item(0)
 
-                        val rootDict = doc.getElementsByTagName("dict").item(0)
+                rootDict.appendChild(doc.createElement("key").apply {
+                    textContent = "CFBundleDevelopmentRegion"
+                })
+                rootDict.appendChild(doc.createElement("string").apply {
+                    textContent = "en"
+                })
 
-                        rootDict.appendChild(doc.createElement("key").apply {
-                            textContent = "CFBundleDevelopmentRegion"
-                        })
-                        rootDict.appendChild(doc.createElement("string").apply {
-                            textContent = "en"
-                        })
+                val transformerFactory = TransformerFactory.newInstance()
+                val transformer = transformerFactory.newTransformer()
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-                        val transformerFactory = TransformerFactory.newInstance()
-                        val transformer = transformerFactory.newTransformer()
-                        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                val writer = FileWriter(infoPList)
+                val result = StreamResult(writer)
 
-                        val writer = FileWriter(infoPList)
-                        val result = StreamResult(writer)
-
-                        transformer.transform(DOMSource(doc), result)
-                    }
-                }
-
-            linkTask.finalizedBy(pack)
+                transformer.transform(DOMSource(doc), result)
+            }
         }
     }
 
