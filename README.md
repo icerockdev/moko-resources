@@ -29,6 +29,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.1.0
   - 0.2.0
   - 0.3.0
+  - 0.4.0
 
 ## Installation
 root build.gradle  
@@ -39,7 +40,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.3.0"
+        classpath "dev.icerock.moko:resources-generator:0.4.0"
     }
 }
 
@@ -56,7 +57,11 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.3.0")
+    commonMainApi("dev.icerock.moko:resources:0.4.0")
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "org.example.library"
 }
 ```
 
@@ -67,7 +72,7 @@ enableFeaturePreview("GRADLE_METADATA")
 
 On iOS, in addition to the Kotlin library add Pod in the Podfile.
 ```ruby
-pod 'MultiPlatformLibraryResources', :git => 'https://github.com/icerockdev/moko-resources.git', :tag => 'release/0.2.0'
+pod 'MultiPlatformLibraryResources', :git => 'https://github.com/icerockdev/moko-resources.git', :tag => 'release/0.4.0'
 ```
 **`MultiPlatformLibraryResources` CocoaPod requires that the framework compiled from Kotlin be named 
 `MultiPlatformLibrary` and be connected as a CocoaPod `MultiPlatformLibrary`. 
