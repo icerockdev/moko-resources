@@ -5,7 +5,6 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
-    id("kotlin-android-extensions")
     id("dev.icerock.mobile.multiplatform")
     id("maven-publish")
 }
@@ -20,10 +19,6 @@ android {
         minSdkVersion(Versions.Android.minSdk)
         targetSdkVersion(Versions.Android.targetSdk)
     }
-}
-
-androidExtensions {
-    isExperimental = true
 }
 
 dependencies {

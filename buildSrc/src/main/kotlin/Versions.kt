@@ -17,7 +17,6 @@ object Versions {
         const val android = "3.4.1"
 
         const val kotlin = Versions.kotlin
-        const val androidExtensions = Versions.kotlin
         const val mokoResources = Versions.mokoResources
     }
 
