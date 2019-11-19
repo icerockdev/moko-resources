@@ -5,7 +5,6 @@
 
 import UIKit
 import MultiPlatformLibrary
-import MultiPlatformLibraryResources
 
 class TestViewController: UIViewController {
     

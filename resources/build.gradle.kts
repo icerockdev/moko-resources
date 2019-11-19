@@ -37,3 +37,13 @@ publishing {
         }
     }
 }
+
+kotlin {
+    targets.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().forEach { target ->
+        target.compilations.getByName("main") {
+            val pluralizedString by cinterops.creating {
+                defFile(project.file("src/iosMain/def/pluralizedString.def"))
+            }
+        }
+    }
+}
