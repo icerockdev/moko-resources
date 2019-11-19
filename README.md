@@ -1,5 +1,5 @@
 ![moko-resources](img/logo.png)  
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.3.50-orange)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.3.60-orange)
 
 # Mobile Kotlin resources
 This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
@@ -21,7 +21,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 
 ## Requirements
 - Gradle version 5.4.1+
-- Android API 21+
+- Android API 16+
 - iOS version 9.0+
 
 ## Versions
@@ -30,6 +30,8 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.2.0
   - 0.3.0
   - 0.4.0
+- kotlin 1.3.60
+  - 0.5.0
 
 ## Installation
 root build.gradle  
@@ -40,7 +42,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.4.0"
+        classpath "dev.icerock.moko:resources-generator:0.5.0"
     }
 }
 
@@ -57,7 +59,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.4.0")
+    commonMainApi("dev.icerock.moko:resources:0.5.0")
 }
 
 multiplatformResources {
@@ -69,16 +71,6 @@ settings.gradle
 ```groovy
 enableFeaturePreview("GRADLE_METADATA")
 ```
-
-On iOS, in addition to the Kotlin library add Pod in the Podfile.
-```ruby
-pod 'MultiPlatformLibraryResources', :git => 'https://github.com/icerockdev/moko-resources.git', :tag => 'release/0.4.0'
-```
-**`MultiPlatformLibraryResources` CocoaPod requires that the framework compiled from Kotlin be named 
-`MultiPlatformLibrary` and be connected as a CocoaPod `MultiPlatformLibrary`. 
-[Here](sample/ios-app/Podfile)'s an example.
-To simplify integration with MultiPlatformFramework you can use [mobile-multiplatform-plugin](https://github.com/icerockdev/mobile-multiplatform-gradle-plugin)**.  
-`MultiPlatformLibraryResources` CocoaPod contains an extension `localized` for `StringDesc`.
 
 ## Usage
 ### Example 1 - simple localization string

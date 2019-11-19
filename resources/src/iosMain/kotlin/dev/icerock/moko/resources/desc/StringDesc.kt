@@ -6,10 +6,13 @@ package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
+import dev.icerock.moko.resources.objc.pluralizedString
+import platform.Foundation.NSString
+import platform.Foundation.stringWithFormat
 
 actual sealed class StringDesc {
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
-        override fun toLocalizedString(formatter: Formatter): String {
+        override fun localized(): String {
             return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
         }
     }
@@ -18,21 +21,26 @@ actual sealed class StringDesc {
         val stringRes: StringResource,
         val args: List<Any>
     ) : StringDesc() {
-        override fun toLocalizedString(formatter: Formatter): String {
-            val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
-            return formatter.formatString(string, args.toTypedArray())
-        }
-
         actual constructor(stringRes: StringResource, vararg args: Any) : this(
             stringRes,
             args.toList()
         )
+
+        override fun localized(): String {
+            val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
+            return stringWithFormat(string, args.toTypedArray())
+        }
     }
 
     actual data class Plural actual constructor(val pluralsRes: PluralsResource, val number: Int) :
         StringDesc() {
-        override fun toLocalizedString(formatter: Formatter): String {
-            return formatter.plural(pluralsRes, number)
+
+        override fun localized(): String {
+            return pluralizedString(
+                bundle = pluralsRes.bundle,
+                resourceId = pluralsRes.resourceId,
+                number = number
+            )!!
         }
     }
 
@@ -41,41 +49,96 @@ actual sealed class StringDesc {
         val number: Int,
         val args: List<Any>
     ) : StringDesc() {
-        override fun toLocalizedString(formatter: Formatter): String {
-            return formatter.formatPlural(pluralsRes, number, args.toTypedArray())
-        }
 
         actual constructor(pluralsRes: PluralsResource, number: Int, vararg args: Any) : this(
             pluralsRes,
             number,
             args.toList()
         )
+
+        override fun localized(): String {
+            val pluralized = pluralizedString(
+                bundle = pluralsRes.bundle,
+                resourceId = pluralsRes.resourceId,
+                number = number
+            )!!
+            return stringWithFormat(pluralized, args.toTypedArray())
+        }
     }
 
     actual data class Raw actual constructor(val string: String) : StringDesc() {
-        override fun toLocalizedString(formatter: Formatter): String {
+
+        override fun localized(): String {
             return string
         }
     }
 
-    actual data class Composition actual constructor(val args: List<StringDesc>, val separator: String?) : StringDesc() {
-        override fun toLocalizedString(formatter: Formatter): String {
-            return StringBuilder().apply {
-                args.forEachIndexed { index, stringDesc ->
-                    if(index != 0 && separator != null) {
-                        append(separator)
-                    }
-                    append(stringDesc.toLocalizedString(formatter))
-                }
-            }.toString()
+    actual data class Composition actual constructor(
+        val args: List<StringDesc>,
+        val separator: String?
+    ) : StringDesc() {
+        override fun localized(): String {
+            return args.joinToString(separator = separator ?: "") { it.localized() }
         }
     }
 
-    abstract fun toLocalizedString(formatter: Formatter): String
+    abstract fun localized(): String
 
-    interface Formatter {
-        fun formatString(string: String, args: Array<out Any>): String
-        fun plural(resource: PluralsResource, number: Int): String
-        fun formatPlural(resource: PluralsResource, number: Int, args: Array<out Any>): String
+    protected fun stringWithFormat(format: String, args: Array<out Any>): String {
+        // NSString format works with NSObjects via %@, we should change standard format to %@
+        val objcFormat = format.replace(Regex("%[\\.|\\d]*[a|b|c|d|e|f|s]"), "%@")
+        // bad but objc interop limited :(
+        // When calling variadic C functions spread operator is supported only for *arrayOf(...)
+        return when (args.size) {
+            0 -> NSString.stringWithFormat(objcFormat)
+            1 -> NSString.stringWithFormat(objcFormat, args[0])
+            2 -> NSString.stringWithFormat(objcFormat, args[0], args[1])
+            3 -> NSString.stringWithFormat(objcFormat, args[0], args[1], args[2])
+            4 -> NSString.stringWithFormat(objcFormat, args[0], args[1], args[2], args[3])
+            5 -> NSString.stringWithFormat(objcFormat, args[0], args[1], args[2], args[3], args[4])
+            6 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5]
+            )
+            7 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6]
+            )
+            8 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7]
+            )
+            9 -> NSString.stringWithFormat(
+                objcFormat,
+                args[0],
+                args[1],
+                args[2],
+                args[3],
+                args[4],
+                args[5],
+                args[6],
+                args[7],
+                args[8]
+            )
+            else -> throw IllegalArgumentException("can't handle more then 9 arguments now")
+        }
     }
 }

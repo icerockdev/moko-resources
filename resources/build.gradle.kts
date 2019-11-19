@@ -5,7 +5,6 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
-    id("kotlin-android-extensions")
     id("dev.icerock.mobile.multiplatform")
     id("maven-publish")
 }
@@ -22,10 +21,6 @@ android {
     }
 }
 
-androidExtensions {
-    isExperimental = true
-}
-
 dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
 
@@ -39,6 +34,16 @@ publishing {
         credentials {
             username = System.getProperty("BINTRAY_USER")
             password = System.getProperty("BINTRAY_KEY")
+        }
+    }
+}
+
+kotlin {
+    targets.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().forEach { target ->
+        target.compilations.getByName("main") {
+            val pluralizedString by cinterops.creating {
+                defFile(project.file("src/iosMain/def/pluralizedString.def"))
+            }
         }
     }
 }

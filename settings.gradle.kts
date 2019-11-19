@@ -23,7 +23,14 @@ pluginManagement {
 
 enableFeaturePreview("GRADLE_METADATA")
 
+val properties = startParameter.projectProperties
+
+// ./gradlew -PlibraryPublish publishToMavenLocal
+val libraryPublish: Boolean = properties.containsKey("libraryPublish")
+
 include(":resources")
 include(":gradle-plugin")
-include(":sample:android-app")
-include(":sample:mpp-library")
+if(!libraryPublish) {
+    include(":sample:android-app")
+    include(":sample:mpp-library")
+}

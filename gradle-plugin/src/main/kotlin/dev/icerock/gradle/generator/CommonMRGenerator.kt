@@ -29,6 +29,6 @@ class CommonMRGenerator(
 
         project.tasks
             .mapNotNull { it as? KotlinNativeLink }
-            .forEach { it.dependsOn(generationTask) }
+            .forEach { it.compilation.compileKotlinTask.dependsOn(generationTask) }
     }
 }

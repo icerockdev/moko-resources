@@ -60,7 +60,7 @@ class IosMRGenerator(
             .filter { it.compilation.kotlinSourceSets.contains(sourceSet) }
 
         linkTasks.forEach { linkTask ->
-            linkTask.dependsOn(generationTask)
+            linkTask.compilation.compileKotlinTask.dependsOn(generationTask)
 
             val framework = linkTask.binary as? Framework ?: return@forEach
 
