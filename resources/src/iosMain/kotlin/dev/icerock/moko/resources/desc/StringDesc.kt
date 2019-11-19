@@ -85,17 +85,19 @@ actual sealed class StringDesc {
     abstract fun localized(): String
 
     protected fun stringWithFormat(format: String, args: Array<out Any>): String {
+        // NSString format works with NSObjects via %@, we should change standard format to %@
+        val objcFormat = format.replace(Regex("%[\\.|\\d]*[a|b|c|d|e|f|s]"), "%@")
         // bad but objc interop limited :(
         // When calling variadic C functions spread operator is supported only for *arrayOf(...)
         return when (args.size) {
-            0 -> NSString.stringWithFormat(format)
-            1 -> NSString.stringWithFormat(format, args[0])
-            2 -> NSString.stringWithFormat(format, args[0], args[1])
-            3 -> NSString.stringWithFormat(format, args[0], args[1], args[2])
-            4 -> NSString.stringWithFormat(format, args[0], args[1], args[2], args[3])
-            5 -> NSString.stringWithFormat(format, args[0], args[1], args[2], args[3], args[4])
+            0 -> NSString.stringWithFormat(objcFormat)
+            1 -> NSString.stringWithFormat(objcFormat, args[0])
+            2 -> NSString.stringWithFormat(objcFormat, args[0], args[1])
+            3 -> NSString.stringWithFormat(objcFormat, args[0], args[1], args[2])
+            4 -> NSString.stringWithFormat(objcFormat, args[0], args[1], args[2], args[3])
+            5 -> NSString.stringWithFormat(objcFormat, args[0], args[1], args[2], args[3], args[4])
             6 -> NSString.stringWithFormat(
-                format,
+                objcFormat,
                 args[0],
                 args[1],
                 args[2],
@@ -104,7 +106,7 @@ actual sealed class StringDesc {
                 args[5]
             )
             7 -> NSString.stringWithFormat(
-                format,
+                objcFormat,
                 args[0],
                 args[1],
                 args[2],
@@ -114,7 +116,7 @@ actual sealed class StringDesc {
                 args[6]
             )
             8 -> NSString.stringWithFormat(
-                format,
+                objcFormat,
                 args[0],
                 args[1],
                 args[2],
@@ -125,7 +127,7 @@ actual sealed class StringDesc {
                 args[7]
             )
             9 -> NSString.stringWithFormat(
-                format,
+                objcFormat,
                 args[0],
                 args[1],
                 args[2],
