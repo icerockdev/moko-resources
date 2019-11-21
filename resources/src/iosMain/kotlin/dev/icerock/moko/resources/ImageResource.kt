@@ -6,7 +6,7 @@ package dev.icerock.moko.resources
 
 import platform.Foundation.NSBundle
 
-actual class DrawableResource(
+actual class ImageResource(
     val assetImageName: String,
     val bundle: NSBundle = NSBundle.mainBundle
 )

@@ -4,4 +4,6 @@
 
 package dev.icerock.moko.resources
 
-expect class DrawableResource
+import androidx.annotation.DrawableRes
+
+actual class ImageResource(@DrawableRes val drawableResId: Int)
