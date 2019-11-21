@@ -100,7 +100,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         androidPackage: String
     ) {
         val generatedDir = File(project.buildDir, "generated/moko")
-        generatedDir.deleteRecursively()
 
         sourceSets.forEach { sourceSet ->
             val generator = createGenerator(
