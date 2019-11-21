@@ -19,7 +19,7 @@ class TestViewController: UIViewController {
         let drawable = testing.getDrawable()
         let strings = testing.getStrings()
         
-        imageView.image = UIImage(named: drawable.assetImageName)
+        imageView.image = drawable.toUIImage()
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
         
         stringDescTextView.text = testing.getStringDesc().localized()

@@ -5,8 +5,17 @@
 package dev.icerock.moko.resources
 
 import platform.Foundation.NSBundle
+import platform.UIKit.UIImage
 
 actual class ImageResource(
     val assetImageName: String,
     val bundle: NSBundle = NSBundle.mainBundle
-)
+) {
+    fun toUIImage(): UIImage? {
+        return UIImage.imageNamed(
+            name = assetImageName,
+            inBundle = bundle,
+            withConfiguration = null
+        )
+    }
+}

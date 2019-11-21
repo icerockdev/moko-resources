@@ -25,7 +25,7 @@ class IosImagesGenerator(
 
     override fun getPropertyInitializer(key: String): CodeBlock? {
         return CodeBlock.of(
-            "ImageResource(resourceId = %S, bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
+            "ImageResource(assetImageName = %S, bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
             key
         )
     }
@@ -34,19 +34,54 @@ class IosImagesGenerator(
         resourcesGenerationDir: File,
         keyFileMap: Map<String, List<File>>
     ) {
-//        val resDirName = when (language) {
-//            null -> "Base.lproj"
-//            else -> "$language.lproj"
-//        }
-//
-//        val resDir = File(resourcesGenerationDir, resDirName)
-//        val localizableFile = File(resDir, "Localizable.strings")
-//        resDir.mkdirs()
-//
-//        val content = strings.map { (key, value) ->
-//            "\"$key\" = \"$value\";"
-//        }.joinToString("\n")
-//
-//        localizableFile.writeText(content)
+        val assetsDirectory = File(resourcesGenerationDir, "Assets.xcassets")
+
+        keyFileMap.forEach { (key, files) ->
+            val assetDir = File(assetsDirectory, "$key.imageset")
+            val contentsFile = File(assetDir, "Contents.json")
+
+            val validFiles = files.filter { file ->
+                (1..3).map { "@${it}x" }.any { file.nameWithoutExtension.endsWith(it) }
+            }
+
+            validFiles.forEach { it.copyTo(File(assetDir, it.name)) }
+
+            val imagesContent = validFiles.map { file ->
+                val scale = file.nameWithoutExtension.substringAfter("@")
+                """    {
+      "idiom" : "universal",
+      "filename" : "${file.name}",
+      "scale" : "$scale"
+    }"""
+            }.joinToString(separator = ",\n")
+
+            val content = """{
+  "images" : [
+$imagesContent
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}"""
+
+            contentsFile.writeText(content)
+        }
+
+        val process = Runtime.getRuntime().exec(
+            "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
+            emptyArray(),
+            assetsDirectory.parentFile
+        )
+        val errors = process.errorStream.bufferedReader().readText()
+        val input = process.inputStream.bufferedReader().readText()
+        val result = process.waitFor()
+        if(result != 0) {
+            println("can't compile assets - $result")
+            println(input)
+            println(errors)
+        } else {
+            assetsDirectory.deleteRecursively()
+        }
     }
 }

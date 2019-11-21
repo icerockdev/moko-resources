@@ -4,7 +4,7 @@
 
 package com.icerockdev.library
 
-import dev.icerock.moko.resources.DrawableResource
+import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.plus
@@ -24,8 +24,8 @@ object Testing {
         )
     }
 
-    fun getDrawable(): DrawableResource {
-        return MR.drawables.test_drawable
+    fun getDrawable(): ImageResource {
+        return MR.images.home_black_18
     }
 
     fun getStringDesc(): StringDesc {
