@@ -64,7 +64,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 include("MR/**/plurals.xml")
             }
             val images = commonResources.matching {
-                include("MR/images/**.png", "MR/images/**.jpg")
+                include("MR/images/**/*.png", "MR/images/**/*.jpg")
             }
 
             val androidExtension = target.extensions.getByType(LibraryExtension::class)
