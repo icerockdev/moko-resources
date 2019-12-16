@@ -31,6 +31,9 @@ abstract class MRGenerator(
     }
 
     private fun generate() {
+        sourcesGenerationDir.deleteRecursively()
+        resourcesGenerationDir.deleteRecursively()
+
         val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
             .addModifiers(*getMRClassModifiers())
 

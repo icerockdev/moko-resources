@@ -9,6 +9,9 @@ import dev.icerock.gradle.generator.AndroidMRGenerator
 import dev.icerock.gradle.generator.CommonMRGenerator
 import dev.icerock.gradle.generator.IosMRGenerator
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.image.AndroidImagesGenerator
+import dev.icerock.gradle.generator.image.CommonImagesGenerator
+import dev.icerock.gradle.generator.image.IosImagesGenerator
 import dev.icerock.gradle.generator.plurals.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.plurals.CommonPluralsGenerator
 import dev.icerock.gradle.generator.plurals.IosPluralsGenerator
@@ -60,6 +63,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val plurals = commonResources.matching {
                 include("MR/**/plurals.xml")
             }
+            val images = commonResources.matching {
+                include("MR/images/**/*.png", "MR/images/**/*.jpg")
+            }
 
             val androidExtension = target.extensions.getByType(LibraryExtension::class)
             val mainAndroidSet = androidExtension.sourceSets.getByName("main")
@@ -71,6 +77,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 project = target,
                 stringsFileTree = strings,
                 pluralsFileTree = plurals,
+                imagesFileTree = images,
                 sourceSets = sourceSets.filter { it.name.endsWith("Main") },
                 extension = mrExtension,
                 multiplatformExtension = multiplatformExtension,
@@ -94,13 +101,13 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         project: Project,
         stringsFileTree: FileTree,
         pluralsFileTree: FileTree,
+        imagesFileTree: FileTree,
         sourceSets: List<KotlinSourceSet>,
         extension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension,
         androidPackage: String
     ) {
         val generatedDir = File(project.buildDir, "generated/moko")
-        generatedDir.deleteRecursively()
 
         sourceSets.forEach { sourceSet ->
             val generator = createGenerator(
@@ -109,6 +116,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet = sourceSet,
                 stringsFileTree = stringsFileTree,
                 pluralsFileTree = pluralsFileTree,
+                imagesFileTree = imagesFileTree,
                 mrClassPackage = extension.multiplatformResourcesPackage!!,
                 androidRClassPackage = androidPackage
             ) ?: return@forEach
@@ -123,6 +131,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         sourceSet: KotlinSourceSet,
         stringsFileTree: FileTree,
         pluralsFileTree: FileTree,
+        imagesFileTree: FileTree,
         mrClassPackage: String,
         androidRClassPackage: String
     ): MRGenerator? {
@@ -132,6 +141,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet = sourceSet,
                 stringsFileTree = stringsFileTree,
                 pluralsFileTree = pluralsFileTree,
+                imagesFileTree = imagesFileTree,
                 mrClassPackage = mrClassPackage
             )
         }
@@ -148,6 +158,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                     sourceSet = sourceSet,
                     stringsFileTree = stringsFileTree,
                     pluralsFileTree = pluralsFileTree,
+                    imagesFileTree = imagesFileTree,
                     mrClassPackage = mrClassPackage,
                     androidRClassPackage = androidRClassPackage
                 )
@@ -160,6 +171,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                         sourceSet = sourceSet,
                         stringsFileTree = stringsFileTree,
                         pluralsFileTree = pluralsFileTree,
+                        imagesFileTree = imagesFileTree,
                         mrClassPackage = mrClassPackage
                     )
                 } else {
@@ -178,8 +190,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         sourceSet: KotlinSourceSet,
         stringsFileTree: FileTree,
-        mrClassPackage: String,
-        pluralsFileTree: FileTree
+        imagesFileTree: FileTree,
+        pluralsFileTree: FileTree,
+        mrClassPackage: String
     ): MRGenerator {
         return CommonMRGenerator(
             generatedDir = generatedDir,
@@ -193,6 +206,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 CommonPluralsGenerator(
                     sourceSet = sourceSet,
                     pluralsFileTree = pluralsFileTree
+                ),
+                CommonImagesGenerator(
+                    sourceSet = sourceSet,
+                    inputFileTree = imagesFileTree
                 )
             )
         )
@@ -202,9 +219,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         sourceSet: KotlinSourceSet,
         stringsFileTree: FileTree,
+        pluralsFileTree: FileTree,
+        imagesFileTree: FileTree,
         mrClassPackage: String,
-        androidRClassPackage: String,
-        pluralsFileTree: FileTree
+        androidRClassPackage: String
     ): MRGenerator {
         return AndroidMRGenerator(
             generatedDir = generatedDir,
@@ -220,6 +238,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                     sourceSet = sourceSet,
                     pluralsFileTree = pluralsFileTree,
                     androidRClassPackage = androidRClassPackage
+                ),
+                AndroidImagesGenerator(
+                    sourceSet = sourceSet,
+                    inputFileTree = imagesFileTree,
+                    androidRClassPackage = androidRClassPackage
                 )
             )
         )
@@ -229,8 +252,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         sourceSet: KotlinSourceSet,
         stringsFileTree: FileTree,
-        mrClassPackage: String,
-        pluralsFileTree: FileTree
+        pluralsFileTree: FileTree,
+        imagesFileTree: FileTree,
+        mrClassPackage: String
     ): MRGenerator {
         return IosMRGenerator(
             generatedDir = generatedDir,
@@ -244,6 +268,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 IosPluralsGenerator(
                     sourceSet = sourceSet,
                     pluralsFileTree = pluralsFileTree
+                ),
+                IosImagesGenerator(
+                    sourceSet = sourceSet,
+                    inputFileTree = imagesFileTree
                 )
             )
         )
