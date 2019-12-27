@@ -4,12 +4,17 @@
 
 package dev.icerock.gradle.generator
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+import org.w3c.dom.Element
 import java.io.File
 import java.io.FileWriter
 import javax.xml.parsers.DocumentBuilderFactory
@@ -29,6 +34,7 @@ class IosMRGenerator(
     mrClassPackage = mrClassPackage,
     generators = generators
 ) {
+    private val bundleIdentifier = "multiplatform.$mrClassPackage"
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
 
@@ -43,14 +49,13 @@ class IosMRGenerator(
                 bundleClassName,
                 KModifier.PRIVATE
             )
-                .initializer(CodeBlock.of("NSBundle.bundleForClass(object_getClass(this)!!)"))
+                .initializer(CodeBlock.of("NSBundle.bundleWithIdentifier(\"$bundleIdentifier\")!!"))
                 .build()
         )
     }
 
     override fun getImports(): List<ClassName> = listOf(
-        bundleClassName,
-        ClassName("platform.objc", "object_getClass")
+        bundleClassName
     )
 
     override fun apply(generationTask: Task, project: Project) {
@@ -81,6 +86,18 @@ class IosMRGenerator(
                 rootDict.appendChild(doc.createElement("string").apply {
                     textContent = "en"
                 })
+                var current = rootDict.firstChild
+                do {
+                    if (current.textContent == "CFBundleIdentifier") {
+                        var identifierValue = current.nextSibling
+                        while(identifierValue != null && (identifierValue as? Element)?.tagName != "string") {
+                            identifierValue = identifierValue.nextSibling
+                        }
+                        identifierValue?.textContent = bundleIdentifier
+                    }
+
+                    current = current.nextSibling
+                } while (current != null)
 
                 val transformerFactory = TransformerFactory.newInstance()
                 val transformer = transformerFactory.newTransformer()
