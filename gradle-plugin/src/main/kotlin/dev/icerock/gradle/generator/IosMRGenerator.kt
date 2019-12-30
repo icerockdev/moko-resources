@@ -34,6 +34,7 @@ class IosMRGenerator(
     mrClassPackage = mrClassPackage,
     generators = generators
 ) {
+    private lateinit var frameworkName: String
     private val bundleIdentifier = "multiplatform.$mrClassPackage"
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
@@ -43,13 +44,16 @@ class IosMRGenerator(
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         super.processMRClass(mrClass)
 
+        val bundlePath = "NSBundle.mainBundle.pathForResource(\"$frameworkName\", \"framework\", \"Frameworks\")!!"
+        val bundle = "NSBundle.bundleWithPath($bundlePath)!!"
+
         mrClass.addProperty(
             PropertySpec.builder(
                 BUNDLE_PROPERTY_NAME,
                 bundleClassName,
                 KModifier.PRIVATE
             )
-                .initializer(CodeBlock.of("NSBundle.bundleWithIdentifier(\"$bundleIdentifier\")!!"))
+                .initializer(CodeBlock.of(bundle))
                 .build()
         )
     }
@@ -63,6 +67,8 @@ class IosMRGenerator(
             .mapNotNull { it as? KotlinNativeLink }
             .filter { it.binary is Framework }
             .filter { it.compilation.kotlinSourceSets.contains(sourceSet) }
+
+        frameworkName = linkTasks.first().baseName
 
         linkTasks.forEach { linkTask ->
             linkTask.compilation.compileKotlinTask.dependsOn(generationTask)
