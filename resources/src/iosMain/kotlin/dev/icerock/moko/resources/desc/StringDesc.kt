@@ -86,7 +86,7 @@ actual sealed class StringDesc {
 
     protected fun stringWithFormat(format: String, args: Array<out Any>): String {
         // NSString format works with NSObjects via %@, we should change standard format to %@
-        val objcFormat = format.replace(Regex("%[\\.|\\d]*[a|b|c|d|e|f|s]"), "%@")
+        val objcFormat = format.replace(Regex("%((?:\\.|\\d|\\$)*)[abcdefs]"), "%$1@")
         // bad but objc interop limited :(
         // When calling variadic C functions spread operator is supported only for *arrayOf(...)
         return when (args.size) {
