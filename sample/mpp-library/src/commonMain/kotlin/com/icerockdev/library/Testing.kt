@@ -50,6 +50,12 @@ object Testing {
         // composition
         val composition = simpleString + simpleRaw
 
+        // create encoding
+        val encoding = StringDesc.Resource(MR.strings.encoding)
+
+        // create
+        val positional = StringDesc.ResourceFormatted(MR.strings.positional, 9, "str")
+
         // result as list composition
         val list = listOf(
             simpleString,
@@ -60,7 +66,9 @@ object Testing {
             formattedPlural,
             simpleRaw,
             simpleRawExt,
-            composition
+            composition,
+            encoding,
+            positional
         )
 
         return StringDesc.Composition(list, separator = "\n")
