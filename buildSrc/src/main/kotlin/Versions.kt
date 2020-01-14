@@ -11,7 +11,7 @@ object Versions {
 
     const val kotlin = "1.3.61"
 
-    private const val mokoResources = "0.6.0"
+    private const val mokoResources = "0.6.1"
 
     object Plugins {
         const val android = "3.5.2"
@@ -30,6 +30,7 @@ object Versions {
         }
 
         object Jvm {
+            const val apacheCommonsText = "1.3"
             const val kotlinPoet = "1.3.0"
         }
     }

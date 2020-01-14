@@ -18,6 +18,7 @@ dependencies {
     implementation(Deps.Libs.Jvm.kotlinPoet)
     compileOnly(Deps.Plugins.kotlin)
     compileOnly(Deps.Plugins.android)
+    implementation(Deps.Libs.Jvm.apacheCommonsText)
 }
 
 kotlinDslPluginOptions {

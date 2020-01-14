@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.strings.KeyType
+import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
@@ -55,6 +56,7 @@ class AndroidPluralsGenerator(
         val content = strings.map { (key, pluralMap) ->
             val start = "\t<plurals name=\"$key\">\n"
             val items = pluralMap.map { (quantity, value) ->
+                val value = StringEscapeUtils.escapeXml(value)
                 "\t\t<item quantity=\"$quantity\">$value</item>"
             }.joinToString("\n")
             val end = "\n\t</plurals>"
