@@ -30,6 +30,7 @@ object Versions {
         }
 
         object Jvm {
+            const val apacheCommonsText = "1.3"
             const val kotlinPoet = "1.3.0"
         }
     }

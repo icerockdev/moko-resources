@@ -18,7 +18,7 @@ dependencies {
     implementation(Deps.Libs.Jvm.kotlinPoet)
     compileOnly(Deps.Plugins.kotlin)
     compileOnly(Deps.Plugins.android)
-    implementation("org.apache.commons:commons-text:1.3")
+    implementation(Deps.Libs.Jvm.apacheCommonsText)
 }
 
 kotlinDslPluginOptions {
