@@ -28,6 +28,7 @@ android {
         versionName = "0.1.0"
 
         vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -52,4 +53,9 @@ dependencies {
     implementation(Deps.Libs.Android.appCompat.name)
 
     implementation(project(":sample:mpp-library"))
+
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    androidTestImplementation("androidx.test:runner:1.2.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.1")
 }
