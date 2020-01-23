@@ -4,7 +4,11 @@
 
 package dev.icerock.gradle.generator
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -70,6 +74,7 @@ class IosMRGenerator(
                 val infoPList = File(framework.outputFile, "Info.plist")
 
                 val dbFactory = DocumentBuilderFactory.newInstance()
+                dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
                 val dBuilder = dbFactory.newDocumentBuilder()
                 val doc = dBuilder.parse(infoPList)
 
