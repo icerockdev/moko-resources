@@ -15,7 +15,7 @@ actual class ImageResource(
         return UIImage.imageNamed(
             name = assetImageName,
             inBundle = bundle,
-            withConfiguration = null
+            compatibleWithTraitCollection = null
         )
     }
 }
