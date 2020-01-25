@@ -23,6 +23,10 @@ object Versions {
     object Libs {
         object Android {
             const val appCompat = "1.1.0"
+
+            const val espressoCore = "3.2.0"
+            const val testRunner = "1.2.0"
+            const val testExtJunit = "1.1.1"
         }
 
         object MultiPlatform {

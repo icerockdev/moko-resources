@@ -54,8 +54,8 @@ dependencies {
 
     implementation(project(":sample:mpp-library"))
 
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
-    androidTestImplementation("androidx.test:runner:1.2.0")
-    androidTestImplementation("androidx.test:rules:1.2.0")
-    androidTestImplementation("androidx.test.ext:junit:1.1.1")
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.espressoCore.name)
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRunner.name)
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRules.name)
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.testExtJunit.name)
 }
