@@ -1,4 +1,4 @@
-name: UI Tests of Android Sample
+name: Unit tests of Android Sample
 
 on:
   push:
