@@ -5,10 +5,8 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.LibraryExtension
-import dev.icerock.gradle.generator.AndroidMRGenerator
-import dev.icerock.gradle.generator.CommonMRGenerator
-import dev.icerock.gradle.generator.IosMRGenerator
-import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.*
+import dev.icerock.gradle.generator.fonts.FontsGeneratorFeature
 import dev.icerock.gradle.generator.image.ImagesGeneratorFeature
 import dev.icerock.gradle.generator.plurals.PluralsGeneratorFeature
 import dev.icerock.gradle.generator.strings.StringsGeneratorFeature
@@ -90,23 +88,23 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val generatedDir = File(project.buildDir, "generated/moko")
 
         sourceSets.forEach { sourceSet ->
-            val targetInfo = TargetInfo(
+            val sourceInfo = SourceInfo(
                 generatedDir,
                 sourceSet,
                 commonResources,
                 extension.multiplatformResourcesPackage!!,
                 androidPackage
             )
-            val features = with(targetInfo) {
+            val features = with(sourceInfo) {
                 listOf(
                     StringsGeneratorFeature(this),
                     PluralsGeneratorFeature(this),
-                    ImagesGeneratorFeature(this)
+                    ImagesGeneratorFeature(this),
                 )
             }
             val generator = createGenerator(
                 multiplatformExtension = multiplatformExtension,
-                info = targetInfo,
+                info = sourceInfo,
                 features = features
             ) ?: return@forEach
 
@@ -116,7 +114,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
     private fun createGenerator(
         multiplatformExtension: KotlinMultiplatformExtension,
-        info: TargetInfo,
+        info: SourceInfo,
         features: List<ResourceGeneratorFeature>
     ): MRGenerator? {
         if (info.sourceSet.name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
@@ -164,16 +162,3 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     }
 }
 
-data class TargetInfo(
-    val generatedDir: File,
-    val sourceSet: KotlinSourceSet,
-    val commonResources: FileTree,
-    val mrClassPackage: String,
-    val androidRClassPackage: String
-)
-
-abstract class ResourceGeneratorFeature(info: TargetInfo) {
-    abstract fun createCommonGenerator(): MRGenerator.Generator
-    abstract fun createiOSGenerator(): MRGenerator.Generator
-    abstract fun createAndroidGenerator(): MRGenerator.Generator
-}
