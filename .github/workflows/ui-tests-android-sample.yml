@@ -1,8 +1,9 @@
 name: Unit tests of Android Sample
 
 on:
-  push:
+  pull_request:
     branches:
+      - master
       - develop
 
 jobs:

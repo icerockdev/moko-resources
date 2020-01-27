@@ -23,16 +23,16 @@ object Deps {
 
             object AndroidTest {
                 val espressoCore = AndroidLibrary(
-                    name = "androidx.test.espresso:espresso-core:${Versions.Libs.Android.espressoCore}"
+                    name = "androidx.test.espresso:espresso-core:${Versions.Libs.Android.AndroidTest.espressoCore}"
                 )
                 val testRunner = AndroidLibrary(
-                    name = "androidx.test:runner:${Versions.Libs.Android.testRunner}"
+                    name = "androidx.test:runner:${Versions.Libs.Android.AndroidTest.testRunner}"
                 )
                 val testRules = AndroidLibrary(
-                    name = "androidx.test:rules:${Versions.Libs.Android.testRunner}"
+                    name = "androidx.test:rules:${Versions.Libs.Android.AndroidTest.testRunner}"
                 )
                 val testExtJunit = AndroidLibrary(
-                    name = "androidx.test.ext:junit:${Versions.Libs.Android.testExtJunit}"
+                    name = "androidx.test.ext:junit:${Versions.Libs.Android.AndroidTest.testExtJunit}"
                 )
             }
         }
