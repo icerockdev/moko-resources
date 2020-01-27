@@ -100,6 +100,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                     StringsGeneratorFeature(this),
                     PluralsGeneratorFeature(this),
                     ImagesGeneratorFeature(this),
+                    FontsGeneratorFeature(this)
                 )
             }
             val generator = createGenerator(
