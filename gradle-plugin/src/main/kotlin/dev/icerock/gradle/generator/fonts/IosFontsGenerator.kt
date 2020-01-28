@@ -23,7 +23,7 @@ class IosFontsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fontFileName: String): CodeBlock? {
-        return CodeBlock.of("FontResource(fontName = %S", fontFileName)
+        return CodeBlock.of("FontResource(fontName = %S)", fontFileName)
     }
 
     override fun generateResources(

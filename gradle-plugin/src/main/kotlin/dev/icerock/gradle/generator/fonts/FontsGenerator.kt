@@ -24,7 +24,7 @@ abstract class FontsGenerator(
         return typeSpec
     }
 
-    fun createTypeSpec(keys: List<String>): TypeSpec {
+    private fun createTypeSpec(keys: List<String>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder("fonts")
         classBuilder.addModifiers(*getClassModifiers())
 
@@ -62,14 +62,17 @@ abstract class FontsGenerator(
         familyName: String,
         fontStyleFiles: List<Pair<String, String>>
     ): TypeSpec {
-        val spec = TypeSpec.objectBuilder(familyName)
+        val spec = TypeSpec
+            .objectBuilder(familyName)
+            .addModifiers(*getClassModifiers())
         fontStyleFiles
-            .map { Pair(it.first, getPropertyInitializer(it.second)) }
-            .filter { it.second != null }
-            .forEach { (styleName, codeBlock) ->
+            .forEach{ (styleName, fileName) ->
                 val styleProperty = PropertySpec
                     .builder(styleName, resourceClass)
-                    .initializer(codeBlock!!)
+                    .addModifiers(*getPropertyModifiers())
+                getPropertyInitializer(fileName)?.let { codeBlock ->
+                    styleProperty.initializer(codeBlock)
+                }
                 spec.addProperty(styleProperty.build())
             }
         return spec.build()
