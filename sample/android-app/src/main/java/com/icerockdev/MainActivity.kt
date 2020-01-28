@@ -1,5 +1,10 @@
+/*
+ * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package com.icerockdev
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
@@ -27,4 +32,12 @@ class MainActivity : AppCompatActivity() {
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
     }
+
+    /**
+     * For unit-tests purposes.
+     */
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHandler.updateLocale(newBase))
+    }
+
 }

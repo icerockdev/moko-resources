@@ -1,0 +1,20 @@
+name: Unit tests of Android Sample
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  test:
+    runs-on: macOS-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Sample unit-tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedAndroidTest
