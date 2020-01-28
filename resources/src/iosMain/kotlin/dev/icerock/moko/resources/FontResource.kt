@@ -10,9 +10,9 @@ import platform.UIKit.UIFont
 import platform.UIKit.UIFontDescriptor
 
 actual class FontResource(private val fontName: String) {
-    fun withSize(size: Double): UIFont {
+    fun uiFont(withSize: Double): UIFont {
         return UIFont.fontWithDescriptor(
-            UIFontDescriptor.fontDescriptorWithName(fontName, (size)),
-            size)
+            UIFontDescriptor.fontDescriptorWithName(fontName, (withSize)),
+            withSize)
     }
 }

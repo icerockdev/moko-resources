@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle.generator.fonts
 
-import com.squareup.javapoet.MethodSpec
 import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.file.FileTree
@@ -68,7 +67,7 @@ abstract class FontsGenerator(
         fontStyleFiles
             .forEach{ (styleName, fileName) ->
                 val styleProperty = PropertySpec
-                    .builder(styleName, resourceClass)
+                    .builder(styleName.decapitalize(), resourceClass)
                     .addModifiers(*getPropertyModifiers())
                 getPropertyInitializer(fileName)?.let { codeBlock ->
                     styleProperty.initializer(codeBlock)
