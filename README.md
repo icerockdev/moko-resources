@@ -76,6 +76,16 @@ settings.gradle
 enableFeaturePreview("GRADLE_METADATA")
 ```
 
+ios-app Info.plist:
+```xml
+<key>CFBundleLocalizations</key>
+<array>
+    <string>en</string>
+    <string>ru</string>
+</array>
+```
+in array should be added all used languages.
+
 ## Usage
 ### Example 1 - simple localization string
 The first step is a create a file `strings.xml` in `commonMain/resources/MR/base` with the following content:
