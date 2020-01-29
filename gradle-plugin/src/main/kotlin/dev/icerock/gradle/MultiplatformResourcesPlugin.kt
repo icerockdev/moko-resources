@@ -95,14 +95,12 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 extension.multiplatformResourcesPackage!!,
                 androidPackage
             )
-            val features = with(sourceInfo) {
-                listOf(
-                    StringsGeneratorFeature(this),
-                    PluralsGeneratorFeature(this),
-                    ImagesGeneratorFeature(this),
-                    FontsGeneratorFeature(this)
-                )
-            }
+            val features = listOf(
+                StringsGeneratorFeature(sourceInfo),
+                PluralsGeneratorFeature(sourceInfo),
+                ImagesGeneratorFeature(sourceInfo),
+                FontsGeneratorFeature(sourceInfo)
+            )
             val generator = createGenerator(
                 multiplatformExtension = multiplatformExtension,
                 info = sourceInfo,
