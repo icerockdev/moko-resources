@@ -4,7 +4,11 @@
 
 package dev.icerock.gradle.generator.fonts
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -19,7 +23,9 @@ abstract class FontsGenerator(
 
     override fun generate(resourcesGenerationDir: File): TypeSpec {
         val typeSpec = createTypeSpec(inputFileTree.map { it.nameWithoutExtension }.sorted())
-        generateResources(resourcesGenerationDir, inputFileTree.map { it })
+        generateResources(resourcesGenerationDir, inputFileTree.map {
+            FontFile(key = it.nameWithoutExtension, file = it)
+        })
         return typeSpec
     }
 
@@ -66,7 +72,7 @@ abstract class FontsGenerator(
             .objectBuilder(familyName)
             .addModifiers(*getClassModifiers())
         fontStyleFiles
-            .forEach{ (styleName, fileName) ->
+            .forEach { (styleName, fileName) ->
                 val styleProperty = PropertySpec
                     .builder(styleName.decapitalize(), resourceClass)
                     .addModifiers(*getPropertyModifiers())
@@ -80,7 +86,7 @@ abstract class FontsGenerator(
 
     protected open fun generateResources(
         resourcesGenerationDir: File,
-        files: List<File>
+        files: List<FontFile>
     ) {
     }
 
@@ -89,4 +95,9 @@ abstract class FontsGenerator(
     abstract fun getPropertyModifiers(): Array<KModifier>
 
     abstract fun getPropertyInitializer(fontFileName: String): CodeBlock?
+
+    data class FontFile(
+        val key: String,
+        val file: File
+    )
 }

@@ -10,6 +10,7 @@ import com.squareup.kotlinpoet.KModifier
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
+import java.util.*
 
 class AndroidFontsGenerator(
     sourceSet: KotlinSourceSet,
@@ -23,12 +24,28 @@ class AndroidFontsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
-        //TODO: Implement
-        return null
+    override fun getPropertyInitializer(fontFileName: String): CodeBlock? {
+        return CodeBlock.of("FontResource(fontResourceId = R.font.%L)", keyToResourceId(fontFileName))
     }
 
     override fun getImports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
     )
+
+    override fun generateResources(
+        resourcesGenerationDir: File,
+        files: List<FontFile>
+    ) {
+        val fontResDir = File(resourcesGenerationDir, "font")
+        fontResDir.mkdirs()
+
+        files.forEach { (key, file) ->
+            val fileName = keyToResourceId(key) + "." + file.extension
+            file.copyTo(File(fontResDir, fileName))
+        }
+    }
+
+    private fun keyToResourceId(key: String): String {
+        return key.replace("-", "_").toLowerCase(Locale.ROOT)
+    }
 }

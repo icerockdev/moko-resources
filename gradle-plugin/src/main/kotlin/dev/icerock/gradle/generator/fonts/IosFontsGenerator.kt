@@ -28,9 +28,9 @@ class IosFontsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        files: List<File>
+        files: List<FontFile>
     ) {
-        files.forEach { file ->
+        files.forEach { (_, file) ->
             file.copyTo(File(resourcesGenerationDir, file.name))
         }
     }

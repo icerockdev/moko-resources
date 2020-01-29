@@ -4,6 +4,16 @@
 
 package dev.icerock.moko.resources
 
-actual class FontResource(fontName: String) {
+import android.content.Context
+import android.graphics.Typeface
+import androidx.annotation.FontRes
+import androidx.core.content.res.ResourcesCompat
 
+actual class FontResource(
+    @FontRes
+    private val fontResourceId: Int
+) {
+    fun getTypeface(context: Context): Typeface? {
+        return ResourcesCompat.getFont(context, fontResourceId)
+    }
 }
