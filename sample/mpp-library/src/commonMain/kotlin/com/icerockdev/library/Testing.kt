@@ -73,4 +73,8 @@ object Testing {
 
         return StringDesc.Composition(list, separator = "\n")
     }
+
+    fun getFont1() = MR.fonts.Raleway.italic
+
+    fun getFont2() = MR.fonts.Raleway.bold
 }

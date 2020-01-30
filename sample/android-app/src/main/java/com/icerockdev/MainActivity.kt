@@ -29,8 +29,10 @@ class MainActivity : AppCompatActivity() {
 
         imageView.setImageResource(drawable.drawableResId)
         textView.text = text
+        textView.typeface = Testing.getFont1().getTypeface(context = this)
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
+        stringDescTextView.typeface = Testing.getFont2().getTypeface(context = this)
     }
 
     /**
