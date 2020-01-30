@@ -6,20 +6,22 @@ package dev.icerock.gradle.generator.fonts
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import dev.icerock.gradle.generator.ExtendsPlistDictionary
 import dev.icerock.gradle.generator.IosMRGenerator
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.io.File
 import javax.xml.parsers.DocumentBuilder
 
 class IosFontsGenerator(
     sourceSet: KotlinSourceSet,
-    inputFileTree: FileTree
+    private val inputFileTree: FileTree
 ) : FontsGenerator(
     sourceSet = sourceSet,
     inputFileTree = inputFileTree
-) {
+), ExtendsPlistDictionary {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -36,5 +38,19 @@ class IosFontsGenerator(
         files.forEach { (_, file) ->
             file.copyTo(File(resourcesGenerationDir, file.name))
         }
+    }
+
+    override fun appendPlistInfo(doc: Document, rootDict: Node) {
+        val fontNodes = inputFileTree.map {
+            doc.createElement("string").apply {
+                textContent = "${it.name}"
+            }
+        }
+        rootDict.appendChild(doc.createElement("key").apply {
+            textContent = "UIAppFonts"
+        })
+        rootDict.appendChild(doc.createElement("array").apply {
+            fontNodes.forEach { appendChild(it) }
+        })
     }
 }
