@@ -9,7 +9,9 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.IosMRGenerator
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.w3c.dom.Node
 import java.io.File
+import javax.xml.parsers.DocumentBuilder
 
 class IosFontsGenerator(
     sourceSet: KotlinSourceSet,
@@ -30,6 +32,7 @@ class IosFontsGenerator(
         resourcesGenerationDir: File,
         files: List<FontFile>
     ) {
+
         files.forEach { (_, file) ->
             file.copyTo(File(resourcesGenerationDir, file.name))
         }

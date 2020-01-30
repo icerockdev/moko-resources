@@ -14,6 +14,8 @@ import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+import org.w3c.dom.Document
+import org.w3c.dom.Node
 import java.io.File
 import java.io.FileWriter
 import javax.xml.parsers.DocumentBuilderFactory
@@ -26,7 +28,7 @@ class IosMRGenerator(
     generatedDir: File,
     sourceSet: KotlinSourceSet,
     mrClassPackage: String,
-    generators: List<Generator>
+    private val generators: List<Generator>
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
@@ -80,12 +82,12 @@ class IosMRGenerator(
 
                 val rootDict = doc.getElementsByTagName("dict").item(0)
 
-                rootDict.appendChild(doc.createElement("key").apply {
-                    textContent = "CFBundleDevelopmentRegion"
-                })
-                rootDict.appendChild(doc.createElement("string").apply {
-                    textContent = "en"
-                })
+                generators.forEach { generator ->
+                    (generator as? ExtendsPlistDictionary)?.let {
+                        it.appendPlistInfo(doc, rootDict)
+                    }
+
+                }
 
                 val transformerFactory = TransformerFactory.newInstance()
                 val transformer = transformerFactory.newTransformer()
@@ -102,4 +104,8 @@ class IosMRGenerator(
     companion object {
         const val BUNDLE_PROPERTY_NAME = "bundle"
     }
+}
+
+interface ExtendsPlistDictionary {
+    fun appendPlistInfo(doc: Document, rootDict: Node)
 }
