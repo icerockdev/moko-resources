@@ -5,4 +5,6 @@
     <string name="test3">тест 3</string>
     <string name="common.name">Тестовый проект</string>
     <string name="format">Тестовые данные %d</string>
+    <string name="encoding">Выберите портфель и сумму</string>
+    <string name="positional">вторая строка %2$s первое число %1$d</string>
 </resources>
