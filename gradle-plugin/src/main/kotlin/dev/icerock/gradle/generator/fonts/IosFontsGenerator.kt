@@ -17,11 +17,11 @@ import javax.xml.parsers.DocumentBuilder
 
 class IosFontsGenerator(
     sourceSet: KotlinSourceSet,
-    private val inputFileTree: FileTree
+    inputFileTree: FileTree
 ) : FontsGenerator(
     sourceSet = sourceSet,
     inputFileTree = inputFileTree
-), ExtendsPlistDictionary {
+) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -38,19 +38,5 @@ class IosFontsGenerator(
         files.forEach { (_, file) ->
             file.copyTo(File(resourcesGenerationDir, file.name))
         }
-    }
-
-    override fun appendPlistInfo(doc: Document, rootDict: Node) {
-        val fontNodes = inputFileTree.map {
-            doc.createElement("string").apply {
-                textContent = "${it.name}"
-            }
-        }
-        rootDict.appendChild(doc.createElement("key").apply {
-            textContent = "UIAppFonts"
-        })
-        rootDict.appendChild(doc.createElement("array").apply {
-            fontNodes.forEach { appendChild(it) }
-        })
     }
 }
