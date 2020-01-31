@@ -36,6 +36,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.6.0
   - 0.6.1
   - 0.6.2
+  - 0.7.0
 
 ## Installation
 root build.gradle  
@@ -46,7 +47,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.6.2"
+        classpath "dev.icerock.moko:resources-generator:0.7.0"
     }
 }
 
@@ -63,7 +64,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.6.2")
+    commonMainApi("dev.icerock.moko:resources:0.7.0")
 }
 
 multiplatformResources {
@@ -75,6 +76,16 @@ settings.gradle
 ```groovy
 enableFeaturePreview("GRADLE_METADATA")
 ```
+
+ios-app Info.plist:
+```xml
+<key>CFBundleLocalizations</key>
+<array>
+    <string>en</string>
+    <string>ru</string>
+</array>
+```
+in array should be added all used languages.
 
 ## Usage
 ### Example 1 - simple localization string

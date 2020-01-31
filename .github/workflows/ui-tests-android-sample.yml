@@ -12,7 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+      - name: Build and publish local
+        run: ./gradlew -PlibraryPublish :gradle-plugin:publishPluginPublicationToMavenLocal :resources:publishToMavenLocal
       - name: Sample unit-tests
         uses: reactivecircus/android-emulator-runner@v2
         with:

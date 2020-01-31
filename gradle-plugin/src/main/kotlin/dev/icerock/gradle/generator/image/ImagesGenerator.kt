@@ -4,11 +4,7 @@
 
 package dev.icerock.gradle.generator.image
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet

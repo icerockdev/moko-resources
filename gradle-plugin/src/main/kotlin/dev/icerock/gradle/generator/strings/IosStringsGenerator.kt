@@ -10,6 +10,9 @@ import dev.icerock.gradle.generator.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAM
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
+import dev.icerock.gradle.generator.ExtendsPlistDictionary
+import org.w3c.dom.Document
+import org.w3c.dom.Node
 
 class IosStringsGenerator(
     sourceSet: KotlinSourceSet,
@@ -17,7 +20,7 @@ class IosStringsGenerator(
 ) : StringsGenerator(
     sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
-) {
+), ExtendsPlistDictionary {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -45,5 +48,14 @@ class IosStringsGenerator(
         }.joinToString("\n")
 
         localizableFile.writeText(content)
+    }
+
+    override fun appendPlistInfo(doc: Document, rootDict: Node) {
+        rootDict.appendChild(doc.createElement("key").apply {
+            textContent = "CFBundleDevelopmentRegion"
+        })
+        rootDict.appendChild(doc.createElement("string").apply {
+            textContent = "en"
+        })
     }
 }
