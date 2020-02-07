@@ -20,7 +20,9 @@ actual sealed class StringDesc {
         val args: List<Any>
     ) : StringDesc() {
         override fun toString(context: Context): String {
-            return context.getString(stringRes.resourceId, *(args.toTypedArray()))
+            return context.getString(stringRes.resourceId, *(
+                    args.map{ (it as? StringDesc)?.toString(context) ?: it }.toTypedArray())
+            )
         }
 
         actual constructor(stringRes: StringResource, vararg args: Any) : this(

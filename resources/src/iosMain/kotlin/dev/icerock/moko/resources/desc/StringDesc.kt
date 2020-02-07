@@ -23,7 +23,7 @@ actual sealed class StringDesc {
     ) : StringDesc() {
         actual constructor(stringRes: StringResource, vararg args: Any) : this(
             stringRes,
-            args.toList()
+            args.toList().map{ (it as? StringDesc)?.localized() ?: it }
         )
 
         override fun localized(): String {
