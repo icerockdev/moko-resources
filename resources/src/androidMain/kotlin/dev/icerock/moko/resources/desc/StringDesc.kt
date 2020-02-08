@@ -5,6 +5,8 @@
 package dev.icerock.moko.resources.desc
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
 
@@ -13,9 +15,30 @@ actual sealed class StringDesc {
         return args.toList().map { (it as? StringDesc)?.toString(context) ?: it }.toTypedArray()
     }
 
-    actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
+    actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc(), Parcelable {
         override fun toString(context: Context): String {
             return context.getString(stringRes.resourceId)
+        }
+
+        // android parcelable
+        constructor(parcel: Parcel) : this(
+            stringRes = parcel.readParcelable<StringResource>(StringResource::class.java.classLoader)
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeParcelable(stringRes, flags)
+        }
+
+        override fun describeContents(): Int = 0
+
+        companion object CREATOR : Parcelable.Creator<Resource> {
+            override fun createFromParcel(parcel: Parcel): Resource {
+                return Resource(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Resource?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 
@@ -35,10 +58,35 @@ actual sealed class StringDesc {
         )
     }
 
-    actual data class Plural actual constructor(val pluralsRes: PluralsResource, val number: Int) :
-        StringDesc() {
+    actual data class Plural actual constructor(
+        val pluralsRes: PluralsResource,
+        val number: Int
+    ) : StringDesc(), Parcelable {
         override fun toString(context: Context): String {
             return context.resources.getQuantityString(pluralsRes.resourceId, number)
+        }
+
+        // android parcelable
+        constructor(parcel: Parcel) : this(
+            pluralsRes = parcel.readParcelable(PluralsResource::class.java.classLoader),
+            number = parcel.readInt()
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeParcelable(pluralsRes, flags)
+            parcel.writeInt(number)
+        }
+
+        override fun describeContents(): Int = 0
+
+        companion object CREATOR : Parcelable.Creator<Plural> {
+            override fun createFromParcel(parcel: Parcel): Plural {
+                return Plural(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Plural?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 
@@ -62,9 +110,32 @@ actual sealed class StringDesc {
         )
     }
 
-    actual data class Raw actual constructor(val string: String) : StringDesc() {
+    actual data class Raw actual constructor(
+        val string: String
+    ) : StringDesc(), Parcelable {
         override fun toString(context: Context): String {
             return string
+        }
+
+        // android parcelable
+        constructor(parcel: Parcel) : this(
+            string = parcel.readString()
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(string)
+        }
+
+        override fun describeContents(): Int = 0
+
+        companion object CREATOR : Parcelable.Creator<Raw> {
+            override fun createFromParcel(parcel: Parcel): Raw {
+                return Raw(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Raw?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 
