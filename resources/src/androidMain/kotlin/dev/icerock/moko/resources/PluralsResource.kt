@@ -4,6 +4,11 @@
 
 package dev.icerock.moko.resources
 
+import android.os.Parcelable
 import androidx.annotation.PluralsRes
+import kotlinx.android.parcel.Parcelize
 
-actual class PluralsResource(@PluralsRes val resourceId: Int)
+@Parcelize
+actual class PluralsResource(
+    @PluralsRes val resourceId: Int
+) : Parcelable
