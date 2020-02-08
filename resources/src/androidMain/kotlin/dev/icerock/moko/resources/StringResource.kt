@@ -4,30 +4,11 @@
 
 package dev.icerock.moko.resources
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 actual class StringResource(
     @StringRes val resourceId: Int
-) : Parcelable {
-
-    constructor(parcel: Parcel) : this(parcel.readInt())
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(resourceId)
-    }
-
-    override fun describeContents(): Int = 0
-
-    companion object CREATOR : Parcelable.Creator<StringResource> {
-        override fun createFromParcel(parcel: Parcel): StringResource {
-            return StringResource(parcel)
-        }
-
-        override fun newArray(size: Int): Array<StringResource?> {
-            return arrayOfNulls(size)
-        }
-    }
-
-}
+) : Parcelable
