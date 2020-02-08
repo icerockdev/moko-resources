@@ -12,8 +12,9 @@ import platform.Foundation.stringWithFormat
 
 actual sealed class StringDesc {
     protected fun processArgs(args: List<Any>): Array<out Any> {
-        return args.toList().map{ (it as? StringDesc)?.localized() ?: it }.toTypedArray()
+        return args.toList().map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
     }
+
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
         override fun localized(): String {
             return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)

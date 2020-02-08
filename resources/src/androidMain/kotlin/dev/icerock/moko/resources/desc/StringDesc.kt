@@ -10,8 +10,9 @@ import dev.icerock.moko.resources.StringResource
 
 actual sealed class StringDesc {
     protected fun processArgs(args: List<Any>, context: Context): Array<out Any> {
-        return args.toList().map{ (it as? StringDesc)?.toString(context) ?: it }.toTypedArray()
+        return args.toList().map { (it as? StringDesc)?.toString(context) ?: it }.toTypedArray()
     }
+
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
         override fun toString(context: Context): String {
             return context.getString(stringRes.resourceId)
@@ -23,7 +24,8 @@ actual sealed class StringDesc {
         val args: List<Any>
     ) : StringDesc() {
         override fun toString(context: Context): String {
-            return context.getString(stringRes.resourceId, *processArgs(args, context)
+            return context.getString(
+                stringRes.resourceId, *processArgs(args, context)
             )
         }
 
@@ -66,11 +68,12 @@ actual sealed class StringDesc {
         }
     }
 
-    actual data class Composition actual constructor(val args: List<StringDesc>, val separator: String?) : StringDesc() {
+    actual data class Composition actual constructor(val args: List<StringDesc>, val separator: String?) :
+        StringDesc() {
         override fun toString(context: Context): String {
             return StringBuilder().apply {
                 args.forEachIndexed { index, stringDesc ->
-                    if(index != 0 && separator != null) {
+                    if (index != 0 && separator != null) {
                         append(separator)
                     }
                     append(stringDesc.toString(context))
