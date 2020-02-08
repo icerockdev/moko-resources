@@ -9,6 +9,9 @@ import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
 
 actual sealed class StringDesc {
+    protected fun processArgs(args: List<Any>, context: Context): Array<out Any> {
+        return args.toList().map{ (it as? StringDesc)?.toString(context) ?: it }.toTypedArray()
+    }
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
         override fun toString(context: Context): String {
             return context.getString(stringRes.resourceId)
@@ -20,7 +23,8 @@ actual sealed class StringDesc {
         val args: List<Any>
     ) : StringDesc() {
         override fun toString(context: Context): String {
-            return context.getString(stringRes.resourceId, *(args.toTypedArray()))
+            return context.getString(stringRes.resourceId, *processArgs(args, context)
+            )
         }
 
         actual constructor(stringRes: StringResource, vararg args: Any) : this(
@@ -45,7 +49,7 @@ actual sealed class StringDesc {
             return context.resources.getQuantityString(
                 pluralsRes.resourceId,
                 number,
-                *(args.toTypedArray())
+                *processArgs(args, context)
             )
         }
 

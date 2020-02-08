@@ -11,6 +11,9 @@ import platform.Foundation.NSString
 import platform.Foundation.stringWithFormat
 
 actual sealed class StringDesc {
+    protected fun processArgs(args: List<Any>): Array<out Any> {
+        return args.toList().map{ (it as? StringDesc)?.localized() ?: it }.toTypedArray()
+    }
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
         override fun localized(): String {
             return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
@@ -28,7 +31,7 @@ actual sealed class StringDesc {
 
         override fun localized(): String {
             val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
-            return stringWithFormat(string, args.toTypedArray())
+            return stringWithFormat(string, processArgs(args))
         }
     }
 
@@ -62,7 +65,7 @@ actual sealed class StringDesc {
                 resourceId = pluralsRes.resourceId,
                 number = number
             )!!
-            return stringWithFormat(pluralized, args.toTypedArray())
+            return stringWithFormat(pluralized, processArgs(args))
         }
     }
 
