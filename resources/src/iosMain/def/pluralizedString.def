@@ -4,7 +4,7 @@ package = dev.icerock.moko.resources.objc
 #import <Foundation/NSString.h>
 #import <Foundation/NSBundle.h>
 
-NSString* pluralizedString(NSBundle* bundle, NSString* resourceId, int number) {
-  NSString* localized = [bundle localizedStringForKey: resourceId value: nil table: nil];
+NSString* pluralizedString(NSBundle* bundle, NSString* resourceId, int number, NSString* table) {
+  NSString* localized = [bundle localizedStringForKey: resourceId value: nil table: table];
   return [NSString localizedStringWithFormat:localized, number];
 }

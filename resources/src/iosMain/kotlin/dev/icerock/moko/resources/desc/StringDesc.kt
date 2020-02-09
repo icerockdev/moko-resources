@@ -17,7 +17,7 @@ actual sealed class StringDesc {
 
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
         override fun localized(): String {
-            return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
+            return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, locale.stringsTable)
         }
     }
 
@@ -31,7 +31,7 @@ actual sealed class StringDesc {
         )
 
         override fun localized(): String {
-            val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
+            val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, locale.stringsTable)
             return stringWithFormat(string, processArgs(args))
         }
     }
@@ -43,7 +43,8 @@ actual sealed class StringDesc {
             return pluralizedString(
                 bundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
-                number = number
+                number = number,
+                table = locale.stringsTable
             )!!
         }
     }
@@ -64,14 +65,14 @@ actual sealed class StringDesc {
             val pluralized = pluralizedString(
                 bundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
-                number = number
+                number = number,
+                table = locale.stringsTable
             )!!
             return stringWithFormat(pluralized, processArgs(args))
         }
     }
 
     actual data class Raw actual constructor(val string: String) : StringDesc() {
-
         override fun localized(): String {
             return string
         }
@@ -84,6 +85,23 @@ actual sealed class StringDesc {
         override fun localized(): String {
             return args.joinToString(separator = separator ?: "") { it.localized() }
         }
+    }
+
+    actual sealed class LocaleType {
+        actual class System actual constructor(): LocaleType() {
+            override val stringsTable: String? = null
+
+        }
+
+        actual class Custom actual constructor(locale: String): LocaleType() {
+            override val stringsTable: String? = "$locale.strings"
+        }
+
+        abstract val stringsTable: String?
+    }
+
+    actual companion object {
+        actual var locale: LocaleType = LocaleType.System()
     }
 
     abstract fun localized(): String
