@@ -17,7 +17,7 @@ actual sealed class StringDesc {
 
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
         override fun localized(): String {
-            return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, locale.stringsTable)
+            return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, localeType.stringsTable)
         }
     }
 
@@ -31,7 +31,7 @@ actual sealed class StringDesc {
         )
 
         override fun localized(): String {
-            val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, locale.stringsTable)
+            val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, localeType.stringsTable)
             return stringWithFormat(string, processArgs(args))
         }
     }
@@ -44,7 +44,7 @@ actual sealed class StringDesc {
                 bundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
                 number = number,
-                table = locale.stringsTable
+                table = localeType.stringsTable
             )!!
         }
     }
@@ -66,7 +66,7 @@ actual sealed class StringDesc {
                 bundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
                 number = number,
-                table = locale.stringsTable
+                table = localeType.stringsTable
             )!!
             return stringWithFormat(pluralized, processArgs(args))
         }
@@ -101,7 +101,7 @@ actual sealed class StringDesc {
     }
 
     actual companion object {
-        actual var locale: LocaleType = LocaleType.System()
+        actual var localeType: LocaleType = LocaleType.System()
     }
 
     abstract fun localized(): String

@@ -27,7 +27,7 @@ expect sealed class StringDesc {
     }
 
     companion object {
-        var locale: LocaleType
+        var localeType: LocaleType
     }
 }
 
