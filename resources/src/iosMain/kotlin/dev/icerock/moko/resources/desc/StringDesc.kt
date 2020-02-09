@@ -94,7 +94,7 @@ actual sealed class StringDesc {
         }
 
         actual class Custom actual constructor(locale: String): LocaleType() {
-            override val stringsTable: String? = "$locale.strings"
+            override val stringsTable: String? = "$locale"
         }
 
         abstract val stringsTable: String?
