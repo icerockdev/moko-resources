@@ -48,6 +48,13 @@ class IosStringsGenerator(
         }.joinToString("\n")
 
         localizableFile.writeText(content)
+
+        if (language != null) {
+            val baseDir = File(resourcesGenerationDir, "Base.lproj")
+            baseDir.mkdirs()
+            val customTableFile = File(resDir, "$language.strings")
+            customTableFile.writeText(content)
+        }
     }
 
     override fun appendPlistInfo(doc: Document, rootDict: Node) {

@@ -30,20 +30,7 @@ class IosPluralsGenerator(
         )
     }
 
-    override fun generateResources(
-        resourcesGenerationDir: File,
-        language: String?,
-        strings: Map<KeyType, PluralMap>
-    ) {
-        val resDirName = when (language) {
-            null -> "Base.lproj"
-            else -> "$language.lproj"
-        }
-
-        val resDir = File(resourcesGenerationDir, resDirName)
-        val localizableFile = File(resDir, "Localizable.stringsdict")
-        resDir.mkdirs()
-
+    private fun writeStringsFile(file: File, strings: Map<KeyType, PluralMap>) {
         val head = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -79,8 +66,31 @@ class IosPluralsGenerator(
 	</dict>
 </plist>"""
 
-        localizableFile.writeText(head)
-        localizableFile.appendText(content)
-        localizableFile.appendText(footer)
+        file.writeText(head)
+        file.appendText(content)
+        file.appendText(footer)
+    }
+
+    override fun generateResources(
+        resourcesGenerationDir: File,
+        language: String?,
+        strings: Map<KeyType, PluralMap>
+    ) {
+        val resDirName = when (language) {
+            null -> "Base.lproj"
+            else -> "$language.lproj"
+        }
+
+        val resDir = File(resourcesGenerationDir, resDirName)
+        val localizableFile = File(resDir, "Localizable.stringsdict")
+        resDir.mkdirs()
+        writeStringsFile(localizableFile, strings)
+
+        if (language != null) {
+            val baseDir = File(resourcesGenerationDir, "Base.lproj")
+            baseDir.mkdirs()
+            val customTableFile = File(resDir, "$language.stringsdict")
+            writeStringsFile(customTableFile, strings)
+        }
     }
 }
