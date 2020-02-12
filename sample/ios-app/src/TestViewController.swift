@@ -27,3 +27,14 @@ class TestViewController: UIViewController {
         stringDescTextView.font = testing.getFont2().uiFont(withSize: 14.0)
     }
 }
+
+class LanguageTableViewController: UITableViewController {
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if(segue.identifier == "") {
+            Testing().locale(lang: nil)
+        } else {
+            Testing().locale(lang: segue.identifier)
+        }
+    }
+}
