@@ -5,11 +5,9 @@
 package dev.icerock.moko.resources.desc
 
 import android.content.Context
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.Parcelable
-import androidx.annotation.RequiresApi
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
 import kotlinx.android.parcel.Parcelize
@@ -113,27 +111,24 @@ actual sealed class StringDesc {
     }
 
     actual companion object {
-        //TODO: work with context when property set, create and save new resources
-        private var localizedResources: Resources? = null
+        private fun localizedContext(context: Context): Context {
+            if(localeType.systemLocale == null) return context
 
-        //TODO: Work around API versions
-        internal fun resourcesForContext(context: Context): Resources {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                return context.resources
+            val resources = context.resources
+            val config = resources.configuration
+
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                config.setLocale(localeType.systemLocale)
+                context.createConfigurationContext(config)
+            } else {
+                config.locale = localeType.systemLocale
+                resources.updateConfiguration(config, resources.displayMetrics)
+                context
             }
+        }
 
-            val locale = localeType.systemLocale ?: return context.resources
-            val cachedConf = localizedResources?.configuration
-
-            if (cachedConf == null || cachedConf.locales.indexOf(locale) == -1) {
-                var conf = Configuration(context.resources.configuration)
-                conf.setLocale(locale)
-                val localizedContext = context.createConfigurationContext(conf)
-                val res = localizedContext.resources
-                localizedResources = res
-                return res
-            }
-            return localizedResources!!
+        private fun resourcesForContext(context: Context): Resources {
+            return localizedContext(context).resources
         }
 
         actual var localeType: LocaleType = LocaleType.System()
