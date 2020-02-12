@@ -77,4 +77,9 @@ object Testing {
     fun getFont1() = MR.fonts.Raleway.italic
 
     fun getFont2() = MR.fonts.Raleway.bold
+
+    fun locale(lang: String?) {
+        StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)
+        else StringDesc.LocaleType.System()
+    }
 }
