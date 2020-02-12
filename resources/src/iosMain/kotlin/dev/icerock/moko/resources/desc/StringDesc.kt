@@ -87,23 +87,6 @@ actual sealed class StringDesc {
         }
     }
 
-    actual sealed class LocaleType {
-        actual class System actual constructor(): LocaleType() {
-            override val stringsTable: String? = null
-
-        }
-
-        actual class Custom actual constructor(locale: String): LocaleType() {
-            override val stringsTable: String? = "$locale"
-        }
-
-        abstract val stringsTable: String?
-    }
-
-    actual companion object {
-        actual var localeType: LocaleType = LocaleType.System()
-    }
-
     abstract fun localized(): String
 
     protected fun stringWithFormat(format: String, args: Array<out Any>): String {
@@ -162,5 +145,23 @@ actual sealed class StringDesc {
             )
             else -> throw IllegalArgumentException("can't handle more then 9 arguments now")
         }
+    }
+
+    actual sealed class LocaleType {
+        actual class System actual constructor(): LocaleType() {
+            override val stringsTable: String? = null
+
+        }
+
+        actual class Custom actual constructor(locale: String): LocaleType() {
+            override val stringsTable: String? = "$locale"
+        }
+
+        abstract val stringsTable: String?
+    }
+
+    @ThreadLocal
+    actual companion object {
+        actual var localeType: LocaleType = LocaleType.System()
     }
 }
