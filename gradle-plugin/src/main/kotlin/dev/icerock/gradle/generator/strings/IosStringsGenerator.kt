@@ -52,7 +52,7 @@ class IosStringsGenerator(
         if (language != null) {
             val baseDir = File(resourcesGenerationDir, "Base.lproj")
             baseDir.mkdirs()
-            val customTableFile = File(resDir, "$language.strings")
+            val customTableFile = File(baseDir, "$language.strings")
             customTableFile.writeText(content)
         }
     }
