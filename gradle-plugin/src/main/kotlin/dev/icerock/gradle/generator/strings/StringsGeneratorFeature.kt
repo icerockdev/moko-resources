@@ -8,14 +8,16 @@ import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.MRGenerator
 
-class StringsGeneratorFeature(private val info: SourceInfo): ResourceGeneratorFeature(info) {
+class StringsGeneratorFeature(private val info: SourceInfo,
+                              private val iosBaseLocalizationRegion: String
+): ResourceGeneratorFeature(info) {
     private val stringsFileTree = info.commonResources.matching{ include("MR/**/strings.xml") }
     override fun createCommonGenerator(): MRGenerator.Generator {
         return CommonStringsGenerator(info.sourceSet, stringsFileTree)
     }
 
     override fun createiOSGenerator(): MRGenerator.Generator  {
-        return IosStringsGenerator(info.sourceSet, stringsFileTree)
+        return IosStringsGenerator(info.sourceSet, stringsFileTree, iosBaseLocalizationRegion)
     }
 
     override fun createAndroidGenerator(): MRGenerator.Generator {

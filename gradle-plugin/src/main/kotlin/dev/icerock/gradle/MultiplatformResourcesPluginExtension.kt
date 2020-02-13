@@ -11,5 +11,11 @@ open class MultiplatformResourcesPluginExtension {
             onChange?.invoke()
         }
 
+    var iosBaseLocalizationRegion: String = "en"
+        set(value) {
+            field = value
+            onChange?.invoke()
+        }
+
     internal var onChange: (() -> Unit)? = null
 }

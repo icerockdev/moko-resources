@@ -14,7 +14,8 @@ import java.io.File
 
 class IosPluralsGenerator(
     sourceSet: KotlinSourceSet,
-    pluralsFileTree: FileTree
+    pluralsFileTree: FileTree,
+    private val baseLocalizationRegion: String
 ) : PluralsGenerator(
     sourceSet = sourceSet,
     pluralsFileTree = pluralsFileTree
@@ -86,11 +87,11 @@ class IosPluralsGenerator(
         resDir.mkdirs()
         writeStringsFile(localizableFile, strings)
 
-        if (language != null) {
-            val baseDir = File(resourcesGenerationDir, "Base.lproj")
-            baseDir.mkdirs()
-            val customTableFile = File(baseDir, "$language.stringsdict")
-            writeStringsFile(customTableFile, strings)
+        if (language == null) {
+            val regionDir = File(resourcesGenerationDir, "$baseLocalizationRegion.lproj")
+            regionDir.mkdirs()
+            val regionFile = File(regionDir, "Localizable.stringsdict")
+            writeStringsFile(regionFile, strings)
         }
     }
 }
