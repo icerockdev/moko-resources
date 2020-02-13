@@ -89,7 +89,7 @@ class IosPluralsGenerator(
         if (language != null) {
             val baseDir = File(resourcesGenerationDir, "Base.lproj")
             baseDir.mkdirs()
-            val customTableFile = File(resDir, "$language.stringsdict")
+            val customTableFile = File(baseDir, "$language.stringsdict")
             writeStringsFile(customTableFile, strings)
         }
     }
