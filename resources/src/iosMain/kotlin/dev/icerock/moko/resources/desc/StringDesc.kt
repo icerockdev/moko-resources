@@ -20,7 +20,7 @@ actual sealed class StringDesc {
     protected fun localizedString(stringRes: StringResource): String {
         var string = localeType.bundle.localizedStringForKey(stringRes.resourceId, null, null)
         if (string == stringRes.resourceId) {
-            string = LocaleType.System().bundle.localizedStringForKey(stringRes.resourceId, null, null)
+            string = mainBundle.localizedStringForKey(stringRes.resourceId, null, null)
         }
         return string
     }
