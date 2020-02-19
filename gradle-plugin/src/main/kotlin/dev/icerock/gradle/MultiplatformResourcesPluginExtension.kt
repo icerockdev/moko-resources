@@ -4,18 +4,11 @@
 
 package dev.icerock.gradle
 
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+
 open class MultiplatformResourcesPluginExtension {
     var multiplatformResourcesPackage: String? = null
-        set(value) {
-            field = value
-            onChange?.invoke()
-        }
-
+    var multiplatformResourcesSourceSet: String? = null
     var iosBaseLocalizationRegion: String = "en"
-        set(value) {
-            field = value
-            onChange?.invoke()
-        }
-
-    internal var onChange: (() -> Unit)? = null
+    val sourceSetName: String get() = multiplatformResourcesSourceSet ?: KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME
 }

@@ -70,6 +70,7 @@ dependencies {
 
 multiplatformResources {
     multiplatformResourcesPackage = "org.example.library"
+    multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
 }
 ```
 
