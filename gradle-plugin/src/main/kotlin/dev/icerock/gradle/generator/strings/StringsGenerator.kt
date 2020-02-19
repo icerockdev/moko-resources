@@ -50,6 +50,15 @@ abstract class StringsGenerator(
             mutableMap[name] = value
         }
 
+        val incorrectKeys = mutableMap
+            .filter { it.key == it.value }
+            .keys
+            .toList()
+        if (incorrectKeys.isNotEmpty()) {
+            val excMessage = incorrectKeys.map{ "\"$it\"" }.joinToString()
+            throw Exception("StringsGenerator: Can't process keys which equals their value: $excMessage")
+        }
+
         return mutableMap
     }
 
