@@ -12,7 +12,7 @@ import dev.icerock.moko.resources.desc.plus
 object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(
-            MR.strings.test.desc(),
+            MR.strings.test_simple.desc(),
             MR.strings.test2.desc(),
             MR.strings.test3.desc(),
             MR.strings.common_name.desc(),
@@ -30,8 +30,8 @@ object Testing {
 
     fun getStringDesc(): StringDesc {
         // create simple string
-        val simpleString = StringDesc.Resource(MR.strings.test)
-        val simpleStringExt = MR.strings.test.desc()
+        val simpleString = StringDesc.Resource(MR.strings.test_simple)
+        val simpleStringExt = MR.strings.test_simple.desc()
 
         // create formatted string
         val formattedString = StringDesc.ResourceFormatted(MR.strings.format, 9)
