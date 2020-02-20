@@ -5,11 +5,13 @@
 package dev.icerock.moko.resources.desc
 
 import android.content.Context
-import android.os.Parcel
+import android.content.res.Resources
+import android.os.Build
 import android.os.Parcelable
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 actual sealed class StringDesc {
     protected fun processArgs(args: List<Any>, context: Context): Array<out Any> {
@@ -19,7 +21,7 @@ actual sealed class StringDesc {
     @Parcelize
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc(), Parcelable {
         override fun toString(context: Context): String {
-            return context.getString(stringRes.resourceId)
+            return resourcesForContext(context).getString(stringRes.resourceId)
         }
     }
 
@@ -28,7 +30,7 @@ actual sealed class StringDesc {
         val args: List<Any>
     ) : StringDesc() {
         override fun toString(context: Context): String {
-            return context.getString(
+            return resourcesForContext(context).getString(
                 stringRes.resourceId, *processArgs(args, context)
             )
         }
@@ -45,7 +47,7 @@ actual sealed class StringDesc {
         val number: Int
     ) : StringDesc(), Parcelable {
         override fun toString(context: Context): String {
-            return context.resources.getQuantityString(pluralsRes.resourceId, number)
+            return resourcesForContext(context).getQuantityString(pluralsRes.resourceId, number)
         }
     }
 
@@ -55,7 +57,7 @@ actual sealed class StringDesc {
         val args: List<Any>
     ) : StringDesc() {
         override fun toString(context: Context): String {
-            return context.resources.getQuantityString(
+            return resourcesForContext(context).getQuantityString(
                 pluralsRes.resourceId,
                 number,
                 *processArgs(args, context)
@@ -93,4 +95,42 @@ actual sealed class StringDesc {
     }
 
     abstract fun toString(context: Context): String
+
+    actual sealed class LocaleType {
+        actual class System actual constructor() :
+            LocaleType() {
+            override val systemLocale: Locale? = null
+        }
+
+        actual class Custom actual constructor(locale: String) :
+            LocaleType() {
+            override val systemLocale: Locale = Locale(locale)
+        }
+
+        abstract val systemLocale: Locale?
+    }
+
+    actual companion object {
+        private fun localizedContext(context: Context): Context {
+            if(localeType.systemLocale == null) return context
+
+            val resources = context.resources
+            val config = resources.configuration
+
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                config.setLocale(localeType.systemLocale)
+                context.createConfigurationContext(config)
+            } else {
+                config.locale = localeType.systemLocale
+                resources.updateConfiguration(config, resources.displayMetrics)
+                context
+            }
+        }
+
+        private fun resourcesForContext(context: Context): Resources {
+            return localizedContext(context).resources
+        }
+
+        actual var localeType: LocaleType = LocaleType.System()
+    }
 }

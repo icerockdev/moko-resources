@@ -95,8 +95,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 androidPackage
             )
             val features = listOf(
-                StringsGeneratorFeature(sourceInfo),
-                PluralsGeneratorFeature(sourceInfo),
+                StringsGeneratorFeature(sourceInfo, extension.iosBaseLocalizationRegion),
+                PluralsGeneratorFeature(sourceInfo, extension.iosBaseLocalizationRegion),
                 ImagesGeneratorFeature(sourceInfo),
                 FontsGeneratorFeature(sourceInfo)
             )

@@ -16,7 +16,8 @@ import org.w3c.dom.Node
 
 class IosStringsGenerator(
     sourceSet: KotlinSourceSet,
-    stringsFileTree: FileTree
+    stringsFileTree: FileTree,
+    private val baseLocalizationRegion: String
 ) : StringsGenerator(
     sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
@@ -46,8 +47,14 @@ class IosStringsGenerator(
         val content = strings.map { (key, value) ->
             "\"$key\" = \"$value\";"
         }.joinToString("\n")
-
         localizableFile.writeText(content)
+
+        if (language == null) {
+            val regionDir = File(resourcesGenerationDir, "$baseLocalizationRegion.lproj")
+            regionDir.mkdirs()
+            val regionFile = File(regionDir, "Localizable.strings")
+            regionFile.writeText(content)
+        }
     }
 
     override fun appendPlistInfo(doc: Document, rootDict: Node) {
@@ -55,7 +62,7 @@ class IosStringsGenerator(
             textContent = "CFBundleDevelopmentRegion"
         })
         rootDict.appendChild(doc.createElement("string").apply {
-            textContent = "en"
+            textContent = baseLocalizationRegion
         })
     }
 }
