@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="test">prueba</string>
+    <string name="test.simple">prueba</string>
     <string name="test2">prueba 2</string>
     <string name="test3">prueba 3</string>
     <string name="common.name">proyecto de prueba</string>

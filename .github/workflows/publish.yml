@@ -14,5 +14,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build and publish to Bintray
-        run: ./gradlew -PlibraryPublish :gradle-plugin:publishPluginPublicationToBintrayRepository :resources:publishAllPublicationsToBintrayRepository -DBINTRAY_USER=${{ secrets.BINTRAY_USER }} -DBINTRAY_KEY=${{ secrets.BINTRAY_KEY }}
+      - name: Publish plugin
+        run: ./gradlew -PlibraryPublish :gradle-plugin:publishPluginPublicationToBintrayRepository -DBINTRAY_USER=${{ secrets.BINTRAY_USER }} -DBINTRAY_KEY=${{ secrets.BINTRAY_KEY }}
+      - name: Publish library
+        run: ./gradlew -PlibraryPublish :resources:publishAllPublicationsToBintrayRepository -DBINTRAY_USER=${{ secrets.BINTRAY_USER }} -DBINTRAY_KEY=${{ secrets.BINTRAY_KEY }}

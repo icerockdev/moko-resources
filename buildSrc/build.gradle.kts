@@ -12,9 +12,9 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.icerock:mobile-multiplatform:0.4.0")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.60")
-    implementation("com.android.tools.build:gradle:3.5.2")
+    implementation("dev.icerock:mobile-multiplatform:0.6.0")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.70")
+    implementation("com.android.tools.build:gradle:3.6.1")
 }
 
 kotlinDslPluginOptions {

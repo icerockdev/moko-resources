@@ -28,7 +28,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val mrExtension =
             target.extensions.create<MultiplatformResourcesPluginExtension>("multiplatformResources")
 
-        mrExtension.onChange = {
+        target.afterEvaluate {
             configureGenerators(
                 target = target,
                 mrExtension = mrExtension
@@ -45,8 +45,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 target.extensions.getByType(KotlinMultiplatformExtension::class)
 
             val sourceSets = multiplatformExtension.sourceSets
-            val commonSourceSet =
-                sourceSets.getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
+            val commonSourceSet = sourceSets.getByName(mrExtension.sourceSetName)
             val commonResources = commonSourceSet.resources
 
             val androidExtension = target.extensions.getByType(LibraryExtension::class)
@@ -96,13 +95,14 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 androidPackage
             )
             val features = listOf(
-                StringsGeneratorFeature(sourceInfo),
-                PluralsGeneratorFeature(sourceInfo),
+                StringsGeneratorFeature(sourceInfo, extension.iosBaseLocalizationRegion),
+                PluralsGeneratorFeature(sourceInfo, extension.iosBaseLocalizationRegion),
                 ImagesGeneratorFeature(sourceInfo),
                 FontsGeneratorFeature(sourceInfo)
             )
             val generator = createGenerator(
                 multiplatformExtension = multiplatformExtension,
+                extension = extension,
                 info = sourceInfo,
                 features = features
             ) ?: return@forEach
@@ -113,16 +113,19 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
     private fun createGenerator(
         multiplatformExtension: KotlinMultiplatformExtension,
+        extension: MultiplatformResourcesPluginExtension,
         info: SourceInfo,
         features: List<ResourceGeneratorFeature>
     ): MRGenerator? {
-        if (info.sourceSet.name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
+        if (info.sourceSet.name == extension.sourceSetName) {
             return CommonMRGenerator(
                 info.generatedDir,
                 info.sourceSet,
                 info.mrClassPackage,
                 generators = features.map { it.createCommonGenerator() }
             )
+        } else if (info.sourceSet.name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
+            return null
         }
 
         val target = multiplatformExtension.targets.firstOrNull { target ->

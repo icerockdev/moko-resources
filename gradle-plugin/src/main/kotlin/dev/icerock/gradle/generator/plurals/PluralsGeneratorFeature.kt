@@ -9,14 +9,16 @@ import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.MRGenerator
 
 
-class PluralsGeneratorFeature(private val info: SourceInfo): ResourceGeneratorFeature(info) {
+class PluralsGeneratorFeature(private val info: SourceInfo,
+                              private val iosBaseLocalizationRegion: String
+): ResourceGeneratorFeature(info) {
     private val stringsFileTree = info.commonResources.matching{ include("MR/**/plurals.xml") }
     override fun createCommonGenerator(): MRGenerator.Generator {
         return CommonPluralsGenerator(info.sourceSet, stringsFileTree)
     }
 
     override fun createiOSGenerator(): MRGenerator.Generator  {
-        return IosPluralsGenerator(info.sourceSet, stringsFileTree)
+        return IosPluralsGenerator(info.sourceSet, stringsFileTree, iosBaseLocalizationRegion)
     }
 
     override fun createAndroidGenerator(): MRGenerator.Generator {
