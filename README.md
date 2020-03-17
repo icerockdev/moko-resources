@@ -10,6 +10,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - [Versions](#versions)
 - [Installation](#installation)
 - [Usage](#usage)
+- [FAQ](#faq)
 - [Samples](#samples)
 - [Set Up Locally](#setup-locally)
 - [Contributing](#contributing)
