@@ -78,11 +78,6 @@ multiplatformResources {
 }
 ```
 
-settings.gradle  
-```groovy
-enableFeaturePreview("GRADLE_METADATA")
-```
-
 ios-app Info.plist:
 ```xml
 <key>CFBundleLocalizations</key>
