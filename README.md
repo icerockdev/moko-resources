@@ -294,7 +294,12 @@ sample without our plugin:
 kotlin {
     iosX64().binaries {
         framework {
-            export("dev.icerock.moko:resources:0.9.0")
+            export("dev.icerock.moko:resources-iosx64:0.9.0")
+        }
+    }
+    iosArm64().binaries {
+        framework {
+            export("dev.icerock.moko:resources-iosarm64:0.9.0")
         }
     }
 }
