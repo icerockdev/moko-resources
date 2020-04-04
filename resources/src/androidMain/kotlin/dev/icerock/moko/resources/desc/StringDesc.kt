@@ -112,7 +112,7 @@ actual sealed class StringDesc {
 
     actual companion object {
         private fun localizedContext(context: Context): Context {
-            if(localeType.systemLocale == null) return context
+            if (localeType.systemLocale == null) return context
 
             val resources = context.resources
             val config = resources.configuration
