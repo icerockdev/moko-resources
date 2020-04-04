@@ -29,7 +29,10 @@ class AndroidMRGenerator(
         project.tasks.getByName("preBuild").dependsOn(generationTask)
 
         val androidExtension = project.extensions.getByType(LibraryExtension::class)
-        val mainAndroidSet = androidExtension.sourceSets.getByName("main")
-        mainAndroidSet.res.srcDir(resourcesGenerationDir)
+        val referencedAndroidSet = androidExtension.sourceSets.first {
+            val capitalized = it.name.capitalize()
+            "android$capitalized" == sourceSet.name
+        }
+        referencedAndroidSet.res.srcDir(resourcesGenerationDir)
     }
 }
