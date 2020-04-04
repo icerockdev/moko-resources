@@ -24,7 +24,8 @@ class AndroidImagesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String): CodeBlock? {
-        return CodeBlock.of("ImageResource(R.drawable.%L)", key)
+        val processedKey = processKey(key)
+        return CodeBlock.of("ImageResource(R.drawable.%L)", processedKey)
     }
 
     override fun getImports(): List<ClassName> = listOf(
@@ -53,7 +54,12 @@ class AndroidImagesGenerator(
             }
 
             val drawableDir = File(resourcesGenerationDir, drawableDirName)
-            file.copyTo(File(drawableDir, "$key.${file.extension}"))
+            val processedKey = processKey(key)
+            file.copyTo(File(drawableDir, "$processedKey.${file.extension}"))
         }
+    }
+
+    private fun processKey(key: String): String {
+        return key.toLowerCase()
     }
 }

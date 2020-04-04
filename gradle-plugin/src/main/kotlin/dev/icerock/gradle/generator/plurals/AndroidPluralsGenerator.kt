@@ -26,7 +26,7 @@ class AndroidPluralsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String): CodeBlock? {
-        val processedKey = key.replace(".", "_")
+        val processedKey = processKey(key)
         return CodeBlock.of("PluralsResource(R.plurals.%L)", processedKey)
     }
 
@@ -54,10 +54,11 @@ class AndroidPluralsGenerator(
             """.trimIndent()
 
         val content = strings.map { (key, pluralMap) ->
-            val start = "\t<plurals name=\"$key\">\n"
+            val processedKey = processKey(key)
+            val start = "\t<plurals name=\"$processedKey\">\n"
             val items = pluralMap.map { (quantity, value) ->
-                val value = StringEscapeUtils.escapeXml(value)
-                "\t\t<item quantity=\"$quantity\">$value</item>"
+                val processedValue = StringEscapeUtils.escapeXml(value)
+                "\t\t<item quantity=\"$quantity\">$processedValue</item>"
             }.joinToString("\n")
             val end = "\n\t</plurals>"
 
@@ -71,5 +72,9 @@ class AndroidPluralsGenerator(
         stringsFile.writeText(header + "\n")
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
+    }
+
+    private fun processKey(key: String): String {
+        return key.replace(".", "_").toLowerCase()
     }
 }
