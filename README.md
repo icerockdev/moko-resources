@@ -1,5 +1,5 @@
 ![moko-resources](img/logo.png)  
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.3.70-orange)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.3.71-orange)
 
 # Mobile Kotlin resources
 This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
@@ -20,7 +20,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms.
 
 ## Requirements
-- Gradle version 5.4.1+
+- Gradle version 5.6.4+
 - Android API 16+
 - iOS version 9.0+
 
@@ -40,6 +40,8 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.8.0
 - kotlin 1.3.70
   - 0.9.0
+- kotlin 1.3.71
+  - 0.9.1
 
 ## Installation
 root build.gradle  
@@ -50,7 +52,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.9.0"
+        classpath "dev.icerock.moko:resources-generator:0.9.1"
     }
 }
 
@@ -67,7 +69,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.9.0")
+    commonMainApi("dev.icerock.moko:resources:0.9.1")
 }
 
 multiplatformResources {
@@ -75,11 +77,6 @@ multiplatformResources {
     iosBaseLocalizationRegion = "en" //optional, default "en"
     multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
 }
-```
-
-settings.gradle  
-```groovy
-enableFeaturePreview("GRADLE_METADATA")
 ```
 
 ios-app Info.plist:
