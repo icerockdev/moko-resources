@@ -4,7 +4,11 @@
 
 package dev.icerock.gradle.generator
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.strings.KeyType
 import dev.icerock.gradle.generator.strings.LanguageType
 import java.io.File

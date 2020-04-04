@@ -157,11 +157,11 @@ actual sealed class StringDesc {
     }
 
     actual sealed class LocaleType {
-        actual class System actual constructor(): LocaleType() {
+        actual class System actual constructor() : LocaleType() {
             override val bundle: NSBundle = NSBundle.bundleForClass(object_getClass(this)!!)
         }
 
-        actual class Custom actual constructor(locale: String): LocaleType() {
+        actual class Custom actual constructor(locale: String) : LocaleType() {
             override val bundle: NSBundle by lazy {
                 val currentBundle = NSBundle.bundleForClass(object_getClass(this)!!)
                 val bundlePath = currentBundle.pathForResource(locale, "lproj")

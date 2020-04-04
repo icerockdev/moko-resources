@@ -5,7 +5,12 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.LibraryExtension
-import dev.icerock.gradle.generator.*
+import dev.icerock.gradle.generator.AndroidMRGenerator
+import dev.icerock.gradle.generator.CommonMRGenerator
+import dev.icerock.gradle.generator.IosMRGenerator
+import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.ResourceGeneratorFeature
+import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.fonts.FontsGeneratorFeature
 import dev.icerock.gradle.generator.image.ImagesGeneratorFeature
 import dev.icerock.gradle.generator.plurals.PluralsGeneratorFeature
@@ -44,8 +49,18 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val multiplatformExtension =
                 target.extensions.getByType(KotlinMultiplatformExtension::class)
 
-            val sourceSets = multiplatformExtension.sourceSets
-            val commonSourceSet = sourceSets.getByName(mrExtension.sourceSetName)
+            val sourceSets = multiplatformExtension.targets
+                .flatMap { it.compilations }
+                .filter { it.associateWith.isEmpty() } // filter all tests source sets
+                .map { compilation ->
+                    if (compilation.target is KotlinAndroidTarget) {
+                        compilation.kotlinSourceSets.first { it.name == "androidMain" }
+                    } else {
+                        compilation.defaultSourceSet
+                    }
+                }
+                .distinct()
+            val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
             val commonResources = commonSourceSet.resources
 
             val androidExtension = target.extensions.getByType(LibraryExtension::class)
@@ -57,7 +72,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             generateMultiplatformResources(
                 project = target,
                 commonResources = commonResources,
-                sourceSets = sourceSets.filter { it.name.endsWith("Main") },
+                sourceSets = sourceSets,
                 extension = mrExtension,
                 multiplatformExtension = multiplatformExtension,
                 androidPackage = androidPackage
@@ -139,7 +154,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                     info.generatedDir,
                     info.sourceSet,
                     info.mrClassPackage,
-                    generators = features.map{ it.createAndroidGenerator() }
+                    generators = features.map { it.createAndroidGenerator() }
                 )
             }
             is KotlinNativeTarget -> {
@@ -149,7 +164,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                         info.generatedDir,
                         info.sourceSet,
                         info.mrClassPackage,
-                        generators = features.map{ it.createiOSGenerator() }
+                        generators = features.map { it.createiOSGenerator() }
                     )
                 } else {
                     println("unsupported native family $family")

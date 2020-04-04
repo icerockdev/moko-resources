@@ -55,7 +55,7 @@ abstract class StringsGenerator(
             .keys
             .toList()
         if (incorrectKeys.isNotEmpty()) {
-            val excMessage = incorrectKeys.map{ "\"$it\"" }.joinToString()
+            val excMessage = incorrectKeys.map { "\"$it\"" }.joinToString()
             throw Exception("StringsGenerator: Can't process keys which equals their value: $excMessage")
         }
 
