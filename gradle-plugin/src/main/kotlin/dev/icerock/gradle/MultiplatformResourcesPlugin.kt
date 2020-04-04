@@ -16,8 +16,10 @@ import org.gradle.api.file.FileTree
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinCommonCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 import java.io.File
@@ -44,8 +46,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val multiplatformExtension =
                 target.extensions.getByType(KotlinMultiplatformExtension::class)
 
-            val sourceSets = multiplatformExtension.sourceSets
-            val commonSourceSet = sourceSets.getByName(mrExtension.sourceSetName)
+            val sourceSets = multiplatformExtension.targets
+                .flatMap { it.compilations }
+                .filter { it.associateWith.isEmpty() } // filter all tests source sets
+                .map { it.defaultSourceSet }
+            val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
             val commonResources = commonSourceSet.resources
 
             val androidExtension = target.extensions.getByType(LibraryExtension::class)
@@ -57,7 +62,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             generateMultiplatformResources(
                 project = target,
                 commonResources = commonResources,
-                sourceSets = sourceSets.filter { it.name.endsWith("Main") },
+                sourceSets = sourceSets,
                 extension = mrExtension,
                 multiplatformExtension = multiplatformExtension,
                 androidPackage = androidPackage
