@@ -49,7 +49,14 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val sourceSets = multiplatformExtension.targets
                 .flatMap { it.compilations }
                 .filter { it.associateWith.isEmpty() } // filter all tests source sets
-                .map { it.defaultSourceSet }
+                .map { compilation ->
+                    if(compilation.target is KotlinAndroidTarget) {
+                        compilation.kotlinSourceSets.first { it.name == "androidMain" }
+                    } else {
+                        compilation.defaultSourceSet
+                    }
+                }
+                .distinct()
             val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
             val commonResources = commonSourceSet.resources
 
