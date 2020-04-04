@@ -25,7 +25,7 @@ class AndroidStringsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String): CodeBlock? {
-        val processedKey = key.replace(".", "_")
+        val processedKey = processKey(key)
         return CodeBlock.of("StringResource(R.string.%L)", processedKey)
     }
 
@@ -53,8 +53,9 @@ class AndroidStringsGenerator(
             """.trimIndent()
 
         val content = strings.map { (key, value) ->
-            val value = StringEscapeUtils.escapeXml(value)
-            "\t<string name=\"$key\">$value</string>"
+            val processedKey = processKey(key)
+            val processedValue = StringEscapeUtils.escapeXml(value)
+            "\t<string name=\"$processedKey\">$processedValue</string>"
         }.joinToString("\n")
 
         val footer = """
@@ -64,5 +65,9 @@ class AndroidStringsGenerator(
         stringsFile.writeText(header + "\n")
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
+    }
+
+    private fun processKey(key: String): String {
+        return key.replace(".", "_").toLowerCase()
     }
 }

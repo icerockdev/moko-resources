@@ -5,7 +5,12 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.LibraryExtension
-import dev.icerock.gradle.generator.*
+import dev.icerock.gradle.generator.AndroidMRGenerator
+import dev.icerock.gradle.generator.CommonMRGenerator
+import dev.icerock.gradle.generator.IosMRGenerator
+import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.ResourceGeneratorFeature
+import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.fonts.FontsGeneratorFeature
 import dev.icerock.gradle.generator.image.ImagesGeneratorFeature
 import dev.icerock.gradle.generator.plurals.PluralsGeneratorFeature
@@ -16,10 +21,8 @@ import org.gradle.api.file.FileTree
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinCommonCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 import java.io.File
@@ -50,7 +53,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 .flatMap { it.compilations }
                 .filter { it.associateWith.isEmpty() } // filter all tests source sets
                 .map { compilation ->
-                    if(compilation.target is KotlinAndroidTarget) {
+                    if (compilation.target is KotlinAndroidTarget) {
                         compilation.kotlinSourceSets.first { it.name == "androidMain" }
                     } else {
                         compilation.defaultSourceSet
@@ -151,7 +154,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                     info.generatedDir,
                     info.sourceSet,
                     info.mrClassPackage,
-                    generators = features.map{ it.createAndroidGenerator() }
+                    generators = features.map { it.createAndroidGenerator() }
                 )
             }
             is KotlinNativeTarget -> {
@@ -161,7 +164,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                         info.generatedDir,
                         info.sourceSet,
                         info.mrClassPackage,
-                        generators = features.map{ it.createiOSGenerator() }
+                        generators = features.map { it.createiOSGenerator() }
                     )
                 } else {
                     println("unsupported native family $family")

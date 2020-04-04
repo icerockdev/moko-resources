@@ -4,13 +4,13 @@
 
 package dev.icerock.gradle.generator.fonts
 
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.SourceInfo
-import dev.icerock.gradle.generator.MRGenerator
 
 
-class FontsGeneratorFeature(private val info: SourceInfo): ResourceGeneratorFeature(info) {
-    private val stringsFileTree = info.commonResources.matching{
+class FontsGeneratorFeature(private val info: SourceInfo) : ResourceGeneratorFeature(info) {
+    private val stringsFileTree = info.commonResources.matching {
         include("MR/fonts/**.ttf")
     }
 
@@ -18,7 +18,7 @@ class FontsGeneratorFeature(private val info: SourceInfo): ResourceGeneratorFeat
         return CommonFontsGenerator(info.sourceSet, stringsFileTree)
     }
 
-    override fun createiOSGenerator(): MRGenerator.Generator  {
+    override fun createiOSGenerator(): MRGenerator.Generator {
         return IosFontsGenerator(info.sourceSet, stringsFileTree)
     }
 

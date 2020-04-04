@@ -76,7 +76,7 @@ $imagesContent
         val errors = process.errorStream.bufferedReader().readText()
         val input = process.inputStream.bufferedReader().readText()
         val result = process.waitFor()
-        if(result != 0) {
+        if (result != 0) {
             println("can't compile assets - $result")
             println(input)
             println(errors)
