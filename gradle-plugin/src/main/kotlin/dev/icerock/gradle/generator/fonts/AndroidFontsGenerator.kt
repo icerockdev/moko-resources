@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.KModifier
 import org.gradle.api.file.FileTree
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 class AndroidFontsGenerator(
     sourceSet: KotlinSourceSet,

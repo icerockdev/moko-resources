@@ -86,7 +86,6 @@ class IosMRGenerator(
                     (generator as? ExtendsPlistDictionary)?.let {
                         it.appendPlistInfo(doc, rootDict)
                     }
-
                 }
 
                 val transformerFactory = TransformerFactory.newInstance()

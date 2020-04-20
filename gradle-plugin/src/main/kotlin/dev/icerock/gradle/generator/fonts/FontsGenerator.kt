@@ -57,8 +57,6 @@ abstract class FontsGenerator(
                 )
             )
         }
-
-
         return classBuilder.build()
     }
 

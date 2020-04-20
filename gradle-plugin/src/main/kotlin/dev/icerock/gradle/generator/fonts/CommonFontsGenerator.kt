@@ -20,5 +20,5 @@ class CommonFontsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
-    override fun getPropertyInitializer(key: String): CodeBlock? = null
+    override fun getPropertyInitializer(fontFileName: String): CodeBlock? = null
 }

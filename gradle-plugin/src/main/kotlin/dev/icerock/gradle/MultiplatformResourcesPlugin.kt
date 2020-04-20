@@ -164,7 +164,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                         info.generatedDir,
                         info.sourceSet,
                         info.mrClassPackage,
-                        generators = features.map { it.createiOSGenerator() }
+                        generators = features.map { it.createIosGenerator() }
                     )
                 } else {
                     println("unsupported native family $family")
@@ -178,4 +178,3 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 }
-
