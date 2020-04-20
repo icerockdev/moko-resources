@@ -14,14 +14,14 @@ class ImagesGeneratorFeature(private val info: SourceInfo) : ResourceGeneratorFe
     }
 
     override fun createCommonGenerator(): MRGenerator.Generator {
-        return CommonImagesGenerator(info.sourceSet, stringsFileTree)
+        return CommonImagesGenerator(stringsFileTree)
     }
 
     override fun createIosGenerator(): MRGenerator.Generator {
-        return IosImagesGenerator(info.sourceSet, stringsFileTree)
+        return IosImagesGenerator(stringsFileTree)
     }
 
     override fun createAndroidGenerator(): MRGenerator.Generator {
-        return AndroidImagesGenerator(info.sourceSet, stringsFileTree, info.androidRClassPackage)
+        return AndroidImagesGenerator(stringsFileTree, info.androidRClassPackage)
     }
 }

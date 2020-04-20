@@ -14,14 +14,14 @@ class PluralsGeneratorFeature(
 ) : ResourceGeneratorFeature {
     private val stringsFileTree = info.commonResources.matching { include("MR/**/plurals.xml") }
     override fun createCommonGenerator(): MRGenerator.Generator {
-        return CommonPluralsGenerator(info.sourceSet, stringsFileTree)
+        return CommonPluralsGenerator(stringsFileTree)
     }
 
     override fun createIosGenerator(): MRGenerator.Generator {
-        return IosPluralsGenerator(info.sourceSet, stringsFileTree, iosBaseLocalizationRegion)
+        return IosPluralsGenerator(stringsFileTree, iosBaseLocalizationRegion)
     }
 
     override fun createAndroidGenerator(): MRGenerator.Generator {
-        return AndroidPluralsGenerator(info.sourceSet, stringsFileTree, info.androidRClassPackage)
+        return AndroidPluralsGenerator(stringsFileTree, info.androidRClassPackage)
     }
 }

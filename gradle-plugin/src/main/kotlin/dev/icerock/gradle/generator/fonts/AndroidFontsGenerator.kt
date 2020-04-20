@@ -8,16 +8,13 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 import java.util.Locale
 
 class AndroidFontsGenerator(
-    sourceSet: KotlinSourceSet,
     inputFileTree: FileTree,
     private val androidRClassPackage: String
 ) : FontsGenerator(
-    sourceSet = sourceSet,
     inputFileTree = inputFileTree
 ) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

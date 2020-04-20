@@ -11,7 +11,6 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.w3c.dom.Document
@@ -26,7 +25,7 @@ import javax.xml.transform.stream.StreamResult
 
 class IosMRGenerator(
     generatedDir: File,
-    sourceSet: KotlinSourceSet,
+    sourceSet: SourceSet,
     mrClassPackage: String,
     private val generators: List<Generator>
 ) : MRGenerator(
@@ -82,11 +81,9 @@ class IosMRGenerator(
 
                 val rootDict = doc.getElementsByTagName("dict").item(0)
 
-                generators.forEach { generator ->
-                    (generator as? ExtendsPlistDictionary)?.let {
-                        it.appendPlistInfo(doc, rootDict)
-                    }
-                }
+                generators
+                    .mapNotNull { it as? ExtendsPlistDictionary }
+                    .forEach { it.appendPlistInfo(doc, rootDict) }
 
                 val transformerFactory = TransformerFactory.newInstance()
                 val transformer = transformerFactory.newTransformer()

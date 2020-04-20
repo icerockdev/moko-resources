@@ -14,14 +14,14 @@ class FontsGeneratorFeature(private val info: SourceInfo) : ResourceGeneratorFea
     }
 
     override fun createCommonGenerator(): MRGenerator.Generator {
-        return CommonFontsGenerator(info.sourceSet, stringsFileTree)
+        return CommonFontsGenerator(stringsFileTree)
     }
 
     override fun createIosGenerator(): MRGenerator.Generator {
-        return IosFontsGenerator(info.sourceSet, stringsFileTree)
+        return IosFontsGenerator(stringsFileTree)
     }
 
     override fun createAndroidGenerator(): MRGenerator.Generator {
-        return AndroidFontsGenerator(info.sourceSet, stringsFileTree, info.androidRClassPackage)
+        return AndroidFontsGenerator(stringsFileTree, info.androidRClassPackage)
     }
 }

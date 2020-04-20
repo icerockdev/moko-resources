@@ -11,11 +11,9 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 abstract class FontsGenerator(
-    protected val sourceSet: KotlinSourceSet,
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 

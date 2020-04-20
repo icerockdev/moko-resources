@@ -6,13 +6,10 @@ package dev.icerock.gradle.generator.plurals
 
 import com.squareup.kotlinpoet.CodeBlock
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 class CommonPluralsGenerator(
-    sourceSet: KotlinSourceSet,
     pluralsFileTree: FileTree
 ) : PluralsGenerator(
-    sourceSet = sourceSet,
     pluralsFileTree = pluralsFileTree
 ) {
     override fun getPropertyInitializer(key: String): CodeBlock? = null

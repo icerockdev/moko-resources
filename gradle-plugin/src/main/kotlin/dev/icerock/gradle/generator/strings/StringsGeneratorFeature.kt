@@ -14,14 +14,14 @@ class StringsGeneratorFeature(
 ) : ResourceGeneratorFeature {
     private val stringsFileTree = info.commonResources.matching { include("MR/**/strings.xml") }
     override fun createCommonGenerator(): MRGenerator.Generator {
-        return CommonStringsGenerator(info.sourceSet, stringsFileTree)
+        return CommonStringsGenerator(stringsFileTree)
     }
 
     override fun createIosGenerator(): MRGenerator.Generator {
-        return IosStringsGenerator(info.sourceSet, stringsFileTree, iosBaseLocalizationRegion)
+        return IosStringsGenerator(stringsFileTree, iosBaseLocalizationRegion)
     }
 
     override fun createAndroidGenerator(): MRGenerator.Generator {
-        return AndroidStringsGenerator(info.sourceSet, stringsFileTree, info.androidRClassPackage)
+        return AndroidStringsGenerator(stringsFileTree, info.androidRClassPackage)
     }
 }

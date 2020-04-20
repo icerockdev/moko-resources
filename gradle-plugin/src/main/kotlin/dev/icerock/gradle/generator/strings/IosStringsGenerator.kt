@@ -15,11 +15,9 @@ import org.w3c.dom.Node
 import java.io.File
 
 class IosStringsGenerator(
-    sourceSet: KotlinSourceSet,
     stringsFileTree: FileTree,
     private val baseLocalizationRegion: String
 ) : StringsGenerator(
-    sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
 ), ExtendsPlistDictionary {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -15,7 +15,7 @@ import java.io.File
 
 abstract class MRGenerator(
     generatedDir: File,
-    protected val sourceSet: KotlinSourceSet,
+    protected val sourceSet: SourceSet,
     private val mrClassPackage: String,
     private val generators: List<Generator>
 ) {
@@ -24,10 +24,10 @@ abstract class MRGenerator(
 
     init {
         sourcesGenerationDir.mkdirs()
-        sourceSet.kotlin.srcDir(sourcesGenerationDir)
+        sourceSet.addSourceDir(sourcesGenerationDir)
 
         resourcesGenerationDir.mkdirs()
-        sourceSet.resources.srcDir(resourcesGenerationDir)
+        sourceSet.addResourcesDir(resourcesGenerationDir)
     }
 
     private fun generate() {
@@ -82,5 +82,12 @@ abstract class MRGenerator(
     interface Generator {
         fun generate(resourcesGenerationDir: File): TypeSpec
         fun getImports(): List<ClassName>
+    }
+
+    interface SourceSet {
+        val name: String
+
+        fun addSourceDir(directory: File)
+        fun addResourcesDir(directory: File)
     }
 }

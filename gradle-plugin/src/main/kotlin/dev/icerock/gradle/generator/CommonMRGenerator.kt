@@ -13,7 +13,7 @@ import java.io.File
 
 class CommonMRGenerator(
     generatedDir: File,
-    sourceSet: KotlinSourceSet,
+    sourceSet: SourceSet,
     mrClassPackage: String,
     generators: List<Generator>
 ) : MRGenerator(
