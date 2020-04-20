@@ -40,19 +40,19 @@ class IosImagesGenerator(
             val contentsFile = File(assetDir, "Contents.json")
 
             val validFiles = files.filter { file ->
-                (1..3).map { "@${it}x" }.any { file.nameWithoutExtension.endsWith(it) }
+                VALID_SIZES.map { "@${it}x" }.any { file.nameWithoutExtension.endsWith(it) }
             }
 
             validFiles.forEach { it.copyTo(File(assetDir, it.name)) }
 
-            val imagesContent = validFiles.map { file ->
+            val imagesContent = validFiles.joinToString(separator = ",\n") { file ->
                 val scale = file.nameWithoutExtension.substringAfter("@")
                 """    {
       "idiom" : "universal",
       "filename" : "${file.name}",
       "scale" : "$scale"
     }"""
-            }.joinToString(separator = ",\n")
+            }
 
             val content = """{
   "images" : [
@@ -82,5 +82,9 @@ $imagesContent
         } else {
             assetsDirectory.deleteRecursively()
         }
+    }
+
+    private companion object {
+        val VALID_SIZES: IntRange = 0..3
     }
 }

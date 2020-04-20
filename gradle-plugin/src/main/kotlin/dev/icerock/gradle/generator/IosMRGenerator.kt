@@ -90,7 +90,7 @@ class IosMRGenerator(
 
                 val transformerFactory = TransformerFactory.newInstance()
                 val transformer = transformerFactory.newTransformer()
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes")
 
                 val writer = FileWriter(infoPList)
                 val result = StreamResult(writer)

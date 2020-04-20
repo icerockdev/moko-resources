@@ -34,6 +34,7 @@ abstract class MRGenerator(
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
 
+        @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
             .addModifiers(*getMRClassModifiers())
 

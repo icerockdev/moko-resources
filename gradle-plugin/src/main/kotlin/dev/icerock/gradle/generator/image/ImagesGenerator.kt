@@ -31,6 +31,7 @@ abstract class ImagesGenerator(
         return typeSpec
     }
 
+    @Suppress("SpreadOperator")
     fun createTypeSpec(keys: List<String>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder("images")
         classBuilder.addModifiers(*getClassModifiers())

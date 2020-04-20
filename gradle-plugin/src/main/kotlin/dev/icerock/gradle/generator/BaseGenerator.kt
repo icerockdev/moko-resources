@@ -32,6 +32,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         return stringsClass
     }
 
+    @Suppress("SpreadOperator")
     private fun createTypeSpec(keys: List<KeyType>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder(getClassName())
         classBuilder.addModifiers(*getClassModifiers())

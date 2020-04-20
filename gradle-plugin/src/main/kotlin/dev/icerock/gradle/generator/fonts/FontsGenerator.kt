@@ -31,6 +31,7 @@ abstract class FontsGenerator(
 
     private fun createTypeSpec(keys: List<String>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder("fonts")
+        @Suppress("SpreadOperator")
         classBuilder.addModifiers(*getClassModifiers())
 
         /*
@@ -44,7 +45,7 @@ abstract class FontsGenerator(
         }
 
         familyGroups.forEach { group ->
-            //Make pairs: "style name" - "font file"
+            // TODO Make pairs: "style name" - "font file"
             val stylePairs = group
                 .value
                 .map { it.substringAfter("-") to it }
@@ -62,6 +63,7 @@ abstract class FontsGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
+    @Suppress("SpreadOperator")
     private fun generateFontFamilySpec(
         familyName: String,
         fontStyleFiles: List<Pair<String, String>>

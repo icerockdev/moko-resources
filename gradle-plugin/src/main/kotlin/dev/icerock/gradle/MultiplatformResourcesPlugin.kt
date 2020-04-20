@@ -91,6 +91,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         return manifest.attributes.getNamedItem("package").textContent
     }
 
+    @Suppress("LongParameterList")
     private fun generateMultiplatformResources(
         project: Project,
         commonResources: FileTree,
@@ -132,21 +133,27 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         info: SourceInfo,
         features: List<ResourceGeneratorFeature>
     ): MRGenerator? {
-        if (info.sourceSet.name == extension.sourceSetName) {
-            return CommonMRGenerator(
+        return when (info.sourceSet.name) {
+            extension.sourceSetName -> CommonMRGenerator(
                 info.generatedDir,
                 info.sourceSet,
                 info.mrClassPackage,
                 generators = features.map { it.createCommonGenerator() }
             )
-        } else if (info.sourceSet.name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
-            return null
+            KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME -> null
+            else -> createPlatformGenerator(multiplatformExtension, info, features)
         }
+    }
 
+    private fun createPlatformGenerator(
+        multiplatformExtension: KotlinMultiplatformExtension,
+        info: SourceInfo,
+        features: List<ResourceGeneratorFeature>
+    ): MRGenerator? {
         val target = multiplatformExtension.targets.firstOrNull { target ->
             val sourceSets = target.compilations.flatMap { it.kotlinSourceSets }
             sourceSets.any { it == info.sourceSet }
-        } ?: return null
+        }
 
         return when (target) {
             is KotlinAndroidTarget -> {
