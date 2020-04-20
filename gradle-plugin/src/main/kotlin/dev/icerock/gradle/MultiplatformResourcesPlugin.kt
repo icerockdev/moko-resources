@@ -45,39 +45,37 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         target: Project,
         mrExtension: MultiplatformResourcesPluginExtension
     ) {
-        target.afterEvaluate {
-            val multiplatformExtension =
-                target.extensions.getByType(KotlinMultiplatformExtension::class)
+        val multiplatformExtension =
+            target.extensions.getByType(KotlinMultiplatformExtension::class)
 
-            val sourceSets = multiplatformExtension.targets
-                .flatMap { it.compilations }
-                .filter { it.associateWith.isEmpty() } // filter all tests source sets
-                .map { compilation ->
-                    if (compilation.target is KotlinAndroidTarget) {
-                        compilation.kotlinSourceSets.first { it.name == "androidMain" }
-                    } else {
-                        compilation.defaultSourceSet
-                    }
+        val sourceSets = multiplatformExtension.targets
+            .flatMap { it.compilations }
+            .filter { it.associateWith.isEmpty() } // filter all tests source sets
+            .map { compilation ->
+                if (compilation.target is KotlinAndroidTarget) {
+                    compilation.kotlinSourceSets.first { it.name == "androidMain" }
+                } else {
+                    compilation.defaultSourceSet
                 }
-                .distinct()
-            val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
-            val commonResources = commonSourceSet.resources
+            }
+            .distinct()
+        val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
+        val commonResources = commonSourceSet.resources
 
-            val androidExtension = target.extensions.getByType(LibraryExtension::class)
-            val mainAndroidSet = androidExtension.sourceSets.getByName("main")
-            val manifestFile = mainAndroidSet.manifest.srcFile
+        val androidExtension = target.extensions.getByType(LibraryExtension::class)
+        val mainAndroidSet = androidExtension.sourceSets.getByName("main")
+        val manifestFile = mainAndroidSet.manifest.srcFile
 
-            val androidPackage = getAndroidPackage(manifestFile)
+        val androidPackage = getAndroidPackage(manifestFile)
 
-            generateMultiplatformResources(
-                project = target,
-                commonResources = commonResources,
-                sourceSets = sourceSets,
-                extension = mrExtension,
-                multiplatformExtension = multiplatformExtension,
-                androidPackage = androidPackage
-            )
-        }
+        generateMultiplatformResources(
+            project = target,
+            commonResources = commonResources,
+            sourceSets = sourceSets,
+            extension = mrExtension,
+            multiplatformExtension = multiplatformExtension,
+            androidPackage = androidPackage
+        )
     }
 
     private fun getAndroidPackage(manifestFile: File): String {
