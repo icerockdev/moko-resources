@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="test.plural">
+        <item quantity="zero">cero</item>
+        <item quantity="one">uno</item>
+        <item quantity="two">dos</item>
+        <item quantity="few">algo</item>
+        <item quantity="many">mucho</item>
+        <item quantity="other">otro</item>
+    </plural>
+    <plural name="my_plural">
+        <item quantity="zero">cero</item>
+        <item quantity="one">uno</item>
+        <item quantity="two">dos</item>
+        <item quantity="few">algo</item>
+        <item quantity="many">mucho</item>
+        <item quantity="other">otro</item>
+    </plural>
+    <plural name="myPlural">
+        <item quantity="zero">cero</item>
+        <item quantity="one">uno</item>
+        <item quantity="two">dos</item>
+        <item quantity="few">algo</item>
+        <item quantity="many">mucho</item>
+        <item quantity="other">otro</item>
+    </plural>
+</resources>

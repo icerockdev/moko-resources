@@ -2,13 +2,21 @@
 <resources>
     <plural name="test.plural">
         <item quantity="zero">ноль</item>
-        <item quantity="one">один</item>
-        <item quantity="two">два</item>
-        <item quantity="few">несколько</item>
-        <item quantity="many">много</item>
-        <item quantity="other">другое</item>
+        <item quantity="one">%d - один</item>
+        <item quantity="two">%d - два</item>
+        <item quantity="few">%d - несколько</item>
+        <item quantity="many">%d - много</item>
+        <item quantity="other">%d - другое</item>
     </plural>
     <plural name="my_plural">
+        <item quantity="zero">нет элементов</item>
+        <item quantity="one">%d элемент</item>
+        <item quantity="two">%d элемента</item>
+        <item quantity="few">%d элементов</item>
+        <item quantity="many">%d элементов</item>
+        <item quantity="other">%d элемента</item>
+    </plural>
+    <plural name="myPlural">
         <item quantity="zero">нет элементов</item>
         <item quantity="one">%d элемент</item>
         <item quantity="two">%d элемента</item>
