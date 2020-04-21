@@ -29,8 +29,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.konan.target.Family
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -90,7 +90,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
         setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
         setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
-        setupIosGenerator(targets, generatedDir, mrClassPackage, features)
+        setupIosGenerator(targets, generatedDir, mrClassPackage, features, target)
     }
 
     private fun setupCommonGenerator(
@@ -101,13 +101,12 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         target: Project
     ) {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
-        val generator = CommonMRGenerator(
+        CommonMRGenerator(
             generatedDir,
             commonGeneratorSourceSet,
             mrClassPackage,
             generators = features.map { it.createCommonGenerator() }
-        )
-        generator.apply(target)
+        ).apply(target)
     }
 
     @Suppress("LongParameterList")
@@ -122,40 +121,41 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
             .filterIsInstance<KotlinAndroidTarget>()
             .flatMap { it.compilations }
-            .filter { it.associateWith.isEmpty() } // remove tests compilations
+            .filterNot { it.name.endsWith("Test") } // remove tests compilations
             .map { it.defaultSourceSet }
 
         val androidSourceSet: MRGenerator.SourceSet = createSourceSet(androidMainSourceSet, kotlinSourceSets)
-        val generator = AndroidMRGenerator(
+        AndroidMRGenerator(
             generatedDir,
             androidSourceSet,
             mrClassPackage,
             generators = features.map { it.createAndroidGenerator() }
-        )
-        generator.apply(target)
+        ).apply(target)
     }
 
     private fun setupIosGenerator(
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
-        features: List<ResourceGeneratorFeature>
+        features: List<ResourceGeneratorFeature>,
+        target: Project
     ) {
         targets
             .filterIsInstance<KotlinNativeTarget>()
             .filter { it.konanTarget.family == Family.IOS }
             .map { kotlinNativeTarget ->
-                val mainCompilation: KotlinNativeCompilation = kotlinNativeTarget.compilations
+                kotlinNativeTarget.compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
-                createSourceSet(mainCompilation.defaultSourceSet)
             }
-            .forEach { sourceSet ->
+            .forEach { compilation ->
+                val sourceSet = createSourceSet(compilation.defaultSourceSet)
                 IosMRGenerator(
                     generatedDir,
                     sourceSet,
                     mrClassPackage,
-                    generators = features.map { it.createIosGenerator() }
-                )
+                    generators = features.map { it.createIosGenerator() },
+                    compilation = compilation
+                ).apply(target)
             }
     }
 
@@ -180,7 +180,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     ): MRGenerator.SourceSet {
         return object : MRGenerator.SourceSet {
             override val name: String
-                get() = androidSourceSet.name
+                get() = "android${androidSourceSet.name.capitalize()}"
 
             override fun addSourceDir(directory: File) {
                 kotlinSourceSets.forEach { it.kotlin.srcDir(directory) }
