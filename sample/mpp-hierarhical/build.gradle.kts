@@ -15,6 +15,10 @@ android {
         minSdkVersion(Versions.Android.minSdk)
         targetSdkVersion(Versions.Android.targetSdk)
     }
+
+    lintOptions {
+        disable("ImpliedQuantity")
+    }
 }
 
 kotlin {
