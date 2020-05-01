@@ -3,6 +3,7 @@
     <string name="test.simple">тест</string>
     <string name="test2">тест 2</string>
     <string name="test3">тест 3</string>
+    <string name="Test4">тест 4</string>
     <string name="common.name">Тестовый проект</string>
     <string name="format">Тестовые данные %d</string>
     <string name="encoding">Выберите портфель и сумму</string>

@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
     - master
+    - develop
 
 jobs:
   build:
@@ -16,6 +17,8 @@ jobs:
       with:
         java-version: 1.8
     - name: Check plugin build
-      run: ./gradlew -PlibraryPublish :gradle-plugin:publishPluginPublicationToMavenLocal
+      run: ./gradlew -PlibraryPublish :gradle-plugin:detekt :gradle-plugin:publishPluginPublicationToMavenLocal
     - name: Check library build
       run: ./gradlew -PlibraryPublish :resources:publishToMavenLocal
+    - name: Check demo library
+      run: ./gradlew :sample:mpp-conditional:build :sample:mpp-hierarhical:build :sample:mpp-library:build :sample:mpp-mixed:build

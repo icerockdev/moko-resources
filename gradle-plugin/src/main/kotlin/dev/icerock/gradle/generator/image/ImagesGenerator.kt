@@ -11,11 +11,9 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 abstract class ImagesGenerator(
-    protected val sourceSet: KotlinSourceSet,
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
@@ -31,6 +29,7 @@ abstract class ImagesGenerator(
         return typeSpec
     }
 
+    @Suppress("SpreadOperator")
     fun createTypeSpec(keys: List<String>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder("images")
         classBuilder.addModifiers(*getClassModifiers())

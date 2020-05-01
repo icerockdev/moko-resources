@@ -4,17 +4,14 @@
 
 package dev.icerock.gradle.generator
 
-import com.android.build.gradle.LibraryExtension
 import com.squareup.kotlinpoet.KModifier
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.kotlin.dsl.getByType
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 class AndroidMRGenerator(
     generatedDir: File,
-    sourceSet: KotlinSourceSet,
+    sourceSet: SourceSet,
     mrClassPackage: String,
     generators: List<Generator>
 ) : MRGenerator(
@@ -27,12 +24,5 @@ class AndroidMRGenerator(
 
     override fun apply(generationTask: Task, project: Project) {
         project.tasks.getByName("preBuild").dependsOn(generationTask)
-
-        val androidExtension = project.extensions.getByType(LibraryExtension::class)
-        val referencedAndroidSet = androidExtension.sourceSets.first {
-            val capitalized = it.name.capitalize()
-            "android$capitalized" == sourceSet.name
-        }
-        referencedAndroidSet.res.srcDir(resourcesGenerationDir)
     }
 }

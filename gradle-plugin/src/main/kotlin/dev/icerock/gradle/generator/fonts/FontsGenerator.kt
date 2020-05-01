@@ -11,11 +11,9 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 abstract class FontsGenerator(
-    protected val sourceSet: KotlinSourceSet,
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
@@ -31,6 +29,7 @@ abstract class FontsGenerator(
 
     private fun createTypeSpec(keys: List<String>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder("fonts")
+        @Suppress("SpreadOperator")
         classBuilder.addModifiers(*getClassModifiers())
 
         /*
@@ -44,7 +43,7 @@ abstract class FontsGenerator(
         }
 
         familyGroups.forEach { group ->
-            //Make pairs: "style name" - "font file"
+            // TODO Make pairs: "style name" - "font file"
             val stylePairs = group
                 .value
                 .map { it.substringAfter("-") to it }
@@ -57,13 +56,12 @@ abstract class FontsGenerator(
                 )
             )
         }
-
-
         return classBuilder.build()
     }
 
     override fun getImports(): List<ClassName> = emptyList()
 
+    @Suppress("SpreadOperator")
     private fun generateFontFamilySpec(
         familyName: String,
         fontStyleFiles: List<Pair<String, String>>

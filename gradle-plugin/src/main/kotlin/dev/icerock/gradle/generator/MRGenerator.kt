@@ -10,12 +10,11 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 abstract class MRGenerator(
     generatedDir: File,
-    protected val sourceSet: KotlinSourceSet,
+    protected val sourceSet: SourceSet,
     private val mrClassPackage: String,
     private val generators: List<Generator>
 ) {
@@ -24,16 +23,17 @@ abstract class MRGenerator(
 
     init {
         sourcesGenerationDir.mkdirs()
-        sourceSet.kotlin.srcDir(sourcesGenerationDir)
+        sourceSet.addSourceDir(sourcesGenerationDir)
 
         resourcesGenerationDir.mkdirs()
-        sourceSet.resources.srcDir(resourcesGenerationDir)
+        sourceSet.addResourcesDir(resourcesGenerationDir)
     }
 
     private fun generate() {
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
 
+        @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
             .addModifiers(*getMRClassModifiers())
 
@@ -57,7 +57,10 @@ abstract class MRGenerator(
 
     fun apply(project: Project) {
         val name = sourceSet.name
-        val genTask = project.task("generateMR$name") {
+        val genTaskName = "generateMR$name"
+        val genTask = runCatching {
+            project.tasks.getByName(genTaskName)
+        }.getOrNull() ?: project.task(genTaskName) {
             group = "multiplatform"
 
             doLast {
@@ -81,5 +84,12 @@ abstract class MRGenerator(
     interface Generator {
         fun generate(resourcesGenerationDir: File): TypeSpec
         fun getImports(): List<ClassName>
+    }
+
+    interface SourceSet {
+        val name: String
+
+        fun addSourceDir(directory: File)
+        fun addResourcesDir(directory: File)
     }
 }

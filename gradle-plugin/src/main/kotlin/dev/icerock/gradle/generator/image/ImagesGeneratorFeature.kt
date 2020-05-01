@@ -8,22 +8,20 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.SourceInfo
 
-
-class ImagesGeneratorFeature(private val info: SourceInfo) : ResourceGeneratorFeature(info) {
+class ImagesGeneratorFeature(private val info: SourceInfo) : ResourceGeneratorFeature {
     private val stringsFileTree = info.commonResources.matching {
         include("MR/images/**/*.png", "MR/images/**/*.jpg")
     }
 
     override fun createCommonGenerator(): MRGenerator.Generator {
-        return CommonImagesGenerator(info.sourceSet, stringsFileTree)
+        return CommonImagesGenerator(stringsFileTree)
     }
 
-    override fun createiOSGenerator(): MRGenerator.Generator {
-        return IosImagesGenerator(info.sourceSet, stringsFileTree)
+    override fun createIosGenerator(): MRGenerator.Generator {
+        return IosImagesGenerator(stringsFileTree)
     }
 
     override fun createAndroidGenerator(): MRGenerator.Generator {
-        return AndroidImagesGenerator(info.sourceSet, stringsFileTree, info.androidRClassPackage)
+        return AndroidImagesGenerator(stringsFileTree, info.androidRClassPackage)
     }
-
 }

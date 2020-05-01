@@ -11,9 +11,10 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.io.File
@@ -26,9 +27,10 @@ import javax.xml.transform.stream.StreamResult
 
 class IosMRGenerator(
     generatedDir: File,
-    sourceSet: KotlinSourceSet,
+    sourceSet: SourceSet,
     mrClassPackage: String,
-    private val generators: List<Generator>
+    private val generators: List<Generator>,
+    private val compilation: AbstractKotlinNativeCompilation
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
@@ -60,45 +62,48 @@ class IosMRGenerator(
     )
 
     override fun apply(generationTask: Task, project: Project) {
-        val linkTasks = project.tasks
-            .mapNotNull { it as? KotlinNativeLink }
-            .filter { it.binary is Framework }
-            .filter { it.compilation.kotlinSourceSets.contains(sourceSet) }
+        val compileTask: KotlinNativeCompile = compilation.compileKotlinTask
+        compileTask.dependsOn(generationTask)
 
-        linkTasks.forEach { linkTask ->
-            linkTask.compilation.compileKotlinTask.dependsOn(generationTask)
+        val kotlinNativeTarget = compilation.target as KotlinNativeTarget
 
-            val framework = linkTask.binary as? Framework ?: return@forEach
+        val frameworkBinaries: List<Framework> = kotlinNativeTarget.binaries
+            .filterIsInstance<Framework>()
+            .filter { it.compilation == compilation }
+
+        frameworkBinaries.forEach { framework ->
+            val linkTask = framework.linkTask
 
             linkTask.doLast {
                 resourcesGenerationDir.copyRecursively(framework.outputFile, overwrite = true)
 
-                val infoPList = File(framework.outputFile, "Info.plist")
-
-                val dbFactory = DocumentBuilderFactory.newInstance()
-                dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-                val dBuilder = dbFactory.newDocumentBuilder()
-                val doc = dBuilder.parse(infoPList)
-
-                val rootDict = doc.getElementsByTagName("dict").item(0)
-
-                generators.forEach { generator ->
-                    (generator as? ExtendsPlistDictionary)?.let {
-                        it.appendPlistInfo(doc, rootDict)
-                    }
-
-                }
-
-                val transformerFactory = TransformerFactory.newInstance()
-                val transformer = transformerFactory.newTransformer()
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-                val writer = FileWriter(infoPList)
-                val result = StreamResult(writer)
-
-                transformer.transform(DOMSource(doc), result)
+                processInfoPlist(framework)
             }
         }
+    }
+
+    private fun processInfoPlist(framework: Framework) {
+        val infoPList = File(framework.outputFile, "Info.plist")
+
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val doc = dBuilder.parse(infoPList)
+
+        val rootDict = doc.getElementsByTagName("dict").item(0)
+
+        generators
+            .mapNotNull { it as? ExtendsPlistDictionary }
+            .forEach { it.appendPlistInfo(doc, rootDict) }
+
+        val transformerFactory = TransformerFactory.newInstance()
+        val transformer = transformerFactory.newTransformer()
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
+
+        val writer = FileWriter(infoPList)
+        val result = StreamResult(writer)
+
+        transformer.transform(DOMSource(doc), result)
     }
 
     companion object {

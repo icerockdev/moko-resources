@@ -10,15 +10,12 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.strings.KeyType
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 class AndroidPluralsGenerator(
-    sourceSet: KotlinSourceSet,
     pluralsFileTree: FileTree,
     private val androidRClassPackage: String
 ) : PluralsGenerator(
-    sourceSet = sourceSet,
     pluralsFileTree = pluralsFileTree
 ) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -33,4 +33,7 @@ include(":gradle-plugin")
 if(!libraryPublish) {
     include(":sample:android-app")
     include(":sample:mpp-library")
+    include(":sample:mpp-conditional")
+    include(":sample:mpp-hierarhical")
+    include(":sample:mpp-mixed")
 }

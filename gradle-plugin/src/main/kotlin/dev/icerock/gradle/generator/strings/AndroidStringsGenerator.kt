@@ -9,15 +9,12 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 class AndroidStringsGenerator(
-    sourceSet: KotlinSourceSet,
     stringsFileTree: FileTree,
     private val androidRClassPackage: String
 ) : StringsGenerator(
-    sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
 ) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

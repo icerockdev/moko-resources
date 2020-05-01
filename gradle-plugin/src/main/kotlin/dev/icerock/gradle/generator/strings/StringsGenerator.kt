@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator.strings
 import com.squareup.kotlinpoet.ClassName
 import dev.icerock.gradle.generator.BaseGenerator
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -15,7 +14,6 @@ typealias LanguageType = String
 typealias KeyType = String
 
 abstract class StringsGenerator(
-    protected val sourceSet: KotlinSourceSet,
     private val stringsFileTree: FileTree
 ) : BaseGenerator<String>() {
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
@@ -55,8 +53,7 @@ abstract class StringsGenerator(
             .keys
             .toList()
         if (incorrectKeys.isNotEmpty()) {
-            val excMessage = incorrectKeys.map { "\"$it\"" }.joinToString()
-            throw Exception("StringsGenerator: Can't process keys which equals their value: $excMessage")
+            throw EqualStringKeysException(incorrectKeys)
         }
 
         return mutableMap

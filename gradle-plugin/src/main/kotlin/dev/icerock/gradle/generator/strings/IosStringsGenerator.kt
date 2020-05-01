@@ -9,17 +9,14 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ExtendsPlistDictionary
 import dev.icerock.gradle.generator.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.io.File
 
 class IosStringsGenerator(
-    sourceSet: KotlinSourceSet,
     stringsFileTree: FileTree,
     private val baseLocalizationRegion: String
 ) : StringsGenerator(
-    sourceSet = sourceSet,
     stringsFileTree = stringsFileTree
 ), ExtendsPlistDictionary {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

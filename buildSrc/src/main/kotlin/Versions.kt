@@ -18,6 +18,7 @@ object Versions {
 
         const val kotlin = Versions.kotlin
         const val mokoResources = Versions.mokoResources
+        const val detekt = "1.7.4"
     }
 
     object Libs {

@@ -9,7 +9,6 @@ import dev.icerock.gradle.generator.BaseGenerator
 import dev.icerock.gradle.generator.strings.KeyType
 import dev.icerock.gradle.generator.strings.LanguageType
 import org.gradle.api.file.FileTree
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.w3c.dom.Element
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -17,7 +16,6 @@ import javax.xml.parsers.DocumentBuilderFactory
 typealias PluralMap = Map<String, String>
 
 abstract class PluralsGenerator(
-    protected val sourceSet: KotlinSourceSet,
     private val pluralsFileTree: FileTree
 ) : BaseGenerator<PluralMap>() {
 
