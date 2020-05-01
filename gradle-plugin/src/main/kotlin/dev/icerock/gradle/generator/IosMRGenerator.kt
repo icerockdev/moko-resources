@@ -112,6 +112,9 @@ class IosMRGenerator(
                         val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
                         val klib = KotlinLibraryLayoutImpl(klibKonan)
                         val layout = klib.extractingToTemp
+
+                        // TODO merge each resource types
+
                         File(layout.resourcesDir.path).copyRecursively(framework.outputFile, overwrite = true)
                     }
 
