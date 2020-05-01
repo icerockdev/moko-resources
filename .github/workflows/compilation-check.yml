@@ -21,4 +21,4 @@ jobs:
     - name: Check library build
       run: ./gradlew -PlibraryPublish :resources:publishToMavenLocal
     - name: Check demo library
-      run: ./gradlew :mpp-conditional:build :mpp-hierarhical:build :mpp-library:build :mpp-mixed:build
+      run: ./gradlew :sample:mpp-conditional:build :sample:mpp-hierarhical:build :sample:mpp-library:build :sample:mpp-mixed:build
