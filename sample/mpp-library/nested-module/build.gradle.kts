@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 plugins {
@@ -16,25 +16,13 @@ android {
         minSdkVersion(Versions.Android.minSdk)
         targetSdkVersion(Versions.Android.targetSdk)
     }
-
-    lintOptions {
-        disable("ImpliedQuantity")
-    }
 }
-
-setupFramework(
-    exports = listOf(
-        Deps.Libs.MultiPlatform.mokoResources
-    )
-)
 
 dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
     mppLibrary(Deps.Libs.MultiPlatform.mokoResources)
-
-    commonMainImplementation(project("$path:nested-module"))
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    multiplatformResourcesPackage = "com.icerockdev.library.nested"
 }
