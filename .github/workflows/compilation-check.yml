@@ -20,3 +20,5 @@ jobs:
       run: ./gradlew -PlibraryPublish :gradle-plugin:detekt :gradle-plugin:publishPluginPublicationToMavenLocal
     - name: Check library build
       run: ./gradlew -PlibraryPublish :resources:publishToMavenLocal
+    - name: Check demo library
+      run: ./gradlew :mpp-conditional:build :mpp-hierarhical:build :mpp-library:build :mpp-mixed:build
