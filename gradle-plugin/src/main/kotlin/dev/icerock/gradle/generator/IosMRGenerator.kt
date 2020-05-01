@@ -11,10 +11,13 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.kotlin.dsl.support.unzipTo
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import org.jetbrains.kotlin.konan.file.zipDirAs
+import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.io.File
@@ -62,9 +65,35 @@ class IosMRGenerator(
     )
 
     override fun apply(generationTask: Task, project: Project) {
+        setupKLibResources(generationTask)
+        setupFrameworkResources()
+    }
+
+    private fun setupKLibResources(generationTask: Task) {
         val compileTask: KotlinNativeCompile = compilation.compileKotlinTask
         compileTask.dependsOn(generationTask)
 
+        compileTask.doLast {
+            this as KotlinNativeCompile
+
+            val klibFile = this.outputFile.get()
+            val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
+            val resRepackDir = File(repackDir, "resources")
+
+            unzipTo(zipFile = klibFile, outputDirectory = repackDir)
+
+            resourcesGenerationDir.copyRecursively(resRepackDir, overwrite = true)
+
+            val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
+            val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
+
+            repackKonan.zipDirAs(klibKonan)
+
+            repackDir.deleteRecursively()
+        }
+    }
+
+    private fun setupFrameworkResources() {
         val kotlinNativeTarget = compilation.target as KotlinNativeTarget
 
         val frameworkBinaries: List<Framework> = kotlinNativeTarget.binaries
@@ -75,7 +104,16 @@ class IosMRGenerator(
             val linkTask = framework.linkTask
 
             linkTask.doLast {
-                resourcesGenerationDir.copyRecursively(framework.outputFile, overwrite = true)
+                linkTask.libraries
+                    .plus(linkTask.intermediateLibrary.get())
+                    .filter { it.extension == "klib" }
+                    .forEach {
+                        project.logger.warn("copy resources from $it")
+                        val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
+                        val klib = KotlinLibraryLayoutImpl(klibKonan)
+                        val layout = klib.extractingToTemp
+                        File(layout.resourcesDir.path).copyRecursively(framework.outputFile, overwrite = true)
+                    }
 
                 processInfoPlist(framework)
             }
