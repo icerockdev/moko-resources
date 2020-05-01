@@ -30,7 +30,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.konan.target.Family
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -140,23 +139,34 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         features: List<ResourceGeneratorFeature>,
         target: Project
     ) {
-        targets
+        val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
             .filter { it.konanTarget.family == Family.IOS }
             .map { kotlinNativeTarget ->
                 kotlinNativeTarget.compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
             }
-            .forEach { compilation ->
-                val sourceSet = createSourceSet(compilation.defaultSourceSet)
-                IosMRGenerator(
-                    generatedDir,
-                    sourceSet,
-                    mrClassPackage,
-                    generators = features.map { it.createIosGenerator() },
-                    compilation = compilation
-                ).apply(target)
-            }
+
+        val defSourceSets = compilations.map { it.defaultSourceSet }
+        compilations.forEach { compilation ->
+            val kss = compilation.defaultSourceSet
+            val depend = kss.getDependedFrom(defSourceSets)
+
+            val sourceSet = createSourceSet(depend ?: kss)
+            IosMRGenerator(
+                generatedDir,
+                sourceSet,
+                mrClassPackage,
+                generators = features.map { it.createIosGenerator() },
+                compilation = compilation
+            ).apply(target)
+        }
+    }
+
+    private fun KotlinSourceSet.getDependedFrom(sourceSets: Collection<KotlinSourceSet>): KotlinSourceSet? {
+        return sourceSets.firstOrNull { this.dependsOn.contains(it) } ?: this.dependsOn
+            .mapNotNull { it.getDependedFrom(sourceSets) }
+            .firstOrNull()
     }
 
     private fun createSourceSet(kotlinSourceSet: KotlinSourceSet): MRGenerator.SourceSet {

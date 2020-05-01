@@ -35,8 +35,11 @@ kotlin {
     sourceSets {
         val iosX64Main by getting {}
         val iosX64Test by getting {}
-        val iosArm64Main by getting {
+        val iosMiddle by creating {
             dependsOn(iosX64Main)
+        }
+        val iosArm64Main by getting {
+            dependsOn(iosMiddle)
         }
         val iosArm64Test by getting {
             dependsOn(iosX64Test)

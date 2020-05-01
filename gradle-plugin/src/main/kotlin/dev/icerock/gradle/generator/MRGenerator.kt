@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 abstract class MRGenerator(
@@ -58,7 +57,10 @@ abstract class MRGenerator(
 
     fun apply(project: Project) {
         val name = sourceSet.name
-        val genTask = project.task("generateMR$name") {
+        val genTaskName = "generateMR$name"
+        val genTask = runCatching {
+            project.tasks.getByName(genTaskName)
+        }.getOrNull() ?: project.task(genTaskName) {
             group = "multiplatform"
 
             doLast {
