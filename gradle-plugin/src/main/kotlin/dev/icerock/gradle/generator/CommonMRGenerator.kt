@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.KModifier
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 
