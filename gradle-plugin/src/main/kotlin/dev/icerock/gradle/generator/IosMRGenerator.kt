@@ -25,7 +25,7 @@ class IosMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
     mrClassPackage: String,
-    private val generators: List<Generator>,
+    generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
     private val baseLocalizationRegion: String
 ) : MRGenerator(
@@ -51,7 +51,7 @@ class IosMRGenerator(
             )
                 .delegate(
                     CodeBlock.of(
-                            """
+                        """
 lazy<NSBundle> {
     val result = NSBundle.bundleWithIdentifier("$bundleIdentifier")
     if (result != null) return@lazy result
@@ -69,7 +69,7 @@ lazy<NSBundle> {
     return@lazy NSBundle.bundleWithIdentifier("$bundleIdentifier")!!
 }
                     """.trimIndent()
-                        )
+                    )
                 )
                 .build()
         )
@@ -163,31 +163,9 @@ lazy<NSBundle> {
 
                         File(layout.resourcesDir.path).copyRecursively(framework.outputFile, overwrite = true)
                     }
-//
-//                processInfoPlist(framework)
             }
         }
     }
-
-//    private fun processInfoPlist(framework: Framework) {
-//        val infoPList = File(framework.outputFile, "Info.plist")
-//
-//        val dbFactory = DocumentBuilderFactory.newInstance()
-//        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-//        val dBuilder = dbFactory.newDocumentBuilder()
-//        val doc = dBuilder.parse(infoPList)
-//
-//        val rootDict = doc.getElementsByTagName("dict").item(0)
-//
-//        val transformerFactory = TransformerFactory.newInstance()
-//        val transformer = transformerFactory.newTransformer()
-//        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
-//
-//        val writer = FileWriter(infoPList)
-//        val result = StreamResult(writer)
-//
-//        transformer.transform(DOMSource(doc), result)
-//    }
 
     companion object {
         const val BUNDLE_PROPERTY_NAME = "bundle"
