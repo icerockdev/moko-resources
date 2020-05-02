@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.KModifier
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 
 class CommonMRGenerator(
@@ -23,11 +22,5 @@ class CommonMRGenerator(
 ) {
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.EXPECT)
 
-    override fun apply(generationTask: Task, project: Project) {
-        project.tasks.getByName("preBuild").dependsOn(generationTask)
-
-        project.tasks
-            .mapNotNull { it as? KotlinNativeLink }
-            .forEach { it.compilation.compileKotlinTask.dependsOn(generationTask) }
-    }
+    override fun apply(generationTask: Task, project: Project) {}
 }

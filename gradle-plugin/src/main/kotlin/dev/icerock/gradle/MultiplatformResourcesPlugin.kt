@@ -9,6 +9,7 @@ import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.AndroidSourceSet
 import dev.icerock.gradle.generator.AndroidMRGenerator
 import dev.icerock.gradle.generator.CommonMRGenerator
+import dev.icerock.gradle.generator.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.generator.IosMRGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
@@ -91,6 +92,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
         setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
         setupIosGenerator(targets, generatedDir, mrClassPackage, features, target, iosLocalizationRegion)
+
+        val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
+        val commonGenerationTask = generationTasks.first { it.name == "generateMRcommonMain" }
+        generationTasks.filter { it != commonGenerationTask }
+            .forEach { it.dependsOn(commonGenerationTask) }
     }
 
     private fun setupCommonGenerator(
@@ -133,6 +139,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         ).apply(target)
     }
 
+    @Suppress("LongParameterList")
     private fun setupIosGenerator(
         targets: List<KotlinTarget>,
         generatedDir: File,
