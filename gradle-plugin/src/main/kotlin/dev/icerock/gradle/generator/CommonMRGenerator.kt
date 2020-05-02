@@ -22,5 +22,6 @@ class CommonMRGenerator(
 ) {
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.EXPECT)
 
+    @Suppress("EmptyFunctionBlock")
     override fun apply(generationTask: Task, project: Project) {}
 }
