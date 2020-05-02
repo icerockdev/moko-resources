@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.fonts
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import dev.icerock.gradle.generator.IosMRGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -19,7 +20,10 @@ class IosFontsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fontFileName: String): CodeBlock? {
-        return CodeBlock.of("FontResource(fontName = %S)", fontFileName)
+        return CodeBlock.of(
+            "FontResource(fontName = %S, bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
+            fontFileName
+        )
     }
 
     override fun generateResources(

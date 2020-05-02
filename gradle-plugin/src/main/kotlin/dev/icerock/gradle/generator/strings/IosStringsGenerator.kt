@@ -6,11 +6,8 @@ package dev.icerock.gradle.generator.strings
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.ExtendsPlistDictionary
 import dev.icerock.gradle.generator.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import org.gradle.api.file.FileTree
-import org.w3c.dom.Document
-import org.w3c.dom.Node
 import java.io.File
 
 class IosStringsGenerator(
@@ -18,7 +15,7 @@ class IosStringsGenerator(
     private val baseLocalizationRegion: String
 ) : StringsGenerator(
     stringsFileTree = stringsFileTree
-), ExtendsPlistDictionary {
+) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -52,14 +49,5 @@ class IosStringsGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
-    }
-
-    override fun appendPlistInfo(doc: Document, rootDict: Node) {
-        rootDict.appendChild(doc.createElement("key").apply {
-            textContent = "CFBundleDevelopmentRegion"
-        })
-        rootDict.appendChild(doc.createElement("string").apply {
-            textContent = baseLocalizationRegion
-        })
     }
 }

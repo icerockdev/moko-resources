@@ -15,7 +15,7 @@ import java.io.File
 abstract class MRGenerator(
     generatedDir: File,
     protected val sourceSet: SourceSet,
-    private val mrClassPackage: String,
+    protected val mrClassPackage: String,
     private val generators: List<Generator>
 ) {
     private val sourcesGenerationDir = File(generatedDir, "${sourceSet.name}/src")

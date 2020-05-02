@@ -97,8 +97,7 @@ actual sealed class StringDesc {
     abstract fun toString(context: Context): String
 
     actual sealed class LocaleType {
-        actual class System actual constructor() :
-            LocaleType() {
+        actual object System : LocaleType() {
             override val systemLocale: Locale? = null
         }
 
@@ -131,6 +130,6 @@ actual sealed class StringDesc {
             return localizedContext(context).resources
         }
 
-        actual var localeType: LocaleType = LocaleType.System()
+        actual var localeType: LocaleType = LocaleType.System
     }
 }

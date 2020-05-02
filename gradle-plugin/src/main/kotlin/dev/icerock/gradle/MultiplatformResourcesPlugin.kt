@@ -79,9 +79,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             mrExtension.multiplatformResourcesPackage!!,
             androidPackage
         )
+        val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
         val features = listOf(
-            StringsGeneratorFeature(sourceInfo, mrExtension.iosBaseLocalizationRegion),
-            PluralsGeneratorFeature(sourceInfo, mrExtension.iosBaseLocalizationRegion),
+            StringsGeneratorFeature(sourceInfo, iosLocalizationRegion),
+            PluralsGeneratorFeature(sourceInfo, iosLocalizationRegion),
             ImagesGeneratorFeature(sourceInfo),
             FontsGeneratorFeature(sourceInfo)
         )
@@ -89,7 +90,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
         setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
         setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
-        setupIosGenerator(targets, generatedDir, mrClassPackage, features, target)
+        setupIosGenerator(targets, generatedDir, mrClassPackage, features, target, iosLocalizationRegion)
     }
 
     private fun setupCommonGenerator(
@@ -137,7 +138,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         mrClassPackage: String,
         features: List<ResourceGeneratorFeature>,
-        target: Project
+        target: Project,
+        iosLocalizationRegion: String
     ) {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
@@ -158,7 +160,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet,
                 mrClassPackage,
                 generators = features.map { it.createIosGenerator() },
-                compilation = compilation
+                compilation = compilation,
+                baseLocalizationRegion = iosLocalizationRegion
             ).apply(target)
         }
     }

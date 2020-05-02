@@ -18,22 +18,16 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
-import org.w3c.dom.Document
-import org.w3c.dom.Node
 import java.io.File
-import java.io.FileWriter
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
+import java.util.Properties
 
 class IosMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
     mrClassPackage: String,
     private val generators: List<Generator>,
-    private val compilation: AbstractKotlinNativeCompilation
+    private val compilation: AbstractKotlinNativeCompilation,
+    private val baseLocalizationRegion: String
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
@@ -42,6 +36,7 @@ class IosMRGenerator(
 ) {
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
+    private val bundleIdentifier = "$mrClassPackage.MR"
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -54,14 +49,34 @@ class IosMRGenerator(
                 bundleClassName,
                 KModifier.PRIVATE
             )
-                .initializer(CodeBlock.of("NSBundle.bundleForClass(object_getClass(this)!!)"))
+                .delegate(
+                    CodeBlock.of(
+                            """
+lazy<NSBundle> {
+    val result = NSBundle.bundleWithIdentifier("$bundleIdentifier")
+    if (result != null) return@lazy result
+
+    val mainPath = NSBundle.mainBundle.bundlePath
+    val appFrameworks = NSBundle.allFrameworks.filterIsInstance<NSBundle>()
+        .filter { it.bundlePath.startsWith(mainPath) }
+    appFrameworks.flatMap { frameworkBundle ->
+        @Suppress("UNCHECKED_CAST")
+        frameworkBundle.pathsForResourcesOfType(ext = "bundle", inDirectory = null) as List<String>
+    }.forEach { bundlePath ->
+        NSBundle.bundleWithPath(bundlePath)?.bundleIdentifier
+    }
+
+    return@lazy NSBundle.bundleWithIdentifier("$bundleIdentifier")!!
+}
+                    """.trimIndent()
+                        )
+                )
                 .build()
         )
     }
 
     override fun getImports(): List<ClassName> = listOf(
-        bundleClassName,
-        ClassName("platform.objc", "object_getClass")
+        bundleClassName
     )
 
     override fun apply(generationTask: Task, project: Project) {
@@ -82,7 +97,40 @@ class IosMRGenerator(
 
             unzipTo(zipFile = klibFile, outputDirectory = repackDir)
 
-            resourcesGenerationDir.copyRecursively(resRepackDir, overwrite = true)
+            val manifestFile = File(repackDir, "manifest")
+            val manifest = Properties()
+            manifest.load(manifestFile.inputStream())
+
+            val uniqueName = manifest["unique_name"] as String
+
+            val bundleDir = File(resRepackDir, "$uniqueName.bundle")
+            bundleDir.mkdir()
+
+            val bundleContentsDir = File(bundleDir, "Contents")
+            bundleContentsDir.mkdir()
+
+            val bundlePList = File(bundleContentsDir, "Info.plist")
+            bundlePList.writeText(
+                """<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$baseLocalizationRegion</string>
+	<key>CFBundleIdentifier</key>
+	<string>$bundleIdentifier</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+    <key>CFBundlePackageType</key>
+	<string>BNDL</string>
+</dict>
+</plist>"""
+            )
+
+            val bundleResourcesDir = File(bundleContentsDir, "Resources")
+            bundleResourcesDir.mkdir()
+
+            resourcesGenerationDir.copyRecursively(bundleResourcesDir, overwrite = true)
 
             val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
             val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
@@ -113,45 +161,35 @@ class IosMRGenerator(
                         val klib = KotlinLibraryLayoutImpl(klibKonan)
                         val layout = klib.extractingToTemp
 
-                        // TODO merge each resource types
-
                         File(layout.resourcesDir.path).copyRecursively(framework.outputFile, overwrite = true)
                     }
-
-                processInfoPlist(framework)
+//
+//                processInfoPlist(framework)
             }
         }
     }
 
-    private fun processInfoPlist(framework: Framework) {
-        val infoPList = File(framework.outputFile, "Info.plist")
-
-        val dbFactory = DocumentBuilderFactory.newInstance()
-        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-        val dBuilder = dbFactory.newDocumentBuilder()
-        val doc = dBuilder.parse(infoPList)
-
-        val rootDict = doc.getElementsByTagName("dict").item(0)
-
-        generators
-            .mapNotNull { it as? ExtendsPlistDictionary }
-            .forEach { it.appendPlistInfo(doc, rootDict) }
-
-        val transformerFactory = TransformerFactory.newInstance()
-        val transformer = transformerFactory.newTransformer()
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
-
-        val writer = FileWriter(infoPList)
-        val result = StreamResult(writer)
-
-        transformer.transform(DOMSource(doc), result)
-    }
+//    private fun processInfoPlist(framework: Framework) {
+//        val infoPList = File(framework.outputFile, "Info.plist")
+//
+//        val dbFactory = DocumentBuilderFactory.newInstance()
+//        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+//        val dBuilder = dbFactory.newDocumentBuilder()
+//        val doc = dBuilder.parse(infoPList)
+//
+//        val rootDict = doc.getElementsByTagName("dict").item(0)
+//
+//        val transformerFactory = TransformerFactory.newInstance()
+//        val transformer = transformerFactory.newTransformer()
+//        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
+//
+//        val writer = FileWriter(infoPList)
+//        val result = StreamResult(writer)
+//
+//        transformer.transform(DOMSource(doc), result)
+//    }
 
     companion object {
         const val BUNDLE_PROPERTY_NAME = "bundle"
     }
-}
-
-interface ExtendsPlistDictionary {
-    fun appendPlistInfo(doc: Document, rootDict: Node)
 }
