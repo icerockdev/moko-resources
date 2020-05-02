@@ -156,7 +156,7 @@ lazy<NSBundle> {
                     .plus(linkTask.intermediateLibrary.get())
                     .filter { it.extension == "klib" }
                     .forEach {
-                        project.logger.warn("copy resources from $it")
+                        project.logger.info("copy resources from $it")
                         val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
                         val klib = KotlinLibraryLayoutImpl(klibKonan)
                         val layout = klib.extractingToTemp
