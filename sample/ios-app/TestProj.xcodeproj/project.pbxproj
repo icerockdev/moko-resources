@@ -112,7 +112,7 @@
 				287627FB1F319065007FA12B /* Sources */,
 				287627FC1F319065007FA12B /* Frameworks */,
 				287627FD1F319065007FA12B /* Resources */,
-				9B9470727B06EFAA41C171BB /* [CP] Embed Pods Frameworks */,
+				B82E91042382B0A43D529F33 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -173,7 +173,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		9B9470727B06EFAA41C171BB /* [CP] Embed Pods Frameworks */ = {
+		B82E91042382B0A43D529F33 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -250,6 +250,7 @@
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CURRENT_PROJECT_VERSION = 0;
 				DEFINES_MODULE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
@@ -260,6 +261,7 @@
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CURRENT_PROJECT_VERSION = 0;
 				DEFINES_MODULE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
@@ -269,11 +271,11 @@
 			baseConfigurationReference = DFBDF7D3559D080FDCA444A6 /* Pods-TestProj.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 4VU932NX78;
+				DEVELOPMENT_TEAM = RF9T8S9829;
 				INFOPLIST_FILE = src/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.icerock.moko.sample.resources;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.icerock.moko.sample.resources-test";
 				PRODUCT_NAME = mokoSampleResources;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -287,11 +289,11 @@
 			baseConfigurationReference = A644D2F1C5377C40A53FCD6A /* Pods-TestProj.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 4VU932NX78;
+				DEVELOPMENT_TEAM = RF9T8S9829;
 				INFOPLIST_FILE = src/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.icerock.moko.sample.resources;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.icerock.moko.sample.resources-test";
 				PRODUCT_NAME = mokoSampleResources;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;

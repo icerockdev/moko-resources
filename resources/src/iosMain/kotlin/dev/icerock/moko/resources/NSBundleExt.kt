@@ -7,19 +7,18 @@ package dev.icerock.moko.resources
 import platform.Foundation.NSBundle
 
 fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
-    val result = NSBundle.bundleWithIdentifier(identifier)
-    if (result != null) return result
+    // try get already loaded bundle
+    NSBundle.bundleWithIdentifier(identifier)?.let { return it }
 
-    val mainPath = NSBundle.mainBundle.bundlePath
-    val appFrameworks = NSBundle.allFrameworks.filterIsInstance<NSBundle>()
-        .filter { it.bundlePath.startsWith(mainPath) }
-    appFrameworks.flatMap { frameworkBundle ->
-        @Suppress("UNCHECKED_CAST")
-        frameworkBundle.pathsForResourcesOfType(ext = "bundle", inDirectory = null) as List<String>
-    }.forEach { bundlePath ->
+    // try load from app framework
+    NSBundle.mainBundle
+        .pathsForResourcesOfType(ext = "framework", inDirectory = "Frameworks")
+        .filterIsInstance<String>()
+        .mapNotNull { NSBundle.bundleWithPath(it) }
+        .flatMap { it.pathsForResourcesOfType(ext = "bundle", inDirectory = null) }
+        .filterIsInstance<String>()
         // load each loadable bundle to correct load by identifier later
-        NSBundle.bundleWithPath(bundlePath)?.bundleIdentifier
-    }
+        .forEach { NSBundle.bundleWithPath(it)?.bundleIdentifier }
 
     return NSBundle.bundleWithIdentifier(identifier)!!
 }
