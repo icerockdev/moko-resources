@@ -5,26 +5,30 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.LibraryExtension
-import dev.icerock.gradle.generator.AndroidMRGenerator
-import dev.icerock.gradle.generator.CommonMRGenerator
-import dev.icerock.gradle.generator.IosMRGenerator
+import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.api.AndroidSourceSet
+import dev.icerock.gradle.generator.FontsGenerator
+import dev.icerock.gradle.generator.GenerateMultiplatformResourcesTask
+import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.image.AndroidImagesGenerator
-import dev.icerock.gradle.generator.image.CommonImagesGenerator
-import dev.icerock.gradle.generator.image.IosImagesGenerator
-import dev.icerock.gradle.generator.plurals.AndroidPluralsGenerator
-import dev.icerock.gradle.generator.plurals.CommonPluralsGenerator
-import dev.icerock.gradle.generator.plurals.IosPluralsGenerator
-import dev.icerock.gradle.generator.strings.AndroidStringsGenerator
-import dev.icerock.gradle.generator.strings.CommonStringsGenerator
-import dev.icerock.gradle.generator.strings.IosStringsGenerator
+import dev.icerock.gradle.generator.PluralsGenerator
+import dev.icerock.gradle.generator.ResourceGeneratorFeature
+import dev.icerock.gradle.generator.SourceInfo
+import dev.icerock.gradle.generator.StringsGenerator
+import dev.icerock.gradle.generator.android.AndroidMRGenerator
+import dev.icerock.gradle.generator.common.CommonMRGenerator
+import dev.icerock.gradle.generator.ios.IosMRGenerator
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.FileTree
+import org.gradle.api.tasks.SourceSet
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
@@ -36,53 +40,175 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val mrExtension =
             target.extensions.create<MultiplatformResourcesPluginExtension>("multiplatformResources")
 
-        mrExtension.onChange = {
-            configureGenerators(
-                target = target,
-                mrExtension = mrExtension
-            )
+        target.plugins.withType<KotlinMultiplatformPluginWrapper> {
+            val multiplatformExtension = target.extensions.getByType(this.projectExtensionClass)
+
+            target.plugins.withType<LibraryPlugin> {
+                val androidExtension = target.extensions.getByName("android") as LibraryExtension
+
+                target.afterEvaluate {
+                    configureGenerators(
+                        target = target,
+                        mrExtension = mrExtension,
+                        multiplatformExtension = multiplatformExtension,
+                        androidExtension = androidExtension
+                    )
+                }
+            }
         }
     }
 
     private fun configureGenerators(
         target: Project,
-        mrExtension: MultiplatformResourcesPluginExtension
+        mrExtension: MultiplatformResourcesPluginExtension,
+        multiplatformExtension: KotlinMultiplatformExtension,
+        androidExtension: LibraryExtension
     ) {
-        target.afterEvaluate {
-            val multiplatformExtension =
-                target.extensions.getByType(KotlinMultiplatformExtension::class)
+        val androidMainSourceSet = androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
-            val sourceSets = multiplatformExtension.sourceSets
-            val commonSourceSet =
-                sourceSets.getByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
-            val commonResources = commonSourceSet.resources
+        val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
+        val commonResources = commonSourceSet.resources
 
-            val strings = commonResources.matching {
-                include("MR/**/strings.xml")
+        val manifestFile = androidMainSourceSet.manifest.srcFile
+        val androidPackage = getAndroidPackage(manifestFile)
+
+        val generatedDir = File(target.buildDir, "generated/moko")
+        val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage)
+        val sourceInfo = SourceInfo(
+            generatedDir,
+            commonResources,
+            mrExtension.multiplatformResourcesPackage!!,
+            androidPackage
+        )
+        val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
+        val features = listOf(
+            StringsGenerator.Feature(sourceInfo, iosLocalizationRegion),
+            PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion),
+            ImagesGenerator.Feature(sourceInfo),
+            FontsGenerator.Feature(sourceInfo)
+        )
+        val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
+
+        setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
+        setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
+        setupIosGenerator(targets, generatedDir, mrClassPackage, features, target, iosLocalizationRegion)
+
+        val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
+        val commonGenerationTask = generationTasks.first { it.name == "generateMRcommonMain" }
+        generationTasks.filter { it != commonGenerationTask }
+            .forEach { it.dependsOn(commonGenerationTask) }
+    }
+
+    private fun setupCommonGenerator(
+        commonSourceSet: KotlinSourceSet,
+        generatedDir: File,
+        mrClassPackage: String,
+        features: List<ResourceGeneratorFeature>,
+        target: Project
+    ) {
+        val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
+        CommonMRGenerator(
+            generatedDir,
+            commonGeneratorSourceSet,
+            mrClassPackage,
+            generators = features.map { it.createCommonGenerator() }
+        ).apply(target)
+    }
+
+    @Suppress("LongParameterList")
+    private fun setupAndroidGenerator(
+        targets: List<KotlinTarget>,
+        androidMainSourceSet: AndroidSourceSet,
+        generatedDir: File,
+        mrClassPackage: String,
+        features: List<ResourceGeneratorFeature>,
+        target: Project
+    ) {
+        val kotlinSourceSets: List<KotlinSourceSet> = targets
+            .filterIsInstance<KotlinAndroidTarget>()
+            .flatMap { it.compilations }
+            .filterNot { it.name.endsWith("Test") } // remove tests compilations
+            .map { it.defaultSourceSet }
+
+        val androidSourceSet: MRGenerator.SourceSet = createSourceSet(androidMainSourceSet, kotlinSourceSets)
+        AndroidMRGenerator(
+            generatedDir,
+            androidSourceSet,
+            mrClassPackage,
+            generators = features.map { it.createAndroidGenerator() }
+        ).apply(target)
+    }
+
+    @Suppress("LongParameterList")
+    private fun setupIosGenerator(
+        targets: List<KotlinTarget>,
+        generatedDir: File,
+        mrClassPackage: String,
+        features: List<ResourceGeneratorFeature>,
+        target: Project,
+        iosLocalizationRegion: String
+    ) {
+        val compilations = targets
+            .filterIsInstance<KotlinNativeTarget>()
+            .filter { it.konanTarget.family == Family.IOS }
+            .map { kotlinNativeTarget ->
+                kotlinNativeTarget.compilations
+                    .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
             }
-            val plurals = commonResources.matching {
-                include("MR/**/plurals.xml")
+
+        val defSourceSets = compilations.map { it.defaultSourceSet }
+        compilations.forEach { compilation ->
+            val kss = compilation.defaultSourceSet
+            val depend = kss.getDependedFrom(defSourceSets)
+
+            val sourceSet = createSourceSet(depend ?: kss)
+            IosMRGenerator(
+                generatedDir,
+                sourceSet,
+                mrClassPackage,
+                generators = features.map { it.createIosGenerator() },
+                compilation = compilation,
+                baseLocalizationRegion = iosLocalizationRegion
+            ).apply(target)
+        }
+    }
+
+    private fun KotlinSourceSet.getDependedFrom(sourceSets: Collection<KotlinSourceSet>): KotlinSourceSet? {
+        return sourceSets.firstOrNull { this.dependsOn.contains(it) } ?: this.dependsOn
+            .mapNotNull { it.getDependedFrom(sourceSets) }
+            .firstOrNull()
+    }
+
+    private fun createSourceSet(kotlinSourceSet: KotlinSourceSet): MRGenerator.SourceSet {
+        return object : MRGenerator.SourceSet {
+            override val name: String
+                get() = kotlinSourceSet.name
+
+            override fun addSourceDir(directory: File) {
+                kotlinSourceSet.kotlin.srcDir(directory)
             }
-            val images = commonResources.matching {
-                include("MR/images/**/*.png", "MR/images/**/*.jpg")
+
+            override fun addResourcesDir(directory: File) {
+                kotlinSourceSet.resources.srcDir(directory)
+            }
+        }
+    }
+
+    private fun createSourceSet(
+        androidSourceSet: AndroidSourceSet,
+        kotlinSourceSets: List<KotlinSourceSet>
+    ): MRGenerator.SourceSet {
+        return object : MRGenerator.SourceSet {
+            override val name: String
+                get() = "android${androidSourceSet.name.capitalize()}"
+
+            override fun addSourceDir(directory: File) {
+                kotlinSourceSets.forEach { it.kotlin.srcDir(directory) }
             }
 
-            val androidExtension = target.extensions.getByType(LibraryExtension::class)
-            val mainAndroidSet = androidExtension.sourceSets.getByName("main")
-            val manifestFile = mainAndroidSet.manifest.srcFile
-
-            val androidPackage = getAndroidPackage(manifestFile)
-
-            generateMultiplatformResources(
-                project = target,
-                stringsFileTree = strings,
-                pluralsFileTree = plurals,
-                imagesFileTree = images,
-                sourceSets = sourceSets.filter { it.name.endsWith("Main") },
-                extension = mrExtension,
-                multiplatformExtension = multiplatformExtension,
-                androidPackage = androidPackage
-            )
+            override fun addResourcesDir(directory: File) {
+                androidSourceSet.res.srcDir(directory)
+            }
         }
     }
 
@@ -95,185 +221,5 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val manifest = manifestNodes.item(0)
 
         return manifest.attributes.getNamedItem("package").textContent
-    }
-
-    private fun generateMultiplatformResources(
-        project: Project,
-        stringsFileTree: FileTree,
-        pluralsFileTree: FileTree,
-        imagesFileTree: FileTree,
-        sourceSets: List<KotlinSourceSet>,
-        extension: MultiplatformResourcesPluginExtension,
-        multiplatformExtension: KotlinMultiplatformExtension,
-        androidPackage: String
-    ) {
-        val generatedDir = File(project.buildDir, "generated/moko")
-
-        sourceSets.forEach { sourceSet ->
-            val generator = createGenerator(
-                multiplatformExtension = multiplatformExtension,
-                generatedDir = generatedDir,
-                sourceSet = sourceSet,
-                stringsFileTree = stringsFileTree,
-                pluralsFileTree = pluralsFileTree,
-                imagesFileTree = imagesFileTree,
-                mrClassPackage = extension.multiplatformResourcesPackage!!,
-                androidRClassPackage = androidPackage
-            ) ?: return@forEach
-
-            generator.apply(project = project)
-        }
-    }
-
-    private fun createGenerator(
-        multiplatformExtension: KotlinMultiplatformExtension,
-        generatedDir: File,
-        sourceSet: KotlinSourceSet,
-        stringsFileTree: FileTree,
-        pluralsFileTree: FileTree,
-        imagesFileTree: FileTree,
-        mrClassPackage: String,
-        androidRClassPackage: String
-    ): MRGenerator? {
-        if (sourceSet.name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
-            return createCommonGenerator(
-                generatedDir = generatedDir,
-                sourceSet = sourceSet,
-                stringsFileTree = stringsFileTree,
-                pluralsFileTree = pluralsFileTree,
-                imagesFileTree = imagesFileTree,
-                mrClassPackage = mrClassPackage
-            )
-        }
-
-        val target = multiplatformExtension.targets.firstOrNull { target ->
-            val sourceSets = target.compilations.flatMap { it.kotlinSourceSets }
-            sourceSets.any { it == sourceSet }
-        } ?: return null
-
-        return when (target) {
-            is KotlinAndroidTarget -> {
-                createAndroidGenerator(
-                    generatedDir = generatedDir,
-                    sourceSet = sourceSet,
-                    stringsFileTree = stringsFileTree,
-                    pluralsFileTree = pluralsFileTree,
-                    imagesFileTree = imagesFileTree,
-                    mrClassPackage = mrClassPackage,
-                    androidRClassPackage = androidRClassPackage
-                )
-            }
-            is KotlinNativeTarget -> {
-                val family = target.konanTarget.family
-                if (family == Family.IOS) {
-                    createIosGenerator(
-                        generatedDir = generatedDir,
-                        sourceSet = sourceSet,
-                        stringsFileTree = stringsFileTree,
-                        pluralsFileTree = pluralsFileTree,
-                        imagesFileTree = imagesFileTree,
-                        mrClassPackage = mrClassPackage
-                    )
-                } else {
-                    println("unsupported native family $family")
-                    null
-                }
-            }
-            else -> {
-                println("unsupported target $target")
-                null
-            }
-        }
-    }
-
-    private fun createCommonGenerator(
-        generatedDir: File,
-        sourceSet: KotlinSourceSet,
-        stringsFileTree: FileTree,
-        imagesFileTree: FileTree,
-        pluralsFileTree: FileTree,
-        mrClassPackage: String
-    ): MRGenerator {
-        return CommonMRGenerator(
-            generatedDir = generatedDir,
-            sourceSet = sourceSet,
-            mrClassPackage = mrClassPackage,
-            generators = listOf(
-                CommonStringsGenerator(
-                    sourceSet = sourceSet,
-                    stringsFileTree = stringsFileTree
-                ),
-                CommonPluralsGenerator(
-                    sourceSet = sourceSet,
-                    pluralsFileTree = pluralsFileTree
-                ),
-                CommonImagesGenerator(
-                    sourceSet = sourceSet,
-                    inputFileTree = imagesFileTree
-                )
-            )
-        )
-    }
-
-    private fun createAndroidGenerator(
-        generatedDir: File,
-        sourceSet: KotlinSourceSet,
-        stringsFileTree: FileTree,
-        pluralsFileTree: FileTree,
-        imagesFileTree: FileTree,
-        mrClassPackage: String,
-        androidRClassPackage: String
-    ): MRGenerator {
-        return AndroidMRGenerator(
-            generatedDir = generatedDir,
-            sourceSet = sourceSet,
-            mrClassPackage = mrClassPackage,
-            generators = listOf(
-                AndroidStringsGenerator(
-                    sourceSet = sourceSet,
-                    stringsFileTree = stringsFileTree,
-                    androidRClassPackage = androidRClassPackage
-                ),
-                AndroidPluralsGenerator(
-                    sourceSet = sourceSet,
-                    pluralsFileTree = pluralsFileTree,
-                    androidRClassPackage = androidRClassPackage
-                ),
-                AndroidImagesGenerator(
-                    sourceSet = sourceSet,
-                    inputFileTree = imagesFileTree,
-                    androidRClassPackage = androidRClassPackage
-                )
-            )
-        )
-    }
-
-    private fun createIosGenerator(
-        generatedDir: File,
-        sourceSet: KotlinSourceSet,
-        stringsFileTree: FileTree,
-        pluralsFileTree: FileTree,
-        imagesFileTree: FileTree,
-        mrClassPackage: String
-    ): MRGenerator {
-        return IosMRGenerator(
-            generatedDir = generatedDir,
-            sourceSet = sourceSet,
-            mrClassPackage = mrClassPackage,
-            generators = listOf(
-                IosStringsGenerator(
-                    sourceSet = sourceSet,
-                    stringsFileTree = stringsFileTree
-                ),
-                IosPluralsGenerator(
-                    sourceSet = sourceSet,
-                    pluralsFileTree = pluralsFileTree
-                ),
-                IosImagesGenerator(
-                    sourceSet = sourceSet,
-                    inputFileTree = imagesFileTree
-                )
-            )
-        )
     }
 }

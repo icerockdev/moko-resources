@@ -3,8 +3,9 @@
  */
 
 plugins {
-    `kotlin-dsl`
-    `maven-publish`
+    id("org.gradle.kotlin.kotlin-dsl") version "1.3.6"
+    id("org.gradle.maven-publish")
+    id("io.gitlab.arturbosch.detekt") version(Versions.Plugins.detekt)
 }
 
 repositories {
@@ -18,6 +19,8 @@ dependencies {
     implementation(Deps.Libs.Jvm.kotlinPoet)
     compileOnly(Deps.Plugins.kotlin)
     compileOnly(Deps.Plugins.android)
+    implementation(Deps.Libs.Jvm.apacheCommonsText)
+    detektPlugins(Deps.Libs.Jvm.detektFormatting)
 }
 
 kotlinDslPluginOptions {

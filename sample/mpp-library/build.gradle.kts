@@ -16,6 +16,10 @@ android {
         minSdkVersion(Versions.Android.minSdk)
         targetSdkVersion(Versions.Android.targetSdk)
     }
+
+    lintOptions {
+        disable("ImpliedQuantity")
+    }
 }
 
 setupFramework(
@@ -27,6 +31,8 @@ setupFramework(
 dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
     mppLibrary(Deps.Libs.MultiPlatform.mokoResources)
+
+    commonMainImplementation(project("$path:nested-module"))
 }
 
 multiplatformResources {

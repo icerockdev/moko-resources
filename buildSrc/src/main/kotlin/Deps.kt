@@ -20,6 +20,21 @@ object Deps {
             val appCompat = AndroidLibrary(
                 name = "androidx.appcompat:appcompat:${Versions.Libs.Android.appCompat}"
             )
+
+            object AndroidTest {
+                val espressoCore = AndroidLibrary(
+                    name = "androidx.test.espresso:espresso-core:${Versions.Libs.Android.AndroidTest.espressoCore}"
+                )
+                val testRunner = AndroidLibrary(
+                    name = "androidx.test:runner:${Versions.Libs.Android.AndroidTest.testRunner}"
+                )
+                val testRules = AndroidLibrary(
+                    name = "androidx.test:rules:${Versions.Libs.Android.AndroidTest.testRunner}"
+                )
+                val testExtJunit = AndroidLibrary(
+                    name = "androidx.test.ext:junit:${Versions.Libs.Android.AndroidTest.testExtJunit}"
+                )
+            }
         }
 
         object MultiPlatform {
@@ -36,6 +51,8 @@ object Deps {
 
         object Jvm {
             const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
+            const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.Libs.Jvm.apacheCommonsText}"
+            const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.Plugins.detekt}"
         }
     }
 

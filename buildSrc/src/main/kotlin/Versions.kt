@@ -9,20 +9,27 @@ object Versions {
         const val minSdk = 16
     }
 
-    const val kotlin = "1.3.61"
+    const val kotlin = "1.3.71"
 
-    private const val mokoResources = "0.6.0"
+    private const val mokoResources = "0.9.1"
 
     object Plugins {
-        const val android = "3.5.2"
+        const val android = "3.6.2"
 
         const val kotlin = Versions.kotlin
         const val mokoResources = Versions.mokoResources
+        const val detekt = "1.7.4"
     }
 
     object Libs {
         object Android {
             const val appCompat = "1.1.0"
+
+            object AndroidTest {
+                const val espressoCore = "3.2.0"
+                const val testRunner = "1.2.0"
+                const val testExtJunit = "1.1.1"
+            }
         }
 
         object MultiPlatform {
@@ -30,6 +37,7 @@ object Versions {
         }
 
         object Jvm {
+            const val apacheCommonsText = "1.3"
             const val kotlinPoet = "1.3.0"
         }
     }

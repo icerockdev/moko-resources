@@ -8,11 +8,12 @@ import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.plus
+import com.icerockdev.library.nested.nestedTest
 
 object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(
-            MR.strings.test.desc(),
+            MR.strings.test_simple.desc(),
             MR.strings.test2.desc(),
             MR.strings.test3.desc(),
             MR.strings.common_name.desc(),
@@ -20,7 +21,8 @@ object Testing {
             MR.plurals.test_plural.desc(0),
             MR.plurals.test_plural.desc(1),
             MR.plurals.test_plural.desc(2),
-            MR.plurals.test_plural.desc(3)
+            MR.plurals.test_plural.desc(3),
+            nestedTest()
         )
     }
 
@@ -30,8 +32,8 @@ object Testing {
 
     fun getStringDesc(): StringDesc {
         // create simple string
-        val simpleString = StringDesc.Resource(MR.strings.test)
-        val simpleStringExt = MR.strings.test.desc()
+        val simpleString = StringDesc.Resource(MR.strings.test_simple)
+        val simpleStringExt = MR.strings.test_simple.desc()
 
         // create formatted string
         val formattedString = StringDesc.ResourceFormatted(MR.strings.format, 9)
@@ -50,6 +52,12 @@ object Testing {
         // composition
         val composition = simpleString + simpleRaw
 
+        // create encoding
+        val encoding = StringDesc.Resource(MR.strings.encoding)
+
+        // create
+        val positional = StringDesc.ResourceFormatted(MR.strings.positional, 9, "str")
+
         // result as list composition
         val list = listOf(
             simpleString,
@@ -60,9 +68,20 @@ object Testing {
             formattedPlural,
             simpleRaw,
             simpleRawExt,
-            composition
+            composition,
+            encoding,
+            positional
         )
 
         return StringDesc.Composition(list, separator = "\n")
+    }
+
+    fun getFont1() = MR.fonts.Raleway.italic
+
+    fun getFont2() = MR.fonts.Raleway.bold
+
+    fun locale(lang: String?) {
+        StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)
+        else StringDesc.LocaleType.System
     }
 }

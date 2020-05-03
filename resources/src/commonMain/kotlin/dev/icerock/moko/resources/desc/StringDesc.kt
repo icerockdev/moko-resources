@@ -20,6 +20,15 @@ expect sealed class StringDesc {
 
     class Raw(string: String) : StringDesc
     class Composition(args: List<StringDesc>, separator: String? = null) : StringDesc
+
+    sealed class LocaleType {
+        object System : LocaleType
+        class Custom(locale: String) : LocaleType
+    }
+
+    companion object {
+        var localeType: LocaleType
+    }
 }
 
 fun String.desc() = StringDesc.Raw(this)

@@ -21,7 +21,20 @@ class TestViewController: UIViewController {
         
         imageView.image = drawable.toUIImage()
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
+        textView.font = testing.getFont1().uiFont(withSize: 14.0)
         
         stringDescTextView.text = testing.getStringDesc().localized()
+        stringDescTextView.font = testing.getFont2().uiFont(withSize: 14.0)
+    }
+}
+
+class LanguageTableViewController: UITableViewController {
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if(segue.identifier == "") {
+            Testing().locale(lang: nil)
+        } else {
+            Testing().locale(lang: segue.identifier)
+        }
     }
 }

@@ -7,13 +7,26 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.objc.pluralizedString
+import platform.Foundation.NSBundle
 import platform.Foundation.NSString
 import platform.Foundation.stringWithFormat
 
 actual sealed class StringDesc {
+    protected fun processArgs(args: List<Any>): Array<out Any> {
+        return args.toList().map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
+    }
+
+    protected fun localizedString(stringRes: StringResource): String {
+        val bundle = localeType.getLocaleBundle(stringRes.bundle)
+        val string = bundle.localizedStringForKey(stringRes.resourceId, null, null)
+        return if (string == stringRes.resourceId) {
+            stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
+        } else string
+    }
+
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
         override fun localized(): String {
-            return stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
+            return localizedString(stringRes)
         }
     }
 
@@ -27,8 +40,7 @@ actual sealed class StringDesc {
         )
 
         override fun localized(): String {
-            val string = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
-            return stringWithFormat(string, args.toTypedArray())
+            return stringWithFormat(localizedString(stringRes), processArgs(args))
         }
     }
 
@@ -37,7 +49,8 @@ actual sealed class StringDesc {
 
         override fun localized(): String {
             return pluralizedString(
-                bundle = pluralsRes.bundle,
+                bundle = localeType.getLocaleBundle(pluralsRes.bundle),
+                baseBundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
                 number = number
             )!!
@@ -58,16 +71,16 @@ actual sealed class StringDesc {
 
         override fun localized(): String {
             val pluralized = pluralizedString(
-                bundle = pluralsRes.bundle,
+                bundle = localeType.getLocaleBundle(pluralsRes.bundle),
+                baseBundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
                 number = number
             )!!
-            return stringWithFormat(pluralized, args.toTypedArray())
+            return stringWithFormat(pluralized, processArgs(args))
         }
     }
 
     actual data class Raw actual constructor(val string: String) : StringDesc() {
-
         override fun localized(): String {
             return string
         }
@@ -86,7 +99,7 @@ actual sealed class StringDesc {
 
     protected fun stringWithFormat(format: String, args: Array<out Any>): String {
         // NSString format works with NSObjects via %@, we should change standard format to %@
-        val objcFormat = format.replace(Regex("%[\\.|\\d]*[a|b|c|d|e|f|s]"), "%@")
+        val objcFormat = format.replace(Regex("%((?:\\.|\\d|\\$)*)[abcdefs]"), "%$1@")
         // bad but objc interop limited :(
         // When calling variadic C functions spread operator is supported only for *arrayOf(...)
         return when (args.size) {
@@ -140,5 +153,28 @@ actual sealed class StringDesc {
             )
             else -> throw IllegalArgumentException("can't handle more then 9 arguments now")
         }
+    }
+
+    actual sealed class LocaleType {
+        actual object System : LocaleType() {
+            override fun getLocaleBundle(rootBundle: NSBundle): NSBundle {
+                return rootBundle
+            }
+        }
+
+        actual class Custom actual constructor(private val locale: String) : LocaleType() {
+            override fun getLocaleBundle(rootBundle: NSBundle): NSBundle {
+                return rootBundle.pathForResource(locale, "lproj")
+                    ?.let { NSBundle.bundleWithPath(it) }
+                    ?: rootBundle
+            }
+        }
+
+        abstract fun getLocaleBundle(rootBundle: NSBundle): NSBundle
+    }
+
+    @ThreadLocal
+    actual companion object {
+        actual var localeType: LocaleType = LocaleType.System
     }
 }

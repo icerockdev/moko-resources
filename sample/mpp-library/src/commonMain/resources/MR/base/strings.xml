@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="test">test</string>
+    <string name="test.simple">test</string>
     <string name="test2">test 2</string>
     <string name="test3">test 3</string>
+    <string name="Test4">test 4</string>
     <string name="common.name">Test Project</string>
     <string name="format">Test data %d</string>
+    <string name="encoding">CHOOSE PORTFOLIO &amp; AMOUNT</string>
+    <string name="positional">second string %2$s first decimal %1$d</string>
 </resources>

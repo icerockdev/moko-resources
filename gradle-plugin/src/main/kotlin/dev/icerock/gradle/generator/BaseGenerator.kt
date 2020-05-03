@@ -4,9 +4,11 @@
 
 package dev.icerock.gradle.generator
 
-import com.squareup.kotlinpoet.*
-import dev.icerock.gradle.generator.strings.KeyType
-import dev.icerock.gradle.generator.strings.LanguageType
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 
 abstract class BaseGenerator<T> : MRGenerator.Generator {
@@ -28,6 +30,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         return stringsClass
     }
 
+    @Suppress("SpreadOperator")
     private fun createTypeSpec(keys: List<KeyType>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder(getClassName())
         classBuilder.addModifiers(*getClassModifiers())
