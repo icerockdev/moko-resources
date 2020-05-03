@@ -10,7 +10,6 @@ import dev.icerock.moko.resources.objc.pluralizedString
 import platform.Foundation.NSBundle
 import platform.Foundation.NSString
 import platform.Foundation.stringWithFormat
-import platform.objc.object_getClass
 
 actual sealed class StringDesc {
     protected fun processArgs(args: List<Any>): Array<out Any> {
@@ -18,11 +17,11 @@ actual sealed class StringDesc {
     }
 
     protected fun localizedString(stringRes: StringResource): String {
-        var string = localeType.bundle.localizedStringForKey(stringRes.resourceId, null, null)
-        if (string == stringRes.resourceId) {
-            string = mainBundle.localizedStringForKey(stringRes.resourceId, null, null)
-        }
-        return string
+        val bundle = localeType.getLocaleBundle(stringRes.bundle)
+        val string = bundle.localizedStringForKey(stringRes.resourceId, null, null)
+        return if (string == stringRes.resourceId) {
+            stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
+        } else string
     }
 
     actual data class Resource actual constructor(val stringRes: StringResource) : StringDesc() {
@@ -50,8 +49,8 @@ actual sealed class StringDesc {
 
         override fun localized(): String {
             return pluralizedString(
-                bundle = localeType.bundle,
-                baseBundle = mainBundle,
+                bundle = localeType.getLocaleBundle(pluralsRes.bundle),
+                baseBundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
                 number = number
             )!!
@@ -72,8 +71,8 @@ actual sealed class StringDesc {
 
         override fun localized(): String {
             val pluralized = pluralizedString(
-                bundle = localeType.bundle,
-                baseBundle = mainBundle,
+                bundle = localeType.getLocaleBundle(pluralsRes.bundle),
+                baseBundle = pluralsRes.bundle,
                 resourceId = pluralsRes.resourceId,
                 number = number
             )!!
@@ -157,25 +156,25 @@ actual sealed class StringDesc {
     }
 
     actual sealed class LocaleType {
-        actual class System actual constructor() : LocaleType() {
-            override val bundle: NSBundle = NSBundle.bundleForClass(object_getClass(this)!!)
-        }
-
-        actual class Custom actual constructor(locale: String) : LocaleType() {
-            override val bundle: NSBundle by lazy {
-                val currentBundle = NSBundle.bundleForClass(object_getClass(this)!!)
-                val bundlePath = currentBundle.pathForResource(locale, "lproj")
-                    ?: return@lazy currentBundle
-                NSBundle(bundlePath)
+        actual object System : LocaleType() {
+            override fun getLocaleBundle(rootBundle: NSBundle): NSBundle {
+                return rootBundle
             }
         }
 
-        abstract val bundle: NSBundle
+        actual class Custom actual constructor(private val locale: String) : LocaleType() {
+            override fun getLocaleBundle(rootBundle: NSBundle): NSBundle {
+                return rootBundle.pathForResource(locale, "lproj")
+                    ?.let { NSBundle.bundleWithPath(it) }
+                    ?: rootBundle
+            }
+        }
+
+        abstract fun getLocaleBundle(rootBundle: NSBundle): NSBundle
     }
 
     @ThreadLocal
     actual companion object {
-        actual var localeType: LocaleType = LocaleType.System()
-        val mainBundle = LocaleType.System().bundle
+        actual var localeType: LocaleType = LocaleType.System
     }
 }

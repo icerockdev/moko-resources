@@ -7,16 +7,17 @@ package dev.icerock.gradle
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.AndroidSourceSet
-import dev.icerock.gradle.generator.AndroidMRGenerator
-import dev.icerock.gradle.generator.CommonMRGenerator
-import dev.icerock.gradle.generator.IosMRGenerator
+import dev.icerock.gradle.generator.FontsGenerator
+import dev.icerock.gradle.generator.GenerateMultiplatformResourcesTask
+import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.SourceInfo
-import dev.icerock.gradle.generator.fonts.FontsGeneratorFeature
-import dev.icerock.gradle.generator.image.ImagesGeneratorFeature
-import dev.icerock.gradle.generator.plurals.PluralsGeneratorFeature
-import dev.icerock.gradle.generator.strings.StringsGeneratorFeature
+import dev.icerock.gradle.generator.StringsGenerator
+import dev.icerock.gradle.generator.android.AndroidMRGenerator
+import dev.icerock.gradle.generator.common.CommonMRGenerator
+import dev.icerock.gradle.generator.ios.IosMRGenerator
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
@@ -79,17 +80,23 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             mrExtension.multiplatformResourcesPackage!!,
             androidPackage
         )
+        val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
         val features = listOf(
-            StringsGeneratorFeature(sourceInfo, mrExtension.iosBaseLocalizationRegion),
-            PluralsGeneratorFeature(sourceInfo, mrExtension.iosBaseLocalizationRegion),
-            ImagesGeneratorFeature(sourceInfo),
-            FontsGeneratorFeature(sourceInfo)
+            StringsGenerator.Feature(sourceInfo, iosLocalizationRegion),
+            PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion),
+            ImagesGenerator.Feature(sourceInfo),
+            FontsGenerator.Feature(sourceInfo)
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
         setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
         setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
-        setupIosGenerator(targets, generatedDir, mrClassPackage, features, target)
+        setupIosGenerator(targets, generatedDir, mrClassPackage, features, target, iosLocalizationRegion)
+
+        val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
+        val commonGenerationTask = generationTasks.first { it.name == "generateMRcommonMain" }
+        generationTasks.filter { it != commonGenerationTask }
+            .forEach { it.dependsOn(commonGenerationTask) }
     }
 
     private fun setupCommonGenerator(
@@ -132,12 +139,14 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         ).apply(target)
     }
 
+    @Suppress("LongParameterList")
     private fun setupIosGenerator(
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
         features: List<ResourceGeneratorFeature>,
-        target: Project
+        target: Project,
+        iosLocalizationRegion: String
     ) {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
@@ -158,7 +167,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet,
                 mrClassPackage,
                 generators = features.map { it.createIosGenerator() },
-                compilation = compilation
+                compilation = compilation,
+                baseLocalizationRegion = iosLocalizationRegion
             ).apply(target)
         }
     }

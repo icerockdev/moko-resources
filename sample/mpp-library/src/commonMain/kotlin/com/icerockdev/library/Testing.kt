@@ -8,6 +8,7 @@ import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.plus
+import com.icerockdev.library.nested.nestedTest
 
 object Testing {
     fun getStrings(): List<StringDesc> {
@@ -20,7 +21,8 @@ object Testing {
             MR.plurals.test_plural.desc(0),
             MR.plurals.test_plural.desc(1),
             MR.plurals.test_plural.desc(2),
-            MR.plurals.test_plural.desc(3)
+            MR.plurals.test_plural.desc(3),
+            nestedTest()
         )
     }
 
@@ -80,6 +82,6 @@ object Testing {
 
     fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)
-        else StringDesc.LocaleType.System()
+        else StringDesc.LocaleType.System
     }
 }

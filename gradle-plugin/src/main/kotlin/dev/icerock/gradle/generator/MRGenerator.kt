@@ -15,7 +15,7 @@ import java.io.File
 abstract class MRGenerator(
     generatedDir: File,
     protected val sourceSet: SourceSet,
-    private val mrClassPackage: String,
+    protected val mrClassPackage: String,
     private val generators: List<Generator>
 ) {
     private val sourcesGenerationDir = File(generatedDir, "${sourceSet.name}/src")
@@ -60,9 +60,7 @@ abstract class MRGenerator(
         val genTaskName = "generateMR$name"
         val genTask = runCatching {
             project.tasks.getByName(genTaskName)
-        }.getOrNull() ?: project.task(genTaskName) {
-            group = "multiplatform"
-
+        }.getOrNull() ?: project.tasks.create(genTaskName, GenerateMultiplatformResourcesTask::class.java) {
             doLast {
                 this@MRGenerator.generate()
             }
