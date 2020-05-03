@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -49,34 +50,14 @@ class IosMRGenerator(
                 bundleClassName,
                 KModifier.PRIVATE
             )
-                .delegate(
-                    CodeBlock.of(
-                        """
-lazy<NSBundle> {
-    val result = NSBundle.bundleWithIdentifier("$bundleIdentifier")
-    if (result != null) return@lazy result
-
-    val mainPath = NSBundle.mainBundle.bundlePath
-    val appFrameworks = NSBundle.allFrameworks.filterIsInstance<NSBundle>()
-        .filter { it.bundlePath.startsWith(mainPath) }
-    appFrameworks.flatMap { frameworkBundle ->
-        @Suppress("UNCHECKED_CAST")
-        frameworkBundle.pathsForResourcesOfType(ext = "bundle", inDirectory = null) as List<String>
-    }.forEach { bundlePath ->
-        NSBundle.bundleWithPath(bundlePath)?.bundleIdentifier
-    }
-
-    return@lazy NSBundle.bundleWithIdentifier("$bundleIdentifier")!!
-}
-                    """.trimIndent()
-                    )
-                )
+                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"$bundleIdentifier\") }"))
                 .build()
         )
     }
 
     override fun getImports(): List<ClassName> = listOf(
-        bundleClassName
+        bundleClassName,
+        ClassName(packageName = "dev.icerock.moko.resources", simpleName = "loadableBundle")
     )
 
     override fun apply(generationTask: Task, project: Project) {
