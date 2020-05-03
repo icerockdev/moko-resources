@@ -84,34 +84,15 @@ class IosMRGenerator(
 
             val uniqueName = manifest["unique_name"] as String
 
-            val bundleDir = File(resRepackDir, "$uniqueName.bundle")
-            bundleDir.mkdir()
-
-            val bundleContentsDir = File(bundleDir, "Contents")
-            bundleContentsDir.mkdir()
-
-            val bundlePList = File(bundleContentsDir, "Info.plist")
-            bundlePList.writeText(
-                """<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$baseLocalizationRegion</string>
-	<key>CFBundleIdentifier</key>
-	<string>$bundleIdentifier</string>
-	<key>CFBundleVersion</key>
-	<string>1</string>
-    <key>CFBundlePackageType</key>
-	<string>BNDL</string>
-</dict>
-</plist>"""
+            val loadableBundle = LoadableBundle(
+                directory = resRepackDir,
+                bundleName = uniqueName,
+                developmentRegion = baseLocalizationRegion,
+                identifier = bundleIdentifier
             )
+            loadableBundle.write()
 
-            val bundleResourcesDir = File(bundleContentsDir, "Resources")
-            bundleResourcesDir.mkdir()
-
-            resourcesGenerationDir.copyRecursively(bundleResourcesDir, overwrite = true)
+            resourcesGenerationDir.copyRecursively(loadableBundle.resourcesDir, overwrite = true)
 
             val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
             val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
