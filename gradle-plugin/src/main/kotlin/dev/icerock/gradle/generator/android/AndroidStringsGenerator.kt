@@ -1,12 +1,14 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.strings
+package dev.icerock.gradle.generator.android
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.StringsGenerator
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
 import java.io.File

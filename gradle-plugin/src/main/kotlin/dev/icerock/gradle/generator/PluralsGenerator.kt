@@ -1,13 +1,13 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.plurals
+package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
-import dev.icerock.gradle.generator.BaseGenerator
-import dev.icerock.gradle.generator.strings.KeyType
-import dev.icerock.gradle.generator.strings.LanguageType
+import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
+import dev.icerock.gradle.generator.common.CommonPluralsGenerator
+import dev.icerock.gradle.generator.ios.IosPluralsGenerator
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Element
 import java.io.File
@@ -66,5 +66,29 @@ abstract class PluralsGenerator(
         }
 
         return mutableMap
+    }
+
+    class Feature(
+        private val info: SourceInfo,
+        private val iosBaseLocalizationRegion: String
+    ) : ResourceGeneratorFeature {
+        private val stringsFileTree = info.commonResources.matching { include("MR/**/plurals.xml") }
+        override fun createCommonGenerator(): MRGenerator.Generator {
+            return CommonPluralsGenerator(stringsFileTree)
+        }
+
+        override fun createIosGenerator(): MRGenerator.Generator {
+            return IosPluralsGenerator(
+                stringsFileTree,
+                iosBaseLocalizationRegion
+            )
+        }
+
+        override fun createAndroidGenerator(): MRGenerator.Generator {
+            return AndroidPluralsGenerator(
+                stringsFileTree,
+                info.androidRClassPackage
+            )
+        }
     }
 }

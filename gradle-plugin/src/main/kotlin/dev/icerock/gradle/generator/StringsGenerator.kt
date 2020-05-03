@@ -1,11 +1,13 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.strings
+package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
-import dev.icerock.gradle.generator.BaseGenerator
+import dev.icerock.gradle.generator.android.AndroidStringsGenerator
+import dev.icerock.gradle.generator.common.CommonStringsGenerator
+import dev.icerock.gradle.generator.ios.IosStringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -60,4 +62,28 @@ abstract class StringsGenerator(
     }
 
     override fun getImports(): List<ClassName> = emptyList()
+
+    class Feature(
+        private val info: SourceInfo,
+        private val iosBaseLocalizationRegion: String
+    ) : ResourceGeneratorFeature {
+        private val stringsFileTree = info.commonResources.matching { include("MR/**/strings.xml") }
+        override fun createCommonGenerator(): MRGenerator.Generator {
+            return CommonStringsGenerator(stringsFileTree)
+        }
+
+        override fun createIosGenerator(): MRGenerator.Generator {
+            return IosStringsGenerator(
+                stringsFileTree,
+                iosBaseLocalizationRegion
+            )
+        }
+
+        override fun createAndroidGenerator(): MRGenerator.Generator {
+            return AndroidStringsGenerator(
+                stringsFileTree,
+                info.androidRClassPackage
+            )
+        }
+    }
 }

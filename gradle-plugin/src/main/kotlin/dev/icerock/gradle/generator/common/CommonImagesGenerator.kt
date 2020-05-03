@@ -1,11 +1,12 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.image
+package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import dev.icerock.gradle.generator.ImagesGenerator
 import org.gradle.api.file.FileTree
 
 class CommonImagesGenerator(

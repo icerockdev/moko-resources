@@ -1,13 +1,14 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.plurals
+package dev.icerock.gradle.generator.ios
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.IosMRGenerator
-import dev.icerock.gradle.generator.strings.KeyType
+import dev.icerock.gradle.generator.PluralMap
+import dev.icerock.gradle.generator.PluralsGenerator
+import dev.icerock.gradle.generator.KeyType
 import org.gradle.api.file.FileTree
 import java.io.File
 

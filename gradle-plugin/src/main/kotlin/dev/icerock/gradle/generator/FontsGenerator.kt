@@ -2,14 +2,16 @@
  * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.fonts
+package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.android.AndroidFontsGenerator
+import dev.icerock.gradle.generator.common.CommonFontsGenerator
+import dev.icerock.gradle.generator.ios.IosFontsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -22,7 +24,10 @@ abstract class FontsGenerator(
     override fun generate(resourcesGenerationDir: File): TypeSpec {
         val typeSpec = createTypeSpec(inputFileTree.map { it.nameWithoutExtension }.sorted())
         generateResources(resourcesGenerationDir, inputFileTree.map {
-            FontFile(key = it.nameWithoutExtension, file = it)
+            FontFile(
+                key = it.nameWithoutExtension,
+                file = it
+            )
         })
         return typeSpec
     }
@@ -98,4 +103,25 @@ abstract class FontsGenerator(
         val key: String,
         val file: File
     )
+
+    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature {
+        private val stringsFileTree = info.commonResources.matching {
+            include("MR/fonts/**.ttf")
+        }
+
+        override fun createCommonGenerator(): MRGenerator.Generator {
+            return CommonFontsGenerator(stringsFileTree)
+        }
+
+        override fun createIosGenerator(): MRGenerator.Generator {
+            return IosFontsGenerator(stringsFileTree)
+        }
+
+        override fun createAndroidGenerator(): MRGenerator.Generator {
+            return AndroidFontsGenerator(
+                stringsFileTree,
+                info.androidRClassPackage
+            )
+        }
+    }
 }
