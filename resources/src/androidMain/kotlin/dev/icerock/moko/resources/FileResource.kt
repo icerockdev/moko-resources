@@ -19,6 +19,6 @@ actual class FileResource(
         val resources: Resources = context.resources
         val inputStream: InputStream = resources.openRawResource(rawResId)
         val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-        return bufferedReader.readText()
+        return bufferedReader.use { it.readText() }
     }
 }
