@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <plural name="test.plural">
-        <item quantity="zero">zero</item>
-        <item quantity="one">one</item>
-        <item quantity="two">two</item>
-        <item quantity="few">few</item>
-        <item quantity="many">many</item>
-        <item quantity="other">other</item>
-    </plural>
     <plural name="my_plural">
         <item quantity="zero">no items</item>
         <item quantity="one">%d item</item>

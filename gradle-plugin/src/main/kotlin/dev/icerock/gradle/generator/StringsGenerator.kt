@@ -19,10 +19,19 @@ abstract class StringsGenerator(
     private val stringsFileTree: FileTree
 ) : BaseGenerator<String>() {
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
-        return stringsFileTree.associate { file ->
+        return stringsFileTree.map { file ->
             val language: LanguageType = file.parentFile.name
             val strings: Map<KeyType, String> = loadLanguageStrings(file)
             language to strings
+        }.groupBy(
+            keySelector = { it.first },
+            valueTransform = { it.second }
+        ).mapValues { value ->
+            val maps = value.value
+            maps.fold(mutableMapOf()) { result, keyValueMap ->
+                result.putAll(keyValueMap)
+                result
+            }
         }
     }
 
@@ -67,7 +76,7 @@ abstract class StringsGenerator(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String
     ) : ResourceGeneratorFeature<StringsGenerator> {
-        private val stringsFileTree = info.commonResources.matching { include("MR/**/strings.xml") }
+        private val stringsFileTree = info.commonResources.matching { include("MR/**/strings*.xml") }
         override fun createCommonGenerator(): StringsGenerator {
             return CommonStringsGenerator(stringsFileTree)
         }
