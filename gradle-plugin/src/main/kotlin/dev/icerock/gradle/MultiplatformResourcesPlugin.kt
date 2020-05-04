@@ -103,7 +103,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         commonSourceSet: KotlinSourceSet,
         generatedDir: File,
         mrClassPackage: String,
-        features: List<ResourceGeneratorFeature>,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
@@ -121,7 +121,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         androidMainSourceSet: AndroidSourceSet,
         generatedDir: File,
         mrClassPackage: String,
-        features: List<ResourceGeneratorFeature>,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
@@ -144,7 +144,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
-        features: List<ResourceGeneratorFeature>,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project,
         iosLocalizationRegion: String
     ) {
