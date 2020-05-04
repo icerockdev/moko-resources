@@ -11,7 +11,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Samples](#samples)
-- [Set Up Locally](#setup-locally)
+- [Set Up Locally](#set-up-locally)
 - [Contributing](#contributing)
 - [License](#license)
 

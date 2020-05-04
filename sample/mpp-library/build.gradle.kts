@@ -22,11 +22,7 @@ android {
     }
 }
 
-setupFramework(
-    exports = listOf(
-        Deps.Libs.MultiPlatform.mokoResources
-    )
-)
+setupFramework(exports = emptyList())
 
 dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
