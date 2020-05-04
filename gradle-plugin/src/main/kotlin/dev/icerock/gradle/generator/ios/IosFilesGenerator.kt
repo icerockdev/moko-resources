@@ -19,11 +19,11 @@ class IosFilesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileName: String, fileExtension: String): CodeBlock? {
+    override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? {
         return CodeBlock.of(
             "FileResource(fileName = %S, extension = %S,bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
-            fileName,
-            fileExtension
+            fileSpec.file.nameWithoutExtension,
+            fileSpec.file.extension
         )
     }
 

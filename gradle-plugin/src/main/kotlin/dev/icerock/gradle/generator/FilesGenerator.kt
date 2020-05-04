@@ -24,7 +24,7 @@ abstract class FilesGenerator(
     override fun generate(resourcesGenerationDir: File): TypeSpec {
         val fileSpecs = inputFileTree.map { file ->
             FileSpec(
-                key = file.nameWithoutExtension,
+                key = processKey(file.nameWithoutExtension),
                 file = file
             )
         }.sortedBy { it.key }
@@ -38,31 +38,20 @@ abstract class FilesGenerator(
         @Suppress("SpreadOperator")
         classBuilder.addModifiers(*getClassModifiers())
 
-        keys.forEach {
-            classBuilder.addProperty(
-                generateFileProperty(
-                    fileName = it.key,
-                    fileExtension = it.file.extension
-                )
-            )
-        }
+        keys.forEach { classBuilder.addProperty(generateFileProperty(it)) }
         return classBuilder.build()
     }
 
     override fun getImports(): List<ClassName> = emptyList()
 
     private fun generateFileProperty(
-        fileName: String,
-        fileExtension: String
+        fileSpec: FileSpec
     ): PropertySpec {
         @Suppress("SpreadOperator")
-        return PropertySpec.builder(processKey(fileName), resourceClass)
+        return PropertySpec.builder(fileSpec.key, resourceClass)
             .addModifiers(*getPropertyModifiers())
             .apply {
-                getPropertyInitializer(
-                    fileName = fileName,
-                    fileExtension = fileExtension
-                )?.let { initializer(it) }
+                getPropertyInitializer(fileSpec)?.let { initializer(it) }
             }
             .build()
     }
@@ -81,7 +70,7 @@ abstract class FilesGenerator(
 
     abstract fun getPropertyModifiers(): Array<KModifier>
 
-    abstract fun getPropertyInitializer(fileName: String, fileExtension: String): CodeBlock?
+    abstract fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock?
 
     data class FileSpec(
         val key: String,

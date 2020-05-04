@@ -18,5 +18,5 @@ class CommonFilesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
-    override fun getPropertyInitializer(fileName: String, fileExtension: String): CodeBlock? = null
+    override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? = null
 }

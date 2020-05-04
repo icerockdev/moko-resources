@@ -22,8 +22,8 @@ class AndroidFilesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileName: String, fileExtension: String): CodeBlock? {
-        return CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileName))
+    override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? {
+        return CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileSpec.key))
     }
 
     override fun getImports(): List<ClassName> = listOf(
@@ -44,6 +44,6 @@ class AndroidFilesGenerator(
     }
 
     private fun keyToResourceId(key: String): String {
-        return key.replace("-", "_").toLowerCase(Locale.ROOT)
+        return key.toLowerCase(Locale.ROOT)
     }
 }
