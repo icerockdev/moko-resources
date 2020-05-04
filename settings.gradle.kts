@@ -4,14 +4,12 @@
 
 enableFeaturePreview("GRADLE_METADATA")
 
-val properties = startParameter.projectProperties
-
-// ./gradlew -PlibraryPublish  :gradle-plugin:publishPluginPublicationToMavenLocal :resources:publishToMavenLocal
+val properties: Map<String, String> = startParameter.projectProperties
 val libraryPublish: Boolean = properties.containsKey("libraryPublish")
 
 include(":resources")
 include(":gradle-plugin")
-if(!libraryPublish) {
+if (!libraryPublish) {
     include(":sample:android-app")
     include(":sample:mpp-library", ":sample:mpp-library:nested-module")
     include(":sample:mpp-conditional")
