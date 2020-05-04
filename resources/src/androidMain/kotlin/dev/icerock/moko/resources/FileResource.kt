@@ -4,15 +4,21 @@
 
 package dev.icerock.moko.resources
 
-import java.io.File
-import java.net.URI
+import android.content.Context
+import android.content.res.Resources
+import androidx.annotation.RawRes
+import java.io.BufferedReader
+import java.io.InputStream
+import java.io.InputStreamReader
 
 actual class FileResource(
-    val assetsPath: String
+    @RawRes
+    val rawResId: Int
 ) {
-    actual fun readText(): String {
-        val assetUri: URI = URI.create("file:///android_asset/$assetsPath")
-        val file: File = File(assetUri)
-        return file.readText()
+    fun readText(context: Context): String {
+        val resources: Resources = context.resources
+        val inputStream: InputStream = resources.openRawResource(rawResId)
+        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+        return bufferedReader.readText()
     }
 }

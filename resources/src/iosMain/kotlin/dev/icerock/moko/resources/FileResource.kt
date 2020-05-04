@@ -23,7 +23,7 @@ actual class FileResource(
     val path: String get() = bundle.pathForResource(name = fileName, ofType = null, inDirectory = "files")!!
     val url: NSURL get() = bundle.URLForResource(name = fileName, withExtension = null, subdirectory = "files")!!
 
-    actual fun readText(): String {
+    fun readText(): String {
         val (result: String?, error: NSError?) = memScoped {
             val p = alloc<ObjCObjectVar<NSError?>>()
             val result: String? = runCatching {
@@ -36,7 +36,7 @@ actual class FileResource(
             result to p.value
         }
 
-        if (error != null) throw RuntimeException(error.localizedDescription)
+        if (error != null) throw ReadFileTextException(fileResource = this, error = error)
         else return result!!
     }
 }

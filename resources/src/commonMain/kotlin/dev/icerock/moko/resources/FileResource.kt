@@ -4,6 +4,4 @@
 
 package dev.icerock.moko.resources
 
-expect class FileResource {
-    fun readText(): String
-}
+expect class FileResource
