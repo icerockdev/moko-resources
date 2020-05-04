@@ -74,6 +74,6 @@ class AndroidPluralsGenerator(
     }
 
     private fun processKey(key: String): String {
-        return key.replace(".", "_").toLowerCase()
+        return key.replace(".", "_")
     }
 }
