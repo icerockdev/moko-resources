@@ -8,7 +8,7 @@ import android.content.Context
 import android.os.Build
 import android.os.LocaleList
 import android.preference.PreferenceManager
-import java.util.*
+import java.util.Locale
 
 object LocaleHandler {
 
