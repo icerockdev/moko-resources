@@ -34,6 +34,7 @@ object Versions {
 
         object MultiPlatform {
             const val mokoResources = Versions.mokoResources
+            const val mokoParcelize = "0.3.0"
         }
 
         object Jvm {

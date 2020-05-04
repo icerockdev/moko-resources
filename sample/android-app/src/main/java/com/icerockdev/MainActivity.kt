@@ -41,5 +41,4 @@ class MainActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHandler.updateLocale(newBase))
     }
-
 }

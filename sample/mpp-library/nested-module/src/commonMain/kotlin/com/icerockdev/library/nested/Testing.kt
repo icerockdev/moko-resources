@@ -4,7 +4,7 @@
 
 package com.icerockdev.library.nested
 
-import dev.icerock.moko.resources.desc.StringDesc
+import dev.icerock.moko.resources.desc.*
 import dev.icerock.moko.resources.desc.desc
 
 fun nestedTest(): StringDesc {
