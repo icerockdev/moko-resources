@@ -18,17 +18,19 @@ import platform.Foundation.stringWithContentsOfFile
 
 actual class FileResource(
     val fileName: String,
+    val extension: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {
-    val path: String get() = bundle.pathForResource(name = fileName, ofType = null, inDirectory = "files")!!
-    val url: NSURL get() = bundle.URLForResource(name = fileName, withExtension = null, subdirectory = "files")!!
+    val path: String get() = bundle.pathForResource(name = fileName, ofType = extension, inDirectory = "files")!!
+    val url: NSURL get() = bundle.URLForResource(name = fileName, withExtension = extension, subdirectory = "files")!!
 
     fun readText(): String {
+        val filePath = path
         val (result: String?, error: NSError?) = memScoped {
             val p = alloc<ObjCObjectVar<NSError?>>()
             val result: String? = runCatching {
                 NSString.stringWithContentsOfFile(
-                    path = path,
+                    path = filePath,
                     encoding = NSUTF8StringEncoding,
                     error = p.ptr
                 )

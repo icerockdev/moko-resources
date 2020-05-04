@@ -28,30 +28,41 @@ abstract class FilesGenerator(
                 file = file
             )
         }.sortedBy { it.key }
-        val typeSpec = createTypeSpec(fileSpecs.map { it.key })
+        val typeSpec = createTypeSpec(fileSpecs)
         generateResources(resourcesGenerationDir, fileSpecs)
         return typeSpec
     }
 
-    private fun createTypeSpec(keys: List<String>): TypeSpec {
+    private fun createTypeSpec(keys: List<FileSpec>): TypeSpec {
         val classBuilder = TypeSpec.objectBuilder("files")
         @Suppress("SpreadOperator")
         classBuilder.addModifiers(*getClassModifiers())
 
-        keys.forEach { classBuilder.addProperty(generateFileProperty(fileName = it)) }
+        keys.forEach {
+            classBuilder.addProperty(
+                generateFileProperty(
+                    fileName = it.key,
+                    fileExtension = it.file.extension
+                )
+            )
+        }
         return classBuilder.build()
     }
 
     override fun getImports(): List<ClassName> = emptyList()
 
     private fun generateFileProperty(
-        fileName: String
+        fileName: String,
+        fileExtension: String
     ): PropertySpec {
         @Suppress("SpreadOperator")
-        return PropertySpec.builder(fileName, resourceClass)
+        return PropertySpec.builder(processKey(fileName), resourceClass)
             .addModifiers(*getPropertyModifiers())
             .apply {
-                getPropertyInitializer(fileName)?.let { initializer(it) }
+                getPropertyInitializer(
+                    fileName = fileName,
+                    fileExtension = fileExtension
+                )?.let { initializer(it) }
             }
             .build()
     }
@@ -62,11 +73,15 @@ abstract class FilesGenerator(
     ) {
     }
 
+    protected fun processKey(key: String): String {
+        return key.replace("-", "_")
+    }
+
     abstract fun getClassModifiers(): Array<KModifier>
 
     abstract fun getPropertyModifiers(): Array<KModifier>
 
-    abstract fun getPropertyInitializer(fileName: String): CodeBlock?
+    abstract fun getPropertyInitializer(fileName: String, fileExtension: String): CodeBlock?
 
     data class FileSpec(
         val key: String,

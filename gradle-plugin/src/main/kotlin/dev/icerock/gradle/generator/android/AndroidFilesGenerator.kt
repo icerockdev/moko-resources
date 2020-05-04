@@ -22,7 +22,7 @@ class AndroidFilesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileName: String): CodeBlock? {
+    override fun getPropertyInitializer(fileName: String, fileExtension: String): CodeBlock? {
         return CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileName))
     }
 
