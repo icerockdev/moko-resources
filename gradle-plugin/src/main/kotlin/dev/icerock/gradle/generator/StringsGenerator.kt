@@ -66,20 +66,20 @@ abstract class StringsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String
-    ) : ResourceGeneratorFeature {
+    ) : ResourceGeneratorFeature<StringsGenerator> {
         private val stringsFileTree = info.commonResources.matching { include("MR/**/strings.xml") }
-        override fun createCommonGenerator(): MRGenerator.Generator {
+        override fun createCommonGenerator(): StringsGenerator {
             return CommonStringsGenerator(stringsFileTree)
         }
 
-        override fun createIosGenerator(): MRGenerator.Generator {
+        override fun createIosGenerator(): StringsGenerator {
             return IosStringsGenerator(
                 stringsFileTree,
                 iosBaseLocalizationRegion
             )
         }
 
-        override fun createAndroidGenerator(): MRGenerator.Generator {
+        override fun createAndroidGenerator(): StringsGenerator {
             return AndroidStringsGenerator(
                 stringsFileTree,
                 info.androidRClassPackage

@@ -63,20 +63,20 @@ abstract class ImagesGenerator(
 
     abstract fun getPropertyInitializer(key: String): CodeBlock?
 
-    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature {
+    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
             include("MR/images/**/*.png", "MR/images/**/*.jpg")
         }
 
-        override fun createCommonGenerator(): MRGenerator.Generator {
+        override fun createCommonGenerator(): ImagesGenerator {
             return CommonImagesGenerator(stringsFileTree)
         }
 
-        override fun createIosGenerator(): MRGenerator.Generator {
+        override fun createIosGenerator(): ImagesGenerator {
             return IosImagesGenerator(stringsFileTree)
         }
 
-        override fun createAndroidGenerator(): MRGenerator.Generator {
+        override fun createAndroidGenerator(): ImagesGenerator {
             return AndroidImagesGenerator(
                 stringsFileTree,
                 info.androidRClassPackage

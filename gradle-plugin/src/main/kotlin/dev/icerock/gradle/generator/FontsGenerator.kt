@@ -104,20 +104,20 @@ abstract class FontsGenerator(
         val file: File
     )
 
-    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature {
+    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FontsGenerator> {
         private val stringsFileTree = info.commonResources.matching {
             include("MR/fonts/**.ttf")
         }
 
-        override fun createCommonGenerator(): MRGenerator.Generator {
+        override fun createCommonGenerator(): FontsGenerator {
             return CommonFontsGenerator(stringsFileTree)
         }
 
-        override fun createIosGenerator(): MRGenerator.Generator {
+        override fun createIosGenerator(): FontsGenerator {
             return IosFontsGenerator(stringsFileTree)
         }
 
-        override fun createAndroidGenerator(): MRGenerator.Generator {
+        override fun createAndroidGenerator(): FontsGenerator {
             return AndroidFontsGenerator(
                 stringsFileTree,
                 info.androidRClassPackage
