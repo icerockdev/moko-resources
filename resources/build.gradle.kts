@@ -3,10 +3,10 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.multiplatform")
-    id("kotlin-android-extensions")
-    id("dev.icerock.mobile.multiplatform")
+    plugin(Deps.Plugins.androidLibrary)
+    plugin(Deps.Plugins.kotlinMultiplatform)
+    plugin(Deps.Plugins.kotlinAndroidExtensions)
+    plugin(Deps.Plugins.mobileMultiplatform)
     id("maven-publish")
 }
 
