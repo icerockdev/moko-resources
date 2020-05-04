@@ -4,12 +4,45 @@
 
 object Deps {
     object Plugins {
-        const val android =
+        private const val androidPluginModule =
             "com.android.tools.build:gradle:${Versions.Plugins.android}"
-        const val kotlin =
+        val androidApplication = PluginDesc(
+            id = "com.android.application",
+            module = androidPluginModule
+        )
+        val androidLibrary = PluginDesc(
+            id = "com.android.library",
+            module = androidPluginModule
+        )
+
+        private const val kotlinPluginModule =
             "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlin}"
-        const val mokoResources =
-            "dev.icerock.moko:resources-generator:${Versions.Plugins.mokoResources}"
+        val kotlinMultiplatform = PluginDesc(
+            id = "org.jetbrains.kotlin.multiplatform",
+            module = kotlinPluginModule
+        )
+        val kotlinKapt = PluginDesc(
+            id = "kotlin-kapt",
+            module = kotlinPluginModule
+        )
+        val kotlinAndroid = PluginDesc(
+            id = "kotlin-android",
+            module = kotlinPluginModule
+        )
+        val kotlinAndroidExtensions = PluginDesc(
+            id = "kotlin-android-extensions",
+            module = kotlinPluginModule
+        )
+
+        val mobileMultiplatform = PluginDesc(
+            id = "dev.icerock.mobile.multiplatform",
+            module = "dev.icerock:mobile-multiplatform:0.6.1"
+        )
+
+        val mokoResources = PluginDesc(
+            id = "dev.icerock.mobile.multiplatform-resources",
+            module = "dev.icerock.moko:resources-generator:${Versions.Plugins.mokoResources}"
+        )
     }
 
     object Libs {
@@ -55,13 +88,4 @@ object Deps {
             const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.Plugins.detekt}"
         }
     }
-
-    val plugins: Map<String, String> = mapOf(
-        "com.android.application" to Plugins.android,
-        "com.android.library" to Plugins.android,
-        "org.jetbrains.kotlin.multiplatform" to Plugins.kotlin,
-        "kotlin-kapt" to Plugins.kotlin,
-        "kotlin-android" to Plugins.kotlin,
-        "dev.icerock.mobile.multiplatform-resources" to Plugins.mokoResources
-    )
 }

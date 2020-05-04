@@ -15,7 +15,16 @@ buildscript {
         maven { url = uri("https://dl.bintray.com/icerockdev/plugins") }
     }
     dependencies {
-        Deps.plugins.values.forEach { classpath(it) }
+        with(Deps.Plugins) {
+            listOf(
+                androidApplication,
+                androidLibrary,
+                kotlinMultiplatform,
+                kotlinKapt,
+                kotlinAndroid,
+                mokoResources
+            )
+        }.let { plugins(it) }
     }
 }
 
