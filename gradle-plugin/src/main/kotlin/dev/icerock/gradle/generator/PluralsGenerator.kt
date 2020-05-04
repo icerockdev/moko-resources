@@ -20,10 +20,19 @@ abstract class PluralsGenerator(
 ) : BaseGenerator<PluralMap>() {
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, PluralMap>> {
-        return pluralsFileTree.associate { file ->
+        return pluralsFileTree.map { file ->
             val language: LanguageType = file.parentFile.name
             val strings: Map<KeyType, PluralMap> = loadLanguagePlurals(file)
             language to strings
+        }.groupBy(
+            keySelector = { it.first },
+            valueTransform = { it.second }
+        ).mapValues { value ->
+            val maps = value.value
+            maps.fold(mutableMapOf()) { result, keyValueMap ->
+                result.putAll(keyValueMap)
+                result
+            }
         }
     }
 
@@ -72,7 +81,7 @@ abstract class PluralsGenerator(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String
     ) : ResourceGeneratorFeature {
-        private val stringsFileTree = info.commonResources.matching { include("MR/**/plurals.xml") }
+        private val stringsFileTree = info.commonResources.matching { include("MR/**/plurals*.xml") }
         override fun createCommonGenerator(): MRGenerator.Generator {
             return CommonPluralsGenerator(stringsFileTree)
         }
