@@ -27,7 +27,7 @@ class SelectLanguageActivity : AppCompatActivity() {
 
     fun onCustomLanguage(view: View) {
         view as Button
-        
+
         Testing.locale(view.text.toString())
 
         startActivity(Intent(this, MainActivity::class.java))

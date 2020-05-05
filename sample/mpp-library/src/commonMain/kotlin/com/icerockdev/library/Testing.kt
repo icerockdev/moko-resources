@@ -8,6 +8,12 @@ import com.icerockdev.library.nested.nestedFile
 import com.icerockdev.library.nested.nestedTest
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
+import dev.icerock.moko.resources.desc.Composition
+import dev.icerock.moko.resources.desc.Plural
+import dev.icerock.moko.resources.desc.PluralFormatted
+import dev.icerock.moko.resources.desc.Raw
+import dev.icerock.moko.resources.desc.Resource
+import dev.icerock.moko.resources.desc.ResourceFormatted
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.plus

@@ -25,6 +25,8 @@ android {
 dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
 
+    mppLibrary(Deps.Libs.MultiPlatform.mokoParcelize)
+
     androidLibrary(Deps.Libs.Android.appCompat)
 }
 
