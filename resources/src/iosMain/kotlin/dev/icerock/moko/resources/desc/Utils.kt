@@ -10,7 +10,7 @@ import platform.Foundation.stringWithFormat
 
 object Utils {
     fun processArgs(args: List<Any>): Array<out Any> {
-        return args.toList().map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
+        return args.map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
     }
 
     fun localizedString(stringRes: StringResource): String {

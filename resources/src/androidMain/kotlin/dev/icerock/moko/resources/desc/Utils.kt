@@ -10,7 +10,7 @@ import android.os.Build
 
 object Utils {
     fun processArgs(args: List<Any>, context: Context): Array<out Any> {
-        return args.toList().map { (it as? StringDesc)?.toString(context) ?: it }.toTypedArray()
+        return args.map { (it as? StringDesc)?.toString(context) ?: it }.toTypedArray()
     }
 
     fun resourcesForContext(context: Context): Resources {
