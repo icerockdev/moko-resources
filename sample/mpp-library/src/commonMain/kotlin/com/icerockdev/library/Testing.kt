@@ -18,6 +18,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.plus
 
+@Suppress("MagicNumber")
 object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(

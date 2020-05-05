@@ -17,7 +17,6 @@ import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.UIKit.UIFont
 import platform.darwin.UInt8Var
-import platform.objc.object_getClass
 
 actual class FontResource(
     fontName: String,

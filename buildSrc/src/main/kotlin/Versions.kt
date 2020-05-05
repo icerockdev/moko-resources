@@ -10,6 +10,7 @@ object Versions {
     }
 
     const val kotlin = "1.3.72"
+    const val detekt = "1.7.4"
 
     private const val mokoResources = "0.10.0"
 
@@ -18,7 +19,6 @@ object Versions {
 
         const val kotlin = Versions.kotlin
         const val mokoResources = Versions.mokoResources
-        const val detekt = "1.7.4"
     }
 
     object Libs {

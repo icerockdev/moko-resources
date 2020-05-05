@@ -5,7 +5,6 @@
 plugins {
     `kotlin-dsl`
     id("org.gradle.maven-publish")
-    id("io.gitlab.arturbosch.detekt") version(Versions.Plugins.detekt)
 }
 
 repositories {
@@ -17,8 +16,8 @@ repositories {
 
 dependencies {
     implementation(Deps.Libs.Jvm.kotlinPoet)
-    compileOnly(Deps.Plugins.kotlinMultiplatform.module)
-    compileOnly(Deps.Plugins.androidLibrary.module)
+    compileOnly(Deps.Plugins.kotlinMultiplatform.module!!)
+    compileOnly(Deps.Plugins.androidLibrary.module!!)
     implementation(Deps.Libs.Jvm.apacheCommonsText)
     detektPlugins(Deps.Libs.Jvm.detektFormatting)
 }

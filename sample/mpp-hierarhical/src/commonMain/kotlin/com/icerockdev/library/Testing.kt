@@ -4,6 +4,6 @@
 
 package com.icerockdev.library
 
+@Suppress("EmptyFunctionBlock")
 fun test() {
-
 }

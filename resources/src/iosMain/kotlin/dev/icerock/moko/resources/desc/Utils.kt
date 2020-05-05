@@ -26,6 +26,7 @@ object Utils {
         val objcFormat = format.replace(Regex("%((?:\\.|\\d|\\$)*)[abcdefs]"), "%$1@")
         // bad but objc interop limited :(
         // When calling variadic C functions spread operator is supported only for *arrayOf(...)
+        @Suppress("MagicNumber")
         return when (args.size) {
             0 -> NSString.stringWithFormat(objcFormat)
             1 -> NSString.stringWithFormat(objcFormat, args[0])

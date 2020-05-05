@@ -4,45 +4,28 @@
 
 object Deps {
     object Plugins {
-        private const val androidPluginModule =
-            "com.android.tools.build:gradle:${Versions.Plugins.android}"
-        val androidApplication = PluginDesc(
-            id = "com.android.application",
-            module = androidPluginModule
-        )
+        val androidApplication = PluginDesc(id = "com.android.application")
         val androidLibrary = PluginDesc(
             id = "com.android.library",
-            module = androidPluginModule
+            module = "com.android.tools.build:gradle:${Versions.Plugins.android}"
         )
 
-        private const val kotlinPluginModule =
-            "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlin}"
         val kotlinMultiplatform = PluginDesc(
             id = "org.jetbrains.kotlin.multiplatform",
-            module = kotlinPluginModule
+            module = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlin}"
         )
-        val kotlinKapt = PluginDesc(
-            id = "kotlin-kapt",
-            module = kotlinPluginModule
-        )
-        val kotlinAndroid = PluginDesc(
-            id = "kotlin-android",
-            module = kotlinPluginModule
-        )
-        val kotlinAndroidExtensions = PluginDesc(
-            id = "kotlin-android-extensions",
-            module = kotlinPluginModule
-        )
+        val kotlinKapt = PluginDesc(id = "kotlin-kapt")
+        val kotlinAndroid = PluginDesc(id = "kotlin-android")
+        val kotlinAndroidExtensions = PluginDesc(id = "kotlin-android-extensions")
 
-        val mobileMultiplatform = PluginDesc(
-            id = "dev.icerock.mobile.multiplatform",
-            module = "dev.icerock:mobile-multiplatform:0.6.1"
-        )
+        val mobileMultiplatform = PluginDesc(id = "dev.icerock.mobile.multiplatform")
 
         val mokoResources = PluginDesc(
             id = "dev.icerock.mobile.multiplatform-resources",
             module = "dev.icerock.moko:resources-generator:${Versions.Plugins.mokoResources}"
         )
+
+        val detekt = PluginDesc(id = "io.gitlab.arturbosch.detekt", version = Versions.detekt)
     }
 
     object Libs {
@@ -90,7 +73,7 @@ object Deps {
         object Jvm {
             const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
             const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.Libs.Jvm.apacheCommonsText}"
-            const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.Plugins.detekt}"
+            const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}"
         }
     }
 }
