@@ -9,9 +9,9 @@ object Versions {
         const val minSdk = 16
     }
 
-    const val kotlin = "1.3.71"
+    const val kotlin = "1.3.72"
 
-    private const val mokoResources = "0.9.1"
+    private const val mokoResources = "0.10.0"
 
     object Plugins {
         const val android = "3.6.2"

@@ -7,6 +7,7 @@ package dev.icerock.gradle
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.AndroidSourceSet
+import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator
 import dev.icerock.gradle.generator.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.generator.ImagesGenerator
@@ -85,7 +86,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             StringsGenerator.Feature(sourceInfo, iosLocalizationRegion),
             PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion),
             ImagesGenerator.Feature(sourceInfo),
-            FontsGenerator.Feature(sourceInfo)
+            FontsGenerator.Feature(sourceInfo),
+            FilesGenerator.Feature(sourceInfo)
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
@@ -103,7 +105,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         commonSourceSet: KotlinSourceSet,
         generatedDir: File,
         mrClassPackage: String,
-        features: List<ResourceGeneratorFeature>,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
@@ -121,7 +123,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         androidMainSourceSet: AndroidSourceSet,
         generatedDir: File,
         mrClassPackage: String,
-        features: List<ResourceGeneratorFeature>,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
@@ -144,7 +146,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
-        features: List<ResourceGeneratorFeature>,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project,
         iosLocalizationRegion: String
     ) {
