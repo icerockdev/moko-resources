@@ -6,6 +6,7 @@ package com.icerockdev
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,12 @@ class MainActivity : AppCompatActivity() {
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
         stringDescTextView.typeface = Testing.getFont2().getTypeface(context = this)
+
+        listOf(
+            Testing.getTextFile().readText(context = this),
+            Testing.getJsonFile().readText(context = this),
+            Testing.getNestedJsonFile().readText(context = this)
+        ).forEach { Log.d(MainActivity::class.java.simpleName, it) }
     }
 
     /**
@@ -41,5 +48,4 @@ class MainActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHandler.updateLocale(newBase))
     }
-
 }

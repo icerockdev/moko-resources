@@ -15,14 +15,16 @@ buildscript {
         maven { url = uri("https://dl.bintray.com/icerockdev/plugins") }
     }
     dependencies {
+        val libraryPublish: Boolean = properties.containsKey("libraryPublish")
+
         with(Deps.Plugins) {
-            listOf(
+            listOfNotNull(
                 androidApplication,
                 androidLibrary,
                 kotlinMultiplatform,
                 kotlinKapt,
                 kotlinAndroid,
-                mokoResources
+                if(!libraryPublish) mokoResources else null
             )
         }.let { plugins(it) }
     }

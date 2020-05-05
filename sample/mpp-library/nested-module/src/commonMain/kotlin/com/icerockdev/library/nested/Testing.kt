@@ -4,9 +4,14 @@
 
 package com.icerockdev.library.nested
 
+import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
 fun nestedTest(): StringDesc {
     return MR.strings.nested_test.desc()
+}
+
+fun nestedFile(): FileResource {
+    return MR.files.nested_test
 }

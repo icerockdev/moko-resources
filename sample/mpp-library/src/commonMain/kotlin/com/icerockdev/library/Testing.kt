@@ -4,11 +4,13 @@
 
 package com.icerockdev.library
 
+import com.icerockdev.library.nested.nestedFile
+import com.icerockdev.library.nested.nestedTest
+import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.plus
-import com.icerockdev.library.nested.nestedTest
 
 object Testing {
     fun getStrings(): List<StringDesc> {
@@ -83,5 +85,17 @@ object Testing {
     fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)
         else StringDesc.LocaleType.System
+    }
+
+    fun getTextFile(): FileResource {
+        return MR.files.test
+    }
+
+    fun getJsonFile(): FileResource {
+        return MR.files.some
+    }
+
+    fun getNestedJsonFile(): FileResource {
+        return nestedFile()
     }
 }

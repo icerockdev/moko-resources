@@ -80,20 +80,20 @@ abstract class PluralsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String
-    ) : ResourceGeneratorFeature {
+    ) : ResourceGeneratorFeature<PluralsGenerator> {
         private val stringsFileTree = info.commonResources.matching { include("MR/**/plurals*.xml") }
-        override fun createCommonGenerator(): MRGenerator.Generator {
+        override fun createCommonGenerator(): PluralsGenerator {
             return CommonPluralsGenerator(stringsFileTree)
         }
 
-        override fun createIosGenerator(): MRGenerator.Generator {
+        override fun createIosGenerator(): PluralsGenerator {
             return IosPluralsGenerator(
                 stringsFileTree,
                 iosBaseLocalizationRegion
             )
         }
 
-        override fun createAndroidGenerator(): MRGenerator.Generator {
+        override fun createAndroidGenerator(): PluralsGenerator {
             return AndroidPluralsGenerator(
                 stringsFileTree,
                 info.androidRClassPackage

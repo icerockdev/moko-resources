@@ -25,6 +25,13 @@ class TestViewController: UIViewController {
         
         stringDescTextView.text = testing.getStringDesc().localized()
         stringDescTextView.font = testing.getFont2().uiFont(withSize: 14.0)
+        
+        [
+        testing.getTextFile(),
+        testing.getJsonFile(),
+        testing.getNestedJsonFile()
+        ].map { $0.readText() }
+        .forEach { print($0) }
     }
 }
 
