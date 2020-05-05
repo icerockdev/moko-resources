@@ -17,13 +17,14 @@ import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.UIKit.UIFont
 import platform.darwin.UInt8Var
-import platform.objc.object_getClass
 
-actual class FontResource(fontName: String) {
+actual class FontResource(
+    fontName: String,
+    bundle: NSBundle = NSBundle.mainBundle
+) {
     private val fontRef: CGFontRef
 
     init {
-        val bundle = NSBundle.bundleForClass(object_getClass(this)!!)
         val pathForResourceString = bundle.pathForResource(name = "$fontName.ttf", ofType = null)!!
         val fontData = NSData.create(contentsOfFile = pathForResourceString)!!
         val cfDataRef = CFDataCreate(

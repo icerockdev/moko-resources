@@ -4,8 +4,8 @@
 
 package dev.icerock.gradle.generator
 
-abstract class ResourceGeneratorFeature(info: SourceInfo) {
-    abstract fun createCommonGenerator(): MRGenerator.Generator
-    abstract fun createiOSGenerator(): MRGenerator.Generator
-    abstract fun createAndroidGenerator(): MRGenerator.Generator
+interface ResourceGeneratorFeature<T : MRGenerator.Generator> {
+    fun createCommonGenerator(): T
+    fun createIosGenerator(): T
+    fun createAndroidGenerator(): T
 }

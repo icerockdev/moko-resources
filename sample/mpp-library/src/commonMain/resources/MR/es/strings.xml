@@ -3,6 +3,7 @@
     <string name="test.simple">prueba</string>
     <string name="test2">prueba 2</string>
     <string name="test3">prueba 3</string>
+    <string name="Test4">prueba 4</string>
     <string name="common.name">proyecto de prueba</string>
     <string name="format">datos de prueba %d</string>
     <string name="encoding">ELIJA LA CARTERA Y LA CANTIDAD</string>

@@ -3,10 +3,10 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.multiplatform")
-    id("kotlin-android-extensions")
-    id("dev.icerock.mobile.multiplatform")
+    plugin(Deps.Plugins.androidLibrary)
+    plugin(Deps.Plugins.kotlinMultiplatform)
+    plugin(Deps.Plugins.kotlinAndroidExtensions)
+    plugin(Deps.Plugins.mobileMultiplatform)
     id("maven-publish")
 }
 
@@ -24,6 +24,8 @@ android {
 
 dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
+
+    mppLibrary(Deps.Libs.MultiPlatform.mokoParcelize)
 
     androidLibrary(Deps.Libs.Android.appCompat)
 }

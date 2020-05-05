@@ -16,19 +16,33 @@ android {
         minSdkVersion(Versions.Android.minSdk)
         targetSdkVersion(Versions.Android.targetSdk)
     }
+
+    lintOptions {
+        disable("ImpliedQuantity")
+    }
 }
 
-setupFramework(
-    exports = listOf(
-        Deps.Libs.MultiPlatform.mokoResources
-    )
-)
+setupFramework(exports = emptyList())
 
 dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
     mppLibrary(Deps.Libs.MultiPlatform.mokoResources)
+
+    commonMainImplementation(project("$path:nested-module"))
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
+
+// uncomment to test static framework
+// also in sample/mpp-library/MultiPlatformLibrary.podspec:14 flag should be uncommented
+//kotlin {
+//    targets
+//        .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
+//        .flatMap { it.binaries }
+//        .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>()
+//        .forEach { framework ->
+//            framework.isStatic = true
+//        }
+//}

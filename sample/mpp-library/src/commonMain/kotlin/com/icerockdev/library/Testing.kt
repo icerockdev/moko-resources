@@ -4,11 +4,21 @@
 
 package com.icerockdev.library
 
+import com.icerockdev.library.nested.nestedFile
+import com.icerockdev.library.nested.nestedTest
+import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
+import dev.icerock.moko.resources.desc.Composition
+import dev.icerock.moko.resources.desc.Plural
+import dev.icerock.moko.resources.desc.PluralFormatted
+import dev.icerock.moko.resources.desc.Raw
+import dev.icerock.moko.resources.desc.Resource
+import dev.icerock.moko.resources.desc.ResourceFormatted
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.plus
 
+@Suppress("MagicNumber")
 object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(
@@ -20,7 +30,8 @@ object Testing {
             MR.plurals.test_plural.desc(0),
             MR.plurals.test_plural.desc(1),
             MR.plurals.test_plural.desc(2),
-            MR.plurals.test_plural.desc(3)
+            MR.plurals.test_plural.desc(3),
+            nestedTest()
         )
     }
 
@@ -80,6 +91,18 @@ object Testing {
 
     fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)
-        else StringDesc.LocaleType.System()
+        else StringDesc.LocaleType.System
+    }
+
+    fun getTextFile(): FileResource {
+        return MR.files.test
+    }
+
+    fun getJsonFile(): FileResource {
+        return MR.files.some
+    }
+
+    fun getNestedJsonFile(): FileResource {
+        return nestedFile()
     }
 }

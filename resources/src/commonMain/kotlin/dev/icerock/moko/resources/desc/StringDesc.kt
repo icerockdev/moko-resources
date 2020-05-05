@@ -7,22 +7,10 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
 
-expect sealed class StringDesc {
-    class Resource(stringRes: StringResource) : StringDesc
-    class ResourceFormatted(stringRes: StringResource, args: List<Any>) : StringDesc {
-        constructor(stringRes: StringResource, vararg args: Any)
-    }
-
-    class Plural(pluralsRes: PluralsResource, number: Int) : StringDesc
-    class PluralFormatted(pluralsRes: PluralsResource, number: Int, args: List<Any>) : StringDesc {
-        constructor(pluralsRes: PluralsResource, number: Int, vararg args: Any)
-    }
-
-    class Raw(string: String) : StringDesc
-    class Composition(args: List<StringDesc>, separator: String? = null) : StringDesc
+expect interface StringDesc {
 
     sealed class LocaleType {
-        class System() : LocaleType
+        object System : LocaleType
         class Custom(locale: String) : LocaleType
     }
 

@@ -4,12 +4,28 @@
 
 object Deps {
     object Plugins {
-        const val android =
-            "com.android.tools.build:gradle:${Versions.Plugins.android}"
-        const val kotlin =
-            "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlin}"
-        const val mokoResources =
-            "dev.icerock.moko:resources-generator:${Versions.Plugins.mokoResources}"
+        val androidApplication = PluginDesc(id = "com.android.application")
+        val androidLibrary = PluginDesc(
+            id = "com.android.library",
+            module = "com.android.tools.build:gradle:${Versions.Plugins.android}"
+        )
+
+        val kotlinMultiplatform = PluginDesc(
+            id = "org.jetbrains.kotlin.multiplatform",
+            module = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlin}"
+        )
+        val kotlinKapt = PluginDesc(id = "kotlin-kapt")
+        val kotlinAndroid = PluginDesc(id = "kotlin-android")
+        val kotlinAndroidExtensions = PluginDesc(id = "kotlin-android-extensions")
+
+        val mobileMultiplatform = PluginDesc(id = "dev.icerock.mobile.multiplatform")
+
+        val mokoResources = PluginDesc(
+            id = "dev.icerock.mobile.multiplatform-resources",
+            module = "dev.icerock.moko:resources-generator:${Versions.Plugins.mokoResources}"
+        )
+
+        val detekt = PluginDesc(id = "io.gitlab.arturbosch.detekt", version = Versions.detekt)
     }
 
     object Libs {
@@ -47,20 +63,17 @@ object Deps {
                 iosX64 = "dev.icerock.moko:resources-iosx64:${Versions.Libs.MultiPlatform.mokoResources}",
                 iosArm64 = "dev.icerock.moko:resources-iosarm64:${Versions.Libs.MultiPlatform.mokoResources}"
             )
+            val mokoParcelize = MultiPlatformLibrary(
+                common = "dev.icerock.moko:parcelize:${Versions.Libs.MultiPlatform.mokoParcelize}",
+                iosX64 = "dev.icerock.moko:parcelize-iosx64:${Versions.Libs.MultiPlatform.mokoParcelize}",
+                iosArm64 = "dev.icerock.moko:parcelize-iosarm64:${Versions.Libs.MultiPlatform.mokoParcelize}"
+            )
         }
 
         object Jvm {
             const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
             const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.Libs.Jvm.apacheCommonsText}"
+            const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}"
         }
     }
-
-    val plugins: Map<String, String> = mapOf(
-        "com.android.application" to Plugins.android,
-        "com.android.library" to Plugins.android,
-        "org.jetbrains.kotlin.multiplatform" to Plugins.kotlin,
-        "kotlin-kapt" to Plugins.kotlin,
-        "kotlin-android" to Plugins.kotlin,
-        "dev.icerock.mobile.multiplatform-resources" to Plugins.mokoResources
-    )
 }

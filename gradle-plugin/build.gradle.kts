@@ -4,7 +4,7 @@
 
 plugins {
     `kotlin-dsl`
-    `maven-publish`
+    id("org.gradle.maven-publish")
 }
 
 repositories {
@@ -16,9 +16,10 @@ repositories {
 
 dependencies {
     implementation(Deps.Libs.Jvm.kotlinPoet)
-    compileOnly(Deps.Plugins.kotlin)
-    compileOnly(Deps.Plugins.android)
+    compileOnly(Deps.Plugins.kotlinMultiplatform.module!!)
+    compileOnly(Deps.Plugins.androidLibrary.module!!)
     implementation(Deps.Libs.Jvm.apacheCommonsText)
+    detektPlugins(Deps.Libs.Jvm.detektFormatting)
 }
 
 kotlinDslPluginOptions {
