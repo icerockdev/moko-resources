@@ -4,7 +4,7 @@
 
 package dev.icerock.moko.resources.desc
 
-actual class CompositionStringDesc actual constructor(
+actual data class CompositionStringDesc actual constructor(
     val args: List<StringDesc>,
     val separator: String?
 ) : StringDesc {

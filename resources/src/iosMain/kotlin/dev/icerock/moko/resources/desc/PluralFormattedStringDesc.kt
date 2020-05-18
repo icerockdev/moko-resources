@@ -7,7 +7,7 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.objc.pluralizedString
 
-actual class PluralFormattedStringDesc actual constructor(
+actual data class PluralFormattedStringDesc actual constructor(
     val pluralsRes: PluralsResource,
     val number: Int,
     val args: List<Any>

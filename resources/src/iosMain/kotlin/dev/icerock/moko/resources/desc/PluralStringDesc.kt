@@ -8,7 +8,7 @@ import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.objc.pluralizedString
 
-actual class PluralStringDesc actual constructor(
+actual data class PluralStringDesc actual constructor(
     val pluralsRes: PluralsResource,
     val number: Int
 ) : StringDesc, Parcelable {
