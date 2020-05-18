@@ -7,7 +7,7 @@ package dev.icerock.moko.resources.desc
 import android.content.Context
 import dev.icerock.moko.resources.PluralsResource
 
-actual class PluralFormattedStringDesc actual constructor(
+actual data class PluralFormattedStringDesc actual constructor(
     val pluralsRes: PluralsResource,
     val number: Int,
     val args: List<Any>
