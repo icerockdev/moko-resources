@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -93,7 +94,18 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
         setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
         setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
-        setupIosGenerator(targets, generatedDir, mrClassPackage, features, target, iosLocalizationRegion)
+        if(HostManager.hostIsMac) {
+            setupIosGenerator(
+                targets,
+                generatedDir,
+                mrClassPackage,
+                features,
+                target,
+                iosLocalizationRegion
+            )
+        } else {
+            target.logger.warn("MR file generation for iOS is not supported on your system!")
+        }
 
         val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
         val commonGenerationTask = generationTasks.first { it.name == "generateMRcommonMain" }
