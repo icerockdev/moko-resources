@@ -6,7 +6,7 @@ package dev.icerock.moko.resources.desc
 
 import android.content.Context
 
-actual class CompositionStringDesc actual constructor(
+actual data class CompositionStringDesc actual constructor(
     val args: List<StringDesc>,
     val separator: String?
 ) : StringDesc {

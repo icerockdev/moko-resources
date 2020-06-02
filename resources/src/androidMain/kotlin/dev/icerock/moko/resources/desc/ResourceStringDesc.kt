@@ -10,7 +10,7 @@ import dev.icerock.moko.parcelize.Parcelize
 import dev.icerock.moko.resources.StringResource
 
 @Parcelize
-actual class ResourceStringDesc actual constructor(
+actual data class ResourceStringDesc actual constructor(
     val stringRes: StringResource
 ) : StringDesc, Parcelable {
     override fun toString(context: Context): String {
