@@ -39,6 +39,10 @@ object Testing {
         return MR.images.home_black_18
     }
 
+    fun getDrawableByFileName(): ImageResource? {
+        return MR.images.getByFileName("home_black_18")
+    }
+
     fun getStringDesc(): StringDesc {
         // create simple string
         val simpleString = StringDesc.Resource(MR.strings.test_simple)

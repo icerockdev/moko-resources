@@ -57,7 +57,7 @@ class IosMRGenerator(
 
     override fun getImports(): List<ClassName> = listOf(
         bundleClassName,
-        ClassName(packageName = "dev.icerock.moko.resources.utils", simpleName = "loadableBundle")
+        ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
     )
 
     override fun apply(generationTask: Task, project: Project) {

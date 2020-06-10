@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator.ios
 
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import org.gradle.api.file.FileTree
@@ -79,6 +80,24 @@ $imagesContent
         } else {
             assetsDirectory.deleteRecursively()
         }
+    }
+
+    override fun buildGetByFileNameMethod(builder: FunSpec.Builder): FunSpec.Builder {
+        val methodBody = CodeBlock.of(
+"""
+return ImageResource(fileName, bundle).let { imgRes ->
+    if (imgRes.toUIImage() != null) {
+        imgRes
+    } else {
+        null
+    }
+}
+"""
+        )
+
+        return builder
+            .addModifiers(listOf(KModifier.ACTUAL))
+            .addCode(methodBody)
     }
 
     private companion object {

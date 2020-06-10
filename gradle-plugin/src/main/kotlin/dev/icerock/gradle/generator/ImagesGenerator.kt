@@ -6,7 +6,9 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
@@ -46,6 +48,8 @@ abstract class ImagesGenerator(
             classBuilder.addProperty(property.build())
         }
 
+        generateGetByFileNameMethod(classBuilder)
+
         return classBuilder.build()
     }
 
@@ -56,6 +60,18 @@ abstract class ImagesGenerator(
         keyFileMap: Map<String, List<File>>
     ) {
     }
+
+    private fun generateGetByFileNameMethod(classBuilder: TypeSpec.Builder) {
+        val className = ClassName("dev.icerock.moko.resources", "ImageResource")
+        val params = ParameterSpec.builder("fileName", kotlin.String::class).build()
+        val function = FunSpec.builder("getByFileName")
+            .returns(className.copy(true))
+            .addParameter(params)
+
+        classBuilder.addFunction(buildGetByFileNameMethod(function).build())
+    }
+
+    protected abstract fun buildGetByFileNameMethod(builder: FunSpec.Builder): FunSpec.Builder
 
     abstract fun getClassModifiers(): Array<KModifier>
 
