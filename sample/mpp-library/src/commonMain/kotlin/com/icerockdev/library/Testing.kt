@@ -69,7 +69,7 @@ object Testing {
 
         // create
         val positional = StringDesc.ResourceFormatted(MR.strings.positional, 9, "str")
-        val positionalExt = MR.strings.positional.format(9 , "str")
+        val positionalExt = MR.strings.positional.format(9, "str")
 
         // result as list composition
         val list = listOf(
