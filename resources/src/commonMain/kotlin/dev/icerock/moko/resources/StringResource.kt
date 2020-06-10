@@ -4,4 +4,10 @@
 
 package dev.icerock.moko.resources
 
+import dev.icerock.moko.resources.desc.ResourceFormatted
+import dev.icerock.moko.resources.desc.StringDesc
+
 expect class StringResource
+
+fun StringResource.format(vararg args: Any) = StringDesc.ResourceFormatted(this, args)
+fun StringResource.format(args: List<Any>) = StringDesc.ResourceFormatted(this, args)
