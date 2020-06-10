@@ -5,7 +5,7 @@
 package dev.icerock.moko.resources.desc
 
 actual data class CompositionStringDesc actual constructor(
-    val args: List<StringDesc>,
+    val args: Iterable<StringDesc>,
     val separator: String?
 ) : StringDesc {
     override fun localized(): String {
