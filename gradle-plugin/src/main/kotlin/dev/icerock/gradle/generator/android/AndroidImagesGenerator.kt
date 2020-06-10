@@ -58,16 +58,16 @@ class AndroidImagesGenerator(
         }
     }
 
-    override fun buildGetByFileNameMethod(builder: FunSpec.Builder): FunSpec.Builder {
+    override fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder {
         val methodBody = CodeBlock.of(
 """
-if(fileName.isBlank()) return null
-val lastNamePart = if (fileName.length > 1) {
-    fileName.substring(1, fileName.length)
+if($argName.isBlank()) return null
+val lastNamePart = if ($argName.length > 1) {
+    $argName.substring(1, $argName.length)
 } else ""
 val methodName = StringBuilder()
     .append("get")
-    .append(fileName[0].toUpperCase())
+    .append($argName[0].toUpperCase())
     .append(lastNamePart).toString()
 return this::class.java.methods
     .find { it.name == methodName }

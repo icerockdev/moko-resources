@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
+import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -82,10 +83,10 @@ $imagesContent
         }
     }
 
-    override fun buildGetByFileNameMethod(builder: FunSpec.Builder): FunSpec.Builder {
+    override fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder {
         val methodBody = CodeBlock.of(
 """
-return ImageResource(fileName, bundle).let { imgRes ->
+return ImageResource($argName, $BUNDLE_PROPERTY_NAME).let { imgRes ->
     if (imgRes.toUIImage() != null) {
         imgRes
     } else {

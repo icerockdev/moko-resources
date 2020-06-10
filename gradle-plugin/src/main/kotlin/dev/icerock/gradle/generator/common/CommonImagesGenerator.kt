@@ -21,7 +21,7 @@ class CommonImagesGenerator(
 
     override fun getPropertyInitializer(key: String): CodeBlock? = null
 
-    override fun buildGetByFileNameMethod(builder: FunSpec.Builder): FunSpec.Builder {
+    override fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder {
         return builder
     }
 }

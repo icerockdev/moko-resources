@@ -62,16 +62,19 @@ abstract class ImagesGenerator(
     }
 
     private fun generateGetByFileNameMethod(classBuilder: TypeSpec.Builder) {
-        val className = ClassName("dev.icerock.moko.resources", "ImageResource")
-        val params = ParameterSpec.builder("fileName", kotlin.String::class).build()
-        val function = FunSpec.builder("getByFileName")
-            .returns(className.copy(true))
-            .addParameter(params)
+        val imageResourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
 
-        classBuilder.addFunction(buildGetByFileNameMethod(function).build())
+        val fileNameArgName = "fileName"
+        val funcParams = ParameterSpec.builder(fileNameArgName, kotlin.String::class).build()
+
+        val function = FunSpec.builder("getByFileName")
+            .returns(imageResourceClassName.copy(true))
+            .addParameter(funcParams)
+
+        classBuilder.addFunction(buildGetByFileNameMethod(fileNameArgName, function).build())
     }
 
-    protected abstract fun buildGetByFileNameMethod(builder: FunSpec.Builder): FunSpec.Builder
+    protected abstract fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder
 
     abstract fun getClassModifiers(): Array<KModifier>
 
