@@ -5,7 +5,6 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import org.gradle.api.file.FileTree
@@ -20,8 +19,4 @@ class CommonImagesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyInitializer(key: String): CodeBlock? = null
-
-    override fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder {
-        return builder
-    }
 }

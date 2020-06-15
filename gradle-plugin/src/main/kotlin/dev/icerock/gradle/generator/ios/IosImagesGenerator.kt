@@ -4,11 +4,12 @@
 
 package dev.icerock.gradle.generator.ios
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ImagesGenerator
-import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -83,22 +84,14 @@ $imagesContent
         }
     }
 
-    override fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder {
-        val methodBody = CodeBlock.of(
-"""
-return ImageResource($argName, $BUNDLE_PROPERTY_NAME).let { imgRes ->
-    if (imgRes.toUIImage() != null) {
-        imgRes
-    } else {
-        null
-    }
-}
-"""
-        )
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) {
+        val bundleType = ClassName("platform.Foundation", "NSBundle")
+        val bundleProperty = PropertySpec.builder("nsBundle", bundleType)
+            .addModifiers(KModifier.OVERRIDE)
+            .initializer("bundle")
+            .build()
 
-        return builder
-            .addModifiers(listOf(KModifier.ACTUAL))
-            .addCode(methodBody)
+        classBuilder.addProperty(bundleProperty)
     }
 
     private companion object {

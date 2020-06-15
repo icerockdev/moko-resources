@@ -6,9 +6,8 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
@@ -40,6 +39,9 @@ abstract class ImagesGenerator(
 
         val resourceClass = ClassName("dev.icerock.moko.resources", "ImageResource")
 
+        val fileResourceInterfaceClassName = ClassName("dev.icerock.moko.resources", "FileResourceContainer")
+        classBuilder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(resourceClass))
+
         keys.forEach { key ->
             val name = key.replace(".", "_")
             val property = PropertySpec.builder(name, resourceClass)
@@ -48,7 +50,7 @@ abstract class ImagesGenerator(
             classBuilder.addProperty(property.build())
         }
 
-        generateGetByFileNameMethod(classBuilder)
+        extendObjectBody(classBuilder)
 
         return classBuilder.build()
     }
@@ -61,20 +63,7 @@ abstract class ImagesGenerator(
     ) {
     }
 
-    private fun generateGetByFileNameMethod(classBuilder: TypeSpec.Builder) {
-        val imageResourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
-
-        val fileNameArgName = "fileName"
-        val funcParams = ParameterSpec.builder(fileNameArgName, kotlin.String::class).build()
-
-        val function = FunSpec.builder("getByFileName")
-            .returns(imageResourceClassName.copy(true))
-            .addParameter(funcParams)
-
-        classBuilder.addFunction(buildGetByFileNameMethod(fileNameArgName, function).build())
-    }
-
-    protected abstract fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder
+    protected open fun extendObjectBody(classBuilder: TypeSpec.Builder) {}
 
     abstract fun getClassModifiers(): Array<KModifier>
 

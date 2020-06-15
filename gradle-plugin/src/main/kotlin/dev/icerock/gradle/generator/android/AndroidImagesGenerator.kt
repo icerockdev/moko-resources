@@ -6,7 +6,6 @@ package dev.icerock.gradle.generator.android
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import org.gradle.api.file.FileTree
@@ -56,28 +55,6 @@ class AndroidImagesGenerator(
             val processedKey = processKey(key)
             file.copyTo(File(drawableDir, "$processedKey.${file.extension}"))
         }
-    }
-
-    override fun buildGetByFileNameMethod(argName: String, builder: FunSpec.Builder): FunSpec.Builder {
-        val methodBody = CodeBlock.of(
-"""
-if($argName.isBlank()) return null
-val lastNamePart = if ($argName.length > 1) {
-    $argName.substring(1, $argName.length)
-} else ""
-val methodName = StringBuilder()
-    .append("get")
-    .append($argName[0].toUpperCase())
-    .append(lastNamePart).toString()
-return this::class.java.methods
-    .find { it.name == methodName }
-    ?.let { it.invoke(this) as ImageResource }
-"""
-        )
-
-        return builder
-            .addModifiers(listOf(KModifier.ACTUAL))
-            .addCode(methodBody)
     }
 
     private fun processKey(key: String): String {
