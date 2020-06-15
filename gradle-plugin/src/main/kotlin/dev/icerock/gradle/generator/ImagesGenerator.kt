@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
@@ -20,12 +19,15 @@ abstract class ImagesGenerator(
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
-    override fun generate(resourcesGenerationDir: File): TypeSpec {
+    override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
+    override val mrObjectName: String = "images"
+
+    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         val keyFileMap = inputFileTree.groupBy { file ->
             file.name.substringBefore("@")
         }
 
-        val typeSpec = createTypeSpec(keyFileMap.keys.sorted())
+        val typeSpec = createTypeSpec(keyFileMap.keys.sorted(), objectBuilder)
 
         generateResources(resourcesGenerationDir, keyFileMap)
 
@@ -33,26 +35,20 @@ abstract class ImagesGenerator(
     }
 
     @Suppress("SpreadOperator")
-    fun createTypeSpec(keys: List<String>): TypeSpec {
-        val classBuilder = TypeSpec.objectBuilder("images")
-        classBuilder.addModifiers(*getClassModifiers())
-
-        val resourceClass = ClassName("dev.icerock.moko.resources", "ImageResource")
-
-        val fileResourceInterfaceClassName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
-        classBuilder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(resourceClass))
+    fun createTypeSpec(keys: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
+        objectBuilder.addModifiers(*getClassModifiers())
 
         keys.forEach { key ->
             val name = key.replace(".", "_")
-            val property = PropertySpec.builder(name, resourceClass)
+            val property = PropertySpec.builder(name, resourceClassName)
             property.addModifiers(*getPropertyModifiers())
             getPropertyInitializer(name)?.let { property.initializer(it) }
-            classBuilder.addProperty(property.build())
+            objectBuilder.addProperty(property.build())
         }
 
-        extendObjectBody(classBuilder)
+        extendObjectBody(objectBuilder)
 
-        return classBuilder.build()
+        return objectBuilder.build()
     }
 
     override fun getImports(): List<ClassName> = emptyList()

@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle.generator
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
@@ -12,12 +11,13 @@ import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 
 abstract class BaseGenerator<T> : MRGenerator.Generator {
-    override fun generate(resourcesGenerationDir: File): TypeSpec {
+
+    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         // language - key - value
         val languageMap: Map<LanguageType, Map<KeyType, T>> = loadLanguageMap()
         val languageKeyValues = languageMap[BASE_LANGUAGE].orEmpty()
 
-        val stringsClass = createTypeSpec(languageKeyValues.keys.toList())
+        val stringsClass = createTypeSpec(languageKeyValues.keys.toList(), objectBuilder)
 
         languageMap.forEach { (language, strings) ->
             if (language == BASE_LANGUAGE) {
@@ -31,29 +31,26 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     }
 
     @Suppress("SpreadOperator")
-    private fun createTypeSpec(keys: List<KeyType>): TypeSpec {
-        val classBuilder = TypeSpec.objectBuilder(getClassName())
-        classBuilder.addModifiers(*getClassModifiers())
-
-        val resourceClass = getPropertyClass()
+    private fun createTypeSpec(keys: List<KeyType>, objectBuilder: TypeSpec.Builder): TypeSpec {
+        objectBuilder.addModifiers(*getClassModifiers())
 
         keys.forEach { key ->
             val name = key.replace(".", "_")
             val property =
-                PropertySpec.builder(name, resourceClass)
+                PropertySpec.builder(name, resourceClassName)
             property.addModifiers(*getPropertyModifiers())
             getPropertyInitializer(key)?.let { property.initializer(it) }
-            classBuilder.addProperty(property.build())
+            objectBuilder.addProperty(property.build())
         }
 
-        return classBuilder.build()
+        extendObjectBody(objectBuilder)
+        return objectBuilder.build()
     }
 
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
     protected abstract fun getPropertyInitializer(key: String): CodeBlock?
-    protected abstract fun getClassName(): String
-    protected abstract fun getPropertyClass(): ClassName
 
+    protected open fun extendObjectBody(classBuilder: TypeSpec.Builder) {}
     protected open fun getClassModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
     protected open fun generateResources(

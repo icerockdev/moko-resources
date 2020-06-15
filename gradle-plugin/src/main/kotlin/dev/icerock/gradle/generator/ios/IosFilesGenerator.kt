@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.ios
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FilesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -15,6 +16,8 @@ class IosFilesGenerator(
 ) : FilesGenerator(
     inputFileTree = inputFileTree
 ) {
+    private val iosGeneratorHelper = IosGeneratorHelper()
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -37,5 +40,9 @@ class IosFilesGenerator(
         files.forEach { (_, file) ->
             file.copyTo(File(targetDir, file.name))
         }
+    }
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) {
+        iosGeneratorHelper.addBundlePropertyTo(classBuilder)
     }
 }

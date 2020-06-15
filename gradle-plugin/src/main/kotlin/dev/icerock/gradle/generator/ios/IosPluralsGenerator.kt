@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.ios
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.KeyType
@@ -18,6 +19,8 @@ class IosPluralsGenerator(
 ) : PluralsGenerator(
     pluralsFileTree = pluralsFileTree
 ) {
+    private val iosGeneratorHelper = IosGeneratorHelper()
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -91,5 +94,9 @@ class IosPluralsGenerator(
             val regionFile = File(regionDir, "Localizable.stringsdict")
             writeStringsFile(regionFile, strings)
         }
+    }
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) {
+        iosGeneratorHelper.addBundlePropertyTo(classBuilder)
     }
 }

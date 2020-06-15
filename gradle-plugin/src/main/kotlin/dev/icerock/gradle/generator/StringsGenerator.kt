@@ -18,6 +18,10 @@ typealias KeyType = String
 abstract class StringsGenerator(
     private val stringsFileTree: FileTree
 ) : BaseGenerator<String>() {
+
+    override val resourceClassName = ClassName("dev.icerock.moko.resources", "StringResource")
+    override val mrObjectName: String = "strings"
+
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
         return stringsFileTree.map { file ->
             val language: LanguageType = file.parentFile.name
@@ -33,14 +37,6 @@ abstract class StringsGenerator(
                 result
             }
         }
-    }
-
-    override fun getClassName(): String {
-        return "strings"
-    }
-
-    override fun getPropertyClass(): ClassName {
-        return ClassName("dev.icerock.moko.resources", "StringResource")
     }
 
     private fun loadLanguageStrings(stringsFile: File): Map<KeyType, String> {

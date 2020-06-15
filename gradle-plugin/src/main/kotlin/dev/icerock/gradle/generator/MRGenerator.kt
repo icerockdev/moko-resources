@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -37,7 +38,14 @@ abstract class MRGenerator(
         val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
             .addModifiers(*getMRClassModifiers())
 
-        generators.forEach { mrClassSpec.addType(it.generate(resourcesGenerationDir)) }
+        generators.forEach { generator ->
+            val builder = TypeSpec.objectBuilder(generator.mrObjectName)
+
+            val fileResourceInterfaceClassName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
+            builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
+
+            mrClassSpec.addType(generator.generate(resourcesGenerationDir, builder))
+        }
 
         processMRClass(mrClassSpec)
 
@@ -80,7 +88,10 @@ abstract class MRGenerator(
     }
 
     interface Generator {
-        fun generate(resourcesGenerationDir: File): TypeSpec
+        val mrObjectName: String
+        val resourceClassName: ClassName
+
+        fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
         fun getImports(): List<ClassName>
     }
 

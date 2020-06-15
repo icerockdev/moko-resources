@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.ios
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.StringsGenerator
@@ -18,6 +19,8 @@ class IosStringsGenerator(
 ) : StringsGenerator(
     stringsFileTree = stringsFileTree
 ) {
+    private val iosGeneratorHelper = IosGeneratorHelper()
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -51,5 +54,9 @@ class IosStringsGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
+    }
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) {
+        iosGeneratorHelper.addBundlePropertyTo(classBuilder)
     }
 }

@@ -19,10 +19,11 @@ abstract class FontsGenerator(
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
-    private val resourceClass = ClassName("dev.icerock.moko.resources", "FontResource")
+    override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
+    override val mrObjectName: String = "fonts"
 
-    override fun generate(resourcesGenerationDir: File): TypeSpec {
-        val typeSpec = createTypeSpec(inputFileTree.map { it.nameWithoutExtension }.sorted())
+    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+        val typeSpec = createTypeSpec(inputFileTree.map { it.nameWithoutExtension }.sorted(), objectBuilder)
         generateResources(resourcesGenerationDir, inputFileTree.map {
             FontFile(
                 key = it.nameWithoutExtension,
@@ -32,10 +33,9 @@ abstract class FontsGenerator(
         return typeSpec
     }
 
-    private fun createTypeSpec(keys: List<String>): TypeSpec {
-        val classBuilder = TypeSpec.objectBuilder("fonts")
+    private fun createTypeSpec(keys: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
         @Suppress("SpreadOperator")
-        classBuilder.addModifiers(*getClassModifiers())
+        objectBuilder.addModifiers(*getClassModifiers())
 
         /*
         * 1. Group keys by family name (split('-').first())
@@ -54,14 +54,15 @@ abstract class FontsGenerator(
                 .map { it.substringAfter("-") to it }
                 .toList()
 
-            classBuilder.addType(
+            objectBuilder.addType(
                 generateFontFamilySpec(
                     familyName = group.key,
                     fontStyleFiles = stylePairs
                 )
             )
         }
-        return classBuilder.build()
+        extendObjectBody(objectBuilder)
+        return objectBuilder.build()
     }
 
     override fun getImports(): List<ClassName> = emptyList()
@@ -77,7 +78,7 @@ abstract class FontsGenerator(
         fontStyleFiles
             .forEach { (styleName, fileName) ->
                 val styleProperty = PropertySpec
-                    .builder(styleName.decapitalize(), resourceClass)
+                    .builder(styleName.decapitalize(), resourceClassName)
                     .addModifiers(*getPropertyModifiers())
                 getPropertyInitializer(fileName)?.let { codeBlock ->
                     styleProperty.initializer(codeBlock)
@@ -92,6 +93,8 @@ abstract class FontsGenerator(
         files: List<FontFile>
     ) {
     }
+
+    protected open fun extendObjectBody(classBuilder: TypeSpec.Builder) {}
 
     abstract fun getClassModifiers(): Array<KModifier>
 

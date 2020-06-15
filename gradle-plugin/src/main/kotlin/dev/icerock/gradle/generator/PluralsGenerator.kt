@@ -19,6 +19,9 @@ abstract class PluralsGenerator(
     private val pluralsFileTree: FileTree
 ) : BaseGenerator<PluralMap>() {
 
+    override val resourceClassName = ClassName("dev.icerock.moko.resources", "PluralsResource")
+    override val mrObjectName: String = "plurals"
+
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, PluralMap>> {
         return pluralsFileTree.map { file ->
             val language: LanguageType = file.parentFile.name
@@ -34,14 +37,6 @@ abstract class PluralsGenerator(
                 result
             }
         }
-    }
-
-    override fun getClassName(): String {
-        return "plurals"
-    }
-
-    override fun getPropertyClass(): ClassName {
-        return ClassName("dev.icerock.moko.resources", "PluralsResource")
     }
 
     override fun getImports(): List<ClassName> = emptyList()
