@@ -134,10 +134,16 @@ In `commonMain/resources/MR/base/strings.xml` add:
 </resources>
 ```
 Then add the localized values for other languages like in example #1.
-Now create the followin function in `commonMain`:
+Now create the following function in `commonMain`:
 ```kotlin
 fun getMyFormatDesc(input: String): StringDesc {
   return StringDesc.ResourceFormatted(MR.strings.my_string_formatted, input)
+}
+```
+To create formatted strings from resources you can also use extension `format`:
+```kotlin
+fun getMyFormatDesc(input: String): StringDesc {
+  return MR.strings.my_string_formatted.format(input)
 }
 ```
 Now add support on the platform side like in example #1:  
@@ -203,6 +209,13 @@ Next, create a function in `commonMain`:
 fun getMyPluralFormattedDesc(quantity: Int): StringDesc {
   // we pass quantity as selector for correct plural string and for pass quantity as argument for formatting
   return StringDesc.PluralFormatted(MR.plurals.my_plural, quantity, quantity)  
+}
+```
+To create formatted plural strings from resources you can also use extension `format`:
+```kotlin
+fun getMyPluralFormattedDesc(quantity: Int): StringDesc {
+  // we pass quantity as selector for correct plural string and for pass quantity as argument for formatting
+  return MR.plurals.my_plural.format(quantity, quantity)  
 }
 ```
 And like in example #1, add the platform-side support:  

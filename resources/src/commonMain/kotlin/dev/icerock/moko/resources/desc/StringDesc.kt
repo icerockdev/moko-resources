@@ -26,3 +26,6 @@ fun PluralsResource.desc(number: Int) = StringDesc.Plural(this, number)
 operator fun StringDesc.plus(other: StringDesc): StringDesc {
     return StringDesc.Composition(listOf(this, other))
 }
+
+fun Iterable<StringDesc>.joinToStringDesc(separator: String = ", "): StringDesc =
+    StringDesc.Composition(this, separator)
