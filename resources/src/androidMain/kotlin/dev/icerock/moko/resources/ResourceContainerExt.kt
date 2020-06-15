@@ -4,7 +4,7 @@
 
 package dev.icerock.moko.resources
 
-actual fun FileResourceContainer<ImageResource>.getImageByFileName(fileName: String): ImageResource? {
+actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String): ImageResource? {
     if(fileName.isBlank()) return null
 
     val lastNamePart = if (fileName.length > 1) {

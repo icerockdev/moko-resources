@@ -39,7 +39,7 @@ abstract class ImagesGenerator(
 
         val resourceClass = ClassName("dev.icerock.moko.resources", "ImageResource")
 
-        val fileResourceInterfaceClassName = ClassName("dev.icerock.moko.resources", "FileResourceContainer")
+        val fileResourceInterfaceClassName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
         classBuilder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(resourceClass))
 
         keys.forEach { key ->

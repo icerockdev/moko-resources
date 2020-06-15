@@ -4,8 +4,4 @@
 
 package dev.icerock.moko.resources
 
-import platform.Foundation.NSBundle
-
-actual interface FileResourceContainer<T> {
-    val nsBundle: NSBundle
-}
+actual interface ResourceContainer<T>

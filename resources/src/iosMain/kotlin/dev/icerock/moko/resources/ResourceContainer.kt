@@ -4,6 +4,8 @@
 
 package dev.icerock.moko.resources
 
-expect interface FileResourceContainer<T>
+import platform.Foundation.NSBundle
 
-expect fun FileResourceContainer<ImageResource>.getImageByFileName(fileName: String): ImageResource?
+actual interface ResourceContainer<T> {
+    val nsBundle: NSBundle
+}

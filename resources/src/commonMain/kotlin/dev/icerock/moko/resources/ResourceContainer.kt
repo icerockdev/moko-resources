@@ -4,4 +4,6 @@
 
 package dev.icerock.moko.resources
 
-actual interface FileResourceContainer<T>
+expect interface ResourceContainer<T>
+
+expect fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String): ImageResource?
