@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.android
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.KeyType
@@ -72,6 +73,8 @@ class AndroidPluralsGenerator(
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
     }
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     private fun processKey(key: String): String {
         return key.replace(".", "_")

@@ -10,7 +10,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 
-abstract class BaseGenerator<T> : MRGenerator.Generator {
+abstract class BaseGenerator<T> : MRGenerator.Generator,
+    ObjectBodyExtendable {
 
     override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         // language - key - value
@@ -50,7 +51,6 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
     protected abstract fun getPropertyInitializer(key: String): CodeBlock?
 
-    protected open fun extendObjectBody(classBuilder: TypeSpec.Builder) {}
     protected open fun getClassModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
     protected open fun generateResources(

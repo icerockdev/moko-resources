@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 
@@ -14,4 +15,6 @@ class CommonStringsGenerator(
     stringsFileTree = stringsFileTree
 ) {
     override fun getPropertyInitializer(key: String): CodeBlock? = null
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 }

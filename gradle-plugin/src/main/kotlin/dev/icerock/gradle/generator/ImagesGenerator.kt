@@ -17,7 +17,7 @@ import java.io.File
 
 abstract class ImagesGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.Generator {
+) : MRGenerator.Generator, ObjectBodyExtendable {
 
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"
@@ -58,8 +58,6 @@ abstract class ImagesGenerator(
         keyFileMap: Map<String, List<File>>
     ) {
     }
-
-    protected open fun extendObjectBody(classBuilder: TypeSpec.Builder) {}
 
     abstract fun getClassModifiers(): Array<KModifier>
 

@@ -6,8 +6,8 @@ package dev.icerock.gradle.generator.ios
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FontsGenerator
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -15,8 +15,7 @@ class IosFontsGenerator(
     inputFileTree: FileTree
 ) : FontsGenerator(
     inputFileTree = inputFileTree
-) {
-    private val iosGeneratorHelper = IosGeneratorHelper()
+), ObjectBodyExtendable by IosGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -37,9 +36,5 @@ class IosFontsGenerator(
         files.forEach { (_, file) ->
             file.copyTo(File(resourcesGenerationDir, file.name))
         }
-    }
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) {
-        iosGeneratorHelper.addBundlePropertyTo(classBuilder)
     }
 }

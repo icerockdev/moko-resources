@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.android
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FontsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -42,6 +43,8 @@ class AndroidFontsGenerator(
             file.copyTo(File(fontResDir, fileName))
         }
     }
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     private fun keyToResourceId(key: String): String {
         return key.replace("-", "_").toLowerCase(Locale.ROOT)

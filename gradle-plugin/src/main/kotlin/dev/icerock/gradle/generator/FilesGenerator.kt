@@ -17,7 +17,7 @@ import java.io.File
 
 abstract class FilesGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.Generator {
+) : MRGenerator.Generator, ObjectBodyExtendable {
 
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FileResource")
     override val mrObjectName: String = "files"
@@ -62,8 +62,6 @@ abstract class FilesGenerator(
         files: List<FileSpec>
     ) {
     }
-
-    protected open fun extendObjectBody(classBuilder: TypeSpec.Builder) {}
 
     protected fun processKey(key: String): String {
         return key.replace("-", "_")

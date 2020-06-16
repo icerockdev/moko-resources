@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.android
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ImagesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -56,6 +57,8 @@ class AndroidImagesGenerator(
             file.copyTo(File(drawableDir, "$processedKey.${file.extension}"))
         }
     }
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     private fun processKey(key: String): String {
         return key.toLowerCase()

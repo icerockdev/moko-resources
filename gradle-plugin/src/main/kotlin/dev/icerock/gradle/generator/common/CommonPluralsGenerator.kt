@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
 
@@ -14,4 +15,6 @@ class CommonPluralsGenerator(
     pluralsFileTree = pluralsFileTree
 ) {
     override fun getPropertyInitializer(key: String): CodeBlock? = null
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 }

@@ -17,7 +17,7 @@ import java.io.File
 
 abstract class FontsGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.Generator {
+) : MRGenerator.Generator, ObjectBodyExtendable {
 
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
     override val mrObjectName: String = "fonts"
@@ -93,8 +93,6 @@ abstract class FontsGenerator(
         files: List<FontFile>
     ) {
     }
-
-    protected open fun extendObjectBody(classBuilder: TypeSpec.Builder) {}
 
     abstract fun getClassModifiers(): Array<KModifier>
 
