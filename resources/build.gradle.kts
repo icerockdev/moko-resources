@@ -26,6 +26,7 @@ dependencies {
     mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
 
     mppLibrary(Deps.Libs.MultiPlatform.mokoParcelize)
+    mppLibrary(Deps.Libs.MultiPlatform.mokoGraphics)
 
     androidLibrary(Deps.Libs.Android.appCompat)
 }

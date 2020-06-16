@@ -20,8 +20,11 @@ class TestViewController: UIViewController {
         let strings = testing.getStrings()
         
         imageView.image = drawable.toUIImage()
+        
+        let textColor = MR.colors().textColor.color
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
         textView.font = testing.getFont1().uiFont(withSize: 14.0)
+        textView.textColor = UIColor(red: CGFloat(textColor.red), green: CGFloat(textColor.green), blue: CGFloat(textColor.blue), alpha: CGFloat(textColor.alpha))
         
         stringDescTextView.text = testing.getStringDesc().localized()
         stringDescTextView.font = testing.getFont2().uiFont(withSize: 14.0)
