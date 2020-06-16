@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.ios.IosStringsGenerator
@@ -18,6 +19,10 @@ typealias KeyType = String
 abstract class StringsGenerator(
     private val stringsFileTree: FileTree
 ) : BaseGenerator<String>() {
+
+    override val resourceClassName = ClassName("dev.icerock.moko.resources", "StringResource")
+    override val mrObjectName: String = "strings"
+
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
         return stringsFileTree.map { file ->
             val language: LanguageType = file.parentFile.name
@@ -33,14 +38,6 @@ abstract class StringsGenerator(
                 result
             }
         }
-    }
-
-    override fun getClassName(): String {
-        return "strings"
-    }
-
-    override fun getPropertyClass(): ClassName {
-        return ClassName("dev.icerock.moko.resources", "StringResource")
     }
 
     private fun loadLanguageStrings(stringsFile: File): Map<KeyType, String> {
@@ -71,6 +68,8 @@ abstract class StringsGenerator(
     }
 
     override fun getImports(): List<ClassName> = emptyList()
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     class Feature(
         private val info: SourceInfo,

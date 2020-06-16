@@ -8,16 +8,19 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class IosStringsGenerator(
     stringsFileTree: FileTree,
     private val baseLocalizationRegion: String
 ) : StringsGenerator(
     stringsFileTree = stringsFileTree
-) {
+), ObjectBodyExtendable by IosGeneratorHelper() {
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

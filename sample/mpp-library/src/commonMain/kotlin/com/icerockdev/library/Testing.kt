@@ -18,6 +18,7 @@ import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.joinToStringDesc
 import dev.icerock.moko.resources.desc.plus
 import dev.icerock.moko.resources.format
+import dev.icerock.moko.resources.getImageByFileName
 
 @Suppress("MagicNumber")
 object Testing {
@@ -38,6 +39,10 @@ object Testing {
 
     fun getDrawable(): ImageResource {
         return MR.images.home_black_18
+    }
+
+    fun getDrawableByFileName(): ImageResource? {
+        return MR.images.getImageByFileName("home_black_18")
     }
 
     fun getStringDesc(): StringDesc {
