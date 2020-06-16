@@ -5,7 +5,6 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
 

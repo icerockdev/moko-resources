@@ -6,7 +6,6 @@ package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ImagesGenerator
 import org.gradle.api.file.FileTree
 

@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator.android
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.StringsGenerator
 import org.apache.commons.lang3.StringEscapeUtils
