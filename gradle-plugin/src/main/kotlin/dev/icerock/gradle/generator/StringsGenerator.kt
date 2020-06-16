@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.ios.IosStringsGenerator
@@ -67,6 +68,8 @@ abstract class StringsGenerator(
     }
 
     override fun getImports(): List<ClassName> = emptyList()
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     class Feature(
         private val info: SourceInfo,

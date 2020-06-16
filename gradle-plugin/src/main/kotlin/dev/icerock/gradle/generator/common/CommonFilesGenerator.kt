@@ -20,6 +20,4 @@ class CommonFilesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? = null
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 }

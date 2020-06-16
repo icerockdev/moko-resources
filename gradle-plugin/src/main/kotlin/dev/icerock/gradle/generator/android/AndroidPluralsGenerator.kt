@@ -74,8 +74,6 @@ class AndroidPluralsGenerator(
         stringsFile.appendText("\n" + footer)
     }
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     private fun processKey(key: String): String {
         return key.replace(".", "_")
     }

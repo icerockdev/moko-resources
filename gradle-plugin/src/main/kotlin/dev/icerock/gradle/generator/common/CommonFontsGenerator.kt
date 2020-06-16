@@ -20,6 +20,4 @@ class CommonFontsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyInitializer(fontFileName: String): CodeBlock? = null
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 }

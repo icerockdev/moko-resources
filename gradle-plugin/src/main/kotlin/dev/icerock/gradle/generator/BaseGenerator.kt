@@ -48,6 +48,8 @@ abstract class BaseGenerator<T> : MRGenerator.Generator,
         return objectBuilder.build()
     }
 
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
+
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
     protected abstract fun getPropertyInitializer(key: String): CodeBlock?
 

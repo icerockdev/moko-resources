@@ -67,6 +67,8 @@ abstract class FilesGenerator(
         return key.replace("-", "_")
     }
 
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
+
     abstract fun getClassModifiers(): Array<KModifier>
 
     abstract fun getPropertyModifiers(): Array<KModifier>

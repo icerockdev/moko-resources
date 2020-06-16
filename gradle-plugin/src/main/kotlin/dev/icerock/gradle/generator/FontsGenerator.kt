@@ -94,6 +94,8 @@ abstract class FontsGenerator(
     ) {
     }
 
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
+
     abstract fun getClassModifiers(): Array<KModifier>
 
     abstract fun getPropertyModifiers(): Array<KModifier>

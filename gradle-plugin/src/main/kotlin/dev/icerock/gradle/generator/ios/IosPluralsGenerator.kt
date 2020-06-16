@@ -13,6 +13,7 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class IosPluralsGenerator(
     pluralsFileTree: FileTree,
     private val baseLocalizationRegion: String

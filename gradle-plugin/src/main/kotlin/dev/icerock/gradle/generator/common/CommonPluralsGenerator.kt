@@ -15,6 +15,4 @@ class CommonPluralsGenerator(
     pluralsFileTree = pluralsFileTree
 ) {
     override fun getPropertyInitializer(key: String): CodeBlock? = null
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 }

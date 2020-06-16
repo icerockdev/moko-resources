@@ -20,6 +20,4 @@ class CommonImagesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyInitializer(key: String): CodeBlock? = null
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 }

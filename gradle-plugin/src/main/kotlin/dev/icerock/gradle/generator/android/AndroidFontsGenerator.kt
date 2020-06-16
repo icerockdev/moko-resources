@@ -44,8 +44,6 @@ class AndroidFontsGenerator(
         }
     }
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     private fun keyToResourceId(key: String): String {
         return key.replace("-", "_").toLowerCase(Locale.ROOT)
     }

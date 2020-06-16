@@ -44,8 +44,6 @@ class AndroidFilesGenerator(
         }
     }
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     private fun keyToResourceId(key: String): String {
         return key.toLowerCase(Locale.ROOT)
     }
