@@ -17,7 +17,7 @@ import java.io.File
 
 abstract class ImagesGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.Generator, ObjectBodyExtendable {
+) : MRGenerator.Generator {
 
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"

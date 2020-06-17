@@ -87,7 +87,7 @@ abstract class MRGenerator(
         const val mrClassName = "MR"
     }
 
-    interface Generator {
+    interface Generator : ObjectBodyExtendable {
         val mrObjectName: String
         val resourceClassName: ClassName
 

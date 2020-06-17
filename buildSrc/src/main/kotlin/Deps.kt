@@ -78,6 +78,7 @@ object Deps {
 
         object Jvm {
             const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
+            const val koson = "com.lectra:koson:${Versions.Libs.Jvm.koson}"
             const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.Libs.Jvm.apacheCommonsText}"
             const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}"
         }

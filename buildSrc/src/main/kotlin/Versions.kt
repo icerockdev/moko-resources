@@ -41,6 +41,7 @@ object Versions {
         object Jvm {
             const val apacheCommonsText = "1.3"
             const val kotlinPoet = "1.6.0"
+            const val koson = "1.0.5"
         }
     }
 }

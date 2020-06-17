@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation(Deps.Libs.Jvm.kotlinPoet)
+    implementation(Deps.Libs.Jvm.koson)
     compileOnly(Deps.Plugins.kotlinMultiplatform.module!!)
     compileOnly(Deps.Plugins.androidLibrary.module!!)
     implementation(Deps.Libs.Jvm.apacheCommonsText)

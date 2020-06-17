@@ -19,7 +19,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class ColorsGenerator(
     private val colorsFileTree: FileTree
-) : MRGenerator.Generator, ObjectBodyExtendable {
+) : MRGenerator.Generator {
 
     override val resourceClassName: ClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource")
@@ -34,7 +34,8 @@ abstract class ColorsGenerator(
         objectBuilder.addModifiers(*getClassModifiers())
         extendObjectBody(objectBuilder)
 
-        parseColors().forEach { colorNode ->
+        val colors = parseColors()
+        colors.forEach { colorNode ->
             val className = if (colorNode.isThemed()) {
                 themedColorClassName
             } else {
@@ -46,6 +47,8 @@ abstract class ColorsGenerator(
             objectBuilder.addProperty(property.build())
         }
 
+        generateResources(resourcesGenerationDir, colors)
+
         return objectBuilder.build()
     }
 
@@ -55,12 +58,17 @@ abstract class ColorsGenerator(
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyInitializer(color: ColorNode): CodeBlock? {
         val className = if (color.isThemed()) {
-            "Themed(Color(${color.lightColor}), Color(${color.lightColor}))"
+            "Themed(light = Color(0x${argbToRgba(color.lightColor)}), dark = Color(0x${argbToRgba(color.darkColor)}))"
         } else {
-            "Single(Color(${color.defaultColor}))"
+            "Single(color = Color(0x${argbToRgba(color.singleColor)}))"
         }
         return CodeBlock.of(className)
     }
+
+    protected open fun generateResources(
+        resourcesGenerationDir: File,
+        colors: List<ColorNode>
+    ) = Unit
 
     private fun parseColors(): List<ColorNode> {
         val colorNodes = mutableListOf<ColorNode>()
@@ -77,7 +85,7 @@ abstract class ColorsGenerator(
                 val colorName = stringNode.attributes.getNamedItem(XmlNodeAttrColorName).textContent
                 var lightColor: String? = null
                 var darkColor: String? = null
-                var defaultColor: String? = null
+                var singleColor: String? = null
                 stringNode.childNodes.forEach { xmlNode ->
                     when (xmlNode.nodeName) {
                         "light" -> {
@@ -87,11 +95,11 @@ abstract class ColorsGenerator(
                             darkColor = xmlNode.textContent
                         }
                         else -> {
-                            defaultColor = xmlNode.textContent
+                            singleColor = xmlNode.textContent
                         }
                     }
                 }
-                colorNodes.add(ColorNode(colorName, lightColor, darkColor, defaultColor))
+                colorNodes.add(ColorNode(colorName, lightColor, darkColor, singleColor))
             }
         }
 
@@ -121,18 +129,23 @@ abstract class ColorsGenerator(
         }
     }
 
+    private fun argbToRgba(color: String?): String? {
+        return color?.substring(0,2)?.let {
+            "${color.substringAfter(it)}$it"
+        }
+    }
+
     companion object {
         internal const val XmlColorTag = "color"
         internal const val XmlNodeAttrColorName = "name"
     }
 }
 
-class ColorNode(
+data class ColorNode(
     val name: String,
     val lightColor: String?,
     val darkColor: String?,
-    val defaultColor: String?
+    val singleColor: String?
 ) {
-
     fun isThemed(): Boolean = lightColor != null && darkColor != null
 }

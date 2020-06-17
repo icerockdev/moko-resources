@@ -10,8 +10,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 
-abstract class BaseGenerator<T> : MRGenerator.Generator,
-    ObjectBodyExtendable {
+abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         // language - key - value

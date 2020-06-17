@@ -5,16 +5,13 @@
 package com.icerockdev
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.icerockdev.library.Testing
-import com.icerockdev.library.MR
-import dev.icerock.moko.graphics.colorInt
-import dev.icerock.moko.resources.getColor
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,10 +33,7 @@ class MainActivity : AppCompatActivity() {
         textView.text = text
         textView.typeface = Testing.getFont1().getTypeface(context = this)
 
-        val textColor = MR.colors.textColor.getColor(this).colorInt()
-            .run(Integer::toHexString)
-            .let { "#$it" }
-            .run(Color::parseColor)
+        val textColor = ContextCompat.getColor(this, R.color.textColor)
         textView.setTextColor(textColor)
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
