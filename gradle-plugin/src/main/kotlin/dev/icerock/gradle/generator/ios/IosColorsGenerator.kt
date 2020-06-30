@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.ASSETS_DIR_NAME
 import dev.icerock.gradle.utils.ArgbColor
 import dev.icerock.gradle.utils.parseRgbaColor
 import kotlinx.serialization.json.JsonObject
@@ -31,8 +32,7 @@ class IosColorsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun generateResources(resourcesGenerationDir: File, colors: List<ColorNode>) {
-        val assetsDirectory = File(resourcesGenerationDir, "Assets.xcassets")
-        assetsDirectory.mkdir()
+        val assetsDirectory = File(resourcesGenerationDir, ASSETS_DIR_NAME)
 
         colors.forEach { colorNode ->
             val assetDir = File(assetsDirectory, "${colorNode.name}.colorset")
@@ -66,22 +66,6 @@ class IosColorsGenerator(
                 }
             }
             contentsFile.writeText(resultObj.toString())
-        }
-
-        val process = Runtime.getRuntime().exec(
-            "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
-            emptyArray(),
-            assetsDirectory.parentFile
-        )
-        val errors = process.errorStream.bufferedReader().readText()
-        val input = process.inputStream.bufferedReader().readText()
-        val result = process.waitFor()
-        if (result != 0) {
-            println("can't compile assets - $result")
-            println(input)
-            println(errors)
-        } else {
-            assetsDirectory.deleteRecursively()
         }
     }
 

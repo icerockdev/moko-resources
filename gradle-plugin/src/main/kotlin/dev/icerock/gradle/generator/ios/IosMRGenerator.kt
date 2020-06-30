@@ -39,6 +39,8 @@ class IosMRGenerator(
         ClassName("platform.Foundation", "NSBundle")
     private val bundleIdentifier = "$mrClassPackage.MR"
 
+    private var assetsDirectory: File? = null
+
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
@@ -63,6 +65,12 @@ class IosMRGenerator(
     override fun apply(generationTask: Task, project: Project) {
         setupKLibResources(generationTask)
         setupFrameworkResources()
+    }
+
+    override fun beforeMRGeneration() {
+        assetsDirectory = File(resourcesGenerationDir, ASSETS_DIR_NAME).apply {
+            mkdirs()
+        }
     }
 
     private fun setupKLibResources(generationTask: Task) {
@@ -91,6 +99,24 @@ class IosMRGenerator(
                 identifier = bundleIdentifier
             )
             loadableBundle.write()
+
+            assetsDirectory?.let { assetsDir ->
+                val process = Runtime.getRuntime().exec(
+                    "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
+                    emptyArray(),
+                    assetsDir.parentFile
+                )
+                val errors = process.errorStream.bufferedReader().readText()
+                val input = process.inputStream.bufferedReader().readText()
+                val result = process.waitFor()
+                if (result != 0) {
+                    println("can't compile assets - $result")
+                    println(input)
+                    println(errors)
+                } else {
+                    assetsDir.deleteRecursively()
+                }
+            }
 
             resourcesGenerationDir.copyRecursively(loadableBundle.resourcesDir, overwrite = true)
 
@@ -131,5 +157,6 @@ class IosMRGenerator(
 
     companion object {
         const val BUNDLE_PROPERTY_NAME = "bundle"
+        const val ASSETS_DIR_NAME = "Assets.xcassets"
     }
 }
