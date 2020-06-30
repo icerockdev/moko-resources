@@ -17,6 +17,7 @@ object Deps {
         val kotlinKapt = PluginDesc(id = "kotlin-kapt")
         val kotlinAndroid = PluginDesc(id = "kotlin-android")
         val kotlinAndroidExtensions = PluginDesc(id = "kotlin-android-extensions")
+        val kotlinSerialization = PluginDesc(id = "kotlin-serialization")
 
         val mobileMultiplatform = PluginDesc(id = "dev.icerock.mobile.multiplatform")
 
@@ -68,10 +69,17 @@ object Deps {
                 iosX64 = "dev.icerock.moko:parcelize-iosx64:${Versions.Libs.MultiPlatform.mokoParcelize}",
                 iosArm64 = "dev.icerock.moko:parcelize-iosarm64:${Versions.Libs.MultiPlatform.mokoParcelize}"
             )
+            val mokoGraphics = MultiPlatformLibrary(
+                common = "dev.icerock.moko:graphics:${Versions.Libs.MultiPlatform.mokoGraphics}",
+                iosX64 = "dev.icerock.moko:graphics-iosx64:${Versions.Libs.MultiPlatform.mokoGraphics}",
+                iosArm64 = "dev.icerock.moko:graphics-iosarm64:${Versions.Libs.MultiPlatform.mokoGraphics}"
+            )
+
         }
 
         object Jvm {
             const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
+            const val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.Libs.Jvm.kotlinxSerialization}"
             const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.Libs.Jvm.apacheCommonsText}"
             const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}"
         }

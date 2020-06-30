@@ -28,6 +28,7 @@ buildscript {
                 kotlinMultiplatform,
                 kotlinKapt,
                 kotlinAndroid,
+                kotlinSerialization,
                 if (!libraryPublish) mokoResources else null
             )
         }.let { plugins(it) }

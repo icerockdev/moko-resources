@@ -34,6 +34,8 @@ abstract class MRGenerator(
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
 
+        beforeMRGeneration()
+
         @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
             .addModifiers(*getMRClassModifiers())
@@ -61,6 +63,8 @@ abstract class MRGenerator(
 
         val file = fileSpec.build()
         file.writeTo(sourcesGenerationDir)
+
+        afterMRGeneration()
     }
 
     fun apply(project: Project) {
@@ -77,6 +81,9 @@ abstract class MRGenerator(
         apply(generationTask = genTask, project = project)
     }
 
+    protected open fun beforeMRGeneration() = Unit
+    protected open fun afterMRGeneration() = Unit
+
     protected abstract fun getMRClassModifiers(): Array<KModifier>
     protected abstract fun apply(generationTask: Task, project: Project)
 
@@ -87,7 +94,7 @@ abstract class MRGenerator(
         const val mrClassName = "MR"
     }
 
-    interface Generator {
+    interface Generator : ObjectBodyExtendable {
         val mrObjectName: String
         val resourceClassName: ClassName
 

@@ -7,6 +7,7 @@ package dev.icerock.gradle
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.AndroidSourceSet
+import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator
 import dev.icerock.gradle.generator.GenerateMultiplatformResourcesTask
@@ -88,7 +89,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion),
             ImagesGenerator.Feature(sourceInfo),
             FontsGenerator.Feature(sourceInfo),
-            FilesGenerator.Feature(sourceInfo)
+            FilesGenerator.Feature(sourceInfo),
+            ColorsGenerator.Feature(sourceInfo)
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
