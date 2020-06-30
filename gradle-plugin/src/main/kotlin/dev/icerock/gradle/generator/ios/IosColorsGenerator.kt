@@ -44,7 +44,11 @@ class IosColorsGenerator(
                 val lightColor = parseRgbaColor(colorNode.lightColor!!.toLong(16))
                 val darkColor = parseRgbaColor(colorNode.darkColor!!.toLong(16))
 
-                val anyColor = buildColorIdiomJsonObj(lightColor) // set any color as light
+                /*
+                Sets any color as light. Check about colors in the docs:
+                https://developer.apple.com/documentation/xcode/supporting_dark_mode_in_your_interface
+                 */
+                val anyColor = buildColorIdiomJsonObj(lightColor)
                 val lightColorObj = buildAppearancesIdiomJsonBlock("light", lightColor)
                 val darkColorObj = buildAppearancesIdiomJsonBlock("dark", darkColor)
 
