@@ -25,30 +25,52 @@ class AndroidColorsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun generateResources(resourcesGenerationDir: File, colors: List<ColorNode>) {
-        val valuesDirName = "values"
-        val valuesDir = File(resourcesGenerationDir, valuesDirName)
-        val stringsFile = File(valuesDir, "colors.xml")
+        val valuesDir = File(resourcesGenerationDir, "values")
+        val defaultStringsFile = File(valuesDir, COLORS_XML_FILE_NAME)
         valuesDir.mkdirs()
+
+        val valuesNightDir = File(resourcesGenerationDir, "values-night")
+        val darkStringsFile = File(valuesNightDir, COLORS_XML_FILE_NAME)
+        valuesNightDir.mkdirs()
 
         val header = """
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
             """.trimIndent()
 
-        val content = colors.map { colorNode ->
-            if (colorNode.isThemed()) {
-                "\t<color name=\"${colorNode.name}_light\">#${replaceColorAlpha(colorNode.lightColor)}</color>\n\t<color name=\"${colorNode.name}_dark\">#${replaceColorAlpha(colorNode.darkColor)}</color>"
-            } else {
-                "\t<color name=\"${colorNode.name}\">#${replaceColorAlpha(colorNode.singleColor)}</color>"
-            }
-        }.joinToString("\n")
-
         val footer = """
 </resources>
             """.trimIndent()
 
-        stringsFile.writeText(header + "\n")
-        stringsFile.appendText(content)
-        stringsFile.appendText("\n" + footer)
+        val defaultContent = colors.joinToString("\n") { colorNode ->
+            if (colorNode.isThemed()) {
+                buildColorString(colorNode.name, replaceColorAlpha(colorNode.lightColor))
+            } else {
+                buildColorString(colorNode.name, replaceColorAlpha(colorNode.singleColor))
+            }
+        }
+
+        val darkContent = colors.filter { it.isThemed() }.joinToString("\n") { colorNode ->
+            buildColorString(colorNode.name, replaceColorAlpha(colorNode.darkColor))
+        }
+
+        println("defaultContent = $defaultContent")
+        println("darkContent = $darkContent")
+
+        defaultStringsFile.writeText(header + "\n")
+        defaultStringsFile.appendText(defaultContent)
+        defaultStringsFile.appendText("\n" + footer)
+
+        darkStringsFile.writeText(header + "\n")
+        darkStringsFile.appendText(darkContent)
+        darkStringsFile.appendText("\n" + footer)
+    }
+
+    private fun buildColorString(name: String, colorCode: String?): String {
+        return "\t<color name=\"$name\">#$colorCode</color>"
+    }
+
+    companion object {
+        private const val COLORS_XML_FILE_NAME = "colors.xml"
     }
 }
