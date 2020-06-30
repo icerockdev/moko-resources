@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="textColor">EE2050FF</color>
+    <color name="textColor">42A3A2FF</color>
     <color name="whiteThemed">
         <light>FFFFFFFF</light>
         <dark>000000FF</dark>

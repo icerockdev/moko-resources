@@ -37,9 +37,9 @@ class AndroidColorsGenerator(
 
         val content = colors.map { colorNode ->
             if (colorNode.isThemed()) {
-                "\t<color name=\"${colorNode.name}_light\">#${colorNode.lightColor}</color>\n\t<color name=\"${colorNode.name}_dark\">#${colorNode.darkColor}</color>"
+                "\t<color name=\"${colorNode.name}_light\">#${replaceColorAlpha(colorNode.lightColor)}</color>\n\t<color name=\"${colorNode.name}_dark\">#${replaceColorAlpha(colorNode.darkColor)}</color>"
             } else {
-                "\t<color name=\"${colorNode.name}\">#${colorNode.singleColor}</color>"
+                "\t<color name=\"${colorNode.name}\">#${replaceColorAlpha(colorNode.singleColor)}</color>"
             }
         }.joinToString("\n")
 

@@ -58,9 +58,9 @@ abstract class ColorsGenerator(
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyInitializer(color: ColorNode): CodeBlock? {
         val className = if (color.isThemed()) {
-            "Themed(light = Color(0x${argbToRgba(color.lightColor)}), dark = Color(0x${argbToRgba(color.darkColor)}))"
+            "Themed(light = Color(0x${color.lightColor}), dark = Color(0x${color.darkColor}))"
         } else {
-            "Single(color = Color(0x${argbToRgba(color.singleColor)}))"
+            "Single(color = Color(0x${color.singleColor}))"
         }
         return CodeBlock.of(className)
     }
@@ -129,10 +129,11 @@ abstract class ColorsGenerator(
         }
     }
 
-    private fun argbToRgba(color: String?): String? {
-        return color?.substring(0,2)?.let {
-            "${color.substringAfter(it)}$it"
-        }
+    protected fun replaceColorAlpha(color: String?): String? {
+        if(color == null) return color
+
+        val alpha = color.substring(color.length - 2, color.length)
+        return "$alpha${color.removeRange(color.length - 2, color.length)}"
     }
 
     companion object {
@@ -143,9 +144,9 @@ abstract class ColorsGenerator(
 
 data class ColorNode(
     val name: String,
-    val lightColor: String?,
-    val darkColor: String?,
-    val singleColor: String?
+    val lightColor: String?, // as rgba
+    val darkColor: String?, // as rgba
+    val singleColor: String? // as rgba
 ) {
     fun isThemed(): Boolean = lightColor != null && darkColor != null
 }

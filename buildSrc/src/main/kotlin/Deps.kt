@@ -17,6 +17,7 @@ object Deps {
         val kotlinKapt = PluginDesc(id = "kotlin-kapt")
         val kotlinAndroid = PluginDesc(id = "kotlin-android")
         val kotlinAndroidExtensions = PluginDesc(id = "kotlin-android-extensions")
+        val kotlinSerialization = PluginDesc(id = "kotlin-serialization")
 
         val mobileMultiplatform = PluginDesc(id = "dev.icerock.mobile.multiplatform")
 
@@ -78,7 +79,7 @@ object Deps {
 
         object Jvm {
             const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
-            const val koson = "com.lectra:koson:${Versions.Libs.Jvm.koson}"
+            const val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.Libs.Jvm.kotlinxSerialization}"
             const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.Libs.Jvm.apacheCommonsText}"
             const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}"
         }

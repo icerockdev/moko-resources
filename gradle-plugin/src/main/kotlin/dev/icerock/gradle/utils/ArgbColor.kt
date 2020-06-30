@@ -13,3 +13,11 @@ internal fun parseArgbColor(argbColor: Long): ArgbColor {
     val a: Float = (argbColor shr 24 and 0xff) / 255.0f
     return ArgbColor(a, r, g, b)
 }
+
+internal fun parseRgbaColor(rgbaColor: Long): ArgbColor {
+    val r: Float = (rgbaColor shr 24 and 0xff) / 255.0f
+    val g: Float = (rgbaColor shr 16 and 0xff) / 255.0f
+    val b: Float = (rgbaColor shr 8 and 0xff) / 255.0f
+    val a: Float = (rgbaColor and 0xff) / 255.0f
+    return ArgbColor(a, r, g, b)
+}

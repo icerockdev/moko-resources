@@ -4,16 +4,16 @@
 
 package dev.icerock.gradle.generator.ios
 
-import com.lectra.koson.ObjectType
-import com.lectra.koson.arr
-import com.lectra.koson.obj
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.utils.ArgbColor
-import dev.icerock.gradle.utils.parseArgbColor
+import dev.icerock.gradle.utils.parseRgbaColor
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.json
+import kotlinx.serialization.json.jsonArray
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -41,28 +41,31 @@ class IosColorsGenerator(
             contentsFile.createNewFile()
 
             val colorContentObj = if (colorNode.isThemed()) {
-                val lightColor = parseArgbColor(colorNode.lightColor!!.toLong(16))
-                val darkColor = parseArgbColor(colorNode.darkColor!!.toLong(16))
+                val lightColor = parseRgbaColor(colorNode.lightColor!!.toLong(16))
+                val darkColor = parseRgbaColor(colorNode.darkColor!!.toLong(16))
 
                 val anyColor = buildColorIdiomJsonObj(lightColor) // set any color as light
                 val lightColorObj = buildAppearancesIdiomJsonBlock("light", lightColor)
                 val darkColorObj = buildAppearancesIdiomJsonBlock("dark", darkColor)
 
-                arr[anyColor, lightColorObj, darkColorObj]
+                jsonArray {
+                    +anyColor
+                    +lightColorObj
+                    +darkColorObj
+                }
             } else {
-                val singleColor = parseArgbColor(colorNode.singleColor!!.toLong(16))
-
-                arr[buildColorIdiomJsonObj(singleColor)]
+                val singleColor = parseRgbaColor(colorNode.singleColor!!.toLong(16))
+                jsonArray { +buildColorIdiomJsonObj(singleColor) }
             }
 
-            val resultObj = obj {
+            val resultObj = json {
                 "colors" to colorContentObj
-                "info" to obj {
+                "info" to json {
                     "author" to "xcode"
                     "version" to 1
                 }
             }
-            contentsFile.writeText(resultObj.pretty())
+            contentsFile.writeText(resultObj.toString())
         }
 
         val process = Runtime.getRuntime().exec(
@@ -82,9 +85,9 @@ class IosColorsGenerator(
         }
     }
 
-    private fun buildColorJsonObj(argbColor: ArgbColor): ObjectType = obj {
+    private fun buildColorJsonObj(argbColor: ArgbColor): JsonObject = json {
         "color-space" to "srgb"
-        "components" to obj {
+        "components" to json {
             "alpha" to argbColor.a
             "red" to argbColor.r
             "green" to argbColor.g
@@ -92,19 +95,19 @@ class IosColorsGenerator(
         }
     }
 
-    private fun buildColorIdiomJsonObj(argbColor: ArgbColor): ObjectType = obj {
+    private fun buildColorIdiomJsonObj(argbColor: ArgbColor): JsonObject = json {
         "color" to buildColorJsonObj(argbColor)
         "idiom" to "universal"
     }
 
-    private fun buildAppearancesIdiomJsonBlock(valueTag: String, argbColor: ArgbColor): ObjectType {
-        return obj {
-            "appearances" to arr[
-                    obj {
-                        "appearance" to "luminosity"
-                        "value" to valueTag
-                    }
-            ]
+    private fun buildAppearancesIdiomJsonBlock(valueTag: String, argbColor: ArgbColor): JsonObject {
+        return json {
+            "appearances" to jsonArray {
+                +json {
+                    "appearance" to "luminosity"
+                    "value" to valueTag
+                }
+            }
             "color" to buildColorJsonObj(argbColor)
             "idiom" to "universal"
         }
