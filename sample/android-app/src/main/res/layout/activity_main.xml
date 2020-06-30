@@ -15,12 +15,12 @@
 
     <TextView
         android:id="@+id/textView"
-        android:textColor="@color/themedColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/stringDescTextView"
+        android:textColor="@color/textColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>
