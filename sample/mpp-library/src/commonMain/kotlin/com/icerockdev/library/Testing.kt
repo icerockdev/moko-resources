@@ -8,7 +8,6 @@ import com.icerockdev.library.nested.nestedFile
 import com.icerockdev.library.nested.nestedTest
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
-import dev.icerock.moko.resources.desc.Composition
 import dev.icerock.moko.resources.desc.Plural
 import dev.icerock.moko.resources.desc.PluralFormatted
 import dev.icerock.moko.resources.desc.Raw
@@ -16,7 +15,10 @@ import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.ResourceFormatted
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.desc.joinToStringDesc
 import dev.icerock.moko.resources.desc.plus
+import dev.icerock.moko.resources.format
+import dev.icerock.moko.resources.getImageByFileName
 
 @Suppress("MagicNumber")
 object Testing {
@@ -39,6 +41,10 @@ object Testing {
         return MR.images.home_black_18
     }
 
+    fun getDrawableByFileName(): ImageResource? {
+        return MR.images.getImageByFileName("home_black_18")
+    }
+
     fun getStringDesc(): StringDesc {
         // create simple string
         val simpleString = StringDesc.Resource(MR.strings.test_simple)
@@ -46,6 +52,7 @@ object Testing {
 
         // create formatted string
         val formattedString = StringDesc.ResourceFormatted(MR.strings.format, 9)
+        val formattedStringExt = MR.strings.format.format(9)
 
         // create plural
         val simplePlural = StringDesc.Plural(MR.plurals.test_plural, 10)
@@ -53,6 +60,7 @@ object Testing {
 
         // create formatted plural
         val formattedPlural = StringDesc.PluralFormatted(MR.plurals.my_plural, 10, 10)
+        val formattedPluralExt = MR.plurals.my_plural.format(10, 10)
 
         // raw string
         val simpleRaw = StringDesc.Raw("raw string")
@@ -66,6 +74,7 @@ object Testing {
 
         // create
         val positional = StringDesc.ResourceFormatted(MR.strings.positional, 9, "str")
+        val positionalExt = MR.strings.positional.format(9, "str")
 
         // result as list composition
         val list = listOf(
@@ -82,7 +91,7 @@ object Testing {
             positional
         )
 
-        return StringDesc.Composition(list, separator = "\n")
+        return list.joinToStringDesc("\n")
     }
 
     fun getFont1() = MR.fonts.Raleway.italic

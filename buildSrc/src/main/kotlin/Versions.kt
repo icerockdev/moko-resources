@@ -12,7 +12,7 @@ object Versions {
     const val kotlin = "1.3.72"
     const val detekt = "1.7.4"
 
-    private const val mokoResources = "0.10.1"
+    private const val mokoResources = "0.11.0"
 
     object Plugins {
         const val android = "3.6.2"
@@ -35,11 +35,13 @@ object Versions {
         object MultiPlatform {
             const val mokoResources = Versions.mokoResources
             const val mokoParcelize = "0.3.0"
+            const val mokoGraphics = "0.3.0"
         }
 
         object Jvm {
             const val apacheCommonsText = "1.3"
-            const val kotlinPoet = "1.3.0"
+            const val kotlinPoet = "1.6.0"
+            const val kotlinxSerialization = "0.20.0"
         }
     }
 }

@@ -9,15 +9,18 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class IosPluralsGenerator(
     pluralsFileTree: FileTree,
     private val baseLocalizationRegion: String
 ) : PluralsGenerator(
     pluralsFileTree = pluralsFileTree
-) {
+), ObjectBodyExtendable by IosGeneratorHelper() {
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

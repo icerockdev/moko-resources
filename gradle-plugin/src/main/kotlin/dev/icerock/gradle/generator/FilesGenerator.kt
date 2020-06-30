@@ -19,27 +19,28 @@ abstract class FilesGenerator(
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
-    private val resourceClass = ClassName("dev.icerock.moko.resources", "FileResource")
+    override val resourceClassName = ClassName("dev.icerock.moko.resources", "FileResource")
+    override val mrObjectName: String = "files"
 
-    override fun generate(resourcesGenerationDir: File): TypeSpec {
+    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         val fileSpecs = inputFileTree.map { file ->
             FileSpec(
                 key = processKey(file.nameWithoutExtension),
                 file = file
             )
         }.sortedBy { it.key }
-        val typeSpec = createTypeSpec(fileSpecs)
+        val typeSpec = createTypeSpec(fileSpecs, objectBuilder)
         generateResources(resourcesGenerationDir, fileSpecs)
         return typeSpec
     }
 
-    private fun createTypeSpec(keys: List<FileSpec>): TypeSpec {
-        val classBuilder = TypeSpec.objectBuilder("files")
+    private fun createTypeSpec(keys: List<FileSpec>, objectBuilder: TypeSpec.Builder): TypeSpec {
         @Suppress("SpreadOperator")
-        classBuilder.addModifiers(*getClassModifiers())
+        objectBuilder.addModifiers(*getClassModifiers())
 
-        keys.forEach { classBuilder.addProperty(generateFileProperty(it)) }
-        return classBuilder.build()
+        keys.forEach { objectBuilder.addProperty(generateFileProperty(it)) }
+        extendObjectBody(objectBuilder)
+        return objectBuilder.build()
     }
 
     override fun getImports(): List<ClassName> = emptyList()
@@ -48,7 +49,7 @@ abstract class FilesGenerator(
         fileSpec: FileSpec
     ): PropertySpec {
         @Suppress("SpreadOperator")
-        return PropertySpec.builder(fileSpec.key, resourceClass)
+        return PropertySpec.builder(fileSpec.key, resourceClassName)
             .addModifiers(*getPropertyModifiers())
             .apply {
                 getPropertyInitializer(fileSpec)?.let { initializer(it) }
@@ -65,6 +66,8 @@ abstract class FilesGenerator(
     protected fun processKey(key: String): String {
         return key.replace("-", "_")
     }
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     abstract fun getClassModifiers(): Array<KModifier>
 

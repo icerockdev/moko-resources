@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.icerockdev.library.Testing
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         imageView.setImageResource(drawable.drawableResId)
         textView.text = text
         textView.typeface = Testing.getFont1().getTypeface(context = this)
+
+        val textColor = ContextCompat.getColor(this, R.color.textColor)
+        textView.setTextColor(textColor)
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
         stringDescTextView.typeface = Testing.getFont2().getTypeface(context = this)

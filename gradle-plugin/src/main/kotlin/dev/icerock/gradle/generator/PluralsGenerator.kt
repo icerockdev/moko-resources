@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.ios.IosPluralsGenerator
@@ -18,6 +19,9 @@ typealias PluralMap = Map<String, String>
 abstract class PluralsGenerator(
     private val pluralsFileTree: FileTree
 ) : BaseGenerator<PluralMap>() {
+
+    override val resourceClassName = ClassName("dev.icerock.moko.resources", "PluralsResource")
+    override val mrObjectName: String = "plurals"
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, PluralMap>> {
         return pluralsFileTree.map { file ->
@@ -36,15 +40,9 @@ abstract class PluralsGenerator(
         }
     }
 
-    override fun getClassName(): String {
-        return "plurals"
-    }
-
-    override fun getPropertyClass(): ClassName {
-        return ClassName("dev.icerock.moko.resources", "PluralsResource")
-    }
-
     override fun getImports(): List<ClassName> = emptyList()
+
+    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     private fun loadLanguagePlurals(pluralsFile: File): Map<KeyType, PluralMap> {
         val dbFactory = DocumentBuilderFactory.newInstance()

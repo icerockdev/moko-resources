@@ -7,14 +7,18 @@ package dev.icerock.gradle.generator.ios
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
+import dev.icerock.gradle.generator.ObjectBodyExtendable
+import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.ASSETS_DIR_NAME
 import org.gradle.api.file.FileTree
 import java.io.File
 
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class IosImagesGenerator(
     inputFileTree: FileTree
 ) : ImagesGenerator(
     inputFileTree = inputFileTree
-) {
+), ObjectBodyExtendable by IosGeneratorHelper() {
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -30,7 +34,7 @@ class IosImagesGenerator(
         resourcesGenerationDir: File,
         keyFileMap: Map<String, List<File>>
     ) {
-        val assetsDirectory = File(resourcesGenerationDir, "Assets.xcassets")
+        val assetsDirectory = File(resourcesGenerationDir, ASSETS_DIR_NAME)
 
         keyFileMap.forEach { (key, files) ->
             val assetDir = File(assetsDirectory, "$key.imageset")
@@ -62,22 +66,6 @@ $imagesContent
 }"""
 
             contentsFile.writeText(content)
-        }
-
-        val process = Runtime.getRuntime().exec(
-            "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
-            emptyArray(),
-            assetsDirectory.parentFile
-        )
-        val errors = process.errorStream.bufferedReader().readText()
-        val input = process.inputStream.bufferedReader().readText()
-        val result = process.waitFor()
-        if (result != 0) {
-            println("can't compile assets - $result")
-            println(input)
-            println(errors)
-        } else {
-            assetsDirectory.deleteRecursively()
         }
     }
 

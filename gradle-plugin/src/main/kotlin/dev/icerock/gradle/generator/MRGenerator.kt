@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -33,11 +34,20 @@ abstract class MRGenerator(
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
 
+        beforeMRGeneration()
+
         @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
             .addModifiers(*getMRClassModifiers())
 
-        generators.forEach { mrClassSpec.addType(it.generate(resourcesGenerationDir)) }
+        generators.forEach { generator ->
+            val builder = TypeSpec.objectBuilder(generator.mrObjectName)
+
+            val fileResourceInterfaceClassName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
+            builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
+
+            mrClassSpec.addType(generator.generate(resourcesGenerationDir, builder))
+        }
 
         processMRClass(mrClassSpec)
 
@@ -53,6 +63,8 @@ abstract class MRGenerator(
 
         val file = fileSpec.build()
         file.writeTo(sourcesGenerationDir)
+
+        afterMRGeneration()
     }
 
     fun apply(project: Project) {
@@ -69,6 +81,9 @@ abstract class MRGenerator(
         apply(generationTask = genTask, project = project)
     }
 
+    protected open fun beforeMRGeneration() = Unit
+    protected open fun afterMRGeneration() = Unit
+
     protected abstract fun getMRClassModifiers(): Array<KModifier>
     protected abstract fun apply(generationTask: Task, project: Project)
 
@@ -79,8 +94,11 @@ abstract class MRGenerator(
         const val mrClassName = "MR"
     }
 
-    interface Generator {
-        fun generate(resourcesGenerationDir: File): TypeSpec
+    interface Generator : ObjectBodyExtendable {
+        val mrObjectName: String
+        val resourceClassName: ClassName
+
+        fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
         fun getImports(): List<ClassName>
     }
 
