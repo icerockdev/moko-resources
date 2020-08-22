@@ -30,6 +30,7 @@ abstract class ColorsGenerator(
     protected val themedColorClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
 
+    @Suppress("SpreadOperator")
     override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
         extendObjectBody(objectBuilder)
@@ -130,7 +131,7 @@ abstract class ColorsGenerator(
     }
 
     protected fun replaceColorAlpha(color: String?): String? {
-        if(color == null) return color
+        if (color == null) return color
 
         val alpha = color.substring(color.length - 2, color.length)
         return "$alpha${color.removeRange(color.length - 2, color.length)}"

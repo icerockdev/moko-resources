@@ -13,7 +13,7 @@ expect interface StringDesc {
         object System : LocaleType
         class Custom(locale: String) : LocaleType
     }
-    
+
     companion object {
         var localeType: LocaleType
     }

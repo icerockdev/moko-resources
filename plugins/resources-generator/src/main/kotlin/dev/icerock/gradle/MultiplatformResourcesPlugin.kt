@@ -67,7 +67,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         multiplatformExtension: KotlinMultiplatformExtension,
         androidExtension: LibraryExtension
     ) {
-        val androidMainSourceSet = androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+        val androidMainSourceSet =
+            androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
         val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
         val commonResources = commonSourceSet.resources
@@ -95,8 +96,15 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
         setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
-        setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
-        if(HostManager.hostIsMac) {
+        setupAndroidGenerator(
+            targets,
+            androidMainSourceSet,
+            generatedDir,
+            mrClassPackage,
+            features,
+            target
+        )
+        if (HostManager.hostIsMac) {
             setupIosGenerator(
                 targets,
                 generatedDir,
@@ -146,7 +154,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             .filterNot { it.name.endsWith("Test") } // remove tests compilations
             .map { it.defaultSourceSet }
 
-        val androidSourceSet: MRGenerator.SourceSet = createSourceSet(androidMainSourceSet, kotlinSourceSets)
+        val androidSourceSet: MRGenerator.SourceSet =
+            createSourceSet(androidMainSourceSet, kotlinSourceSets)
         AndroidMRGenerator(
             generatedDir,
             androidSourceSet,

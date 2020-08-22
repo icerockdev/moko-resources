@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
-import java.util.*
+import java.util.Properties
 
 class IosMRGenerator(
     generatedDir: File,

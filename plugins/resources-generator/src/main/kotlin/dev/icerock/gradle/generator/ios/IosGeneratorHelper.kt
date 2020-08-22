@@ -21,6 +21,5 @@ class IosGeneratorHelper(private val propertyName: String = "nsBundle") :
             .build()
 
         classBuilder.addProperty(bundleProperty)
-
     }
 }

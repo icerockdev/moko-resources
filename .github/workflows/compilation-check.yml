@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Detekt
-        run: ./gradlew detekt
-      - name: Build & Tests
-        run: ./gradlew build
+      - name: Plugin check
+        run: ./gradlew -p plugins detekt build
+      - name: Library check
+        run: ./gradlew detekt build

@@ -41,7 +41,9 @@ class IosColorsGenerator(
             contentsFile.createNewFile()
 
             val colorContentObj = if (colorNode.isThemed()) {
+                @Suppress("MagicNumber")
                 val lightColor = parseRgbaColor(colorNode.lightColor!!.toLong(16))
+                @Suppress("MagicNumber")
                 val darkColor = parseRgbaColor(colorNode.darkColor!!.toLong(16))
 
                 /*
@@ -58,6 +60,7 @@ class IosColorsGenerator(
                     +darkColorObj
                 }
             } else {
+                @Suppress("MagicNumber")
                 val singleColor = parseRgbaColor(colorNode.singleColor!!.toLong(16))
                 jsonArray { +buildColorIdiomJsonObj(singleColor) }
             }
