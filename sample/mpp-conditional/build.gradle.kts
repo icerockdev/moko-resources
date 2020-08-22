@@ -9,13 +9,6 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Versions.Android.compileSdk)
-
-    defaultConfig {
-        minSdkVersion(Versions.Android.minSdk)
-        targetSdkVersion(Versions.Android.targetSdk)
-    }
-
     lintOptions {
         disable("ImpliedQuantity")
     }
@@ -39,8 +32,7 @@ kotlin {
 }
 
 dependencies {
-    commonMainImplementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
-    commonMainImplementation("dev.icerock.moko:resources:${Versions.Libs.MultiPlatform.mokoResources}")
+    commonMainImplementation(Deps.Libs.MultiPlatform.mokoResources.common)
 }
 
 multiplatformResources {

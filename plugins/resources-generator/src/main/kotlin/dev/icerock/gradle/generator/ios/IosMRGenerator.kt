@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
-import java.util.Properties
+import java.util.*
 
 class IosMRGenerator(
     generatedDir: File,
@@ -82,11 +82,12 @@ class IosMRGenerator(
 
             val klibFile = this.outputFile.get()
             val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
-            val resRepackDir = File(repackDir, "resources")
+            val defaultDir = File(repackDir, "default")
+            val resRepackDir = File(defaultDir, "resources")
 
             unzipTo(zipFile = klibFile, outputDirectory = repackDir)
 
-            val manifestFile = File(repackDir, "manifest")
+            val manifestFile = File(defaultDir, "manifest")
             val manifest = Properties()
             manifest.load(manifestFile.inputStream())
 
@@ -123,6 +124,7 @@ class IosMRGenerator(
             val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
             val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
 
+            klibFile.delete()
             repackKonan.zipDirAs(klibKonan)
 
             repackDir.deleteRecursively()
@@ -146,10 +148,13 @@ class IosMRGenerator(
                     .forEach {
                         project.logger.info("copy resources from $it")
                         val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
-                        val klib = KotlinLibraryLayoutImpl(klibKonan)
+                        val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
                         val layout = klib.extractingToTemp
 
-                        File(layout.resourcesDir.path).copyRecursively(framework.outputFile, overwrite = true)
+                        File(layout.resourcesDir.path).copyRecursively(
+                            framework.outputFile,
+                            overwrite = true
+                        )
                     }
             }
         }

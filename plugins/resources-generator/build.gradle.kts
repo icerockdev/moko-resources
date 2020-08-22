@@ -4,27 +4,26 @@
 
 plugins {
     `kotlin-dsl`
-    id("org.gradle.maven-publish")
+    plugin(Deps.Plugins.mavenPublish)
+    plugin(Deps.Plugins.detekt)
 }
 
 repositories {
-    mavenLocal()
-
     jcenter()
     google()
 }
 
+group = "dev.icerock.moko"
+version = Deps.mokoResourcesVersion
+
 dependencies {
+    compileOnly(Deps.Libs.Jvm.kotlinGradlePlugin)
+    compileOnly(Deps.Libs.Jvm.androidGradlePlugin)
     implementation(Deps.Libs.Jvm.kotlinPoet)
     implementation(Deps.Libs.Jvm.kotlinxSerialization)
-    compileOnly(Deps.Plugins.kotlinMultiplatform.module!!)
-    compileOnly(Deps.Plugins.androidLibrary.module!!)
     implementation(Deps.Libs.Jvm.apacheCommonsText)
+    implementation(Deps.Libs.Jvm.kotlinCompilerEmbeddable)
     detektPlugins(Deps.Libs.Jvm.detektFormatting)
-}
-
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
 }
 
 publishing {
@@ -36,14 +35,10 @@ publishing {
             password = System.getProperty("BINTRAY_KEY")
         }
     }
+}
 
-    publications {
-        register("plugin", MavenPublication::class) {
-            groupId = "dev.icerock.moko"
-            artifactId = "resources-generator"
-            version = Versions.Libs.MultiPlatform.mokoResources
-
-            from(components["java"])
-        }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }

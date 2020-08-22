@@ -19,19 +19,7 @@ buildscript {
         maven { url = uri("https://dl.bintray.com/icerockdev/plugins") }
     }
     dependencies {
-        val libraryPublish: Boolean = properties.containsKey("libraryPublish")
-
-        with(Deps.Plugins) {
-            listOfNotNull(
-                androidApplication,
-                androidLibrary,
-                kotlinMultiplatform,
-                kotlinKapt,
-                kotlinAndroid,
-                kotlinSerialization,
-                if (!libraryPublish) mokoResources else null
-            )
-        }.let { plugins(it) }
+        plugin(Deps.Plugins.mokoResources)
     }
 }
 
@@ -50,12 +38,29 @@ allprojects {
     apply(plugin = Deps.Plugins.detekt.id)
 
     configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
-        toolVersion = Versions.detekt
         input.setFrom("src/commonMain/kotlin", "src/androidMain/kotlin", "src/iosMain/kotlin")
     }
 
     dependencies {
         "detektPlugins"(Deps.Libs.Jvm.detektFormatting)
+    }
+
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module(Deps.Libs.MultiPlatform.mokoResources.common))
+                .with(project(":resources"))
+        }
+    }
+
+    plugins.withId(Deps.Plugins.androidLibrary.id) {
+        configure<com.android.build.gradle.LibraryExtension> {
+            compileSdkVersion(Deps.Android.compileSdk)
+
+            defaultConfig {
+                minSdkVersion(Deps.Android.minSdk)
+                targetSdkVersion(Deps.Android.targetSdk)
+            }
+        }
     }
 }
 

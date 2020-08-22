@@ -3,85 +3,96 @@
  */
 
 object Deps {
+    private const val kotlinVersion = "1.4.0"
+    private const val androidGradleVersion = "4.0.1"
+
+    private const val androidAppCompatVersion = "1.1.0"
+    private const val espressoCoreVersion = "3.2.0"
+    private const val testRunnerVersion = "1.2.0"
+    private const val testExtJunitVersion = "1.1.1"
+
+    private const val apacheCommonsTextVersion = "1.3"
+    private const val kotlinPoetVersion = "1.6.0"
+    private const val kotlinxSerializationVersion = "0.20.0"
+
+    private const val detektVersion = "1.7.4"
+
+    private const val mokoGraphicsVersion = "0.4.0"
+    private const val mokoParcelizeVersion = "0.4.0"
+    const val mokoResourcesVersion = "0.12.0"
+
+    object Android {
+        const val compileSdk = 28
+        const val targetSdk = 28
+        const val minSdk = 16
+    }
+
     object Plugins {
-        val androidApplication = PluginDesc(id = "com.android.application")
-        val androidLibrary = PluginDesc(
-            id = "com.android.library",
-            module = "com.android.tools.build:gradle:${Versions.Plugins.android}"
-        )
+        val androidApplication = GradlePlugin(id = "com.android.application")
+        val androidLibrary = GradlePlugin(id = "com.android.library")
+        val kotlinJvm = GradlePlugin(id = "org.jetbrains.kotlin.jvm")
+        val kotlinMultiplatform = GradlePlugin(id = "org.jetbrains.kotlin.multiplatform")
+        val kotlinKapt = GradlePlugin(id = "kotlin-kapt")
+        val kotlinAndroid = GradlePlugin(id = "kotlin-android")
+        val kotlinAndroidExtensions = GradlePlugin(id = "kotlin-android-extensions")
+        val kotlinSerialization = GradlePlugin(id = "kotlin-serialization")
+        val mavenPublish = GradlePlugin(id = "org.gradle.maven-publish")
 
-        val kotlinMultiplatform = PluginDesc(
-            id = "org.jetbrains.kotlin.multiplatform",
-            module = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Plugins.kotlin}"
-        )
-        val kotlinKapt = PluginDesc(id = "kotlin-kapt")
-        val kotlinAndroid = PluginDesc(id = "kotlin-android")
-        val kotlinAndroidExtensions = PluginDesc(id = "kotlin-android-extensions")
-        val kotlinSerialization = PluginDesc(id = "kotlin-serialization")
+        val mobileMultiplatform = GradlePlugin(id = "dev.icerock.mobile.multiplatform")
+        val iosFramework = GradlePlugin(id = "dev.icerock.mobile.multiplatform.ios-framework")
 
-        val mobileMultiplatform = PluginDesc(id = "dev.icerock.mobile.multiplatform")
-
-        val mokoResources = PluginDesc(
+        val mokoResources = GradlePlugin(
             id = "dev.icerock.mobile.multiplatform-resources",
-            module = "dev.icerock.moko:resources-generator:${Versions.Plugins.mokoResources}"
+            module = "dev.icerock.moko:resources-generator:$mokoResourcesVersion"
         )
 
-        val detekt = PluginDesc(id = "io.gitlab.arturbosch.detekt", version = Versions.detekt)
+        val detekt = GradlePlugin(
+            id = "io.gitlab.arturbosch.detekt",
+            version = detektVersion
+        )
     }
 
     object Libs {
         object Android {
-            val kotlinStdLib = AndroidLibrary(
-                name = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
-            )
-            val appCompat = AndroidLibrary(
-                name = "androidx.appcompat:appcompat:${Versions.Libs.Android.appCompat}"
-            )
+            val appCompat =
+                AndroidLibrary(name = "androidx.appcompat:appcompat:$androidAppCompatVersion")
 
             object AndroidTest {
-                val espressoCore = AndroidLibrary(
-                    name = "androidx.test.espresso:espresso-core:${Versions.Libs.Android.AndroidTest.espressoCore}"
-                )
-                val testRunner = AndroidLibrary(
-                    name = "androidx.test:runner:${Versions.Libs.Android.AndroidTest.testRunner}"
-                )
-                val testRules = AndroidLibrary(
-                    name = "androidx.test:rules:${Versions.Libs.Android.AndroidTest.testRunner}"
-                )
-                val testExtJunit = AndroidLibrary(
-                    name = "androidx.test.ext:junit:${Versions.Libs.Android.AndroidTest.testExtJunit}"
-                )
+                val espressoCore =
+                    AndroidLibrary(name = "androidx.test.espresso:espresso-core:$espressoCoreVersion")
+                val testRunner =
+                    AndroidLibrary(name = "androidx.test:runner:$testRunnerVersion")
+                val testRules =
+                    AndroidLibrary(name = "androidx.test:rules:$testRunnerVersion")
+                val testExtJunit =
+                    AndroidLibrary(name = "androidx.test.ext:junit:$testExtJunitVersion")
             }
         }
 
         object MultiPlatform {
-            val kotlinStdLib = MultiPlatformLibrary(
-                android = Android.kotlinStdLib.name,
-                common = "org.jetbrains.kotlin:kotlin-stdlib-common:${Versions.kotlin}"
-            )
-            val mokoResources = MultiPlatformLibrary(
-                common = "dev.icerock.moko:resources:${Versions.Libs.MultiPlatform.mokoResources}",
-                iosX64 = "dev.icerock.moko:resources-iosx64:${Versions.Libs.MultiPlatform.mokoResources}",
-                iosArm64 = "dev.icerock.moko:resources-iosarm64:${Versions.Libs.MultiPlatform.mokoResources}"
-            )
-            val mokoParcelize = MultiPlatformLibrary(
-                common = "dev.icerock.moko:parcelize:${Versions.Libs.MultiPlatform.mokoParcelize}",
-                iosX64 = "dev.icerock.moko:parcelize-iosx64:${Versions.Libs.MultiPlatform.mokoParcelize}",
-                iosArm64 = "dev.icerock.moko:parcelize-iosarm64:${Versions.Libs.MultiPlatform.mokoParcelize}"
-            )
-            val mokoGraphics = MultiPlatformLibrary(
-                common = "dev.icerock.moko:graphics:${Versions.Libs.MultiPlatform.mokoGraphics}",
-                iosX64 = "dev.icerock.moko:graphics-iosx64:${Versions.Libs.MultiPlatform.mokoGraphics}",
-                iosArm64 = "dev.icerock.moko:graphics-iosarm64:${Versions.Libs.MultiPlatform.mokoGraphics}"
-            )
-
+            val mokoResources =
+                MultiPlatformLibrary(common = "dev.icerock.moko:resources:$mokoResourcesVersion")
+            val mokoParcelize =
+                MultiPlatformLibrary(common = "dev.icerock.moko:parcelize:$mokoParcelizeVersion")
+            val mokoGraphics =
+                MultiPlatformLibrary(common = "dev.icerock.moko:graphics:$mokoGraphicsVersion")
         }
 
         object Jvm {
-            const val kotlinPoet = "com.squareup:kotlinpoet:${Versions.Libs.Jvm.kotlinPoet}"
-            const val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.Libs.Jvm.kotlinxSerialization}"
-            const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.Libs.Jvm.apacheCommonsText}"
-            const val detektFormatting = "io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}"
+            const val kotlinPoet =
+                "com.squareup:kotlinpoet:$kotlinPoetVersion"
+            const val kotlinxSerialization =
+                "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion"
+            const val apacheCommonsText =
+                "org.apache.commons:commons-text:$apacheCommonsTextVersion"
+            const val detektFormatting =
+                "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
+            const val kotlinGradlePlugin =
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+            const val androidGradlePlugin =
+                "com.android.tools.build:gradle:$androidGradleVersion"
+            const val kotlinCompilerEmbeddable =
+                "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion"
         }
     }
 }
