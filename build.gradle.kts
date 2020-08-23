@@ -47,7 +47,7 @@ allprojects {
 
     configurations.all {
         resolutionStrategy.dependencySubstitution {
-            substitute(module(Deps.Libs.MultiPlatform.mokoResources.common))
+            substitute(module(Deps.Libs.MultiPlatform.mokoResources))
                 .with(project(":resources"))
         }
     }

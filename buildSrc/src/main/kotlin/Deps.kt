@@ -70,12 +70,9 @@ object Deps {
         }
 
         object MultiPlatform {
-            val mokoResources =
-                MultiPlatformLibrary(common = "dev.icerock.moko:resources:$mokoResourcesVersion")
-            val mokoParcelize =
-                MultiPlatformLibrary(common = "dev.icerock.moko:parcelize:$mokoParcelizeVersion")
-            val mokoGraphics =
-                MultiPlatformLibrary(common = "dev.icerock.moko:graphics:$mokoGraphicsVersion")
+            const val mokoResources = "dev.icerock.moko:resources:$mokoResourcesVersion"
+            const val mokoParcelize = "dev.icerock.moko:parcelize:$mokoParcelizeVersion"
+            const val mokoGraphics = "dev.icerock.moko:graphics:$mokoGraphicsVersion"
         }
 
         object Jvm {

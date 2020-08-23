@@ -20,7 +20,7 @@ kotlin {
 }
 
 dependencies {
-    commonMainImplementation(Deps.Libs.MultiPlatform.mokoResources.common)
+    commonMainImplementation(Deps.Libs.MultiPlatform.mokoResources)
 }
 
 multiplatformResources {

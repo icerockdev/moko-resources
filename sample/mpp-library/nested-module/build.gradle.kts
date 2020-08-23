@@ -10,7 +10,7 @@ plugins {
 }
 
 dependencies {
-    mppLibrary(Deps.Libs.MultiPlatform.mokoResources)
+    commonMainImplementation(Deps.Libs.MultiPlatform.mokoResources)
 }
 
 multiplatformResources {

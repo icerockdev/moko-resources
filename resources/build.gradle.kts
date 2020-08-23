@@ -14,8 +14,8 @@ group = "dev.icerock.moko"
 version = Deps.mokoResourcesVersion
 
 dependencies {
-    mppLibrary(Deps.Libs.MultiPlatform.mokoParcelize)
-    mppLibrary(Deps.Libs.MultiPlatform.mokoGraphics)
+    commonMainApi(Deps.Libs.MultiPlatform.mokoParcelize)
+    commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics)
 
     androidLibrary(Deps.Libs.Android.appCompat)
 }
