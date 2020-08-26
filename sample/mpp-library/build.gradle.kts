@@ -17,7 +17,7 @@ android {
 }
 
 dependencies {
-    commonMainImplementation(Deps.Libs.MultiPlatform.mokoResources)
+    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
 
     commonMainImplementation(project("$path:nested-module"))
 }
