@@ -79,7 +79,7 @@ abstract class PluralsGenerator(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String
     ) : ResourceGeneratorFeature<PluralsGenerator> {
-        private val stringsFileTree = info.commonResources.matching { include("MR/**/plurals*.xml") }
+        private val stringsFileTree = info.commonResources.matching { it.include("MR/**/plurals*.xml") }
         override fun createCommonGenerator(): PluralsGenerator {
             return CommonPluralsGenerator(stringsFileTree)
         }

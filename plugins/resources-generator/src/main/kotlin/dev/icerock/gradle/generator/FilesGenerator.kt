@@ -82,7 +82,7 @@ abstract class FilesGenerator(
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FilesGenerator> {
         private val fileTree = info.commonResources.matching {
-            include("MR/files/**")
+            it.include("MR/files/**")
         }
 
         override fun createCommonGenerator(): FilesGenerator {

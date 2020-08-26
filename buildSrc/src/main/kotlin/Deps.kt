@@ -28,6 +28,7 @@ object Deps {
     }
 
     object Plugins {
+        val javaGradle = GradlePlugin(id = "java-gradle-plugin")
         val androidApplication = GradlePlugin(id = "com.android.application")
         val androidLibrary = GradlePlugin(id = "com.android.library")
         val kotlinJvm = GradlePlugin(id = "org.jetbrains.kotlin.jvm")

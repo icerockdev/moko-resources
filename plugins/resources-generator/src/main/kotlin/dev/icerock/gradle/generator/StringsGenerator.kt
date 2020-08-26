@@ -75,7 +75,7 @@ abstract class StringsGenerator(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String
     ) : ResourceGeneratorFeature<StringsGenerator> {
-        private val stringsFileTree = info.commonResources.matching { include("MR/**/strings*.xml") }
+        private val stringsFileTree = info.commonResources.matching { it.include("MR/**/strings*.xml") }
         override fun createCommonGenerator(): StringsGenerator {
             return CommonStringsGenerator(stringsFileTree)
         }

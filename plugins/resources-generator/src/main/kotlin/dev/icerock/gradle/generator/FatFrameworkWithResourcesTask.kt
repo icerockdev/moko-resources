@@ -18,10 +18,8 @@ open class FatFrameworkWithResourcesTask : FatFrameworkTask() {
             ?.filter { it.name.contains(".bundle") }
             ?.forEach { bundleFile ->
                 project.copy {
-                    from(bundleFile) {
-                        into(bundleFile.name)
-                    }
-                    into(fatFrameworkDir)
+                    it.from(bundleFile) { it.into(bundleFile.name) }
+                    it.into(fatFrameworkDir)
                 }
             }
     }

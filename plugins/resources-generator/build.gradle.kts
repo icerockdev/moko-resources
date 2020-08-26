@@ -3,7 +3,8 @@
  */
 
 plugins {
-    `kotlin-dsl`
+    plugin(Deps.Plugins.javaGradle)
+    plugin(Deps.Plugins.kotlinJvm)
     plugin(Deps.Plugins.mavenPublish)
     plugin(Deps.Plugins.detekt)
 }

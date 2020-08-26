@@ -12,15 +12,19 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.kotlin.dsl.support.unzipTo
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
+import java.io.InputStream
 import java.util.Properties
+import java.util.zip.ZipEntry
+import java.util.zip.ZipException
+import java.util.zip.ZipFile
 
 class IosMRGenerator(
     generatedDir: File,
@@ -77,10 +81,10 @@ class IosMRGenerator(
         val compileTask: KotlinNativeCompile = compilation.compileKotlinTask
         compileTask.dependsOn(generationTask)
 
-        compileTask.doLast {
-            this as KotlinNativeCompile
+        compileTask.doLast { task ->
+            task as KotlinNativeCompile
 
-            val klibFile = this.outputFile.get()
+            val klibFile = task.outputFile.get()
             val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
             val defaultDir = File(repackDir, "default")
             val resRepackDir = File(defaultDir, "resources")
@@ -141,12 +145,14 @@ class IosMRGenerator(
         frameworkBinaries.forEach { framework ->
             val linkTask = framework.linkTask
 
-            linkTask.doLast {
-                linkTask.libraries
-                    .plus(linkTask.intermediateLibrary.get())
+            linkTask.doLast { task ->
+                task as KotlinNativeLink
+
+                task.libraries
+                    .plus(task.intermediateLibrary.get())
                     .filter { it.extension == "klib" }
                     .forEach {
-                        project.logger.info("copy resources from $it")
+                        task.project.logger.info("copy resources from $it")
                         val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
                         val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
                         val layout = klib.extractingToTemp
@@ -159,6 +165,38 @@ class IosMRGenerator(
             }
         }
     }
+
+    private fun unzipTo(outputDirectory: File, zipFile: File) {
+        ZipFile(zipFile).use { zip ->
+            val outputDirectoryCanonicalPath = outputDirectory.canonicalPath
+            for (entry in zip.entries()) {
+                unzipEntryTo(outputDirectory, outputDirectoryCanonicalPath, zip, entry)
+            }
+        }
+    }
+
+
+    private fun unzipEntryTo(
+        outputDirectory: File,
+        outputDirectoryCanonicalPath: String,
+        zip: ZipFile,
+        entry: ZipEntry
+    ) {
+        val output = outputDirectory.resolve(entry.name)
+        if (!output.canonicalPath.startsWith(outputDirectoryCanonicalPath)) {
+            throw ZipException("Zip entry '${entry.name}' is outside of the output directory")
+        }
+        if (entry.isDirectory) {
+            output.mkdirs()
+        } else {
+            output.parentFile.mkdirs()
+            zip.getInputStream(entry).use { it.copyTo(output) }
+        }
+    }
+
+
+    private fun InputStream.copyTo(file: File): Long =
+        file.outputStream().use { copyTo(it) }
 
     companion object {
         const val BUNDLE_PROPERTY_NAME = "bundle"

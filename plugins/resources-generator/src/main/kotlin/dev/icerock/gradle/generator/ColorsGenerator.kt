@@ -111,7 +111,7 @@ abstract class ColorsGenerator(
         private val info: SourceInfo
     ) : ResourceGeneratorFeature<ColorsGenerator> {
 
-        private val colorsFileTree = info.commonResources.matching { include("MR/**/colors*.xml") }
+        private val colorsFileTree = info.commonResources.matching { it.include("MR/**/colors*.xml") }
 
         override fun createCommonGenerator(): ColorsGenerator {
             return CommonColorsGenerator(colorsFileTree)

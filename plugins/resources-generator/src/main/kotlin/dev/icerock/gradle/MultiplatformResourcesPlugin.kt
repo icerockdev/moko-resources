@@ -23,9 +23,6 @@ import dev.icerock.gradle.generator.ios.IosMRGenerator
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
@@ -41,12 +38,12 @@ import javax.xml.parsers.DocumentBuilderFactory
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val mrExtension =
-            target.extensions.create<MultiplatformResourcesPluginExtension>("multiplatformResources")
+            target.extensions.create("multiplatformResources", MultiplatformResourcesPluginExtension::class.java)
 
-        target.plugins.withType<KotlinMultiplatformPluginWrapper> {
-            val multiplatformExtension = target.extensions.getByType(this.projectExtensionClass)
+        target.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
+            val multiplatformExtension = target.extensions.getByType(KotlinMultiplatformExtension::class.java)
 
-            target.plugins.withType<LibraryPlugin> {
+            target.plugins.withType(LibraryPlugin::class.java) {
                 val androidExtension = target.extensions.getByName("android") as LibraryExtension
 
                 target.afterEvaluate {

@@ -109,7 +109,7 @@ abstract class FontsGenerator(
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FontsGenerator> {
         private val stringsFileTree = info.commonResources.matching {
-            include("MR/fonts/**.ttf")
+            it.include("MR/fonts/**.ttf")
         }
 
         override fun createCommonGenerator(): FontsGenerator {

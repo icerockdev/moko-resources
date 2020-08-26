@@ -73,7 +73,7 @@ abstract class MRGenerator(
         val genTask = runCatching {
             project.tasks.getByName(genTaskName)
         }.getOrNull() ?: project.tasks.create(genTaskName, GenerateMultiplatformResourcesTask::class.java) {
-            doLast {
+            it.doLast {
                 this@MRGenerator.generate()
             }
         }
