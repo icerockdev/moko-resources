@@ -3,8 +3,8 @@
  */
 
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
+    plugin(Deps.Plugins.androidApplication)
+    plugin(Deps.Plugins.kotlinAndroid)
 }
 
 android {
@@ -46,12 +46,12 @@ android {
 }
 
 dependencies {
-    implementation(Deps.Libs.Android.appCompat.name)
+    implementation(Deps.Libs.Android.appCompat)
 
     implementation(project(":sample:mpp-library"))
 
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.espressoCore.name)
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRunner.name)
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRules.name)
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.testExtJunit.name)
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.espressoCore)
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRunner)
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRules)
+    androidTestImplementation(Deps.Libs.Android.AndroidTest.testExtJunit)
 }

@@ -17,7 +17,7 @@ dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoParcelize)
     commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics)
 
-    androidLibrary(Deps.Libs.Android.appCompat)
+    androidMainImplementation(Deps.Libs.Android.appCompat)
 }
 
 publishing {
@@ -43,4 +43,10 @@ kotlin {
                 }
             }
         }
+}
+
+tasks.named("publishToMavenLocal") {
+    val pluginPublish = gradle.includedBuild("plugins")
+        .task(":resources-generator:publishToMavenLocal")
+    dependsOn(pluginPublish)
 }

@@ -55,18 +55,18 @@ object Deps {
 
     object Libs {
         object Android {
-            val appCompat =
-                AndroidLibrary(name = "androidx.appcompat:appcompat:$androidAppCompatVersion")
+            const val appCompat =
+                "androidx.appcompat:appcompat:$androidAppCompatVersion"
 
             object AndroidTest {
-                val espressoCore =
-                    AndroidLibrary(name = "androidx.test.espresso:espresso-core:$espressoCoreVersion")
-                val testRunner =
-                    AndroidLibrary(name = "androidx.test:runner:$testRunnerVersion")
-                val testRules =
-                    AndroidLibrary(name = "androidx.test:rules:$testRunnerVersion")
-                val testExtJunit =
-                    AndroidLibrary(name = "androidx.test.ext:junit:$testExtJunitVersion")
+                const val espressoCore =
+                    "androidx.test.espresso:espresso-core:$espressoCoreVersion"
+                const val testRunner =
+                    "androidx.test:runner:$testRunnerVersion"
+                const val testRules =
+                    "androidx.test:rules:$testRunnerVersion"
+                const val testExtJunit =
+                    "androidx.test.ext:junit:$testExtJunitVersion"
             }
         }
 
