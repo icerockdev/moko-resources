@@ -138,32 +138,32 @@ class IosMRGenerator(
     private fun setupFrameworkResources() {
         val kotlinNativeTarget = compilation.target as KotlinNativeTarget
 
-        val frameworkBinaries: List<Framework> = kotlinNativeTarget.binaries
-            .filterIsInstance<Framework>()
-            .filter { it.compilation == compilation }
+        kotlinNativeTarget.binaries
+            .matching { it is Framework && it.compilation == compilation }
+            .configureEach { binary ->
+                val framework = binary as Framework
 
-        frameworkBinaries.forEach { framework ->
-            val linkTask = framework.linkTask
+                val linkTask = framework.linkTask
 
-            linkTask.doLast { task ->
-                task as KotlinNativeLink
+                linkTask.doLast { task ->
+                    task as KotlinNativeLink
 
-                task.libraries
-                    .plus(task.intermediateLibrary.get())
-                    .filter { it.extension == "klib" }
-                    .forEach {
-                        task.project.logger.info("copy resources from $it")
-                        val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
-                        val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-                        val layout = klib.extractingToTemp
+                    task.libraries
+                        .plus(task.intermediateLibrary.get())
+                        .filter { it.extension == "klib" }
+                        .forEach {
+                            task.project.logger.info("copy resources from $it")
+                            val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
+                            val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
+                            val layout = klib.extractingToTemp
 
-                        File(layout.resourcesDir.path).copyRecursively(
-                            framework.outputFile,
-                            overwrite = true
-                        )
-                    }
+                            File(layout.resourcesDir.path).copyRecursively(
+                                framework.outputFile,
+                                overwrite = true
+                            )
+                        }
+                }
             }
-        }
     }
 
     private fun unzipTo(outputDirectory: File, zipFile: File) {
