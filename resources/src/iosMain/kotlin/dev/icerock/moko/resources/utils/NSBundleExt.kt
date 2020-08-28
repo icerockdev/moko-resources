@@ -22,7 +22,7 @@ fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
         if (url.pathExtension == "bundle") {
             val fullPath = "$bundlePath/$relativePath"
             val loadedIdentifier: String? = NSBundle.bundleWithPath(fullPath)?.bundleIdentifier
-            if(isBundleSearchLogEnabled) {
+            if (isBundleSearchLogEnabled) {
                 println("moko-resources auto-load bundle with identifier $loadedIdentifier at path $fullPath")
             }
         }
