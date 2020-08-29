@@ -132,27 +132,27 @@ class IosMRGenerator(
     private fun setupFrameworkResources() {
         val kotlinNativeTarget = compilation.target as KotlinNativeTarget
 
-        val frameworkBinaries: List<Framework> = kotlinNativeTarget.binaries
-            .filterIsInstance<Framework>()
-            .filter { it.compilation == compilation }
+        kotlinNativeTarget.binaries
+            .matching { it is Framework && it.compilation == compilation }
+            .configureEach {
+                val framework = this as Framework
 
-        frameworkBinaries.forEach { framework ->
-            val linkTask = framework.linkTask
+                val linkTask = framework.linkTask
 
-            linkTask.doLast {
-                linkTask.libraries
-                    .plus(linkTask.intermediateLibrary.get())
-                    .filter { it.extension == "klib" }
-                    .forEach {
-                        project.logger.info("copy resources from $it")
-                        val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
-                        val klib = KotlinLibraryLayoutImpl(klibKonan)
-                        val layout = klib.extractingToTemp
+                linkTask.doLast {
+                    linkTask.libraries
+                        .plus(linkTask.intermediateLibrary.get())
+                        .filter { it.extension == "klib" }
+                        .forEach {
+                            project.logger.info("copy resources from $it")
+                            val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
+                            val klib = KotlinLibraryLayoutImpl(klibKonan)
+                            val layout = klib.extractingToTemp
 
-                        File(layout.resourcesDir.path).copyRecursively(framework.outputFile, overwrite = true)
-                    }
+                            File(layout.resourcesDir.path).copyRecursively(framework.outputFile, overwrite = true)
+                        }
+                }
             }
-        }
     }
 
     companion object {
