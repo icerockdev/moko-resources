@@ -47,6 +47,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.10.0
   - 0.10.1
   - 0.11.0
+  - 0.11.1
 - kotlin 1.4.0
   - 0.12.0
 
@@ -80,8 +81,8 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "org.example.library"
-    iosBaseLocalizationRegion = "en" //optional, default "en"
+    multiplatformResourcesPackage = "org.example.library" // required
+    iosBaseLocalizationRegion = "en" // optional, default "en"
     multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
 }
 ```
