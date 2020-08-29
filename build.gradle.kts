@@ -45,13 +45,6 @@ allprojects {
         "detektPlugins"(Deps.Libs.Jvm.detektFormatting)
     }
 
-    configurations.all {
-        resolutionStrategy.dependencySubstitution {
-            substitute(module(Deps.Libs.MultiPlatform.mokoResources))
-                .with(project(":resources"))
-        }
-    }
-
     plugins.withId(Deps.Plugins.androidLibrary.id) {
         configure<com.android.build.gradle.LibraryExtension> {
             compileSdkVersion(Deps.Android.compileSdk)
