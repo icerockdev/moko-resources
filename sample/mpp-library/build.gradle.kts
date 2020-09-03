@@ -26,6 +26,10 @@ multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
 
+framework {
+    export(Deps.Libs.MultiPlatform.mokoGraphics)
+}
+
 // uncomment to test static framework
 // also in sample/mpp-library/MultiPlatformLibrary.podspec:14 flag should be uncommented
 //kotlin {
