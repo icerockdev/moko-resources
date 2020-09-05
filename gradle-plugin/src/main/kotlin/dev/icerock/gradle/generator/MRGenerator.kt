@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import java.io.File
@@ -43,7 +44,8 @@ abstract class MRGenerator(
         generators.forEach { generator ->
             val builder = TypeSpec.objectBuilder(generator.mrObjectName)
 
-            val fileResourceInterfaceClassName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
+            val fileResourceInterfaceClassName =
+                ClassName("dev.icerock.moko.resources", "ResourceContainer")
             builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
 
             mrClassSpec.addType(generator.generate(resourcesGenerationDir, builder))
@@ -72,7 +74,10 @@ abstract class MRGenerator(
         val genTaskName = "generateMR$name"
         val genTask = runCatching {
             project.tasks.getByName(genTaskName)
-        }.getOrNull() ?: project.tasks.create(genTaskName, GenerateMultiplatformResourcesTask::class.java) {
+        }.getOrNull() ?: project.tasks.create(
+            genTaskName,
+            GenerateMultiplatformResourcesTask::class.java
+        ) {
             doLast {
                 this@MRGenerator.generate()
             }
