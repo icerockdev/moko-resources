@@ -10,7 +10,6 @@ import com.android.build.gradle.api.AndroidSourceSet
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator
-import dev.icerock.gradle.generator.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.PluralsGenerator
@@ -20,6 +19,7 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.ios.IosMRGenerator
+import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
@@ -67,7 +67,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         multiplatformExtension: KotlinMultiplatformExtension,
         androidExtension: LibraryExtension
     ) {
-        val androidMainSourceSet = androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+        val androidMainSourceSet =
+            androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
         val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
         val commonResources = commonSourceSet.resources
@@ -95,8 +96,15 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
         setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
-        setupAndroidGenerator(targets, androidMainSourceSet, generatedDir, mrClassPackage, features, target)
-        if(HostManager.hostIsMac) {
+        setupAndroidGenerator(
+            targets,
+            androidMainSourceSet,
+            generatedDir,
+            mrClassPackage,
+            features,
+            target
+        )
+        if (HostManager.hostIsMac) {
             setupIosGenerator(
                 targets,
                 generatedDir,
@@ -146,7 +154,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             .filterNot { it.name.endsWith("Test") } // remove tests compilations
             .map { it.defaultSourceSet }
 
-        val androidSourceSet: MRGenerator.SourceSet = createSourceSet(androidMainSourceSet, kotlinSourceSets)
+        val androidSourceSet: MRGenerator.SourceSet =
+            createSourceSet(androidMainSourceSet, kotlinSourceSets)
         AndroidMRGenerator(
             generatedDir,
             androidSourceSet,

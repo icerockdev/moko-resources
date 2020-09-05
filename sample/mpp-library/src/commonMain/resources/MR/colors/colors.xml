@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="valueColor">B92743FF</color>
+    <color name="referenceColor">@color/valueColor</color>
     <color name="textColor">42A3A2FF</color>
     <color name="themedColor">
         <light>B92743FF</light>
+        <dark>7CCFEEFF</dark>
+    </color>
+    <color name="themedReferenceColor">
+        <light>@color/valueColor</light>
         <dark>7CCFEEFF</dark>
     </color>
 </resources>
