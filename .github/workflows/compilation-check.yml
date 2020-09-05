@@ -19,4 +19,4 @@ jobs:
       - name: Plugin check
         run: ./gradlew -p plugins detekt build publishToMavenLocal
       - name: Library check
-        run: ./gradlew detekt build publishToMavenLocal
+        run: ./gradlew detekt build publishToMavenLocal check

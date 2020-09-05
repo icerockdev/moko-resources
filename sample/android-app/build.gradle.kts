@@ -50,8 +50,8 @@ dependencies {
 
     implementation(project(":sample:mpp-library"))
 
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.espressoCore)
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRunner)
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.testRules)
-    androidTestImplementation(Deps.Libs.Android.AndroidTest.testExtJunit)
+    androidTestImplementation(Deps.Libs.Android.Tests.espressoCore)
+    androidTestImplementation(Deps.Libs.Android.Tests.testRunner)
+    androidTestImplementation(Deps.Libs.Android.Tests.testRules)
+    androidTestImplementation(Deps.Libs.Android.Tests.testExtJunit)
 }

@@ -58,9 +58,15 @@ object Deps {
             const val appCompat =
                 "androidx.appcompat:appcompat:$androidAppCompatVersion"
 
-            object AndroidTest {
+            object Tests {
                 const val espressoCore =
                     "androidx.test.espresso:espresso-core:$espressoCoreVersion"
+                const val kotlinTestJUnit =
+                    "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+                const val testCore =
+                    "androidx.test:core:1.3.0"
+                const val robolectric =
+                    "org.robolectric:robolectric:4.3"
                 const val testRunner =
                     "androidx.test:runner:$testRunnerVersion"
                 const val testRules =
@@ -74,6 +80,13 @@ object Deps {
             const val mokoResources = "dev.icerock.moko:resources:$mokoResourcesVersion"
             const val mokoParcelize = "dev.icerock.moko:parcelize:$mokoParcelizeVersion"
             const val mokoGraphics = "dev.icerock.moko:graphics:$mokoGraphicsVersion"
+
+            object Tests {
+                const val kotlinTest =
+                    "org.jetbrains.kotlin:kotlin-test-common:$kotlinVersion"
+                const val kotlinTestAnnotations =
+                    "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+            }
         }
 
         object Jvm {

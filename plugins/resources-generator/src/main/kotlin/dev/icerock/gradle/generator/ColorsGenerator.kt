@@ -73,6 +73,17 @@ abstract class ColorsGenerator(
 
     private fun parseColors(): List<ColorNode> {
         val colorNodes = mutableListOf<ColorNode>()
+        val colorValues = mutableMapOf<String, String>()
+
+        fun getColor(color: String?): String?  {
+            return if (color?.startsWith(XmlColorReferencePrefix) == true) {
+                val colorName = color.replace(XmlColorReferencePrefix, "")
+                colorValues[colorName]
+            } else {
+                color
+            }
+        }
+
         colorsFileTree.map { file ->
             val dbFactory = DocumentBuilderFactory.newInstance()
             val dBuilder = dbFactory.newDocumentBuilder()
@@ -97,10 +108,15 @@ abstract class ColorsGenerator(
                         }
                         else -> {
                             singleColor = xmlNode.textContent
+                            singleColor?.let {
+                                if (!it.startsWith(XmlColorReferencePrefix)) {
+                                    colorValues[colorName] = it
+                                }
+                            }
                         }
                     }
                 }
-                colorNodes.add(ColorNode(colorName, lightColor, darkColor, singleColor))
+                colorNodes.add(ColorNode(colorName, getColor(lightColor), getColor(darkColor), getColor(singleColor)))
             }
         }
 
@@ -140,6 +156,7 @@ abstract class ColorsGenerator(
     companion object {
         internal const val XmlColorTag = "color"
         internal const val XmlNodeAttrColorName = "name"
+        internal const val XmlColorReferencePrefix = "@color/"
     }
 }
 

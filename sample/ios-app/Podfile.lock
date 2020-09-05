@@ -1,16 +1,21 @@
 PODS:
+  - mpp_hierarhical (1.0)
   - MultiPlatformLibrary (0.1.0)
 
 DEPENDENCIES:
+  - mpp_hierarhical (from `../mpp-hierarhical`)
   - MultiPlatformLibrary (from `../mpp-library`)
 
 EXTERNAL SOURCES:
+  mpp_hierarhical:
+    :path: "../mpp-hierarhical"
   MultiPlatformLibrary:
     :path: "../mpp-library"
 
 SPEC CHECKSUMS:
+  mpp_hierarhical: fcee6b3bcb156048c1ba9fdecffbba0011a49c49
   MultiPlatformLibrary: 176fb8ade516666cd47e93de1b71ba0441a541bb
 
-PODFILE CHECKSUM: 95f068a0f3d27c63d621e129eadfe99686b704a0
+PODFILE CHECKSUM: 4a3e0257d46e2860c0187dfd4b46591e73bdd9d2
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3

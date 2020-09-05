@@ -27,7 +27,7 @@ multiplatformResources {
 }
 
 framework {
-    export(Deps.Libs.MultiPlatform.mokoGraphics)
+//    export(Deps.Libs.MultiPlatform.mokoGraphics)
 }
 
 // uncomment to test static framework

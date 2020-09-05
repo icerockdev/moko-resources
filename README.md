@@ -48,8 +48,9 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.10.1
   - 0.11.0
   - 0.11.1
-- kotlin 1.4.0
   - 0.12.0
+- kotlin 1.4.0
+  - 0.13.0
 
 ## Installation
 root build.gradle  
@@ -60,7 +61,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.12.0"
+        classpath "dev.icerock.moko:resources-generator:0.13.0"
     }
 }
 
@@ -77,7 +78,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.12.0")
+    commonMainApi("dev.icerock.moko:resources:0.13.0")
 }
 
 multiplatformResources {
@@ -96,6 +97,26 @@ ios-app Info.plist:
 </array>
 ```
 in array should be added all used languages.
+
+### Static kotlin frameworks support
+If project configured with static framework output (for example by `org.jetbrains.kotlin.native.cocoapods` plugin)
+ in Xcode project should be added `Build Phase` (at end of list) with script:
+```shell script
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
+    -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
+    -Pmoko.resources.CONFIGURATION=$CONFIGURATION \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
+```
+Please replace `:yourframeworkproject` to kotlin project gradle path, and set correct relative path (`$SRCROOT/../` in example).  
+This phase will copy resources into application, because static frameworks can't have resources.
+
+To disable warnings about static framework in gradle set flag:
+```kotlin
+multiplatformResources {
+    disableStaticFrameworkWarning = true
+}
+```
 
 ## Usage
 ### Example 1 - simple localization string
@@ -336,6 +357,9 @@ Then just launch task:
 
 ## Samples
 Please see more examples in the [sample directory](sample).
+
+Sample `mpp-hierarhical` contains usage of `org.jetbrains.kotlin.native.cocoapods` plugin and unit
+ tests with resources usage. 
 
 ## Set Up Locally 
 - The [resources directory](resources) contains the `resources` library;

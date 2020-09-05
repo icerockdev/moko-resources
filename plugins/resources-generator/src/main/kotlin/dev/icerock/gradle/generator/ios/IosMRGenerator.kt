@@ -9,12 +9,16 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
+import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.file.zipDirAs
@@ -69,6 +73,7 @@ class IosMRGenerator(
     override fun apply(generationTask: Task, project: Project) {
         setupKLibResources(generationTask)
         setupFrameworkResources()
+        setupTestsResources()
     }
 
     override fun beforeMRGeneration() {
@@ -137,6 +142,7 @@ class IosMRGenerator(
 
     private fun setupFrameworkResources() {
         val kotlinNativeTarget = compilation.target as KotlinNativeTarget
+        val project = kotlinNativeTarget.project
 
         kotlinNativeTarget.binaries
             .matching { it is Framework && it.compilation == compilation }
@@ -148,20 +154,90 @@ class IosMRGenerator(
                 linkTask.doLast { task ->
                     task as KotlinNativeLink
 
-                    task.libraries
-                        .plus(task.intermediateLibrary.get())
-                        .filter { it.extension == "klib" }
-                        .forEach {
-                            task.project.logger.info("copy resources from $it")
-                            val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
-                            val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-                            val layout = klib.extractingToTemp
+                    copyKlibsResourcesIntoFramework(task)
+                }
 
-                            File(layout.resourcesDir.path).copyRecursively(
-                                framework.outputFile,
-                                overwrite = true
-                            )
-                        }
+                if (framework.isStatic) {
+                    val resourcesExtension =
+                        project.extensions.getByType(MultiplatformResourcesPluginExtension::class.java)
+                    if (resourcesExtension.disableStaticFrameworkWarning.not()) {
+                        project.logger.warn("$linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources")
+                    }
+                    createCopyFrameworkResourcesTask(linkTask)
+                }
+            }
+    }
+
+    private fun copyKlibsResourcesIntoFramework(linkTask: KotlinNativeLink) {
+        val project = linkTask.project
+        val framework = linkTask.binary as Framework
+
+        copyResourcesFromLibraries(
+            linkTask = linkTask,
+            project = project,
+            outputDir = framework.outputFile
+        )
+    }
+
+    private fun copyResourcesFromLibraries(
+        linkTask: KotlinNativeLink,
+        project: Project,
+        outputDir: File
+    ) {
+        linkTask.libraries
+            .plus(linkTask.intermediateLibrary.get())
+            .filter { it.extension == "klib" }
+            .forEach {
+                project.logger.info("copy resources from $it into $outputDir")
+                val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
+                val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
+                val layout = klib.extractingToTemp
+
+                File(layout.resourcesDir.path).copyRecursively(
+                    target = outputDir,
+                    overwrite = true
+                )
+            }
+    }
+
+    private fun createCopyFrameworkResourcesTask(linkTask: KotlinNativeLink) {
+        val framework = linkTask.binary as Framework
+        val project = linkTask.project
+        val taskName = linkTask.name.replace("link", "copyResources")
+
+        val copyTask = project.tasks.create(taskName, CopyFrameworkResourcesToAppTask::class.java) {
+            it.framework = framework
+        }
+        copyTask.dependsOn(linkTask)
+
+        val xcodeTask = project.tasks.maybeCreate(
+            "copyFrameworkResourcesToApp",
+            CopyFrameworkResourcesToAppEntryPointTask::class.java
+        )
+
+        if (framework.target.konanTarget == xcodeTask.konanTarget &&
+            framework.buildType.getName() == xcodeTask.configuration
+        ) {
+            xcodeTask.dependsOn(copyTask)
+        }
+    }
+
+    private fun setupTestsResources() {
+        val kotlinNativeTarget = compilation.target as KotlinNativeTarget
+        val project = kotlinNativeTarget.project
+
+        kotlinNativeTarget.binaries
+            .matching { it is TestExecutable && it.compilation.associateWith.contains(compilation) }
+            .configureEach {
+                val executable = it as TestExecutable
+
+                val linkTask = executable.linkTask
+                linkTask.doLast {
+                    copyResourcesFromLibraries(
+                        linkTask = linkTask,
+                        project = project,
+                        outputDir = executable.outputDirectory
+                    )
                 }
             }
     }
