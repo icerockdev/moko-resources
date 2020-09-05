@@ -95,6 +95,26 @@ ios-app Info.plist:
 ```
 in array should be added all used languages.
 
+### Static kotlin frameworks support
+If project configured with static framework output (for example by `org.jetbrains.kotlin.native.cocoapods` plugin)
+ in Xcode project should be added `Build Phase` (at end of list) with script:
+```shell script
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
+    -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
+    -Pmoko.resources.CONFIGURATION=$CONFIGURATION \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
+```
+Please replace `:yourframeworkproject` to kotlin project gradle path, and set correct relative path (`$SRCROOT/../` in example).  
+This phase will copy resources into application, because static frameworks can't have resources.
+
+To disable warnings about static framework in gradle set flag:
+```kotlin
+multiplatformResources {
+    disableStaticFrameworkWarning = true
+}
+```
+
 ## Usage
 ### Example 1 - simple localization string
 The first step is a create a file `strings.xml` in `commonMain/resources/MR/base` with the following content:
