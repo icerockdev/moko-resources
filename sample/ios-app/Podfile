@@ -10,8 +10,19 @@ platform :ios, '11.0'
 # need for correct invalidate of cache MultiPlatformLibrary.framework
 install! 'cocoapods', :disable_input_output_paths => true
 
+pre_install do |installer|
+  puts "prebuild kotlin frameworks to correct integration by CocoaPods..."
+  puts "prebuild mpp-library..."
+  `cd .. && ./gradlew :sample:mpp-library:syncMultiPlatformLibraryDebugFrameworkIosX64`
+  puts "prebuild mpp-hierarhical..."
+  `cd .. && ./gradlew :sample:mpp-hierarhical:podspec`
+  puts "prebuild completed"
+end
+
 target 'TestProj' do
-  # MultiPlatformLibrary
-  # для корректной установки фреймворка нужно сначала скомпилировать котлин библиотеку - compile-kotlin-framework.sh (в корневой директории репозитория)
   pod 'MultiPlatformLibrary', :path => '../mpp-library'
+end
+
+target 'TestHierarhical' do
+  pod 'mpp_hierarhical', :path => '../mpp-hierarhical'
 end
