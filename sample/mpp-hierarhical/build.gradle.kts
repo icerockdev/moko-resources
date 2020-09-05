@@ -20,6 +20,10 @@ android {
     lintOptions {
         disable("ImpliedQuantity")
     }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 // CocoaPods requires the podspec to have a version.
@@ -56,6 +60,12 @@ kotlin {
 dependencies {
     commonMainImplementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
     commonMainApi("dev.icerock.moko:resources:${Versions.Libs.MultiPlatform.mokoResources}")
+
+    androidTestImplementation("org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}")
+    androidTestImplementation("androidx.test:core:1.3.0")
+    androidTestImplementation("org.robolectric:robolectric:4.3")
+    commonTestImplementation("org.jetbrains.kotlin:kotlin-test-common:${Versions.kotlin}")
+    commonTestImplementation("org.jetbrains.kotlin:kotlin-test-annotations-common:${Versions.kotlin}")
 }
 
 multiplatformResources {

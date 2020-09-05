@@ -22,3 +22,5 @@ jobs:
         run: ./gradlew -PlibraryPublish detekt :resources:publishToMavenLocal
       - name: Check demo library
         run: ./gradlew detekt :sample:mpp-conditional:build :sample:mpp-hierarhical:build :sample:mpp-library:build :sample:mpp-mixed:build
+      - name: Check tests
+        run: ./gradlew :sample:mpp-hierarhical:check

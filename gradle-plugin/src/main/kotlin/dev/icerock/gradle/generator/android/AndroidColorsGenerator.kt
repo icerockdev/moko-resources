@@ -54,9 +54,6 @@ class AndroidColorsGenerator(
             buildColorString(colorNode.name, replaceColorAlpha(colorNode.darkColor))
         }
 
-        println("defaultContent = $defaultContent")
-        println("darkContent = $darkContent")
-
         defaultStringsFile.writeText(header + "\n")
         defaultStringsFile.appendText(defaultContent)
         defaultStringsFile.appendText("\n" + footer)
