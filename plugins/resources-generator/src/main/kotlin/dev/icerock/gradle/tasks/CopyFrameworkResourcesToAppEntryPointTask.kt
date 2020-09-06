@@ -31,7 +31,11 @@ open class CopyFrameworkResourcesToAppEntryPointTask : DefaultTask() {
     @TaskAction
     fun action() {
         if (dependsOn.isEmpty()) {
-            throw IllegalStateException("framework link task with konanTarget $konanTarget and buildType $configuration not found!")
+            throw IllegalStateException(
+                """
+framework link task with konanTarget $konanTarget and buildType $configuration not found!
+"""
+            )
         }
     }
 }

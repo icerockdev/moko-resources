@@ -30,6 +30,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipFile
 
+@Suppress("TooManyFunctions")
 class IosMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
@@ -161,7 +162,11 @@ class IosMRGenerator(
                     val resourcesExtension =
                         project.extensions.getByType(MultiplatformResourcesPluginExtension::class.java)
                     if (resourcesExtension.disableStaticFrameworkWarning.not()) {
-                        project.logger.warn("$linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources")
+                        project.logger.warn(
+                            """
+$linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources
+"""
+                        )
                     }
                     createCopyFrameworkResourcesTask(linkTask)
                 }
@@ -251,7 +256,6 @@ class IosMRGenerator(
         }
     }
 
-
     private fun unzipEntryTo(
         outputDirectory: File,
         outputDirectoryCanonicalPath: String,
@@ -269,7 +273,6 @@ class IosMRGenerator(
             zip.getInputStream(entry).use { it.copyTo(output) }
         }
     }
-
 
     private fun InputStream.copyTo(file: File): Long =
         file.outputStream().use { copyTo(it) }

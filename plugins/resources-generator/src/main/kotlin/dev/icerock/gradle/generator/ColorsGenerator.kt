@@ -75,7 +75,7 @@ abstract class ColorsGenerator(
         val colorNodes = mutableListOf<ColorNode>()
         val colorValues = mutableMapOf<String, String>()
 
-        fun getColor(color: String?): String?  {
+        fun getColor(color: String?): String? {
             return if (color?.startsWith(XmlColorReferencePrefix) == true) {
                 val colorName = color.replace(XmlColorReferencePrefix, "")
                 colorValues[colorName]
@@ -116,7 +116,14 @@ abstract class ColorsGenerator(
                         }
                     }
                 }
-                colorNodes.add(ColorNode(colorName, getColor(lightColor), getColor(darkColor), getColor(singleColor)))
+                colorNodes.add(
+                    ColorNode(
+                        colorName,
+                        getColor(lightColor),
+                        getColor(darkColor),
+                        getColor(singleColor)
+                    )
+                )
             }
         }
 
@@ -127,7 +134,8 @@ abstract class ColorsGenerator(
         private val info: SourceInfo
     ) : ResourceGeneratorFeature<ColorsGenerator> {
 
-        private val colorsFileTree = info.commonResources.matching { it.include("MR/**/colors*.xml") }
+        private val colorsFileTree =
+            info.commonResources.matching { it.include("MR/**/colors*.xml") }
 
         override fun createCommonGenerator(): ColorsGenerator {
             return CommonColorsGenerator(colorsFileTree)
