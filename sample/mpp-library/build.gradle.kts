@@ -30,15 +30,3 @@ multiplatformResources {
 framework {
     export(Deps.Libs.MultiPlatform.mokoGraphics)
 }
-
-// uncomment to test static framework
-// also in sample/mpp-library/MultiPlatformLibrary.podspec:14 flag should be uncommented
-//kotlin {
-//    targets
-//        .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
-//        .flatMap { it.binaries }
-//        .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>()
-//        .forEach { framework ->
-//            framework.isStatic = true
-//        }
-//}
