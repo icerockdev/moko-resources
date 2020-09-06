@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.desc
 
 import platform.Foundation.NSBundle
+import kotlin.native.concurrent.ThreadLocal
 
 actual interface StringDesc {
     fun localized(): String

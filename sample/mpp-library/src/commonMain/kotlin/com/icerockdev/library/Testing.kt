@@ -4,8 +4,8 @@
 
 package com.icerockdev.library
 
-import com.icerockdev.library.nested.nestedFile
-import com.icerockdev.library.nested.nestedTest
+// import com.icerockdev.library.nested.nestedFile
+// import com.icerockdev.library.nested.nestedTest
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.Plural
@@ -33,7 +33,8 @@ object Testing {
             MR.plurals.test_plural.desc(1),
             MR.plurals.test_plural.desc(2),
             MR.plurals.test_plural.desc(3),
-            nestedTest()
+            // disabled while not fixed https://youtrack.jetbrains.com/issue/KT-41384
+//            nestedTest()
         )
     }
 
@@ -112,6 +113,8 @@ object Testing {
     }
 
     fun getNestedJsonFile(): FileResource {
-        return nestedFile()
+        return MR.files.some
+        // disabled while not fixed https://youtrack.jetbrains.com/issue/KT-41384
+//        return nestedFile()
     }
 }
