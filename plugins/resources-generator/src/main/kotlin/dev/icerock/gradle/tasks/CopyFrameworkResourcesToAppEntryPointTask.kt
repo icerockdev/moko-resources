@@ -5,13 +5,16 @@
 package dev.icerock.gradle.tasks
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.konan.target.KonanTarget
 
 open class CopyFrameworkResourcesToAppEntryPointTask : DefaultTask() {
 
-    val konanTarget: KonanTarget?
-    val configuration: String?
+    @get:Internal
+    internal val konanTarget: KonanTarget?
+    @get:Internal
+    internal val configuration: String?
 
     init {
         group = "moko-resources"
