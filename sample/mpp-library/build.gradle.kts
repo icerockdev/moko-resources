@@ -18,6 +18,7 @@ android {
 
 dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
+    mppLibrary(Deps.Libs.MultiPlatform.mokoGraphics)
 
     commonMainImplementation(project("$path:nested-module"))
 }
@@ -27,7 +28,7 @@ multiplatformResources {
 }
 
 framework {
-//    export(Deps.Libs.MultiPlatform.mokoGraphics)
+    export(Deps.Libs.MultiPlatform.mokoGraphics)
 }
 
 // uncomment to test static framework

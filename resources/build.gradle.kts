@@ -15,7 +15,7 @@ version = Deps.mokoResourcesVersion
 
 dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoParcelize)
-    commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics)
+    commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
 
     androidMainImplementation(Deps.Libs.Android.appCompat)
 }
