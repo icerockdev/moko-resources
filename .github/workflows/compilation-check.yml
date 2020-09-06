@@ -16,11 +16,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Check plugin build
-        run: ./gradlew -PlibraryPublish detekt :gradle-plugin:publishPluginPublicationToMavenLocal
-      - name: Check library build
-        run: ./gradlew -PlibraryPublish detekt :resources:publishToMavenLocal
-      - name: Check demo library
-        run: ./gradlew detekt :sample:mpp-conditional:build :sample:mpp-hierarhical:build :sample:mpp-library:build :sample:mpp-mixed:build
-      - name: Check tests
-        run: ./gradlew :sample:mpp-hierarhical:check
+      - name: Plugin check
+        run: ./gradlew -p plugins detekt build publishToMavenLocal
+      - name: Library check
+        run: ./gradlew detekt build publishToMavenLocal check

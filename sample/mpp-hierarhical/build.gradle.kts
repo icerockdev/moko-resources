@@ -10,13 +10,6 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Versions.Android.compileSdk)
-
-    defaultConfig {
-        minSdkVersion(Versions.Android.minSdk)
-        targetSdkVersion(Versions.Android.targetSdk)
-    }
-
     lintOptions {
         disable("ImpliedQuantity")
     }
@@ -51,21 +44,20 @@ kotlin {
 
         this.binaries.configureEach {
             if (this is org.jetbrains.kotlin.gradle.plugin.mpp.Framework) {
-                this.export("dev.icerock.moko:resources-$arch:${Versions.Libs.MultiPlatform.mokoResources}")
+                this.export(project(":resources"))
             }
         }
     }
 }
 
 dependencies {
-    commonMainImplementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
-    commonMainApi("dev.icerock.moko:resources:${Versions.Libs.MultiPlatform.mokoResources}")
+    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
 
-    androidTestImplementation("org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}")
-    androidTestImplementation("androidx.test:core:1.3.0")
-    androidTestImplementation("org.robolectric:robolectric:4.3")
-    commonTestImplementation("org.jetbrains.kotlin:kotlin-test-common:${Versions.kotlin}")
-    commonTestImplementation("org.jetbrains.kotlin:kotlin-test-annotations-common:${Versions.kotlin}")
+    androidTestImplementation(Deps.Libs.Android.Tests.kotlinTestJUnit)
+    androidTestImplementation(Deps.Libs.Android.Tests.testCore)
+    androidTestImplementation(Deps.Libs.Android.Tests.robolectric)
+    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
+    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
 }
 
 multiplatformResources {

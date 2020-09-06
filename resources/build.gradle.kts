@@ -7,28 +7,17 @@ plugins {
     plugin(Deps.Plugins.kotlinMultiplatform)
     plugin(Deps.Plugins.kotlinAndroidExtensions)
     plugin(Deps.Plugins.mobileMultiplatform)
-    id("maven-publish")
+    plugin(Deps.Plugins.mavenPublish)
 }
 
 group = "dev.icerock.moko"
-version = Versions.Libs.MultiPlatform.mokoResources
-
-android {
-    compileSdkVersion(Versions.Android.compileSdk)
-
-    defaultConfig {
-        minSdkVersion(Versions.Android.minSdk)
-        targetSdkVersion(Versions.Android.targetSdk)
-    }
-}
+version = Deps.mokoResourcesVersion
 
 dependencies {
-    mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
+    commonMainApi(Deps.Libs.MultiPlatform.mokoParcelize)
+    commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
 
-    mppLibrary(Deps.Libs.MultiPlatform.mokoParcelize)
-    mppLibrary(Deps.Libs.MultiPlatform.mokoGraphics)
-
-    androidLibrary(Deps.Libs.Android.appCompat)
+    androidMainImplementation(Deps.Libs.Android.appCompat)
 }
 
 publishing {
@@ -43,11 +32,21 @@ publishing {
 }
 
 kotlin {
-    targets.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().forEach { target ->
-        target.compilations.getByName("main") {
-            val pluralizedString by cinterops.creating {
-                defFile(project.file("src/iosMain/def/pluralizedString.def"))
+    targets
+        .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
+        .configureEach {
+            this as org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
+            compilations.getByName("main") {
+                val pluralizedString by cinterops.creating {
+                    defFile(project.file("src/iosMain/def/pluralizedString.def"))
+                }
             }
         }
-    }
+}
+
+tasks.named("publishToMavenLocal") {
+    val pluginPublish = gradle.includedBuild("plugins")
+        .task(":resources-generator:publishToMavenLocal")
+    dependsOn(pluginPublish)
 }

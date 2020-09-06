@@ -3,46 +3,31 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform")
-    id("dev.icerock.mobile.multiplatform-resources")
+    plugin(Deps.Plugins.androidLibrary)
+    plugin(Deps.Plugins.kotlinMultiplatform)
+    plugin(Deps.Plugins.mobileMultiplatform)
+    plugin(Deps.Plugins.iosFramework)
+    plugin(Deps.Plugins.mokoResources)
 }
 
 android {
-    compileSdkVersion(Versions.Android.compileSdk)
-
-    defaultConfig {
-        minSdkVersion(Versions.Android.minSdk)
-        targetSdkVersion(Versions.Android.targetSdk)
-    }
-
     lintOptions {
         disable("ImpliedQuantity")
     }
 }
 
-setupFramework(exports = listOf(Deps.Libs.MultiPlatform.mokoGraphics))
-
 dependencies {
-    mppLibrary(Deps.Libs.MultiPlatform.kotlinStdLib)
-    mppLibrary(Deps.Libs.MultiPlatform.mokoResources)
+    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
+    mppLibrary(Deps.Libs.MultiPlatform.mokoGraphics)
 
-    commonMainImplementation(project("$path:nested-module"))
+// disabled while not fixed https://youtrack.jetbrains.com/issue/KT-41384
+//    commonMainImplementation(project("$path:nested-module"))
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
 
-// uncomment to test static framework
-// also in sample/mpp-library/MultiPlatformLibrary.podspec:14 flag should be uncommented
-//kotlin {
-//    targets
-//        .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
-//        .flatMap { it.binaries }
-//        .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>()
-//        .forEach { framework ->
-//            framework.isStatic = true
-//        }
-//}
+framework {
+    export(Deps.Libs.MultiPlatform.mokoGraphics)
+}

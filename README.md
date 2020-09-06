@@ -1,5 +1,5 @@
 ![moko-resources](img/logo.png)  
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.3.72-orange)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.4.0-orange)
 
 # Mobile Kotlin resources
 This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
@@ -21,7 +21,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - **FatFrameworkWithResourcesTask** Gradle task.
 
 ## Requirements
-- Gradle version 5.6.4+
+- Gradle version 6.0+
 - Android API 16+
 - iOS version 9.0+
 
@@ -49,6 +49,8 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.11.0
   - 0.11.1
   - 0.12.0
+- kotlin 1.4.0
+  - 0.13.0
 
 ## Installation
 root build.gradle  
@@ -59,7 +61,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.12.0"
+        classpath "dev.icerock.moko:resources-generator:0.13.0"
     }
 }
 
@@ -76,7 +78,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.12.0")
+    commonMainApi("dev.icerock.moko:resources:0.13.0")
 }
 
 multiplatformResources {
