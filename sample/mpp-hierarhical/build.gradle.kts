@@ -44,7 +44,7 @@ kotlin {
 
         this.binaries.configureEach {
             if (this is org.jetbrains.kotlin.gradle.plugin.mpp.Framework) {
-                this.export("dev.icerock.moko:resources-$arch:${Deps.mokoResourcesVersion}")
+                this.export(project(":resources"))
             }
         }
     }
