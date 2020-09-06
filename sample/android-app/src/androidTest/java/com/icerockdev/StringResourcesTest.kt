@@ -46,5 +46,4 @@ abstract class StringResourcesTest {
         onView(ViewMatchers.withId(R.id.stringDescTextView))
             .check(ViewAssertions.matches(ViewMatchers.withText(stringDescsCheck)))
     }
-
 }
