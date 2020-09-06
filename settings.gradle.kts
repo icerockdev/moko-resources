@@ -7,7 +7,8 @@ include(":resources")
 
 include(":sample:android-app")
 include(":sample:mpp-library")
-include(":sample:mpp-library:nested-module")
+// disabled while not fixed https://youtrack.jetbrains.com/issue/KT-41384
+//include(":sample:mpp-library:nested-module")
 include(":sample:mpp-conditional")
 include(":sample:mpp-hierarhical")
 include(":sample:mpp-mixed")
