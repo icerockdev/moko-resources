@@ -51,6 +51,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.12.0
 - kotlin 1.4.0
   - 0.13.0
+  - 0.13.1
 
 ## Installation
 root build.gradle  
@@ -61,7 +62,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.13.0"
+        classpath "dev.icerock.moko:resources-generator:0.13.1"
     }
 }
 
@@ -78,7 +79,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.13.0")
+    commonMainApi("dev.icerock.moko:resources:0.13.1")
 }
 
 multiplatformResources {
@@ -364,8 +365,7 @@ Sample `mpp-hierarhical` contains usage of `org.jetbrains.kotlin.native.cocoapod
 ## Set Up Locally 
 - The [resources directory](resources) contains the `resources` library;
 - The [gradle-plugin directory](gradle-plugin) contains a gradle plugin with a `MR` class generator;
-- The [sample directory](sample) contains sample apps for Android and iOS; plus the mpp-library connected to the apps;
-- For local testing use the `./publishToMavenLocal.sh` script - so that sample apps use the locally published version.
+- The [sample directory](sample) contains sample apps for Android and iOS; plus the mpp-library connected to the apps.
 
 ## Contributing
 All development (both new features and bug fixes) is performed in the `develop` branch. This way `master` always contains the sources of the most recently released version. Please send PRs with bug fixes to the `develop` branch. Documentation fixes in the markdown files are an exception to this rule. They are updated directly in `master`.
