@@ -78,7 +78,8 @@ abstract class ColorsGenerator(
         fun getColor(color: String?): String? {
             return if (color?.startsWith(XmlColorReferencePrefix) == true) {
                 val colorName = color.replace(XmlColorReferencePrefix, "")
-                colorValues[colorName]
+                val colorValue = colorValues[colorName]
+                getColor(colorValue)
             } else {
                 color
             }
@@ -109,9 +110,7 @@ abstract class ColorsGenerator(
                         else -> {
                             singleColor = xmlNode.textContent
                             singleColor?.let {
-                                if (!it.startsWith(XmlColorReferencePrefix)) {
-                                    colorValues[colorName] = it
-                                }
+                                colorValues[colorName] = it
                             }
                         }
                     }
