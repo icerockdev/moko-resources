@@ -12,12 +12,18 @@ Pod::Spec.new do |spec|
     spec.module_name              = "#{spec.name}_umbrella"
 
 #     spec.static_framework = true
+
+    spec.ios.deployment_target = '11.0'
+    spec.osx.deployment_target = '10.6'
+
     spec.pod_target_xcconfig = {
         'MPP_LIBRARY_NAME' => 'MultiPlatformLibrary',
         'GRADLE_TASK[sdk=iphonesimulator*][config=*ebug]' => 'syncMultiPlatformLibraryDebugFrameworkIosX64',
         'GRADLE_TASK[sdk=iphonesimulator*][config=*elease]' => 'syncMultiPlatformLibraryReleaseFrameworkIosX64',
         'GRADLE_TASK[sdk=iphoneos*][config=*ebug]' => 'syncMultiPlatformLibraryDebugFrameworkIosArm64',
-        'GRADLE_TASK[sdk=iphoneos*][config=*elease]' => 'syncMultiPlatformLibraryReleaseFrameworkIosArm64'
+        'GRADLE_TASK[sdk=iphoneos*][config=*elease]' => 'syncMultiPlatformLibraryReleaseFrameworkIosArm64',
+        'GRADLE_TASK[sdk=macosx*][config=*ebug]' => 'syncMultiPlatformLibraryDebugFrameworkMacosX64',
+        'GRADLE_TASK[sdk=macosx*][config=*elease]' => 'syncMultiPlatformLibraryReleaseFrameworkMacosX64'
     }
 
     spec.script_phases = [

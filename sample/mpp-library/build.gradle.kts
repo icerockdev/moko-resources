@@ -16,6 +16,10 @@ android {
     }
 }
 
+kotlin {
+    macosX64()
+}
+
 dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
     commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
