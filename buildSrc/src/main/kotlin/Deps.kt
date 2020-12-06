@@ -40,7 +40,7 @@ object Deps {
         val mavenPublish = GradlePlugin(id = "org.gradle.maven-publish")
 
         val mobileMultiplatform = GradlePlugin(id = "dev.icerock.mobile.multiplatform")
-        val iosFramework = GradlePlugin(id = "dev.icerock.mobile.multiplatform.ios-framework")
+        val appleFramework = GradlePlugin(id = "dev.icerock.mobile.multiplatform.apple-framework")
 
         val mokoResources = GradlePlugin(
             id = "dev.icerock.mobile.multiplatform-resources",
@@ -79,11 +79,8 @@ object Deps {
         object MultiPlatform {
             const val mokoResources = "dev.icerock.moko:resources:$mokoResourcesVersion"
             const val mokoParcelize = "dev.icerock.moko:parcelize:$mokoParcelizeVersion"
-            val mokoGraphics = MultiPlatformLibrary(
-                common = "dev.icerock.moko:graphics:$mokoGraphicsVersion",
-                iosX64 = "dev.icerock.moko:graphics-iosx64:$mokoGraphicsVersion",
-                iosArm64 = "dev.icerock.moko:graphics-iosarm64:$mokoGraphicsVersion"
-            )
+            val mokoGraphics = "dev.icerock.moko:graphics:$mokoGraphicsVersion"
+                .defaultMPL(android = true, ios = true, macos = true)
 
             object Tests {
                 const val kotlinTest =
