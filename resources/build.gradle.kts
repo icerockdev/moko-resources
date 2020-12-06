@@ -32,6 +32,7 @@ publishing {
 }
 
 kotlin {
+    macosX64()
     targets
         .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
         .configureEach {
