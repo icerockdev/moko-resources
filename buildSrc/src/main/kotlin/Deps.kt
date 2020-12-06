@@ -3,8 +3,8 @@
  */
 
 object Deps {
-    private const val kotlinVersion = "1.4.0"
-    private const val androidGradleVersion = "4.0.1"
+    private const val kotlinVersion = "1.4.20"
+    private const val androidGradleVersion = "4.1.1"
 
     private const val androidAppCompatVersion = "1.1.0"
     private const val espressoCoreVersion = "3.2.0"
@@ -17,8 +17,8 @@ object Deps {
 
     private const val detektVersion = "1.7.4"
 
-    private const val mokoGraphicsVersion = "0.4.0"
-    private const val mokoParcelizeVersion = "0.4.0"
+    private const val mokoGraphicsVersion = "0.5.0"
+    private const val mokoParcelizeVersion = "0.5.0"
     const val mokoResourcesVersion = "0.13.1"
 
     object Android {
