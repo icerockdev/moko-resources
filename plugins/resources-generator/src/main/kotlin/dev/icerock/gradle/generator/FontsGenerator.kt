@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
-import dev.icerock.gradle.generator.ios.IosFontsGenerator
+import dev.icerock.gradle.generator.apple.AppleFontsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -117,7 +117,7 @@ abstract class FontsGenerator(
         }
 
         override fun createIosGenerator(): FontsGenerator {
-            return IosFontsGenerator(stringsFileTree)
+            return AppleFontsGenerator(stringsFileTree)
         }
 
         override fun createAndroidGenerator(): FontsGenerator {

@@ -18,7 +18,7 @@ import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
-import dev.icerock.gradle.generator.ios.AppleMRGenerator
+import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -38,10 +38,14 @@ import javax.xml.parsers.DocumentBuilderFactory
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val mrExtension =
-            target.extensions.create("multiplatformResources", MultiplatformResourcesPluginExtension::class.java)
+            target.extensions.create(
+                "multiplatformResources",
+                MultiplatformResourcesPluginExtension::class.java
+            )
 
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
-            val multiplatformExtension = target.extensions.getByType(KotlinMultiplatformExtension::class.java)
+            val multiplatformExtension =
+                target.extensions.getByType(KotlinMultiplatformExtension::class.java)
 
             target.plugins.withType(LibraryPlugin::class.java) {
                 val androidExtension = target.extensions.getByName("android") as LibraryExtension
@@ -172,7 +176,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family == Family.IOS || it.konanTarget.family == Family.OSX}
+            .filter { it.konanTarget.family == Family.IOS || it.konanTarget.family == Family.OSX }
             .map { kotlinNativeTarget ->
                 kotlinNativeTarget.compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)

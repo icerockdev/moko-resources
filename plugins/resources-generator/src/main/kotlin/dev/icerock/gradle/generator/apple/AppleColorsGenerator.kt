@@ -2,14 +2,14 @@
  * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.ios
+package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.generator.ios.AppleMRGenerator.Companion.ASSETS_DIR_NAME
+import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.ASSETS_DIR_NAME
 import dev.icerock.gradle.utils.ArgbColor
 import dev.icerock.gradle.utils.parseRgbaColor
 import kotlinx.serialization.json.JsonObject
@@ -19,9 +19,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
-class IosColorsGenerator(
+class AppleColorsGenerator(
     colorsFileTree: FileTree
-) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by IosGeneratorHelper() {
+) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
     override fun getImports(): List<ClassName> {
         return listOf(
             ClassName("dev.icerock.moko.graphics", "Color")

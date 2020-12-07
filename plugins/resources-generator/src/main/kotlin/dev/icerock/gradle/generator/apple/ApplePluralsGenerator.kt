@@ -2,7 +2,7 @@
  * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.ios
+package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
@@ -14,12 +14,12 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
-class IosPluralsGenerator(
+class ApplePluralsGenerator(
     pluralsFileTree: FileTree,
     private val baseLocalizationRegion: String
 ) : PluralsGenerator(
     pluralsFileTree = pluralsFileTree
-), ObjectBodyExtendable by IosGeneratorHelper() {
+), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

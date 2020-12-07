@@ -12,7 +12,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidColorsGenerator
 import dev.icerock.gradle.generator.common.CommonColorsGenerator
-import dev.icerock.gradle.generator.ios.IosColorsGenerator
+import dev.icerock.gradle.generator.apple.AppleColorsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -142,7 +142,7 @@ abstract class ColorsGenerator(
         }
 
         override fun createIosGenerator(): ColorsGenerator {
-            return IosColorsGenerator(
+            return AppleColorsGenerator(
                 colorsFileTree
             )
         }
