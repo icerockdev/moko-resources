@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    
     var body: some View {
-        Text("Hello, World!")
+        Text("Moko-Resources test")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .font(.title)
     }
 }
 

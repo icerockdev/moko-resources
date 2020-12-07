@@ -6,11 +6,38 @@
 //
 
 import SwiftUI
+import MultiPlatformLibrary
 
 struct ContentView: View {
+    
+    let testing: Testing
+    let image: NSImage
+    let strings: [ResourcesStringDesc]
+    let textColor = MR.colors().textColor.color.toNSColor()
+    
+    init() {
+        testing = Testing()
+        image = testing.getDrawable().toNSImage()!
+        strings = testing.getStrings()
+        
+        [
+            testing.getTextFile(),
+            testing.getJsonFile(),
+            testing.getNestedJsonFile()
+        ].map { $0.readText() }
+        .forEach { print($0) }
+    }
+    
+    
     var body: some View {
-        Text("Hello, World!")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        VStack {
+            Image(nsImage: image)
+            Text(strings.map { $0.localized() }.joined(separator: "\n"))
+                .font(Font(testing.getFont1().uiFont(withSize: 14.0)))
+                .foregroundColor(Color(textColor))
+            Text(testing.getStringDesc().localized())
+                .font(Font(testing.getFont2().uiFont(withSize: 14.0)))
+        }
     }
 }
 
