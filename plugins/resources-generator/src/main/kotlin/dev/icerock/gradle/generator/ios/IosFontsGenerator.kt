@@ -24,7 +24,7 @@ class IosFontsGenerator(
 
     override fun getPropertyInitializer(fontFileName: String): CodeBlock? {
         return CodeBlock.of(
-            "FontResource(fontName = %S, bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
+            "FontResource(fontName = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
             fontFileName
         )
     }

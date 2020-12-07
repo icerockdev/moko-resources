@@ -6,7 +6,7 @@ package dev.icerock.gradle.generator.ios
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.BUNDLE_PROPERTY_NAME
+import dev.icerock.gradle.generator.ios.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator

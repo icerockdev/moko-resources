@@ -27,7 +27,7 @@ class IosPluralsGenerator(
 
     override fun getPropertyInitializer(key: String): CodeBlock? {
         return CodeBlock.of(
-            "PluralsResource(resourceId = %S, bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
+            "PluralsResource(resourceId = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
             key
         )
     }

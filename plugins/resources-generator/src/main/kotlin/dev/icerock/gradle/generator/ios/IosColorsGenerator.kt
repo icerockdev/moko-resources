@@ -9,7 +9,7 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.ASSETS_DIR_NAME
+import dev.icerock.gradle.generator.ios.AppleMRGenerator.Companion.ASSETS_DIR_NAME
 import dev.icerock.gradle.utils.ArgbColor
 import dev.icerock.gradle.utils.parseRgbaColor
 import kotlinx.serialization.json.JsonObject

@@ -17,7 +17,7 @@ class IosGeneratorHelper(private val propertyName: String = "nsBundle") :
         val bundleType = ClassName("platform.Foundation", "NSBundle")
         val bundleProperty = PropertySpec.builder(propertyName, bundleType)
             .addModifiers(KModifier.OVERRIDE)
-            .initializer(IosMRGenerator.BUNDLE_PROPERTY_NAME)
+            .initializer(AppleMRGenerator.BUNDLE_PROPERTY_NAME)
             .build()
 
         classBuilder.addProperty(bundleProperty)

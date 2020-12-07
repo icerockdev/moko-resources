@@ -31,7 +31,7 @@ import java.util.zip.ZipException
 import java.util.zip.ZipFile
 
 @Suppress("TooManyFunctions")
-class IosMRGenerator(
+class AppleMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
     mrClassPackage: String,

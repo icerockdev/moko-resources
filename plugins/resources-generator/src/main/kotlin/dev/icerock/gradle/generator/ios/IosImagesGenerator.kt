@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.ASSETS_DIR_NAME
+import dev.icerock.gradle.generator.ios.AppleMRGenerator.Companion.ASSETS_DIR_NAME
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -25,7 +25,7 @@ class IosImagesGenerator(
 
     override fun getPropertyInitializer(key: String): CodeBlock? {
         return CodeBlock.of(
-            "ImageResource(assetImageName = %S, bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
+            "ImageResource(assetImageName = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
             key
         )
     }

@@ -18,7 +18,7 @@ import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
-import dev.icerock.gradle.generator.ios.IosMRGenerator
+import dev.icerock.gradle.generator.ios.AppleMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -102,7 +102,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target
         )
         if (HostManager.hostIsMac) {
-            setupIosGenerator(
+            setupAppleGenerator(
                 targets,
                 generatedDir,
                 mrClassPackage,
@@ -162,7 +162,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     }
 
     @Suppress("LongParameterList")
-    private fun setupIosGenerator(
+    private fun setupAppleGenerator(
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
@@ -172,7 +172,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family == Family.IOS }
+            .filter { it.konanTarget.family == Family.IOS || it.konanTarget.family == Family.OSX}
             .map { kotlinNativeTarget ->
                 kotlinNativeTarget.compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
@@ -184,7 +184,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val depend = kss.getDependedFrom(defSourceSets)
 
             val sourceSet = createSourceSet(depend ?: kss)
-            IosMRGenerator(
+            AppleMRGenerator(
                 generatedDir,
                 sourceSet,
                 mrClassPackage,
