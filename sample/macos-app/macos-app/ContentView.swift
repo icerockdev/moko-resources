@@ -33,10 +33,10 @@ struct ContentView: View {
         VStack {
             Image(nsImage: image)
             Text(strings.map { $0.localized() }.joined(separator: "\n"))
-                .font(Font(testing.getFont1().uiFont(withSize: 14.0)))
+                .font(Font(testing.getFont1().nsFont(withSize: 14.0)))
                 .foregroundColor(Color(textColor))
             Text(testing.getStringDesc().localized())
-                .font(Font(testing.getFont2().uiFont(withSize: 14.0)))
+                .font(Font(testing.getFont2().nsFont(withSize: 14.0)))
         }
     }
 }

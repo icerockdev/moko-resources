@@ -33,6 +33,19 @@ publishing {
 
 kotlin {
     macosX64()
+    sourceSets {
+        val commonMain by getting {}
+
+        val appleMain by creating {
+            dependsOn(commonMain)
+        }
+        val iosMain by getting {
+            dependsOn(appleMain)
+        }
+        val macosX64Main by getting {
+            dependsOn(appleMain)
+        }
+    }
     targets
         .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
         .configureEach {
@@ -40,7 +53,7 @@ kotlin {
 
             compilations.getByName("main") {
                 val pluralizedString by cinterops.creating {
-                    defFile(project.file("src/iosMain/def/pluralizedString.def"))
+                    defFile(project.file("src/appleMain/def/pluralizedString.def"))
                 }
             }
         }

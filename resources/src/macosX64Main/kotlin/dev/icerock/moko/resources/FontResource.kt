@@ -1,7 +1,3 @@
-/*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
- */
-
 package dev.icerock.moko.resources
 
 import kotlinx.cinterop.CPointer
@@ -36,7 +32,7 @@ actual class FontResource(
         fontRef = CGFontCreateWithDataProvider(dataProvider)!!
     }
 
-    fun uiFont(withSize: Double): NSFont {
+    fun nsFont(withSize: Double): NSFont {
         val ctFont = CTFontCreateWithGraphicsFont(fontRef, withSize, null, null)
         return CFBridgingRelease(ctFont) as NSFont
     }
