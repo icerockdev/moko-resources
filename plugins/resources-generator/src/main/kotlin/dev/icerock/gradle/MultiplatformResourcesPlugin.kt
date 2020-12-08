@@ -30,7 +30,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -176,7 +175,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family == Family.IOS || it.konanTarget.family == Family.OSX }
+            .filter { it.konanTarget.family.isAppleFamily }
             .map { kotlinNativeTarget ->
                 kotlinNativeTarget.compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)

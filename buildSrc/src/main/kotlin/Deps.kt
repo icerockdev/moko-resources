@@ -3,7 +3,7 @@
  */
 
 object Deps {
-    private const val kotlinVersion = "1.4.20"
+    private const val kotlinVersion = "1.4.21"
     private const val androidGradleVersion = "4.1.1"
 
     private const val androidAppCompatVersion = "1.1.0"
@@ -35,7 +35,7 @@ object Deps {
         val kotlinMultiplatform = GradlePlugin(id = "org.jetbrains.kotlin.multiplatform")
         val kotlinKapt = GradlePlugin(id = "kotlin-kapt")
         val kotlinAndroid = GradlePlugin(id = "kotlin-android")
-        val kotlinAndroidExtensions = GradlePlugin(id = "kotlin-android-extensions")
+        val kotlinParcelize = GradlePlugin(id = "kotlin-parcelize")
         val kotlinSerialization = GradlePlugin(id = "kotlin-serialization")
         val mavenPublish = GradlePlugin(id = "org.gradle.maven-publish")
 
