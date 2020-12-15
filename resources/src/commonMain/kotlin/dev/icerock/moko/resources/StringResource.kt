@@ -9,5 +9,6 @@ import dev.icerock.moko.resources.desc.StringDesc
 
 expect class StringResource
 
-fun StringResource.format(vararg args: Any) = StringDesc.ResourceFormatted(this, args)
+@Suppress("SpreadOperator")
+fun StringResource.format(vararg args: Any) = StringDesc.ResourceFormatted(this, *args)
 fun StringResource.format(args: List<Any>) = StringDesc.ResourceFormatted(this, args)
