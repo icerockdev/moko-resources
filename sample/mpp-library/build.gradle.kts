@@ -19,9 +19,7 @@ android {
 dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
     commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
-
-// disabled while not fixed https://youtrack.jetbrains.com/issue/KT-41384
-//    commonMainImplementation(project("$path:nested-module"))
+    commonMainImplementation(project("$path:nested-module"))
 }
 
 multiplatformResources {
