@@ -13,7 +13,7 @@ object Deps {
 
     private const val apacheCommonsTextVersion = "1.3"
     private const val kotlinPoetVersion = "1.6.0"
-    private const val kotlinxSerializationVersion = "0.20.0"
+    private const val kotlinxSerializationVersion = "1.0.0"
 
     private const val detektVersion = "1.7.4"
 
@@ -94,7 +94,7 @@ object Deps {
             const val kotlinPoet =
                 "com.squareup:kotlinpoet:$kotlinPoetVersion"
             const val kotlinxSerialization =
-                "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion"
+                "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
             const val apacheCommonsText =
                 "org.apache.commons:commons-text:$apacheCommonsTextVersion"
             const val detektFormatting =
