@@ -52,6 +52,8 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - kotlin 1.4.0
   - 0.13.0
   - 0.13.1
+- kotlin 1.4.21
+  - 0.13.2
 
 ## Installation
 root build.gradle  
@@ -62,7 +64,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.13.1"
+        classpath "dev.icerock.moko:resources-generator:0.13.2"
     }
 }
 
@@ -79,7 +81,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.13.1")
+    commonMainApi("dev.icerock.moko:resources:0.13.2")
 }
 
 multiplatformResources {

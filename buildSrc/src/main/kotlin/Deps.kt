@@ -3,7 +3,7 @@
  */
 
 object Deps {
-    private const val kotlinVersion = "1.4.0"
+    private const val kotlinVersion = "1.4.21"
     private const val androidGradleVersion = "4.0.1"
 
     private const val androidAppCompatVersion = "1.1.0"
@@ -13,13 +13,13 @@ object Deps {
 
     private const val apacheCommonsTextVersion = "1.3"
     private const val kotlinPoetVersion = "1.6.0"
-    private const val kotlinxSerializationVersion = "0.20.0"
+    private const val kotlinxSerializationVersion = "1.0.0"
 
     private const val detektVersion = "1.7.4"
 
-    private const val mokoGraphicsVersion = "0.4.0"
-    private const val mokoParcelizeVersion = "0.4.0"
-    const val mokoResourcesVersion = "0.13.1"
+    private const val mokoGraphicsVersion = "0.5.0"
+    private const val mokoParcelizeVersion = "0.5.0"
+    const val mokoResourcesVersion = "0.13.2"
 
     object Android {
         const val compileSdk = 28
@@ -79,11 +79,8 @@ object Deps {
         object MultiPlatform {
             const val mokoResources = "dev.icerock.moko:resources:$mokoResourcesVersion"
             const val mokoParcelize = "dev.icerock.moko:parcelize:$mokoParcelizeVersion"
-            val mokoGraphics = MultiPlatformLibrary(
-                common = "dev.icerock.moko:graphics:$mokoGraphicsVersion",
-                iosX64 = "dev.icerock.moko:graphics-iosx64:$mokoGraphicsVersion",
-                iosArm64 = "dev.icerock.moko:graphics-iosarm64:$mokoGraphicsVersion"
-            )
+            val mokoGraphics = "dev.icerock.moko:graphics:$mokoGraphicsVersion"
+                .defaultMPL(ios = true)
 
             object Tests {
                 const val kotlinTest =
@@ -97,7 +94,7 @@ object Deps {
             const val kotlinPoet =
                 "com.squareup:kotlinpoet:$kotlinPoetVersion"
             const val kotlinxSerialization =
-                "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion"
+                "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion"
             const val apacheCommonsText =
                 "org.apache.commons:commons-text:$apacheCommonsTextVersion"
             const val detektFormatting =

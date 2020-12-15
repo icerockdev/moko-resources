@@ -81,7 +81,7 @@ abstract class ColorsGenerator(
                 val colorValue = colorValues[colorName]
                 getColor(colorValue)
             } else {
-                color
+                color?.removePrefix("#")?.removePrefix("0x")
             }
         }
 

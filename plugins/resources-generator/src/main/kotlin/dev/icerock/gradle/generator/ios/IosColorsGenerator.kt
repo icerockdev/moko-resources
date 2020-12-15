@@ -13,8 +13,9 @@ import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.ASSETS_DIR_NAME
 import dev.icerock.gradle.utils.ArgbColor
 import dev.icerock.gradle.utils.parseRgbaColor
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.json
-import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -43,6 +44,7 @@ class IosColorsGenerator(
             val colorContentObj = if (colorNode.isThemed()) {
                 @Suppress("MagicNumber")
                 val lightColor = parseRgbaColor(colorNode.lightColor!!.toLong(16))
+
                 @Suppress("MagicNumber")
                 val darkColor = parseRgbaColor(colorNode.darkColor!!.toLong(16))
 
@@ -54,53 +56,55 @@ class IosColorsGenerator(
                 val lightColorObj = buildAppearancesIdiomJsonBlock("light", lightColor)
                 val darkColorObj = buildAppearancesIdiomJsonBlock("dark", darkColor)
 
-                jsonArray {
-                    +anyColor
-                    +lightColorObj
-                    +darkColorObj
+                buildJsonArray {
+                    add(anyColor)
+                    add(lightColorObj)
+                    add(darkColorObj)
                 }
             } else {
                 @Suppress("MagicNumber")
                 val singleColor = parseRgbaColor(colorNode.singleColor!!.toLong(16))
-                jsonArray { +buildColorIdiomJsonObj(singleColor) }
+                buildJsonArray {
+                    add(buildColorIdiomJsonObj(singleColor))
+                }
             }
 
-            val resultObj = json {
-                "colors" to colorContentObj
-                "info" to json {
-                    "author" to "xcode"
-                    "version" to 1
-                }
+            val resultObj = buildJsonObject {
+                put("colors", colorContentObj)
+                put("info", buildJsonObject {
+                    put("author", "xcode")
+                    put("version", 1)
+                })
             }
             contentsFile.writeText(resultObj.toString())
         }
     }
 
-    private fun buildColorJsonObj(argbColor: ArgbColor): JsonObject = json {
-        "color-space" to "srgb"
-        "components" to json {
-            "alpha" to argbColor.a
-            "red" to argbColor.r
-            "green" to argbColor.g
-            "blue" to argbColor.b
-        }
+    private fun buildColorJsonObj(argbColor: ArgbColor): JsonObject = buildJsonObject {
+        put("color-space", "srgb")
+        put("components", buildJsonObject {
+            put("alpha", argbColor.a)
+            put("red", argbColor.r)
+            put("green", argbColor.g)
+            put("blue", argbColor.b)
+        })
     }
 
-    private fun buildColorIdiomJsonObj(argbColor: ArgbColor): JsonObject = json {
-        "color" to buildColorJsonObj(argbColor)
-        "idiom" to "universal"
+    private fun buildColorIdiomJsonObj(argbColor: ArgbColor): JsonObject = buildJsonObject {
+        put("color", buildColorJsonObj(argbColor))
+        put("idiom", "universal")
     }
 
     private fun buildAppearancesIdiomJsonBlock(valueTag: String, argbColor: ArgbColor): JsonObject {
-        return json {
-            "appearances" to jsonArray {
-                +json {
-                    "appearance" to "luminosity"
-                    "value" to valueTag
-                }
-            }
-            "color" to buildColorJsonObj(argbColor)
-            "idiom" to "universal"
+        return buildJsonObject {
+            put("appearances", buildJsonArray {
+                add(buildJsonObject {
+                    put("appearance", "luminosity")
+                    put("value", valueTag)
+                })
+            })
+            put("color", buildColorJsonObj(argbColor))
+            put("idiom", "universal")
         }
     }
 }
