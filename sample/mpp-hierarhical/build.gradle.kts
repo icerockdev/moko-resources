@@ -25,6 +25,7 @@ version = "1.0"
 kotlin {
     android()
     ios()
+    macosX64("macos")
 
     cocoapods {
         // Configure fields required by CocoaPods.
@@ -35,12 +36,6 @@ kotlin {
     // export correct artifact to use all classes of moko-resources directly from Swift
     targets.configureEach {
         if (this !is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget) return@configureEach
-
-        val arch = when (this.konanTarget) {
-            org.jetbrains.kotlin.konan.target.KonanTarget.IOS_ARM64 -> "iosarm64"
-            org.jetbrains.kotlin.konan.target.KonanTarget.IOS_X64 -> "iosx64"
-            else -> throw IllegalArgumentException()
-        }
 
         this.binaries.configureEach {
             if (this is org.jetbrains.kotlin.gradle.plugin.mpp.Framework) {

@@ -18,7 +18,7 @@ import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
-import dev.icerock.gradle.generator.ios.IosMRGenerator
+import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,7 +30,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -38,10 +37,14 @@ import javax.xml.parsers.DocumentBuilderFactory
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val mrExtension =
-            target.extensions.create("multiplatformResources", MultiplatformResourcesPluginExtension::class.java)
+            target.extensions.create(
+                "multiplatformResources",
+                MultiplatformResourcesPluginExtension::class.java
+            )
 
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
-            val multiplatformExtension = target.extensions.getByType(KotlinMultiplatformExtension::class.java)
+            val multiplatformExtension =
+                target.extensions.getByType(KotlinMultiplatformExtension::class.java)
 
             target.plugins.withType(LibraryPlugin::class.java) {
                 val androidExtension = target.extensions.getByName("android") as LibraryExtension
@@ -105,7 +108,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target
         )
         if (HostManager.hostIsMac) {
-            setupIosGenerator(
+            setupAppleGenerator(
                 targets,
                 generatedDir,
                 mrClassPackage,
@@ -165,7 +168,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     }
 
     @Suppress("LongParameterList")
-    private fun setupIosGenerator(
+    private fun setupAppleGenerator(
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
@@ -175,7 +178,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family == Family.IOS }
+            .filter { it.konanTarget.family.isAppleFamily }
             .map { kotlinNativeTarget ->
                 kotlinNativeTarget.compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
@@ -187,7 +190,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val depend = kss.getDependedFrom(defSourceSets)
 
             val sourceSet = createSourceSet(depend ?: kss)
-            IosMRGenerator(
+            AppleMRGenerator(
                 generatedDir,
                 sourceSet,
                 mrClassPackage,

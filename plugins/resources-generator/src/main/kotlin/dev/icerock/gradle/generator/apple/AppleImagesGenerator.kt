@@ -2,22 +2,22 @@
  * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.ios
+package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.generator.ios.IosMRGenerator.Companion.ASSETS_DIR_NAME
+import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.ASSETS_DIR_NAME
 import org.gradle.api.file.FileTree
 import java.io.File
 
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
-class IosImagesGenerator(
+class AppleImagesGenerator(
     inputFileTree: FileTree
 ) : ImagesGenerator(
     inputFileTree = inputFileTree
-), ObjectBodyExtendable by IosGeneratorHelper() {
+), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -25,7 +25,7 @@ class IosImagesGenerator(
 
     override fun getPropertyInitializer(key: String): CodeBlock? {
         return CodeBlock.of(
-            "ImageResource(assetImageName = %S, bundle = ${IosMRGenerator.BUNDLE_PROPERTY_NAME})",
+            "ImageResource(assetImageName = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
             key
         )
     }
