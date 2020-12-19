@@ -9,6 +9,10 @@ plugins {
     plugin(Deps.Plugins.mokoResources)
 }
 
+kotlin {
+    macosX64()
+}
+
 dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
 }
