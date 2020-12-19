@@ -32,4 +32,5 @@ multiplatformResources {
 
 framework {
     export(Deps.Libs.MultiPlatform.mokoGraphics)
+    export(project(":resources"))
 }

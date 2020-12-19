@@ -12,7 +12,7 @@ struct ContentView: View {
     
     let testing: Testing
     let image: NSImage
-    let strings: [ResourcesStringDesc]
+    let strings: [StringDesc]
     let textColor = MR.colors().textColor.color.toNSColor()
     
     init() {
