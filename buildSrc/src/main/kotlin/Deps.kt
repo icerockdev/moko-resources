@@ -35,12 +35,12 @@ object Deps {
         val kotlinMultiplatform = GradlePlugin(id = "org.jetbrains.kotlin.multiplatform")
         val kotlinKapt = GradlePlugin(id = "kotlin-kapt")
         val kotlinAndroid = GradlePlugin(id = "kotlin-android")
-        val kotlinAndroidExtensions = GradlePlugin(id = "kotlin-android-extensions")
+        val kotlinParcelize = GradlePlugin(id = "kotlin-parcelize")
         val kotlinSerialization = GradlePlugin(id = "kotlin-serialization")
         val mavenPublish = GradlePlugin(id = "org.gradle.maven-publish")
 
         val mobileMultiplatform = GradlePlugin(id = "dev.icerock.mobile.multiplatform")
-        val iosFramework = GradlePlugin(id = "dev.icerock.mobile.multiplatform.ios-framework")
+        val appleFramework = GradlePlugin(id = "dev.icerock.mobile.multiplatform.apple-framework")
 
         val mokoResources = GradlePlugin(
             id = "dev.icerock.mobile.multiplatform-resources",
@@ -80,7 +80,7 @@ object Deps {
             const val mokoResources = "dev.icerock.moko:resources:$mokoResourcesVersion"
             const val mokoParcelize = "dev.icerock.moko:parcelize:$mokoParcelizeVersion"
             val mokoGraphics = "dev.icerock.moko:graphics:$mokoGraphicsVersion"
-                .defaultMPL(ios = true)
+                .defaultMPL(android = true, ios = true, macos = true)
 
             object Tests {
                 const val kotlinTest =

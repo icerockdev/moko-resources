@@ -28,12 +28,8 @@ fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
         }
     }
 
-    val resultBundle = NSBundle.bundleWithIdentifier(identifier)
-    if (resultBundle == null) {
-        throw IllegalArgumentException("bundle with identifier $identifier not found")
-    }
-
-    return resultBundle
+    return bundleWithIdentifier(identifier)
+        ?: throw IllegalArgumentException("bundle with identifier $identifier not found")
 }
 
 var isBundleSearchLogEnabled = false

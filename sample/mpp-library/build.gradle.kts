@@ -6,7 +6,7 @@ plugins {
     plugin(Deps.Plugins.androidLibrary)
     plugin(Deps.Plugins.kotlinMultiplatform)
     plugin(Deps.Plugins.mobileMultiplatform)
-    plugin(Deps.Plugins.iosFramework)
+    plugin(Deps.Plugins.appleFramework)
     plugin(Deps.Plugins.mokoResources)
 }
 
@@ -14,6 +14,10 @@ android {
     lintOptions {
         disable("ImpliedQuantity")
     }
+}
+
+kotlin {
+    macosX64()
 }
 
 dependencies {
@@ -28,4 +32,5 @@ multiplatformResources {
 
 framework {
     export(Deps.Libs.MultiPlatform.mokoGraphics)
+    export(project(":resources"))
 }

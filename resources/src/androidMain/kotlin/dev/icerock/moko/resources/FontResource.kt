@@ -9,7 +9,7 @@ import android.graphics.Typeface
 import android.os.Parcelable
 import androidx.annotation.FontRes
 import androidx.core.content.res.ResourcesCompat
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 actual class FontResource(

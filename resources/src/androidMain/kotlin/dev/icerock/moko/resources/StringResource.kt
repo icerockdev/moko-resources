@@ -6,7 +6,7 @@ package dev.icerock.moko.resources
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 actual class StringResource(
