@@ -69,11 +69,11 @@ abstract class MRGenerator(
         afterMRGeneration()
     }
 
-    fun apply(project: Project) {
+    fun apply(project: Project): GenerateMultiplatformResourcesTask {
         val name = sourceSet.name
         val genTaskName = "generateMR$name"
         val genTask = runCatching {
-            project.tasks.getByName(genTaskName)
+            project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
         }.getOrNull() ?: project.tasks.create(genTaskName, GenerateMultiplatformResourcesTask::class.java) {
             it.doLast {
                 this@MRGenerator.generate()
@@ -81,6 +81,8 @@ abstract class MRGenerator(
         }
 
         apply(generationTask = genTask, project = project)
+
+        return genTask
     }
 
     protected open fun beforeMRGeneration() = Unit
