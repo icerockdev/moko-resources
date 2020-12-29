@@ -61,6 +61,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
+    @Suppress("LongMethod")
     private fun configureGenerators(
         target: Project,
         mrExtension: MultiplatformResourcesPluginExtension,
