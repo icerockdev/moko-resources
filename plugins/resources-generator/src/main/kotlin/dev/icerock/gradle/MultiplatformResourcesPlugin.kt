@@ -98,7 +98,13 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
-        setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
+        val commonGenerationTask = setupCommonGenerator(
+            commonSourceSet = commonSourceSet,
+            generatedDir = generatedDir,
+            mrClassPackage = mrClassPackage,
+            features = features,
+            target = target
+        )
         setupAndroidGenerator(
             targets,
             androidMainSourceSet,
@@ -121,7 +127,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
-        val commonGenerationTask = generationTasks.first { it.name == "generateMRcommonMain" }
         generationTasks.filter { it != commonGenerationTask }
             .forEach { it.dependsOn(commonGenerationTask) }
     }
@@ -132,9 +137,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrClassPackage: String,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
-    ) {
+    ): GenerateMultiplatformResourcesTask {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
-        CommonMRGenerator(
+        return CommonMRGenerator(
             generatedDir,
             commonGeneratorSourceSet,
             mrClassPackage,
