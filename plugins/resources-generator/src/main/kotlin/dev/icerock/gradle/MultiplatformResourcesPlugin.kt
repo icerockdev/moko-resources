@@ -4,8 +4,8 @@
 
 package dev.icerock.gradle
 
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.BasePlugin
 import com.android.build.gradle.api.AndroidSourceSet
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -18,7 +18,7 @@ import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
-import dev.icerock.gradle.generator.ios.IosMRGenerator
+import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,7 +30,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -38,31 +37,36 @@ import javax.xml.parsers.DocumentBuilderFactory
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val mrExtension =
-            target.extensions.create("multiplatformResources", MultiplatformResourcesPluginExtension::class.java)
+            target.extensions.create(
+                "multiplatformResources",
+                MultiplatformResourcesPluginExtension::class.java
+            )
 
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
-            val multiplatformExtension = target.extensions.getByType(KotlinMultiplatformExtension::class.java)
+            val multiplatformExtension =
+                target.extensions.getByType(KotlinMultiplatformExtension::class.java)
 
-            target.plugins.withType(LibraryPlugin::class.java) {
-                val androidExtension = target.extensions.getByName("android") as LibraryExtension
+            target.plugins.withType(BasePlugin::class.java) {
+                val extension = it.getExtension()
 
                 target.afterEvaluate {
                     configureGenerators(
                         target = target,
                         mrExtension = mrExtension,
                         multiplatformExtension = multiplatformExtension,
-                        androidExtension = androidExtension
+                        androidExtension = extension
                     )
                 }
             }
         }
     }
 
+    @Suppress("LongMethod")
     private fun configureGenerators(
         target: Project,
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension,
-        androidExtension: LibraryExtension
+        androidExtension: BaseExtension
     ) {
         val androidMainSourceSet =
             androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
@@ -95,7 +99,13 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
-        setupCommonGenerator(commonSourceSet, generatedDir, mrClassPackage, features, target)
+        val commonGenerationTask = setupCommonGenerator(
+            commonSourceSet = commonSourceSet,
+            generatedDir = generatedDir,
+            mrClassPackage = mrClassPackage,
+            features = features,
+            target = target
+        )
         setupAndroidGenerator(
             targets,
             androidMainSourceSet,
@@ -105,7 +115,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target
         )
         if (HostManager.hostIsMac) {
-            setupIosGenerator(
+            setupAppleGenerator(
                 targets,
                 generatedDir,
                 mrClassPackage,
@@ -118,7 +128,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
-        val commonGenerationTask = generationTasks.first { it.name == "generateMRcommonMain" }
         generationTasks.filter { it != commonGenerationTask }
             .forEach { it.dependsOn(commonGenerationTask) }
     }
@@ -129,9 +138,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrClassPackage: String,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
-    ) {
+    ): GenerateMultiplatformResourcesTask {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
-        CommonMRGenerator(
+        return CommonMRGenerator(
             generatedDir,
             commonGeneratorSourceSet,
             mrClassPackage,
@@ -165,7 +174,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     }
 
     @Suppress("LongParameterList")
-    private fun setupIosGenerator(
+    private fun setupAppleGenerator(
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
@@ -175,7 +184,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family == Family.IOS }
+            .filter { it.konanTarget.family.isAppleFamily }
             .map { kotlinNativeTarget ->
                 kotlinNativeTarget.compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
@@ -187,7 +196,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val depend = kss.getDependedFrom(defSourceSets)
 
             val sourceSet = createSourceSet(depend ?: kss)
-            IosMRGenerator(
+            AppleMRGenerator(
                 generatedDir,
                 sourceSet,
                 mrClassPackage,

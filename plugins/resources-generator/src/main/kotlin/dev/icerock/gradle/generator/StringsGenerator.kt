@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
-import dev.icerock.gradle.generator.ios.IosStringsGenerator
+import dev.icerock.gradle.generator.apple.AppleStringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -81,7 +81,7 @@ abstract class StringsGenerator(
         }
 
         override fun createIosGenerator(): StringsGenerator {
-            return IosStringsGenerator(
+            return AppleStringsGenerator(
                 stringsFileTree,
                 iosBaseLocalizationRegion
             )

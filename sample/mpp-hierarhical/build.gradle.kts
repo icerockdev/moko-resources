@@ -25,6 +25,8 @@ version = "1.0"
 kotlin {
     android()
     ios()
+    macosX64("macos")
+    jvm()
 
     cocoapods {
         // Configure fields required by CocoaPods.
@@ -33,25 +35,34 @@ kotlin {
     }
 
     // export correct artifact to use all classes of moko-resources directly from Swift
-    targets.configureEach {
-        if (this !is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget) return@configureEach
-
-        val arch = when (this.konanTarget) {
-            org.jetbrains.kotlin.konan.target.KonanTarget.IOS_ARM64 -> "iosarm64"
-            org.jetbrains.kotlin.konan.target.KonanTarget.IOS_X64 -> "iosx64"
-            else -> throw IllegalArgumentException()
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java).all {
+        binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class.java).all {
+            export(project(":resources"))
         }
+    }
 
-        this.binaries.configureEach {
-            if (this is org.jetbrains.kotlin.gradle.plugin.mpp.Framework) {
-                this.export(project(":resources"))
-            }
-        }
+    sourceSets {
+        val commonMain by getting
+        val commonTest by getting
+
+        val clientMain by creating { dependsOn(commonMain) }
+        val clientTest by creating { dependsOn(commonTest) }
+
+        val iosMain by getting { dependsOn(clientMain) }
+        val iosTest by getting { dependsOn(clientTest) }
+
+        val macosMain by getting  { dependsOn(clientMain) }
+        val macosTest by getting { dependsOn(clientTest) }
+
+        val androidMain by getting  { dependsOn(clientMain) }
+        val androidTest by getting { dependsOn(clientTest) }
+
+        val jvmMain by getting
     }
 }
 
 dependencies {
-    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
+    "clientMainApi"(Deps.Libs.MultiPlatform.mokoResources)
 
     androidTestImplementation(Deps.Libs.Android.Tests.kotlinTestJUnit)
     androidTestImplementation(Deps.Libs.Android.Tests.testCore)
@@ -63,5 +74,5 @@ dependencies {
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
     disableStaticFrameworkWarning = true
+    multiplatformResourcesSourceSet = "clientMain"
 }
-

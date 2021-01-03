@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
-import dev.icerock.gradle.generator.ios.IosImagesGenerator
+import dev.icerock.gradle.generator.apple.AppleImagesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -77,7 +77,7 @@ abstract class ImagesGenerator(
         }
 
         override fun createIosGenerator(): ImagesGenerator {
-            return IosImagesGenerator(stringsFileTree)
+            return AppleImagesGenerator(stringsFileTree)
         }
 
         override fun createAndroidGenerator(): ImagesGenerator {

@@ -6,6 +6,7 @@ includeBuild("plugins")
 include(":resources")
 
 include(":sample:android-app")
+include(":sample:android-mpp-app")
 include(":sample:mpp-library")
 include(":sample:mpp-library:nested-module")
 include(":sample:mpp-conditional")
