@@ -176,6 +176,33 @@ let string = getMyString().localized()
 ```
 Note: `StringDesc` is a multiple-source container for Strings: in StringDesc we can use a resource, plurals, formatted variants, or raw string. To convert `StringDesc` to `String` on Android call `toString(context)` (a context is required for the resources usage), on iOS - call `localized()`. 
 
+#### MR directly from native side
+Android:
+```kotlin
+val string = MR.strings.my_string.desc().toString(context = this)
+``` 
+iOS:
+```swift
+let string = MR.strings.my_string.desc().localized()
+```
+
+#### Get resourceId for Jetpack Compose / SwiftUI
+Android:
+```kotlin
+val resId = MR.strings.my_string.resourceId
+```
+for example in Compose:
+```kotlin
+text = stringResource(id = MR.strings.email.resourceId)
+```
+
+iOS:
+```swift
+LocalizedStringKey(MR.strings.email.resourceId)
+```
+
+Note: more info in issue [#126](https://github.com/icerockdev/moko-resources/issues/126).
+
 ### Example 2 - formatted localization string
 In `commonMain/resources/MR/base/strings.xml` add:
 ```xml
