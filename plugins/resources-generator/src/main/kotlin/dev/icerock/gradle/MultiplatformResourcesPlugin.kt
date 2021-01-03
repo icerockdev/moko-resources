@@ -4,8 +4,9 @@
 
 package dev.icerock.gradle
 
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.BasePlugin
 import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.AndroidSourceSet
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -46,15 +47,15 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             val multiplatformExtension =
                 target.extensions.getByType(KotlinMultiplatformExtension::class.java)
 
-            target.plugins.withType(LibraryPlugin::class.java) {
-                val androidExtension = target.extensions.getByName("android") as LibraryExtension
+            target.plugins.withType(BasePlugin::class.java) {
+                val extension = it.getExtension()
 
                 target.afterEvaluate {
                     configureGenerators(
                         target = target,
                         mrExtension = mrExtension,
                         multiplatformExtension = multiplatformExtension,
-                        androidExtension = androidExtension
+                        androidExtension = extension
                     )
                 }
             }
@@ -66,7 +67,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         target: Project,
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension,
-        androidExtension: LibraryExtension
+        androidExtension: BaseExtension
     ) {
         val androidMainSourceSet =
             androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
