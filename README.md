@@ -19,6 +19,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - **Strings, Plurals, Images, Fonts, Files** to access the corresponding resources from common code;
 - **Colors** with light/dark mode support;
 - **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms;
+- **Static** iOS frameworks support;
 - **FatFrameworkWithResourcesTask** Gradle task.
 
 ## Requirements
@@ -55,6 +56,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.13.1
 - kotlin 1.4.21
   - 0.13.2
+  - 0.14.0
 
 ## Installation
 root build.gradle  
@@ -65,7 +67,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.13.2"
+        classpath "dev.icerock.moko:resources-generator:0.14.0"
     }
 }
 
@@ -82,7 +84,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.13.2")
+    commonMainApi("dev.icerock.moko:resources:0.14.0")
 }
 
 multiplatformResources {
