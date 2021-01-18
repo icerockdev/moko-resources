@@ -17,8 +17,8 @@ object Deps {
 
     private const val detektVersion = "1.7.4"
 
-    private const val mokoGraphicsVersion = "0.5.0"
-    private const val mokoParcelizeVersion = "0.5.0"
+    private const val mokoGraphicsVersion = "0.6.0"
+    private const val mokoParcelizeVersion = "0.6.0"
     const val mokoResourcesVersion = "0.14.0"
 
     object Android {
