@@ -5,13 +5,15 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
+import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 
 class CommonStringsGenerator(
     stringsFileTree: FileTree
-) : StringsGenerator(
-    stringsFileTree = stringsFileTree
-) {
-    override fun getPropertyInitializer(key: String): CodeBlock? = null
+) : StringsGenerator(stringsFileTree) {
+    override fun getPropertyInitializer(
+        key: String,
+        baseLanguageMap: Map<KeyType, String>
+    ): CodeBlock? = null
 }

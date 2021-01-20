@@ -22,13 +22,11 @@ class AppleFilesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? {
-        return CodeBlock.of(
-            "FileResource(fileName = %S, extension = %S,bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            fileSpec.file.nameWithoutExtension,
-            fileSpec.file.extension
-        )
-    }
+    override fun getPropertyInitializer(fileSpec: FileSpec) = CodeBlock.of(
+        "FileResource(fileName = %S, extension = %S,bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+        fileSpec.file.nameWithoutExtension,
+        fileSpec.file.extension
+    )
 
     override fun generateResources(
         resourcesGenerationDir: File,

@@ -16,17 +16,14 @@ import java.io.File
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
     private val androidRClassPackage: String
-) : StringsGenerator(
-    stringsFileTree = stringsFileTree
-) {
+) : StringsGenerator(stringsFileTree) {
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
-        val processedKey = processKey(key)
-        return CodeBlock.of("StringResource(R.string.%L)", processedKey)
-    }
+    override fun getPropertyInitializer(key: String, baseLanguageMap: Map<KeyType, String>) =
+        CodeBlock.of("StringResource(R.string.%L)", processKey(key))
 
     override fun getImports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
@@ -66,7 +63,5 @@ class AndroidStringsGenerator(
         stringsFile.appendText("\n" + footer)
     }
 
-    private fun processKey(key: String): String {
-        return key.replace(".", "_")
-    }
+    private fun processKey(key: String) = key.replace(".", "_")
 }

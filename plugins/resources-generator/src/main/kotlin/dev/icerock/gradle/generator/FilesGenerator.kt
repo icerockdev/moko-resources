@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFilesGenerator
 import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.apple.AppleFilesGenerator
+import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -81,23 +82,20 @@ abstract class FilesGenerator(
     )
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FilesGenerator> {
+
         private val fileTree = info.commonResources.matching {
             it.include("MR/files/**")
         }
 
-        override fun createCommonGenerator(): FilesGenerator {
-            return CommonFilesGenerator(fileTree)
-        }
+        override fun createCommonGenerator() = CommonFilesGenerator(fileTree)
 
-        override fun createIosGenerator(): FilesGenerator {
-            return AppleFilesGenerator(fileTree)
-        }
+        override fun createIosGenerator() = AppleFilesGenerator(fileTree)
 
-        override fun createAndroidGenerator(): FilesGenerator {
-            return AndroidFilesGenerator(
-                fileTree,
-                info.androidRClassPackage
-            )
-        }
+        override fun createAndroidGenerator() = AndroidFilesGenerator(
+            fileTree,
+            info.androidRClassPackage
+        )
+
+        override fun createJvmGenerator() = JvmFilesGenerator(fileTree)
     }
 }

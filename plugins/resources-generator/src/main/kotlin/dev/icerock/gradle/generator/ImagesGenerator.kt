@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.apple.AppleImagesGenerator
+import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -72,19 +73,16 @@ abstract class ImagesGenerator(
             it.include("MR/images/**/*.png", "MR/images/**/*.jpg")
         }
 
-        override fun createCommonGenerator(): ImagesGenerator {
-            return CommonImagesGenerator(stringsFileTree)
-        }
+        override fun createCommonGenerator() =
+            CommonImagesGenerator(stringsFileTree)
 
-        override fun createIosGenerator(): ImagesGenerator {
-            return AppleImagesGenerator(stringsFileTree)
-        }
+        override fun createIosGenerator() = AppleImagesGenerator(stringsFileTree)
 
-        override fun createAndroidGenerator(): ImagesGenerator {
-            return AndroidImagesGenerator(
-                stringsFileTree,
-                info.androidRClassPackage
-            )
-        }
+        override fun createAndroidGenerator() = AndroidImagesGenerator(
+            stringsFileTree,
+            info.androidRClassPackage
+        )
+
+        override fun createJvmGenerator() = JvmImagesGenerator(stringsFileTree)
     }
 }

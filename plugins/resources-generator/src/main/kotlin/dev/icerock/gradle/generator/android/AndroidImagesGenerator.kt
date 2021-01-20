@@ -14,9 +14,7 @@ import java.io.File
 class AndroidImagesGenerator(
     inputFileTree: FileTree,
     private val androidRClassPackage: String
-) : ImagesGenerator(
-    inputFileTree = inputFileTree
-) {
+) : ImagesGenerator(inputFileTree) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -15,25 +15,19 @@ import java.util.Locale
 class AndroidFilesGenerator(
     inputFileTree: FileTree,
     private val androidRClassPackage: String
-) : FilesGenerator(
-    inputFileTree = inputFileTree
-) {
+) : FilesGenerator(inputFileTree) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? {
-        return CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileSpec.key))
-    }
+    override fun getPropertyInitializer(fileSpec: FileSpec) =
+        CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileSpec.key))
 
-    override fun getImports(): List<ClassName> = listOf(
+    override fun getImports() = listOf(
         ClassName(androidRClassPackage, "R")
     )
 
-    override fun generateResources(
-        resourcesGenerationDir: File,
-        files: List<FileSpec>
-    ) {
+    override fun generateResources(resourcesGenerationDir: File, files: List<FileSpec>) {
         val targetDir = File(resourcesGenerationDir, "raw")
         targetDir.mkdirs()
 
@@ -43,7 +37,5 @@ class AndroidFilesGenerator(
         }
     }
 
-    private fun keyToResourceId(key: String): String {
-        return key.toLowerCase(Locale.ROOT)
-    }
+    private fun keyToResourceId(key: String) = key.toLowerCase(Locale.ROOT)
 }

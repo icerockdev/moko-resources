@@ -5,13 +5,16 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
+import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
 
 class CommonPluralsGenerator(
     pluralsFileTree: FileTree
-) : PluralsGenerator(
-    pluralsFileTree = pluralsFileTree
-) {
-    override fun getPropertyInitializer(key: String): CodeBlock? = null
+) : PluralsGenerator( pluralsFileTree) {
+    override fun getPropertyInitializer(
+        key: String,
+        baseLanguageMap: Map<KeyType, PluralMap>
+    ): CodeBlock? = null
 }

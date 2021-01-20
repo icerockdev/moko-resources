@@ -17,17 +17,13 @@ import java.io.File
 class AndroidPluralsGenerator(
     pluralsFileTree: FileTree,
     private val androidRClassPackage: String
-) : PluralsGenerator(
-    pluralsFileTree = pluralsFileTree
-) {
+) : PluralsGenerator(pluralsFileTree) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
-        val processedKey = processKey(key)
-        return CodeBlock.of("PluralsResource(R.plurals.%L)", processedKey)
-    }
+    override fun getPropertyInitializer(key: String, baseLanguageMap: Map<KeyType, PluralMap>) =
+        CodeBlock.of("PluralsResource(R.plurals.%L)", processKey(key))
 
     override fun getImports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")

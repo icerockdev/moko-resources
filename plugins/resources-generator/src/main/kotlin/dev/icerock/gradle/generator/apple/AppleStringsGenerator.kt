@@ -25,7 +25,10 @@ class AppleStringsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
+    override fun getPropertyInitializer(
+        key: String,
+        baseLanguageMap: Map<KeyType, String>
+    ): CodeBlock? {
         return CodeBlock.of("StringResource(resourceId = %S, bundle = $BUNDLE_PROPERTY_NAME)", key)
     }
 

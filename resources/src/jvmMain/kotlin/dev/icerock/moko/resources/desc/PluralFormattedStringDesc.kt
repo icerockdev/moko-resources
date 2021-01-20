@@ -9,5 +9,11 @@ actual class PluralFormattedStringDesc actual constructor(
 ) : StringDesc {
 
     override fun localized() =
-        MokoBundle.getPluralString(pluralsRes.key, number, pluralsRes.numberFormat.toList(), args)
+        MokoBundle.getPluralString(
+            pluralsRes.key,
+            number,
+            pluralsRes.numberFormat[pluralsRes.key]
+                ?: throw IllegalStateException("Unknown plural description"),
+            args
+        )
 }

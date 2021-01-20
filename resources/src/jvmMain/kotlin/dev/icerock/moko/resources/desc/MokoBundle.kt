@@ -7,6 +7,7 @@ import java.util.*
 
 object MokoBundle {
     private const val BUNDLE_NAME = "moko.MokoBundle"
+    private const val PLURALS_BUNDLE_NAME = "moko.MokoPluralsBundle"
 
     fun getString(key: String, args: List<Any>? = null) =
         with(ResourceBundle.getBundle(BUNDLE_NAME, Locale.getDefault()).getString(key)) {
@@ -29,7 +30,7 @@ object MokoBundle {
         numberFormat: List<Pair<Double, String>>,
         args: List<Any> = emptyList()
     ): String = with(
-        ResourceBundle.getBundle(BUNDLE_NAME, Locale.getDefault())
+        ResourceBundle.getBundle(PLURALS_BUNDLE_NAME, Locale.getDefault())
     ) {
         val messageFormat = MessageFormat("").apply { locale = Locale.getDefault() }
 

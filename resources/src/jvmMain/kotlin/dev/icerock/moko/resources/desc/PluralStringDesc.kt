@@ -5,8 +5,12 @@ import dev.icerock.moko.resources.PluralsResource
 
 actual class PluralStringDesc actual constructor(
     val pluralsRes: PluralsResource,
-    val number: Int
+    val number: Int,
 ) : StringDesc, Parcelable {
 
-    override fun localized() = MokoBundle.getPluralString(pluralsRes.key, number, pluralsRes.numberFormat.toList())
+    override fun localized() = MokoBundle.getPluralString(
+        pluralsRes.key,
+        number,
+        pluralsRes.numberFormat[pluralsRes.key] ?: throw IllegalStateException("Unknown plural description")
+    )
 }

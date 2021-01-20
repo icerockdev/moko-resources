@@ -14,11 +14,10 @@ import java.io.File
 class AndroidColorsGenerator(
     colorsFileTree: FileTree
 ) : ColorsGenerator(colorsFileTree) {
-    override fun getImports(): List<ClassName> {
-        return listOf(
-            ClassName("dev.icerock.moko.graphics", "Color")
-        )
-    }
+
+    override fun getImports() = listOf(
+        ClassName("dev.icerock.moko.graphics", "Color")
+    )
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

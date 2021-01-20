@@ -15,16 +15,13 @@ import java.util.Locale
 class AndroidFontsGenerator(
     inputFileTree: FileTree,
     private val androidRClassPackage: String
-) : FontsGenerator(
-    inputFileTree = inputFileTree
-) {
+) : FontsGenerator(inputFileTree) {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fontFileName: String): CodeBlock? {
-        return CodeBlock.of("FontResource(fontResourceId = R.font.%L)", keyToResourceId(fontFileName))
-    }
+    override fun getPropertyInitializer(fontFileName: String) =
+        CodeBlock.of("FontResource(fontResourceId = R.font.%L)", keyToResourceId(fontFileName))
 
     override fun getImports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")

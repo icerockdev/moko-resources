@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
+import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Element
 import java.io.File
@@ -97,5 +98,7 @@ abstract class PluralsGenerator(
                 info.androidRClassPackage
             )
         }
+
+        override fun createJvmGenerator() = JvmPluralsGenerator(stringsFileTree)
     }
 }

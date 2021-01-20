@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidColorsGenerator
 import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.apple.AppleColorsGenerator
+import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -129,28 +130,18 @@ abstract class ColorsGenerator(
         return colorNodes
     }
 
-    class Feature(
-        private val info: SourceInfo
-    ) : ResourceGeneratorFeature<ColorsGenerator> {
+    class Feature(info: SourceInfo) : ResourceGeneratorFeature<ColorsGenerator> {
 
         private val colorsFileTree =
             info.commonResources.matching { it.include("MR/**/colors*.xml") }
 
-        override fun createCommonGenerator(): ColorsGenerator {
-            return CommonColorsGenerator(colorsFileTree)
-        }
+        override fun createCommonGenerator() = CommonColorsGenerator(colorsFileTree)
 
-        override fun createIosGenerator(): ColorsGenerator {
-            return AppleColorsGenerator(
-                colorsFileTree
-            )
-        }
+        override fun createIosGenerator() = AppleColorsGenerator(colorsFileTree)
 
-        override fun createAndroidGenerator(): ColorsGenerator {
-            return AndroidColorsGenerator(
-                colorsFileTree
-            )
-        }
+        override fun createAndroidGenerator() = AndroidColorsGenerator(colorsFileTree)
+
+        override fun createJvmGenerator() = JvmColorsGenerator(colorsFileTree)
     }
 
     protected fun replaceColorAlpha(color: String?): String? {

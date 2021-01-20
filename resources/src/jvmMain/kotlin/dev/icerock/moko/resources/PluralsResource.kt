@@ -1,3 +1,6 @@
 package dev.icerock.moko.resources
 
-actual class PluralsResource(val key: String, vararg val numberFormat: Pair<Double, String>)
+actual class PluralsResource(
+    val key: String,
+    val numberFormat: Map<String, List<Pair<Double, String>>>
+)
