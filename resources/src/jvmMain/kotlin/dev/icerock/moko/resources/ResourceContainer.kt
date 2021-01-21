@@ -4,4 +4,4 @@ actual interface ResourceContainer<T>
 
 actual fun ResourceContainer<ImageResource>.getImageByFileName(
     fileName: String
-): ImageResource? = ImageResource(fileName)
+): ImageResource? = ImageResource("images/$fileName")

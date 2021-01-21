@@ -11,6 +11,6 @@ actual class PluralStringDesc actual constructor(
     override fun localized() = MokoBundle.getPluralString(
         pluralsRes.key,
         number,
-        pluralsRes.numberFormat[pluralsRes.key] ?: throw IllegalStateException("Unknown plural description")
+        pluralsRes.numberFormat
     )
 }

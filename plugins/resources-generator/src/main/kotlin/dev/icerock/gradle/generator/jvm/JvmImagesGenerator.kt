@@ -14,7 +14,7 @@ class JvmImagesGenerator(inputFileTree: FileTree) : ImagesGenerator(inputFileTre
 
     // TODO replace .png with getting extension
     override fun getPropertyInitializer(key: String) =
-        CodeBlock.of("ImageResource(imagePath = %S)", "$IMAGES_DIR/key.png")
+        CodeBlock.of("ImageResource(imagePath = %S)", "$IMAGES_DIR/$key.png")
 
     override fun generateResources(
         resourcesGenerationDir: File,
@@ -24,7 +24,7 @@ class JvmImagesGenerator(inputFileTree: FileTree) : ImagesGenerator(inputFileTre
 
         keyFileMap.forEach { (key, files) ->
             // We copy the only highest quality image to jvm
-            val hqFile = files.maxBy {
+            val hqFile = files.maxByOrNull {
                 it.nameWithoutExtension.substringAfter("@").substringBefore("x").toDouble()
             } ?: return
             hqFile.copyTo(File(imagesDir, "$key.${hqFile.extension}"))

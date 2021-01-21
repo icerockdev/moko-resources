@@ -5,6 +5,7 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
+import dev.icerock.gradle.generator.jvm.JvmStringsGenerator.Companion.replaceAndroidFormatParameters
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -18,7 +19,7 @@ class JvmPluralsGenerator(pluralsFileTree: FileTree) : PluralsGenerator(pluralsF
         CodeBlock.of(
             "PluralsResource(%S, %L)",
             key,
-            getNumberFormat(baseLanguageMap)
+            getNumberFormat(key, baseLanguageMap)
         )
 
     override fun generateResources(
@@ -31,49 +32,51 @@ class JvmPluralsGenerator(pluralsFileTree: FileTree) : PluralsGenerator(pluralsF
             else -> "${PLURALS_BUNDLE_NAME}_$language"
         }
 
-        val stringsFile = File(resourcesGenerationDir, "${fileDirName}.properties")
-        resourcesGenerationDir.mkdirs()
+        val localizationDir = File(resourcesGenerationDir, LOCALIZATION_DIR).apply { mkdirs() }
+        val stringsFile = File(localizationDir, "${fileDirName}.properties")
 
         val content = strings.map { (key, pluralMap) ->
             "$key = {0}\n" +
                     pluralMap.map { (quantity, value) ->
-                        "${getQuantityKey(key = key, quantity = quantity)} = $value"
+                        "${
+                            getQuantityKey(
+                                key = key,
+                                quantity = quantity
+                            )
+                        } = ${value.replaceAndroidFormatParameters()}"
                     }.joinToString("\n")
         }.joinToString("\n")
 
         stringsFile.writeText(content)
     }
 
-    private fun getNumberFormat(baseLanguageMap: Map<KeyType, PluralMap>) =
-        "mapOf(${
-            baseLanguageMap.map { (key, pluralMap) ->
-                "\"$key\" to listOf(${
-                    pluralMap.map { (quantity, _) ->
-                        val quantityInNumber = mapAndroidQuantityToDouble(quantity)
-                            ?: throw IllegalArgumentException("quantity $quantity is not conforming to the Android standards")
+    private fun getNumberFormat(key: String, baseLanguageMap: Map<KeyType, PluralMap>) =
+        baseLanguageMap[key]?.let {
+            "listOf(${
+                it.mapNotNull { (quantity, _) ->
+                    val quantityInNumber =
+                        mapAndroidQuantityToDouble(quantity) ?: return@mapNotNull null
 
-                        "${quantityInNumber.toDouble()} to \"${
-                            getQuantityKey(
-                                key = key,
-                                quantity = quantity
-                            )
-                        }\""
-                    }.joinToString()
-                })"
-            }.joinToString()
-        })"
+                    "${quantityInNumber.toDouble()} to \"${
+                        getQuantityKey(
+                            key = key,
+                            quantity = quantity
+                        )
+                    }\""
+                }.joinToString()
+            })"
+        }
 
     private fun getQuantityKey(key: String, quantity: String) =
         "${key}_${QUANTITY_PREFIX}_${mapAndroidQuantityToDouble(quantity)}"
 
-    // TODO handle other type
+    // Other will be skipped
     private fun mapAndroidQuantityToDouble(quantity: String) = when (quantity) {
         "zero" -> 0
         "one" -> 1
         "two" -> 2
-        "few" -> 6
-        "many" -> 12
-        "other" -> -1
+        "few" -> 3
+        "many" -> 6
         else -> null
     }
 

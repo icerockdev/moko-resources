@@ -7,9 +7,9 @@ import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
-// TODO should be shared with MokoBundle.Bundle_NAME
-const val BUNDLE_NAME = "moko.MokoBundle"
-const val PLURALS_BUNDLE_NAME = "moko.MokoPluralsBundle"
+const val BUNDLE_NAME = "MokoBundle"
+const val PLURALS_BUNDLE_NAME = "MokoPluralsBundle"
+const val LOCALIZATION_DIR = "localization"
 
 class JvmStringsGenerator(stringsFileTree: FileTree) : StringsGenerator(stringsFileTree) {
 
@@ -30,13 +30,30 @@ class JvmStringsGenerator(stringsFileTree: FileTree) : StringsGenerator(stringsF
             else -> "${BUNDLE_NAME}_$language"
         }
 
-        val stringsFile = File(resourcesGenerationDir, "${fileDirName}.properties")
-        resourcesGenerationDir.mkdirs()
+        val localizationDir = File(resourcesGenerationDir, LOCALIZATION_DIR).apply {
+            mkdirs()
+        }
+        val stringsFile = File(localizationDir, "${fileDirName}.properties")
 
         val content = strings.map { (key, value) ->
-            "$key = $value"
+            "$key = ${value.replaceAndroidFormatParameters()}"
         }.joinToString("\n")
 
         stringsFile.writeText(content)
+    }
+
+    companion object {
+        private val androidFormatRegex = "%.(\\$.)?".toRegex()
+
+        fun String.replaceAndroidFormatParameters(): String {
+
+            var formattedValue = this
+            var paramNr = 0
+
+            while (androidFormatRegex.containsMatchIn(formattedValue)) {
+                formattedValue = formattedValue.replaceFirst(androidFormatRegex, "{${paramNr++}}")
+            }
+            return formattedValue
+        }
     }
 }

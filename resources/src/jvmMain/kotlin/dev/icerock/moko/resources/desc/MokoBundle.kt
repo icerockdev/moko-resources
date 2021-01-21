@@ -6,8 +6,8 @@ import java.text.MessageFormat
 import java.util.*
 
 object MokoBundle {
-    private const val BUNDLE_NAME = "moko.MokoBundle"
-    private const val PLURALS_BUNDLE_NAME = "moko.MokoPluralsBundle"
+    private const val BUNDLE_NAME = "localization.MokoBundle"
+    private const val PLURALS_BUNDLE_NAME = "localization.MokoPluralsBundle"
 
     fun getString(key: String, args: List<Any>? = null) =
         with(ResourceBundle.getBundle(BUNDLE_NAME, Locale.getDefault()).getString(key)) {
@@ -34,7 +34,7 @@ object MokoBundle {
     ) {
         val messageFormat = MessageFormat("").apply { locale = Locale.getDefault() }
 
-        val (limits, strings) = numberFormat.map { it.first } to numberFormat.map { it.second }
+        val (limits, strings) = numberFormat.map { it.first } to numberFormat.map { getString(it.second) }
         val choiceFormat = ChoiceFormat(limits.toDoubleArray(), strings.toTypedArray())
 
         messageFormat.apply {
@@ -44,6 +44,5 @@ object MokoBundle {
         val messageArguments = args.toMutableList().apply { add(0, number) }.toTypedArray()
 
         return messageFormat.format(messageArguments)
-
     }
 }

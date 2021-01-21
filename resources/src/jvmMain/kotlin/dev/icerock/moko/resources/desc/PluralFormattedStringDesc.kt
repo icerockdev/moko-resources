@@ -12,8 +12,7 @@ actual class PluralFormattedStringDesc actual constructor(
         MokoBundle.getPluralString(
             pluralsRes.key,
             number,
-            pluralsRes.numberFormat[pluralsRes.key]
-                ?: throw IllegalStateException("Unknown plural description"),
+            pluralsRes.numberFormat,
             args
         )
 }
