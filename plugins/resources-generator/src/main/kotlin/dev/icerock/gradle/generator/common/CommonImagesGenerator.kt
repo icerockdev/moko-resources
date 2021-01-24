@@ -11,12 +11,10 @@ import org.gradle.api.file.FileTree
 
 class CommonImagesGenerator(
     inputFileTree: FileTree
-) : ImagesGenerator(
-    inputFileTree = inputFileTree
-) {
+) : ImagesGenerator(inputFileTree) {
     override fun getClassModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
-    override fun getPropertyInitializer(key: String): CodeBlock? = null
+    override fun getPropertyInitializer(fileName: String): CodeBlock? = null
 }

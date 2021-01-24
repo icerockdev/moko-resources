@@ -19,8 +19,8 @@ class AndroidImagesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
-        val processedKey = processKey(key)
+    override fun getPropertyInitializer(fileName: String): CodeBlock? {
+        val processedKey = processKey(fileName.substringBefore("."))
         return CodeBlock.of("ImageResource(R.drawable.%L)", processedKey)
     }
 

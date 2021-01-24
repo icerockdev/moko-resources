@@ -23,10 +23,10 @@ class AppleImagesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
+    override fun getPropertyInitializer(fileName: String): CodeBlock? {
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            key
+            fileName.substringBefore(".")
         )
     }
 

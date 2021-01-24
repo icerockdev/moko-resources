@@ -16,9 +16,8 @@ class JvmImagesGenerator(inputFileTree: FileTree) : ImagesGenerator(inputFileTre
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    // TODO replace .png with getting extension
-    override fun getPropertyInitializer(key: String) =
-        CodeBlock.of("ImageResource(imagePath = %S)", "$IMAGES_DIR/$key.png")
+    override fun getPropertyInitializer(fileName: String) =
+        CodeBlock.of("ImageResource(imagePath = %S)", "$IMAGES_DIR/$fileName")
 
     override fun generateResources(
         resourcesGenerationDir: File,

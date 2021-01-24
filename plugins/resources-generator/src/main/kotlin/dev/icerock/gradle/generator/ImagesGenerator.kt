@@ -24,26 +24,33 @@ abstract class ImagesGenerator(
     override val mrObjectName: String = "images"
 
     override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
-        val keyFileMap = inputFileTree.groupBy { file ->
-            file.name.substringBefore("@")
+        val fileMap = inputFileTree.groupBy { file ->
+            "${file.name.substringBefore("@")}.${file.extension}"
         }
 
-        val typeSpec = createTypeSpec(keyFileMap.keys.sorted(), objectBuilder)
+        val typeSpec = createTypeSpec(fileMap.keys.sorted(), objectBuilder)
 
-        generateResources(resourcesGenerationDir, keyFileMap)
+        generateResources(
+            resourcesGenerationDir,
+            fileMap.mapKeys { (key, _) ->
+                key.substringBeforeLast(".") // Remove file extension from keys
+            })
 
         return typeSpec
     }
 
     @Suppress("SpreadOperator")
-    fun createTypeSpec(keys: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
+    fun createTypeSpec(fileNames: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
-        keys.forEach { key ->
-            val name = key.replace(".", "_")
-            val property = PropertySpec.builder(name, resourceClassName)
+        fileNames.forEach { fileName ->
+            val updatedFileName = fileName.substringBeforeLast(".")
+                .replace(".", "_") + ".${fileName.substringAfterLast(".")}"
+            val propertyName = updatedFileName.substringBeforeLast(".")
+            val property = PropertySpec.builder(propertyName, resourceClassName)
+
             property.addModifiers(*getPropertyModifiers())
-            getPropertyInitializer(name)?.let { property.initializer(it) }
+            getPropertyInitializer(updatedFileName)?.let { property.initializer(it) }
             objectBuilder.addProperty(property.build())
         }
 
@@ -66,7 +73,7 @@ abstract class ImagesGenerator(
 
     abstract fun getPropertyModifiers(): Array<KModifier>
 
-    abstract fun getPropertyInitializer(key: String): CodeBlock?
+    abstract fun getPropertyInitializer(fileName: String): CodeBlock?
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
