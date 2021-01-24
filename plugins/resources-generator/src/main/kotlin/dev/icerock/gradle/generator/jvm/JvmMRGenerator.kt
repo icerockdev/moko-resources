@@ -1,3 +1,7 @@
+/*
+ * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.KModifier
@@ -5,6 +9,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
 import java.io.File
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 class JvmMRGenerator(
     generatedDir: File,
@@ -21,6 +26,11 @@ class JvmMRGenerator(
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun apply(generationTask: Task, project: Project) {
-        project.tasks.getByName("preBuild").dependsOn(generationTask)
+        project.tasks.apply {
+            getByName("preBuild").dependsOn(generationTask)
+            withType(KotlinCompile::class.java).all {
+                it.dependsOn(generationTask)
+            }
+        }
     }
 }

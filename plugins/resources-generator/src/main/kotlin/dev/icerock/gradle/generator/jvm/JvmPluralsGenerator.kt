@@ -1,3 +1,7 @@
+/*
+ * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.CodeBlock
@@ -33,7 +37,7 @@ class JvmPluralsGenerator(pluralsFileTree: FileTree) : PluralsGenerator(pluralsF
         }
 
         val localizationDir = File(resourcesGenerationDir, LOCALIZATION_DIR).apply { mkdirs() }
-        val stringsFile = File(localizationDir, "${fileDirName}.properties")
+        val stringsFile = File(localizationDir, "$fileDirName.properties")
 
         val content = strings.map { (key, pluralMap) ->
             "$key = {0}\n" +
@@ -72,15 +76,20 @@ class JvmPluralsGenerator(pluralsFileTree: FileTree) : PluralsGenerator(pluralsF
 
     // Other will be skipped
     private fun mapAndroidQuantityToDouble(quantity: String) = when (quantity) {
-        "zero" -> 0
-        "one" -> 1
-        "two" -> 2
-        "few" -> 3
-        "many" -> 6
+        "zero" -> ZERO
+        "one" -> ONE
+        "two" -> TWO
+        "few" -> FEW
+        "many" -> MANY
         else -> null
     }
 
     companion object {
         private const val QUANTITY_PREFIX = "quantity"
+        private const val ZERO = 0
+        private const val ONE = 1
+        private const val TWO = 2
+        private const val FEW = 3
+        private const val MANY = 6
     }
 }

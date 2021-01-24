@@ -1,9 +1,14 @@
+/*
+ * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package dev.icerock.moko.resources.desc
 
 import java.text.ChoiceFormat
 import java.text.Format
 import java.text.MessageFormat
-import java.util.*
+import java.util.ResourceBundle
+import java.util.Locale
 
 object MokoBundle {
     private const val BUNDLE_NAME = "localization.MokoBundle"

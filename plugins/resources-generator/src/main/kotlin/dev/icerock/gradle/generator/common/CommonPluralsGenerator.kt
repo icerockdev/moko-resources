@@ -12,7 +12,7 @@ import org.gradle.api.file.FileTree
 
 class CommonPluralsGenerator(
     pluralsFileTree: FileTree
-) : PluralsGenerator( pluralsFileTree) {
+) : PluralsGenerator(pluralsFileTree) {
     override fun getPropertyInitializer(
         key: String,
         baseLanguageMap: Map<KeyType, PluralMap>
