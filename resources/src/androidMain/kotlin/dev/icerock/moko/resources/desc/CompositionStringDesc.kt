@@ -7,8 +7,8 @@ package dev.icerock.moko.resources.desc
 import android.content.Context
 
 actual data class CompositionStringDesc actual constructor(
-    private val args: Iterable<StringDesc>,
-    private val separator: String?
+    val args: Iterable<StringDesc>,
+    val separator: String?
 ) : StringDesc {
     override fun toString(context: Context) =
         args.joinToString(separator = separator ?: "") { it.toString(context) }

@@ -9,7 +9,6 @@ plugins {
 repositories {
     jcenter()
     google()
-    mavenLocal()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
