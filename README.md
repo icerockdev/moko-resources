@@ -435,6 +435,10 @@ val color: Color = MR.colors.valueColor.getColor(context = this)
 iOS:
 ```swift
 val color: UIColor = MR.colors.valueColor.getColor(UIScreen.main.traitCollection.userInterfaceStyle)
+
+// If your SwiftUI View can not handle the run time dark/light mode changes for colors
+// add this line on top of the View it will make it aware of dark/light mode changes 
+@Environment(\.colorScheme) var colorScheme
 ```
 
 ### Gradle task for creating Fat Framework with resources 
