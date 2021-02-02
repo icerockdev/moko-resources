@@ -9,8 +9,6 @@ import dev.icerock.moko.resources.ImageResource
 class ImageDescResource(val resource: ImageResource) : ImageDesc
 
 @Suppress("FunctionName")
-fun ImageDesc.Companion.Resource(
-    imageResource: ImageResource
-): ImageDesc = ImageDescResource(imageResource)
+fun ImageDesc.Companion.Resource(resource: ImageResource): ImageDesc = ImageDescResource(resource)
 
 fun ImageResource.asImageDesc() = ImageDesc.Resource(this)
