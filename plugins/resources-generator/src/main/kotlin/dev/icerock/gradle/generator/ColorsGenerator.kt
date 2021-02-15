@@ -155,6 +155,7 @@ abstract class ColorsGenerator(
 
     protected fun replaceColorAlpha(color: String?): String? {
         if (color == null) return color
+        if (color.length == 6) return "$color$NonTransparent"
 
         val alpha = color.substring(color.length - 2, color.length)
         return "$alpha${color.removeRange(color.length - 2, color.length)}"
@@ -164,6 +165,7 @@ abstract class ColorsGenerator(
         internal const val XmlColorTag = "color"
         internal const val XmlNodeAttrColorName = "name"
         internal const val XmlColorReferencePrefix = "@color/"
+        internal const val NonTransparent = "FF"
     }
 }
 
