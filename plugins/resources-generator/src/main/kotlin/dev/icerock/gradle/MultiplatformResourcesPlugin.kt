@@ -192,7 +192,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
             .filterIsInstance<KotlinJvmTarget>()
             .flatMap { it.compilations }
-            .filterNot { it.name.endsWith("Test") } // remove tests compilations
+            .filter { it.associateWith.isEmpty() } // remove tests compilations
             .map { it.defaultSourceSet }
 
         kotlinSourceSets.forEach { kotlinSourceSet ->
