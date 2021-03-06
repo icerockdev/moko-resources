@@ -8,8 +8,8 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 class JvmMRGenerator(
     generatedDir: File,
