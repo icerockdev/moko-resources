@@ -35,19 +35,23 @@ fun main() {
         Surface(Modifier.fillMaxSize()) {
             Column {
                 Row {
-                    testing.getStrings().forEach {
+                    testing.getStrings().forEach { stringDesc ->
                         Text(
-                            it.localized(),
+                            text = stringDesc.localized(),
                             color = Color(MR.colors.textColor.color.argb),
                             modifier = Modifier.padding(8.dp)
                         )
                     }
                 }
-                Text(testing.getStringDesc().localized())
-                Text(testing.getTextFile().readText())
-                Text(testing.getJsonFile().readText())
-                Text(testing.getNestedJsonFile().readText())
-                Image(testing.getDrawable().image.toImageBitmap(), Modifier.size(56.dp))
+                Text(text = testing.getStringDesc().localized())
+                Text(text = testing.getTextFile().readText())
+                Text(text = testing.getJsonFile().readText())
+                Text(text = testing.getNestedJsonFile().readText())
+                Image(
+                    bitmap = testing.getDrawable().image.toImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.size(56.dp)
+                )
             }
         }
     }
