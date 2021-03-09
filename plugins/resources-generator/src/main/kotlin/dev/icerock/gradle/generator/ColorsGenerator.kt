@@ -34,7 +34,7 @@ abstract class ColorsGenerator(
     @Suppress("SpreadOperator")
     override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtStart(objectBuilder)
 
         val colors = parseColors()
         colors.forEach { colorNode ->
@@ -51,10 +51,10 @@ abstract class ColorsGenerator(
 
         generateResources(resourcesGenerationDir, colors)
 
+        extendObjectBodyAtEnd(objectBuilder)
+
         return objectBuilder.build()
     }
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     protected open fun getClassModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()

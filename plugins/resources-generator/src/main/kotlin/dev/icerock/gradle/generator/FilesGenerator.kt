@@ -39,8 +39,10 @@ abstract class FilesGenerator(
         @Suppress("SpreadOperator")
         objectBuilder.addModifiers(*getClassModifiers())
 
+        extendObjectBodyAtStart(objectBuilder)
+
         keys.forEach { objectBuilder.addProperty(generateFileProperty(it)) }
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
         return objectBuilder.build()
     }
 
@@ -67,8 +69,6 @@ abstract class FilesGenerator(
     protected fun processKey(key: String): String {
         return key.replace("-", "_")
     }
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     abstract fun getClassModifiers(): Array<KModifier>
 

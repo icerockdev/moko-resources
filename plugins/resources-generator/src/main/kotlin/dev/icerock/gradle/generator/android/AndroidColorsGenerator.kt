@@ -8,12 +8,14 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class AndroidColorsGenerator(
     colorsFileTree: FileTree
-) : ColorsGenerator(colorsFileTree) {
+) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")

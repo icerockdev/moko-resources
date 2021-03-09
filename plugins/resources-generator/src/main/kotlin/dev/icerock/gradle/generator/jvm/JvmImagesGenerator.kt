@@ -6,18 +6,25 @@ package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ImagesGenerator
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-class JvmImagesGenerator(inputFileTree: FileTree) : ImagesGenerator(inputFileTree) {
+class JvmImagesGenerator(
+    inputFileTree: FileTree
+) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileName: String) =
-        CodeBlock.of("ImageResource(imagePath = %S)", "$IMAGES_DIR/$fileName")
+        CodeBlock.of(
+            "ImageResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
+            "$IMAGES_DIR/$fileName"
+        )
 
     override fun generateResources(
         resourcesGenerationDir: File,

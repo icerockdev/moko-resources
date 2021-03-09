@@ -4,4 +4,22 @@
 
 package dev.icerock.moko.resources
 
-actual class StringResource(val key: String)
+import java.text.MessageFormat
+import java.util.Locale
+
+actual class StringResource(
+    val resourcesClassLoader: ClassLoader,
+    val bundleName: String,
+    val key: String
+) {
+    fun localized(locale: Locale = Locale.getDefault()): String {
+        val resourceBundle = resourcesClassLoader.getResourceBundle(bundleName, locale)
+        return resourceBundle.getString(key)
+    }
+
+    fun localized(locale: Locale = Locale.getDefault(), vararg args: Any): String {
+        val resourceBundle = resourcesClassLoader.getResourceBundle(bundleName, locale)
+        val string = resourceBundle.getString(key)
+        return MessageFormat.format(string, *args)
+    }
+}

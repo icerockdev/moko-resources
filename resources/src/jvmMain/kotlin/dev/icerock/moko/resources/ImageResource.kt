@@ -8,12 +8,13 @@ import java.awt.image.BufferedImage
 import java.io.FileNotFoundException
 import javax.imageio.ImageIO
 
-actual class ImageResource(imagePath: String) {
-
-    val image: BufferedImage = with(Thread.currentThread().contextClassLoader) {
-        getResourceAsStream(imagePath)?.use {
-            ImageIO.read(it)
-        } ?: throw FileNotFoundException("Couldn't open resource as stream at: $imagePath")
+actual class ImageResource(
+    val resourcesClassLoader: ClassLoader,
+    val filePath: String
+) {
+    val image: BufferedImage = run {
+        val stream = resourcesClassLoader.getResourceAsStream(filePath)
+            ?: throw FileNotFoundException("Couldn't open resource as stream at: $filePath")
+        stream.use { ImageIO.read(it) }
     }
-
 }

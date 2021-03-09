@@ -21,11 +21,9 @@ actual interface StringDesc {
         ) : LocaleType() {
             override val systemLocale: Locale = Locale(locale)
         }
-
     }
 
     actual companion object {
         actual var localeType: LocaleType = LocaleType.System
     }
-
 }

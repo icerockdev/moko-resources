@@ -39,6 +39,8 @@ abstract class FontsGenerator(
         @Suppress("SpreadOperator")
         objectBuilder.addModifiers(*getClassModifiers())
 
+        extendObjectBodyAtStart(objectBuilder)
+
         /*
         * 1. Group keys by family name (split('-').first())
         * 2. Generate subtype for each family `classBuilder.addType(...)`
@@ -63,7 +65,7 @@ abstract class FontsGenerator(
                 )
             )
         }
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
         return objectBuilder.build()
     }
 
@@ -95,8 +97,6 @@ abstract class FontsGenerator(
         files: List<FontFile>
     ) {
     }
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     abstract fun getClassModifiers(): Array<KModifier>
 

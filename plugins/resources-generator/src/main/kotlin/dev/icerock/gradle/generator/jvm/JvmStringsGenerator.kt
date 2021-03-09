@@ -7,22 +7,25 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
-const val BUNDLE_NAME = "MokoBundle"
-const val PLURALS_BUNDLE_NAME = "MokoPluralsBundle"
-const val LOCALIZATION_DIR = "localization"
-
-class JvmStringsGenerator(stringsFileTree: FileTree) : StringsGenerator(stringsFileTree) {
+class JvmStringsGenerator(
+    stringsFileTree: FileTree
+) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String, baseLanguageMap: Map<KeyType, String>) =
-        CodeBlock.of("StringResource(%S)", key)
+        CodeBlock.of(
+            "StringResource(resourcesClassLoader = resourcesClassLoader, bundleName = %L, key = %S)",
+            JvmMRGenerator.STRINGS_BUNDLE_PROPERTY_NAME,
+            key
+        )
 
     override fun generateResources(
         resourcesGenerationDir: File,
@@ -30,11 +33,11 @@ class JvmStringsGenerator(stringsFileTree: FileTree) : StringsGenerator(stringsF
         strings: Map<KeyType, String>
     ) {
         val fileDirName = when (language) {
-            null -> BUNDLE_NAME
-            else -> "${BUNDLE_NAME}_$language"
+            null -> JvmMRGenerator.STRINGS_BUNDLE_NAME
+            else -> "${JvmMRGenerator.STRINGS_BUNDLE_NAME}_$language"
         }
 
-        val localizationDir = File(resourcesGenerationDir, LOCALIZATION_DIR).apply {
+        val localizationDir = File(resourcesGenerationDir, JvmMRGenerator.LOCALIZATION_DIR).apply {
             mkdirs()
         }
         val stringsFile = File(localizationDir, "$fileDirName.properties")

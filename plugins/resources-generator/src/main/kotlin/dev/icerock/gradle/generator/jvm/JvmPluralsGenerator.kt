@@ -7,13 +7,16 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmStringsGenerator.Companion.replaceAndroidFormatParameters
 import org.gradle.api.file.FileTree
 import java.io.File
 
-class JvmPluralsGenerator(pluralsFileTree: FileTree) : PluralsGenerator(pluralsFileTree) {
+class JvmPluralsGenerator(
+    pluralsFileTree: FileTree
+) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -21,7 +24,8 @@ class JvmPluralsGenerator(pluralsFileTree: FileTree) : PluralsGenerator(pluralsF
 
     override fun getPropertyInitializer(key: String, baseLanguageMap: Map<KeyType, PluralMap>) =
         CodeBlock.of(
-            "PluralsResource(%S, %L)",
+            "PluralsResource(resourcesClassLoader = resourcesClassLoader, bundleName = %L, key = %S, numberFormat = %L)",
+            JvmMRGenerator.PLURALS_BUNDLE_PROPERTY_NAME,
             key,
             getNumberFormat(key, baseLanguageMap)
         )
@@ -32,11 +36,12 @@ class JvmPluralsGenerator(pluralsFileTree: FileTree) : PluralsGenerator(pluralsF
         strings: Map<KeyType, PluralMap>
     ) {
         val fileDirName = when (language) {
-            null -> PLURALS_BUNDLE_NAME
-            else -> "${PLURALS_BUNDLE_NAME}_$language"
+            null -> JvmMRGenerator.PLURALS_BUNDLE_NAME
+            else -> "${JvmMRGenerator.PLURALS_BUNDLE_NAME}_$language"
         }
 
-        val localizationDir = File(resourcesGenerationDir, LOCALIZATION_DIR).apply { mkdirs() }
+        val localizationDir =
+            File(resourcesGenerationDir, JvmMRGenerator.LOCALIZATION_DIR).apply { mkdirs() }
         val stringsFile = File(localizationDir, "$fileDirName.properties")
 
         val content = strings.map { (key, pluralMap) ->

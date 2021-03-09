@@ -8,6 +8,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FilesGenerator
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 import java.util.Locale
@@ -15,7 +17,7 @@ import java.util.Locale
 class AndroidFilesGenerator(
     inputFileTree: FileTree,
     private val androidRClassPackage: String
-) : FilesGenerator(inputFileTree) {
+) : FilesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

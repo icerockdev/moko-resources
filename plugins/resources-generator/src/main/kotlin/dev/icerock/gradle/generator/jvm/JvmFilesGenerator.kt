@@ -6,18 +6,23 @@ package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FilesGenerator
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-class JvmFilesGenerator(inputFileTree: FileTree) : FilesGenerator(inputFileTree) {
+class JvmFilesGenerator(
+    inputFileTree: FileTree
+) : FilesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileSpec: FileSpec) = CodeBlock.of(
-        "FileResource(path = %S)", "$FILES_DIR/${fileSpec.file.name}"
+        "FileResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
+        "$FILES_DIR/${fileSpec.file.name}"
     )
 
     override fun generateResources(resourcesGenerationDir: File, files: List<FileSpec>) {

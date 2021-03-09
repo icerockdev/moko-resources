@@ -10,6 +10,8 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -17,7 +19,7 @@ import java.io.File
 class AndroidPluralsGenerator(
     pluralsFileTree: FileTree,
     private val androidRClassPackage: String
-) : PluralsGenerator(pluralsFileTree) {
+) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

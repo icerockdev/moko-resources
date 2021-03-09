@@ -5,6 +5,7 @@
 package com.icerockdev.library
 
 import com.icerockdev.library.nested.nestedFile
+import com.icerockdev.library.nested.nestedTest
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.Plural
@@ -33,9 +34,7 @@ object Testing {
             MR.plurals.test_plural.desc(2),
             MR.plurals.test_plural.desc(3),
             MR.plurals.test_plural.desc(7),
-//            TODO nested won't work with the current implementation, since the library tries to resolve from a bundle
-//             that's outside of it's package
-//            nestedTest()
+            nestedTest()
         )
     }
 

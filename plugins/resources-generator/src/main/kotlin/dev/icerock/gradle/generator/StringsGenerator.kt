@@ -70,8 +70,6 @@ abstract class StringsGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String

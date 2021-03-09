@@ -51,10 +51,10 @@ kotlin {
         val iosMain by getting { dependsOn(clientMain) }
         val iosTest by getting { dependsOn(clientTest) }
 
-        val macosMain by getting  { dependsOn(clientMain) }
+        val macosMain by getting { dependsOn(clientMain) }
         val macosTest by getting { dependsOn(clientTest) }
 
-        val androidMain by getting  { dependsOn(clientMain) }
+        val androidMain by getting { dependsOn(clientMain) }
         val androidTest by getting { dependsOn(clientTest) }
 
         val jvmMain by getting

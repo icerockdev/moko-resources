@@ -6,11 +6,13 @@ package dev.icerock.moko.resources
 
 import java.io.FileNotFoundException
 
-actual class FileResource(private val path: String) {
-
-    fun readText(): String = with(Thread.currentThread().contextClassLoader) {
-        getResourceAsStream(path)?.use {
-            it.readBytes().decodeToString()
-        } ?: throw FileNotFoundException("Couldn't open resource as stream at: $path")
+actual class FileResource(
+    val resourcesClassLoader: ClassLoader,
+    val filePath: String
+) {
+    fun readText(): String {
+        val stream = resourcesClassLoader.getResourceAsStream(filePath)
+            ?: throw FileNotFoundException("Couldn't open resource as stream at: $filePath")
+        return stream.use { it.readBytes().decodeToString() }
     }
 }

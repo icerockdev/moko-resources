@@ -12,9 +12,5 @@ actual class PluralStringDesc actual constructor(
     val number: Int,
 ) : StringDesc, Parcelable {
 
-    override fun localized() = MokoBundle.getPluralString(
-        pluralsRes.key,
-        number,
-        pluralsRes.numberFormat
-    )
+    override fun localized() = pluralsRes.localized(quantity = number)
 }

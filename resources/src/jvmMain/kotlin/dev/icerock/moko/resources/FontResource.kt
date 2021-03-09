@@ -7,10 +7,19 @@ package dev.icerock.moko.resources
 import java.awt.Font
 import java.awt.GraphicsEnvironment
 import java.io.File
+import java.io.FileNotFoundException
+import java.net.URL
 
-actual class FontResource(fontPath: String) {
-
-    val font: Font = Font.createFont(Font.TRUETYPE_FONT, File(fontPath))
+actual class FontResource(
+    val resourcesClassLoader: ClassLoader,
+    val filePath: String
+) {
+    val font: Font = run {
+        val resourceUrl: URL = resourcesClassLoader.getResource(filePath)
+            ?: throw FileNotFoundException("Couldn't find font resource at: $filePath")
+        val file: File = File(resourceUrl.toURI())
+        Font.createFont(Font.TRUETYPE_FONT, file)
+    }
 
     init {
         GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font)

@@ -12,7 +12,6 @@ import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.ASSETS_DIR_
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleImagesGenerator(
     inputFileTree: FileTree
 ) : ImagesGenerator(

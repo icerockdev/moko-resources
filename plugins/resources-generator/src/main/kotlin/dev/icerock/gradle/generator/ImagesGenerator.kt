@@ -43,6 +43,8 @@ abstract class ImagesGenerator(
     fun createTypeSpec(fileNames: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
+        extendObjectBodyAtStart(objectBuilder)
+
         fileNames.forEach { fileName ->
             val updatedFileName = fileName.substringBeforeLast(".")
                 .replace(".", "_") + ".${fileName.substringAfterLast(".")}"
@@ -54,7 +56,7 @@ abstract class ImagesGenerator(
             objectBuilder.addProperty(property.build())
         }
 
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
 
         return objectBuilder.build()
     }
@@ -66,8 +68,6 @@ abstract class ImagesGenerator(
         keyFileMap: Map<String, List<File>>
     ) {
     }
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     abstract fun getClassModifiers(): Array<KModifier>
 

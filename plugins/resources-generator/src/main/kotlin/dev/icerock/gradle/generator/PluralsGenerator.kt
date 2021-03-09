@@ -43,8 +43,6 @@ abstract class PluralsGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     private fun loadLanguagePlurals(pluralsFile: File): Map<KeyType, PluralMap> {
         val dbFactory = DocumentBuilderFactory.newInstance()
         val dBuilder = dbFactory.newDocumentBuilder()

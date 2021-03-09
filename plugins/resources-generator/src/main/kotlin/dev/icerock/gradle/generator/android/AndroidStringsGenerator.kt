@@ -8,6 +8,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
@@ -16,7 +18,7 @@ import java.io.File
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
     private val androidRClassPackage: String
-) : StringsGenerator(stringsFileTree) {
+) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

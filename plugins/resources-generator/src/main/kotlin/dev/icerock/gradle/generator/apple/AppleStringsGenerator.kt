@@ -13,7 +13,6 @@ import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleStringsGenerator(
     stringsFileTree: FileTree,
     private val baseLocalizationRegion: String
@@ -28,9 +27,7 @@ class AppleStringsGenerator(
     override fun getPropertyInitializer(
         key: String,
         baseLanguageMap: Map<KeyType, String>
-    ): CodeBlock? {
-        return CodeBlock.of("StringResource(resourceId = %S, bundle = $BUNDLE_PROPERTY_NAME)", key)
-    }
+    ) = CodeBlock.of("StringResource(resourceId = %S, bundle = $BUNDLE_PROPERTY_NAME)", key)
 
     override fun generateResources(
         resourcesGenerationDir: File,

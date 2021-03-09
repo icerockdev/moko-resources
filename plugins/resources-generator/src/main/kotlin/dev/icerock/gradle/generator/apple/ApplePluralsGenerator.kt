@@ -13,7 +13,6 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class ApplePluralsGenerator(
     pluralsFileTree: FileTree,
     private val baseLocalizationRegion: String
@@ -28,12 +27,10 @@ class ApplePluralsGenerator(
     override fun getPropertyInitializer(
         key: String,
         baseLanguageMap: Map<KeyType, PluralMap>
-    ): CodeBlock? {
-        return CodeBlock.of(
-            "PluralsResource(resourceId = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            key
-        )
-    }
+    ) = CodeBlock.of(
+        "PluralsResource(resourceId = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+        key
+    )
 
     private fun writeStringsFile(file: File, strings: Map<KeyType, PluralMap>) {
         val head = """<?xml version="1.0" encoding="UTF-8"?>

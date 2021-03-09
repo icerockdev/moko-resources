@@ -34,6 +34,8 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     private fun createTypeSpec(keys: List<KeyType>, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
+        extendObjectBodyAtStart(objectBuilder)
+
         keys.forEach { key ->
             val name = key.replace(".", "_")
             val property =
@@ -46,11 +48,9 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
             objectBuilder.addProperty(property.build())
         }
 
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
         return objectBuilder.build()
     }
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
     protected abstract fun getPropertyInitializer(

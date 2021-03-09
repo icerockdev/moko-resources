@@ -6,10 +6,14 @@ package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ColorsGenerator
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 
-class JvmColorsGenerator(colorsFileTree: FileTree) : ColorsGenerator(colorsFileTree) {
+class JvmColorsGenerator(
+    colorsFileTree: FileTree
+) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
 
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")

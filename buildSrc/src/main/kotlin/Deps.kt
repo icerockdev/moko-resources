@@ -66,7 +66,7 @@ object Deps {
                 const val testCore =
                     "androidx.test:core:1.3.0"
                 const val robolectric =
-                    "org.robolectric:robolectric:4.3"
+                    "org.robolectric:robolectric:4.5.1"
                 const val testRunner =
                     "androidx.test:runner:$testRunnerVersion"
                 const val testRules =

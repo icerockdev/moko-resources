@@ -11,7 +11,6 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleFontsGenerator(
     inputFileTree: FileTree
 ) : FontsGenerator(inputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
