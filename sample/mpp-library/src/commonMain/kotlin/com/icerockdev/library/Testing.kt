@@ -33,6 +33,7 @@ object Testing {
             MR.plurals.test_plural.desc(1),
             MR.plurals.test_plural.desc(2),
             MR.plurals.test_plural.desc(3),
+            MR.plurals.test_plural.desc(7),
             nestedTest()
         )
     }

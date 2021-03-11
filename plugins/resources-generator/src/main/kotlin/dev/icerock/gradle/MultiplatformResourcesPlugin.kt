@@ -19,6 +19,7 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
+import dev.icerock.gradle.generator.jvm.JvmMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,6 +31,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -100,13 +102,14 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
         val commonGenerationTask = setupCommonGenerator(
-            commonSourceSet = commonSourceSet,
-            generatedDir = generatedDir,
-            mrClassPackage = mrClassPackage,
-            features = features,
-            target = target
+            commonSourceSet,
+            generatedDir,
+            mrClassPackage,
+            features,
+            target
         )
         setupAndroidGenerator(
+            commonSourceSet,
             targets,
             androidMainSourceSet,
             generatedDir,
@@ -114,8 +117,17 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             features,
             target
         )
+        setupJvmGenerator(
+            commonSourceSet,
+            targets,
+            generatedDir,
+            mrClassPackage,
+            features,
+            target
+        )
         if (HostManager.hostIsMac) {
             setupAppleGenerator(
+                commonSourceSet,
                 targets,
                 generatedDir,
                 mrClassPackage,
@@ -150,6 +162,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
     @Suppress("LongParameterList")
     private fun setupAndroidGenerator(
+        commonSourceSet: KotlinSourceSet,
         targets: List<KotlinTarget>,
         androidMainSourceSet: AndroidSourceSet,
         generatedDir: File,
@@ -160,7 +173,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
             .filterIsInstance<KotlinAndroidTarget>()
             .flatMap { it.compilations }
-            .filterNot { it.name.endsWith("Test") } // remove tests compilations
+            .filter { compilation ->
+                compilation.kotlinSourceSets.any { it.isDependsOn(commonSourceSet) }
+            }
             .map { it.defaultSourceSet }
 
         val androidSourceSet: MRGenerator.SourceSet =
@@ -173,8 +188,33 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         ).apply(target)
     }
 
+    private fun setupJvmGenerator(
+        commonSourceSet: KotlinSourceSet,
+        targets: List<KotlinTarget>,
+        generatedDir: File,
+        mrClassPackage: String,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
+        target: Project
+    ) {
+        val kotlinSourceSets: List<KotlinSourceSet> = targets
+            .filterIsInstance<KotlinJvmTarget>()
+            .flatMap { it.compilations }
+            .map { it.defaultSourceSet }
+            .filter { it.isDependsOn(commonSourceSet) }
+
+        kotlinSourceSets.forEach { kotlinSourceSet ->
+            JvmMRGenerator(
+                generatedDir,
+                createSourceSet(kotlinSourceSet),
+                mrClassPackage,
+                generators = features.map { it.createJvmGenerator() }
+            ).apply(target)
+        }
+    }
+
     @Suppress("LongParameterList")
     private fun setupAppleGenerator(
+        commonSourceSet: KotlinSourceSet,
         targets: List<KotlinTarget>,
         generatedDir: File,
         mrClassPackage: String,
@@ -191,6 +231,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             }
 
         val defSourceSets = compilations.map { it.defaultSourceSet }
+            .filter { it.isDependsOn(commonSourceSet) }
         compilations.forEach { compilation ->
             val kss = compilation.defaultSourceSet
             val depend = kss.getDependedFrom(defSourceSets)
@@ -255,5 +296,13 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val manifest = manifestNodes.item(0)
 
         return manifest.attributes.getNamedItem("package").textContent
+    }
+
+    private fun KotlinSourceSet.isDependsOn(sourceSet: KotlinSourceSet): Boolean {
+        if (dependsOn.contains(sourceSet)) return true
+        dependsOn.forEach { parent ->
+            if (parent.isDependsOn(sourceSet)) return true
+        }
+        return false
     }
 }

@@ -10,10 +10,13 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 
-class AppleGeneratorHelper(private val propertyName: String = "nsBundle") :
-    ObjectBodyExtendable {
+class AppleGeneratorHelper(
+    private val propertyName: String = "nsBundle"
+) : ObjectBodyExtendable {
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) {
+    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
+
+    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) {
         val bundleType = ClassName("platform.Foundation", "NSBundle")
         val bundleProperty = PropertySpec.builder(propertyName, bundleType)
             .addModifiers(KModifier.OVERRIDE)

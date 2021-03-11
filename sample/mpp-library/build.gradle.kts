@@ -18,6 +18,7 @@ android {
 
 kotlin {
     macosX64()
+    jvm()
 }
 
 dependencies {

@@ -33,9 +33,10 @@ publishing {
 
 kotlin {
     macosX64()
+    jvm()
     sourceSets {
-        val commonMain by getting {}
-
+        val commonMain by getting
+        val jvmMain by getting
         val appleMain by creating {
             dependsOn(commonMain)
         }

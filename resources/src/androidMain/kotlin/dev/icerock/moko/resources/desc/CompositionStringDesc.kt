@@ -10,14 +10,6 @@ actual data class CompositionStringDesc actual constructor(
     val args: Iterable<StringDesc>,
     val separator: String?
 ) : StringDesc {
-    override fun toString(context: Context): String {
-        return StringBuilder().apply {
-            args.forEachIndexed { index, stringDesc ->
-                if (index != 0 && separator != null) {
-                    append(separator)
-                }
-                append(stringDesc.toString(context))
-            }
-        }.toString()
-    }
+    override fun toString(context: Context) =
+        args.joinToString(separator = separator ?: "") { it.toString(context) }
 }

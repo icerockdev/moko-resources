@@ -19,7 +19,6 @@ import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleColorsGenerator(
     colorsFileTree: FileTree
 ) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {

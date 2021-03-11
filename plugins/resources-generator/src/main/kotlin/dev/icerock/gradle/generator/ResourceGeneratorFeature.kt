@@ -8,4 +8,5 @@ interface ResourceGeneratorFeature<T : MRGenerator.Generator> {
     fun createCommonGenerator(): T
     fun createIosGenerator(): T
     fun createAndroidGenerator(): T
+    fun createJvmGenerator(): T
 }

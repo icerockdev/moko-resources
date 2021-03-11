@@ -11,12 +11,9 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleFontsGenerator(
     inputFileTree: FileTree
-) : FontsGenerator(
-    inputFileTree = inputFileTree
-), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : FontsGenerator(inputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -33,7 +30,6 @@ class AppleFontsGenerator(
         resourcesGenerationDir: File,
         files: List<FontFile>
     ) {
-
         files.forEach { (_, file) ->
             file.copyTo(File(resourcesGenerationDir, file.name))
         }
