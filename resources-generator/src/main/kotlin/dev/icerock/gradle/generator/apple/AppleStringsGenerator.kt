@@ -10,8 +10,12 @@ import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROP
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
+import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
+import org.gradle.internal.impldep.com.googlecode.jatl.Html
 import java.io.File
+import java.net.URLDecoder
+import java.nio.charset.Charset
 
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleStringsGenerator(
@@ -43,7 +47,9 @@ class AppleStringsGenerator(
         val localizableFile = File(resDir, "Localizable.strings")
         resDir.mkdirs()
 
-        val content = strings.map { (key, value) ->
+        val content = strings.mapValues { (_, value) ->
+            convertXmlStringToAppleLocalization(value)
+        }.map { (key, value) ->
             "\"$key\" = \"$value\";"
         }.joinToString("\n")
         localizableFile.writeText(content)
@@ -54,5 +60,11 @@ class AppleStringsGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
+    }
+
+    private fun convertXmlStringToAppleLocalization(input: String): String {
+        val xmlDecoded = StringEscapeUtils.unescapeXml(input)
+        return xmlDecoded.replace("\n", "\\n")
+            .replace("\"", "\\\"")
     }
 }

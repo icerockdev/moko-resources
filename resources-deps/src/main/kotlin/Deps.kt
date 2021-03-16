@@ -3,7 +3,7 @@
  */
 
 object Deps {
-    private const val kotlinVersion = "1.4.21"
+    private const val kotlinVersion = "1.4.31"
     private const val androidGradleVersion = "4.0.1"
 
     private const val androidAppCompatVersion = "1.1.0"
@@ -15,11 +15,11 @@ object Deps {
     private const val kotlinPoetVersion = "1.6.0"
     private const val kotlinxSerializationVersion = "1.0.0"
 
-    private const val detektVersion = "1.7.4"
+    private const val detektVersion = "1.15.0"
 
     private const val mokoGraphicsVersion = "0.5.0"
     private const val mokoParcelizeVersion = "0.5.0"
-    const val mokoResourcesVersion = "0.15.0"
+    const val mokoResourcesVersion = "0.15.1"
 
     object Android {
         const val compileSdk = 28
@@ -46,11 +46,6 @@ object Deps {
             id = "dev.icerock.mobile.multiplatform-resources",
             module = "dev.icerock.moko:resources-generator:$mokoResourcesVersion"
         )
-
-        val detekt = GradlePlugin(
-            id = "io.gitlab.arturbosch.detekt",
-            version = detektVersion
-        )
     }
 
     object Libs {
@@ -66,7 +61,7 @@ object Deps {
                 const val testCore =
                     "androidx.test:core:1.3.0"
                 const val robolectric =
-                    "org.robolectric:robolectric:4.3"
+                    "org.robolectric:robolectric:4.4"
                 const val testRunner =
                     "androidx.test:runner:$testRunnerVersion"
                 const val testRules =

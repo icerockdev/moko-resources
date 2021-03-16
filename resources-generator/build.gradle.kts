@@ -3,21 +3,34 @@
  */
 
 plugins {
-    plugin(Deps.Plugins.javaGradle)
-    plugin(Deps.Plugins.kotlinJvm)
-    plugin(Deps.Plugins.mavenPublish)
-    plugin(Deps.Plugins.detekt)
+    id("org.jetbrains.kotlin.jvm") version ("1.4.31")
+    id("org.gradle.maven-publish")
+    id("io.gitlab.arturbosch.detekt") version ("1.15.0")
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+
+        maven { url = uri("https://dl.bintray.com/icerockdev/plugins") }
+    }
+    dependencies {
+        classpath("gradle:resources-deps:1")
+    }
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     google()
+    jcenter()
 }
 
 group = "dev.icerock.moko"
 version = Deps.mokoResourcesVersion
 
 dependencies {
+    implementation(gradleKotlinDsl())
     compileOnly(Deps.Libs.Jvm.kotlinGradlePlugin)
     compileOnly(Deps.Libs.Jvm.androidGradlePlugin)
     implementation(Deps.Libs.Jvm.kotlinPoet)

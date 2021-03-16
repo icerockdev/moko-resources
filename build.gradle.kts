@@ -3,35 +3,40 @@
  */
 
 plugins {
-    plugin(Deps.Plugins.detekt) apply false
+    id("io.gitlab.arturbosch.detekt") version("1.15.0") apply(false)
 }
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
 
         maven { url = uri("https://dl.bintray.com/kotlin/kotlin") }
         maven { url = uri("https://kotlin.bintray.com/kotlinx") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
         maven { url = uri("https://dl.bintray.com/icerockdev/plugins") }
+
+        jcenter()
     }
     dependencies {
-        plugin(Deps.Plugins.mokoResources)
+        classpath("dev.icerock.moko:resources-generator:0.15.0")
+        classpath("gradle:resources-deps:1")
     }
 }
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
-        jcenter()
 
         maven { url = uri("https://kotlin.bintray.com/kotlin") }
         maven { url = uri("https://kotlin.bintray.com/kotlinx") }
         maven { url = uri("https://dl.bintray.com/icerockdev/moko") }
+
+        jcenter()
     }
 
-    apply(plugin = Deps.Plugins.detekt.id)
+    apply(plugin = "io.gitlab.arturbosch.detekt")
 
     configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         input.setFrom("src/commonMain/kotlin", "src/androidMain/kotlin", "src/iosMain/kotlin")

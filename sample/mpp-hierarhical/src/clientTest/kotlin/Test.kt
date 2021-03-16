@@ -14,4 +14,20 @@ class Test : BaseUnitTest() {
         val rawString = stringDesc.getString()
         assertEquals(expected = "test", actual = rawString)
     }
+
+    @Test
+    fun `test multiline string`() {
+        val stringDesc = MR.strings.multilined.desc()
+        val rawString = stringDesc.getString()
+        assertEquals(expected = """first line
+second line
+third line.""", actual = rawString)
+    }
+
+    @Test
+    fun `test quotes string`() {
+        val stringDesc = MR.strings.quotes.desc()
+        val rawString = stringDesc.getString()
+        assertEquals(expected = """Alex009 said "hello world" & "write tests".""", actual = rawString)
+    }
 }
