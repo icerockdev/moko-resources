@@ -49,6 +49,11 @@ publishing {
             password = System.getProperty("BINTRAY_KEY")
         }
     }
+    publications {
+        register("maven", MavenPublication::class) {
+            from(components["java"])
+        }
+    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
