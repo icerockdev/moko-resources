@@ -4,7 +4,7 @@
 
 object Deps {
     private const val kotlinVersion = "1.4.31"
-    private const val androidGradleVersion = "4.0.1"
+    private const val androidGradleVersion = "4.1.2"
 
     private const val androidAppCompatVersion = "1.1.0"
     private const val espressoCoreVersion = "3.2.0"
