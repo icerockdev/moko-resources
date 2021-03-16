@@ -19,7 +19,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("dev.icerock.moko:resources-generator:0.15.0")
+        classpath("dev.icerock.moko:resources-generator") // composite build used
         classpath("gradle:resources-deps:1")
     }
 }

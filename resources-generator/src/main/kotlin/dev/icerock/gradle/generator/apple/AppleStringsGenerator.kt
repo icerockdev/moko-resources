@@ -6,16 +6,13 @@ package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
+import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import org.gradle.internal.impldep.com.googlecode.jatl.Html
 import java.io.File
-import java.net.URLDecoder
-import java.nio.charset.Charset
 
 @Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleStringsGenerator(
