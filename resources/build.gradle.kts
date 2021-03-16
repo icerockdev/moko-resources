@@ -60,7 +60,7 @@ kotlin {
 }
 
 tasks.named("publishToMavenLocal") {
-    val pluginPublish = gradle.includedBuild("plugins")
-        .task(":resources-generator:publishToMavenLocal")
+    val pluginPublish = gradle.includedBuild("resources-generator")
+        .task(":publishToMavenLocal")
     dependsOn(pluginPublish)
 }
