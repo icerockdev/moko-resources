@@ -9,9 +9,9 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.StringsGenerator
-import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
 import java.io.File
+import org.apache.commons.text.StringEscapeUtils
 
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
@@ -53,7 +53,7 @@ class AndroidStringsGenerator(
 
         val content = strings.map { (key, value) ->
             val processedKey = processKey(key)
-            val processedValue = StringEscapeUtils.escapeXml(value)
+            val processedValue = convertXmlStringToAndroidLocalization(value)
             "\t<string name=\"$processedKey\">$processedValue</string>"
         }.joinToString("\n")
 
@@ -68,5 +68,11 @@ class AndroidStringsGenerator(
 
     private fun processKey(key: String): String {
         return key.replace(".", "_")
+    }
+
+    private fun convertXmlStringToAndroidLocalization(input: String): String {
+        val xmlDecoded = StringEscapeUtils.unescapeXml(input)
+        return xmlDecoded.replace("\n", "\\n")
+            .replace("\"", "\\\"").let { StringEscapeUtils.escapeXml11(it) }
     }
 }

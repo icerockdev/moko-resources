@@ -3,11 +3,11 @@
  */
 
 plugins {
-    plugin(Deps.Plugins.androidLibrary)
-    plugin(Deps.Plugins.kotlinMultiplatform)
-    plugin(Deps.Plugins.kotlinParcelize)
-    plugin(Deps.Plugins.mobileMultiplatform)
-    plugin(Deps.Plugins.mavenPublish)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.multiplatform")
+    id("dev.icerock.mobile.multiplatform")
+    id("kotlin-parcelize")
+    id("org.gradle.maven-publish")
 }
 
 group = "dev.icerock.moko"
@@ -60,7 +60,7 @@ kotlin {
 }
 
 tasks.named("publishToMavenLocal") {
-    val pluginPublish = gradle.includedBuild("plugins")
-        .task(":resources-generator:publishToMavenLocal")
+    val pluginPublish = gradle.includedBuild("resources-generator")
+        .task(":publishToMavenLocal")
     dependsOn(pluginPublish)
 }
