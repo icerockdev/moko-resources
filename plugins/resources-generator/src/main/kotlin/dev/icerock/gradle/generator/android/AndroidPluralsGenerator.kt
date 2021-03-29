@@ -24,7 +24,7 @@ class AndroidPluralsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String, baseLanguageMap: Map<KeyType, PluralMap>) =
+    override fun getPropertyInitializer(key: String) =
         CodeBlock.of("PluralsResource(R.plurals.%L)", processKey(key))
 
     override fun getImports(): List<ClassName> = listOf(

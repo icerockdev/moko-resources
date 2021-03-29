@@ -24,10 +24,7 @@ class ApplePluralsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(
-        key: String,
-        baseLanguageMap: Map<KeyType, PluralMap>
-    ) = CodeBlock.of(
+    override fun getPropertyInitializer(key: String) = CodeBlock.of(
         "PluralsResource(resourceId = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
         key
     )

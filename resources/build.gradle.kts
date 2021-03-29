@@ -36,7 +36,11 @@ kotlin {
     jvm()
     sourceSets {
         val commonMain by getting
-        val jvmMain by getting
+        val jvmMain by getting {
+            dependencies {
+                implementation("com.ibm.icu:icu4j:68.2")
+            }
+        }
         val appleMain by creating {
             dependsOn(commonMain)
         }

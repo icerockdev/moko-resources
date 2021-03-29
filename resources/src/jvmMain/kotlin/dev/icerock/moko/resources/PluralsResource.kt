@@ -4,45 +4,29 @@
 
 package dev.icerock.moko.resources
 
-import java.text.ChoiceFormat
-import java.text.Format
-import java.text.MessageFormat
-import java.util.Locale
+import com.ibm.icu.text.MessageFormat
+import com.ibm.icu.text.PluralRules
+import com.ibm.icu.util.ULocale
+import java.util.*
 
 actual class PluralsResource(
     val resourcesClassLoader: ClassLoader,
     val bundleName: String,
-    val key: String,
-    val numberFormat: List<Pair<Double, String>>
+    val key: String
 ) {
-    fun localized(locale: Locale = Locale.getDefault(), quantity: Int): String {
+
+    private fun getPluralMessage(locale: Locale, quantity: Int): String {
         val resourceBundle = resourcesClassLoader.getResourceBundle(bundleName, locale)
 
-        val limits = numberFormat.map { it.first }
-        val strings = numberFormat.map { resourceBundle.getString(it.second) }
-        val choiceFormat = ChoiceFormat(limits.toDoubleArray(), strings.toTypedArray())
+        val pluralRules = PluralRules.forLocale(ULocale.forLocale(locale))
+        val keyWithQuantity = "$key.${pluralRules.select(quantity.toDouble())}"
 
-        val message = resourceBundle.getString(key)
-        val messageFormat = MessageFormat(message, locale)
-        messageFormat.formats = arrayOf<Format?>(choiceFormat)
-
-        val messageArguments: Array<out Any> = arrayOf(quantity)
-        return messageFormat.format(messageArguments)
+        return resourceBundle.getString(keyWithQuantity)
     }
 
-    fun localized(locale: Locale = Locale.getDefault(), quantity: Int, vararg args: Any): String {
-        val resourceBundle = resourcesClassLoader.getResourceBundle(bundleName, locale)
+    fun localized(locale: Locale = Locale.getDefault(), quantity: Int): String =
+        MessageFormat.format(getPluralMessage(locale, quantity))
 
-        val limits = numberFormat.map { it.first }
-        val strings = numberFormat.map { resourceBundle.getString(it.second) }
-        val choiceFormat = ChoiceFormat(limits.toDoubleArray(), strings.toTypedArray())
-
-        val message = resourceBundle.getString(key)
-        val messageFormat = MessageFormat(message, locale)
-        messageFormat.formats =
-            arrayOf<Format?>(choiceFormat) + args.map { null }.toTypedArray<Format?>()
-
-        val messageArguments: Array<out Any> = arrayOf(quantity, *args)
-        return messageFormat.format(messageArguments)
-    }
+    fun localized(locale: Locale = Locale.getDefault(), quantity: Int, vararg args: Any?): String =
+        MessageFormat.format(getPluralMessage(locale, quantity), *args)
 }

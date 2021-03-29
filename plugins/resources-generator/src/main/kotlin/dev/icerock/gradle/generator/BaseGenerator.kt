@@ -42,8 +42,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
                 PropertySpec.builder(name, resourceClassName)
             property.addModifiers(*getPropertyModifiers())
             getPropertyInitializer(
-                key,
-                loadLanguageMap()[BASE_LANGUAGE].orEmpty()
+                key
             )?.let { property.initializer(it) }
             objectBuilder.addProperty(property.build())
         }
@@ -53,10 +52,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     }
 
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
-    protected abstract fun getPropertyInitializer(
-        key: String,
-        baseLanguageMap: Map<KeyType, T>
-    ): CodeBlock?
+    protected abstract fun getPropertyInitializer(key: String): CodeBlock?
 
     protected open fun getClassModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()

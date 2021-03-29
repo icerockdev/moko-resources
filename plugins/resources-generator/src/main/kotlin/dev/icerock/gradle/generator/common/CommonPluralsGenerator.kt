@@ -5,10 +5,8 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
-import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
 
@@ -16,7 +14,6 @@ class CommonPluralsGenerator(
     pluralsFileTree: FileTree
 ) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getPropertyInitializer(
-        key: String,
-        baseLanguageMap: Map<KeyType, PluralMap>
+        key: String
     ): CodeBlock? = null
 }

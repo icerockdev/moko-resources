@@ -22,12 +22,11 @@ class JvmPluralsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String, baseLanguageMap: Map<KeyType, PluralMap>) =
+    override fun getPropertyInitializer(key: String) =
         CodeBlock.of(
-            "PluralsResource(resourcesClassLoader = resourcesClassLoader, bundleName = %L, key = %S, numberFormat = %L)",
+            "PluralsResource(resourcesClassLoader = resourcesClassLoader, bundleName = %L, key = %S)",
             JvmMRGenerator.PLURALS_BUNDLE_PROPERTY_NAME,
             key,
-            getNumberFormat(key, baseLanguageMap)
         )
 
     override fun generateResources(
@@ -45,56 +44,15 @@ class JvmPluralsGenerator(
         val stringsFile = File(localizationDir, "$fileDirName.properties")
 
         val content = strings.map { (key, pluralMap) ->
-            "$key = {0}\n" +
-                    pluralMap.map { (quantity, value) ->
-                        "${
-                            getQuantityKey(
-                                key = key,
-                                quantity = quantity
-                            )
-                        } = ${value.replaceAndroidFormatParameters()}"
-                    }.joinToString("\n")
+            val keysWithPlurals = pluralMap.map { (quantity, value) ->
+                "$key.$quantity" to value
+            }
+
+            keysWithPlurals.joinToString("\n") { (key, value) ->
+                "$key = ${value.replaceAndroidFormatParameters()}"
+            }
         }.joinToString("\n")
 
         stringsFile.writeText(content)
-    }
-
-    private fun getNumberFormat(key: String, baseLanguageMap: Map<KeyType, PluralMap>) =
-        baseLanguageMap[key]?.let {
-            "listOf(${
-                it.mapNotNull { (quantity, _) ->
-                    val quantityInNumber =
-                        mapAndroidQuantityToDouble(quantity) ?: return@mapNotNull null
-
-                    "${quantityInNumber.toDouble()} to \"${
-                        getQuantityKey(
-                            key = key,
-                            quantity = quantity
-                        )
-                    }\""
-                }.joinToString()
-            })"
-        }
-
-    private fun getQuantityKey(key: String, quantity: String) =
-        "${key}_${QUANTITY_PREFIX}_${mapAndroidQuantityToDouble(quantity)}"
-
-    // Other will be skipped
-    private fun mapAndroidQuantityToDouble(quantity: String) = when (quantity) {
-        "zero" -> ZERO
-        "one" -> ONE
-        "two" -> TWO
-        "few" -> FEW
-        "many" -> MANY
-        else -> null
-    }
-
-    companion object {
-        private const val QUANTITY_PREFIX = "quantity"
-        private const val ZERO = 0
-        private const val ONE = 1
-        private const val TWO = 2
-        private const val FEW = 3
-        private const val MANY = 6
     }
 }

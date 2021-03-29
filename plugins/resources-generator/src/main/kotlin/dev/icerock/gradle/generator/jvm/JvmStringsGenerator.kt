@@ -20,7 +20,7 @@ class JvmStringsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String, baseLanguageMap: Map<KeyType, String>) =
+    override fun getPropertyInitializer(key: String) =
         CodeBlock.of(
             "StringResource(resourcesClassLoader = resourcesClassLoader, bundleName = %L, key = %S)",
             JvmMRGenerator.STRINGS_BUNDLE_PROPERTY_NAME,
