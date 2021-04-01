@@ -57,7 +57,7 @@ java {
 
 publishing {
     repositories.maven("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        name = "bintray"
+        name = "OSSRH"
 
         credentials {
             username = System.getenv("OSSRH_USER")
@@ -116,7 +116,7 @@ publishing {
             }
             if (signingKeyId != null) {
                 useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-                sign(publishing.publications["mavenJava"])
+                sign(publishing.publications)
             }
         }
     }

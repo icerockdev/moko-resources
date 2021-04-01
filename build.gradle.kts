@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
         google()
 
-        maven { url = uri("https://plugins.gradle.org/m2/") }
+        gradlePluginPortal()
     }
     dependencies {
         classpath("dev.icerock.moko:resources-generator") // composite build used
@@ -27,6 +27,7 @@ allprojects {
         jcenter {
             content {
                 includeGroup("org.jetbrains.trove4j")
+                includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
             }
         }
     }
