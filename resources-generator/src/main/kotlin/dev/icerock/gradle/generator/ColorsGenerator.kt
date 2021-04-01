@@ -156,14 +156,18 @@ abstract class ColorsGenerator(
     protected fun replaceColorAlpha(color: String?): String? {
         if (color == null) return color
 
-        val alpha = color.substring(color.length - 2, color.length)
-        return "$alpha${color.removeRange(color.length - 2, color.length)}"
+        val alpha = if (isRgbFormat(color)) DefaultAlpha else color.substring(color.length - 2, color.length)
+        return if (isRgbFormat(color)) "$alpha$color" else "$alpha${color.removeRange(color.length - 2, color.length)}"
     }
+
+    private fun isRgbFormat(color: String): Boolean = color.length == RgbFormatLength
 
     companion object {
         internal const val XmlColorTag = "color"
         internal const val XmlNodeAttrColorName = "name"
         internal const val XmlColorReferencePrefix = "@color/"
+        internal const val RgbFormatLength = 6
+        internal const val DefaultAlpha = "FF"
     }
 }
 

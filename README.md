@@ -1,5 +1,5 @@
 ![moko-resources](img/logo.png)  
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://api.bintray.com/packages/icerockdev/moko/moko-resources/images/download.svg) ](https://bintray.com/icerockdev/moko/moko-resources/_latestVersion) ![kotlin-version](https://img.shields.io/badge/kotlin-1.4.21-orange)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://img.shields.io/maven-central/v/dev.icerock.moko/resources) ](https://repo1.maven.org/maven2/dev/icerock/moko/moko-resources) ![kotlin-version](https://img.shields.io/badge/kotlin-1.4.31-orange)
 
 # Mobile Kotlin resources
 This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
@@ -28,6 +28,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - iOS version 9.0+
 
 ## Versions
+### Bintray
 - kotlin 1.3.50
   - 0.1.0
   - 0.2.0
@@ -58,24 +59,27 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
   - 0.13.2
   - 0.14.0
   - 0.15.0
+### mavenCentral
+- kotlin 1.4.31
+  - 0.15.1
 
 ## Installation
 root build.gradle  
 ```groovy
 buildscript {
     repositories {
-        maven { url = "https://dl.bintray.com/icerockdev/plugins" }
+        mavenCentral()
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.15.0"
+        classpath "dev.icerock.moko:resources-generator:0.15.1"
     }
 }
 
 
 allprojects {
     repositories {
-        maven { url = "https://dl.bintray.com/icerockdev/moko" }
+        mavenCentral()
     }
 }
 ```
@@ -85,7 +89,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.15.0")
+    commonMainApi("dev.icerock.moko:resources:0.15.1")
 }
 
 multiplatformResources {
