@@ -17,6 +17,6 @@ jobs:
         with:
           java-version: 1.8
       - name: Plugin check
-        run: ./gradlew -p plugins detekt build publishToMavenLocal
+        run: ./gradlew -p resources-generator detekt build publishToMavenLocal
       - name: Library check
         run: ./gradlew detekt build publishToMavenLocal check

@@ -6,10 +6,11 @@ package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
+import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
+import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -43,7 +44,9 @@ class AppleStringsGenerator(
         val localizableFile = File(resDir, "Localizable.strings")
         resDir.mkdirs()
 
-        val content = strings.map { (key, value) ->
+        val content = strings.mapValues { (_, value) ->
+            convertXmlStringToAppleLocalization(value)
+        }.map { (key, value) ->
             "\"$key\" = \"$value\";"
         }.joinToString("\n")
         localizableFile.writeText(content)
@@ -54,5 +57,11 @@ class AppleStringsGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
+    }
+
+    private fun convertXmlStringToAppleLocalization(input: String): String {
+        val xmlDecoded = StringEscapeUtils.unescapeXml(input)
+        return xmlDecoded.replace("\n", "\\n")
+            .replace("\"", "\\\"")
     }
 }
