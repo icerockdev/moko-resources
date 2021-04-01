@@ -11,12 +11,7 @@ buildscript {
         mavenCentral()
         google()
 
-        maven { url = uri("https://dl.bintray.com/kotlin/kotlin") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
         maven { url = uri("https://plugins.gradle.org/m2/") }
-        maven { url = uri("https://dl.bintray.com/icerockdev/plugins") }
-
-        jcenter()
     }
     dependencies {
         classpath("dev.icerock.moko:resources-generator") // composite build used
@@ -29,11 +24,11 @@ allprojects {
         mavenCentral()
         google()
 
-        maven { url = uri("https://kotlin.bintray.com/kotlin") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
-        maven { url = uri("https://dl.bintray.com/icerockdev/moko") }
-
-        jcenter()
+        jcenter {
+            content {
+                includeGroup("org.jetbrains.trove4j")
+            }
+        }
     }
 
     apply(plugin = "io.gitlab.arturbosch.detekt")
