@@ -17,8 +17,8 @@ object Deps {
 
     private const val detektVersion = "1.15.0"
 
-    private const val mokoGraphicsVersion = "0.5.0"
-    private const val mokoParcelizeVersion = "0.5.0"
+    private const val mokoGraphicsVersion = "0.6.1"
+    private const val mokoParcelizeVersion = "0.6.1"
     const val mokoResourcesVersion = "0.15.1"
 
     object Android {
@@ -38,6 +38,7 @@ object Deps {
         val kotlinParcelize = GradlePlugin(id = "kotlin-parcelize")
         val kotlinSerialization = GradlePlugin(id = "kotlin-serialization")
         val mavenPublish = GradlePlugin(id = "org.gradle.maven-publish")
+        val signing = GradlePlugin(id = "signing")
 
         val mobileMultiplatform = GradlePlugin(id = "dev.icerock.mobile.multiplatform")
         val appleFramework = GradlePlugin(id = "dev.icerock.mobile.multiplatform.apple-framework")
