@@ -191,7 +191,7 @@ val string = MR.strings.my_string.desc().toString(context = this)
 ``` 
 iOS:
 ```swift
-let string = MR.strings.my_string.desc().localized()
+let string = MR.strings().my_string.desc().localized()
 ```
 
 #### Get resourceId for Jetpack Compose / SwiftUI
@@ -206,7 +206,7 @@ text = stringResource(id = MR.strings.email.resourceId)
 
 iOS:
 ```swift
-LocalizedStringKey(MR.strings.email.resourceId)
+LocalizedStringKey(MR.strings().email.resourceId)
 ```
 
 Note: more info in issue [#126](https://github.com/icerockdev/moko-resources/issues/126).
