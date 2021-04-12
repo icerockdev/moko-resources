@@ -1,5 +1,5 @@
 ![moko-resources](img/logo.png)  
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://img.shields.io/maven-central/v/dev.icerock.moko/resources) ](https://repo1.maven.org/maven2/dev/icerock/moko/moko-resources) ![kotlin-version](https://img.shields.io/badge/kotlin-1.4.31-orange)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://img.shields.io/maven-central/v/dev.icerock.moko/resources) ](https://repo1.maven.org/maven2/dev/icerock/moko/resources) ![kotlin-version](https://img.shields.io/badge/kotlin-1.4.31-orange)
 
 # Mobile Kotlin resources
 This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
@@ -191,7 +191,7 @@ val string = MR.strings.my_string.desc().toString(context = this)
 ``` 
 iOS:
 ```swift
-let string = MR.strings.my_string.desc().localized()
+let string = MR.strings().my_string.desc().localized()
 ```
 
 #### Get resourceId for Jetpack Compose / SwiftUI
@@ -206,7 +206,7 @@ text = stringResource(id = MR.strings.email.resourceId)
 
 iOS:
 ```swift
-LocalizedStringKey(MR.strings.email.resourceId)
+LocalizedStringKey(MR.strings().email.resourceId)
 ```
 
 Note: more info in issue [#126](https://github.com/icerockdev/moko-resources/issues/126).
