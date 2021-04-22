@@ -24,6 +24,11 @@ dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
     commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
     commonMainImplementation(project("$path:nested-module"))
+
+
+    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
+    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
+    //commonTestImplementation(Deps.Libs.MultiPlatform.mokoResourcesTest)
 }
 
 multiplatformResources {

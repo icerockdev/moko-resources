@@ -7,6 +7,8 @@ subprojects {
         resolutionStrategy.dependencySubstitution {
             substitute(module(Deps.Libs.MultiPlatform.mokoResources))
                 .with(project(":resources"))
+            substitute(module(Deps.Libs.MultiPlatform.mokoResourcesTest))
+                .with(project(":resources-test"))
         }
     }
 }
