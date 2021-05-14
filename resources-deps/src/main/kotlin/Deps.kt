@@ -74,6 +74,7 @@ object Deps {
 
         object MultiPlatform {
             const val mokoResources = "dev.icerock.moko:resources:$mokoResourcesVersion"
+            const val mokoResourcesTest = "dev.icerock.moko:resources-test:$mokoResourcesVersion"
             const val mokoParcelize = "dev.icerock.moko:parcelize:$mokoParcelizeVersion"
             val mokoGraphics = "dev.icerock.moko:graphics:$mokoGraphicsVersion"
                 .defaultMPL(android = true, ios = true, macos = true)
