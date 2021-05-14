@@ -25,6 +25,8 @@ dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
     commonMainImplementation(project("$path:nested-module"))
 
+    androidTestImplementation(Deps.Libs.Android.Tests.kotlinTestJUnit)
+    androidTestImplementation(Deps.Libs.Android.Tests.testCore)
 
     commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
     commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
