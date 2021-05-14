@@ -86,6 +86,7 @@ object Testing {
             simplePlural,
             simplePluralExt,
             formattedPlural,
+            formattedPluralExt,
             simpleRaw,
             simpleRawExt,
             composition,
