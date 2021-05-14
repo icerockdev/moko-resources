@@ -4,12 +4,17 @@
 
 package com.icerock.library
 
+import dev.icerock.moko.resources.ColorResource
+import dev.icerock.moko.resources.test.createColorResourceMock
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @Suppress("MagicNumber")
 class Testing {
     @Test
-    fun `some test`() {
+    fun `test color resource mock`() {
+        val colorResource = createColorResourceMock()
 
+        assertEquals(0, (colorResource as? ColorResource.Single)?.color?.rgba)
     }
 }

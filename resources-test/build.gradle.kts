@@ -9,6 +9,23 @@ plugins {
     id("org.gradle.maven-publish")
 }
 
+kotlin {
+    macosX64()
+    sourceSets {
+        val commonMain by getting {}
+
+        val appleMain by creating {
+            dependsOn(commonMain)
+        }
+        val iosMain by getting {
+            dependsOn(appleMain)
+        }
+        val macosX64Main by getting {
+            dependsOn(appleMain)
+        }
+    }
+}
+
 dependencies {
     commonMainApi(project(":resources"))
 }

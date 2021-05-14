@@ -28,7 +28,7 @@ dependencies {
 
     commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
     commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
-    //commonTestImplementation(Deps.Libs.MultiPlatform.mokoResourcesTest)
+    commonTestImplementation(Deps.Libs.MultiPlatform.mokoResourcesTest)
 }
 
 multiplatformResources {
