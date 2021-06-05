@@ -32,6 +32,7 @@ class JvmMRGenerator(
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         super.processMRClass(mrClass)
+        val flattenClassName = mrClassPackage.replace(".", "")
 
         mrClass.addProperty(
             PropertySpec.builder(
@@ -39,7 +40,7 @@ class JvmMRGenerator(
                 STRING,
                 KModifier.PRIVATE
             )
-                .initializer(CodeBlock.of("\"%L/%L\"", LOCALIZATION_DIR, STRINGS_BUNDLE_NAME))
+                .initializer(CodeBlock.of("\"%L/%L\"", LOCALIZATION_DIR, "${flattenClassName}_$STRINGS_BUNDLE_NAME"))
                 .build()
         )
 
@@ -49,7 +50,7 @@ class JvmMRGenerator(
                 STRING,
                 KModifier.PRIVATE
             )
-                .initializer(CodeBlock.of("\"%L/%L\"", LOCALIZATION_DIR, PLURALS_BUNDLE_NAME))
+                .initializer(CodeBlock.of("\"%L/%L\"", LOCALIZATION_DIR, "${flattenClassName}_$PLURALS_BUNDLE_NAME"))
                 .build()
         )
     }

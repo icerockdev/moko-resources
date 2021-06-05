@@ -92,8 +92,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         )
         val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
         val features = listOf(
-            StringsGenerator.Feature(sourceInfo, iosLocalizationRegion),
-            PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion),
+            StringsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrClassPackage),
+            PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrClassPackage),
             ImagesGenerator.Feature(sourceInfo),
             FontsGenerator.Feature(sourceInfo),
             FilesGenerator.Feature(sourceInfo),

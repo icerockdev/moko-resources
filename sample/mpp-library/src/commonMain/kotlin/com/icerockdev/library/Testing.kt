@@ -36,8 +36,7 @@ object Testing {
             MR.strings.multilined.desc(),
             MR.strings.quotes.desc(),
             nestedTest(),
-            MR.plurals.test_plural.desc(7),
-//            nestedTest()
+            MR.plurals.test_plural.desc(7)
         )
     }
 

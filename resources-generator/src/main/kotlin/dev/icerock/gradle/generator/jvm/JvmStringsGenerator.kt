@@ -13,8 +13,11 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmStringsGenerator(
-    stringsFileTree: FileTree
+    stringsFileTree: FileTree,
+    private val mrClassPackage: String
 ) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+
+    private val flattenClassPackage = mrClassPackage.replace(".", "")
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -33,8 +36,8 @@ class JvmStringsGenerator(
         strings: Map<KeyType, String>
     ) {
         val fileDirName = when (language) {
-            null -> JvmMRGenerator.STRINGS_BUNDLE_NAME
-            else -> "${JvmMRGenerator.STRINGS_BUNDLE_NAME}_$language"
+            null -> "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}"
+            else -> "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}_$language"
         }
 
         val localizationDir = File(resourcesGenerationDir, JvmMRGenerator.LOCALIZATION_DIR).apply {

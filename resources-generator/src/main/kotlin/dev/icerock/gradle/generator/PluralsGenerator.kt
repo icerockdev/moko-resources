@@ -76,7 +76,8 @@ abstract class PluralsGenerator(
 
     class Feature(
         private val info: SourceInfo,
-        private val iosBaseLocalizationRegion: String
+        private val iosBaseLocalizationRegion: String,
+        private val mrClassPackage: String
     ) : ResourceGeneratorFeature<PluralsGenerator> {
         private val stringsFileTree = info.commonResources.matching { it.include("MR/**/plurals*.xml") }
         override fun createCommonGenerator(): PluralsGenerator {
@@ -97,6 +98,6 @@ abstract class PluralsGenerator(
             )
         }
 
-        override fun createJvmGenerator() = JvmPluralsGenerator(stringsFileTree)
+        override fun createJvmGenerator() = JvmPluralsGenerator(stringsFileTree, mrClassPackage)
     }
 }

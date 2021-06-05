@@ -15,8 +15,11 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmPluralsGenerator(
-    pluralsFileTree: FileTree
+    pluralsFileTree: FileTree,
+    private val mrClassPackage: String
 ) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+
+    private val flattenClassPackage = mrClassPackage.replace(".", "")
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -35,8 +38,8 @@ class JvmPluralsGenerator(
         strings: Map<KeyType, PluralMap>
     ) {
         val fileDirName = when (language) {
-            null -> JvmMRGenerator.PLURALS_BUNDLE_NAME
-            else -> "${JvmMRGenerator.PLURALS_BUNDLE_NAME}_$language"
+            null -> "${flattenClassPackage}_${JvmMRGenerator.PLURALS_BUNDLE_NAME}"
+            else -> "${flattenClassPackage}_${JvmMRGenerator.PLURALS_BUNDLE_NAME}_$language"
         }
 
         val localizationDir =
