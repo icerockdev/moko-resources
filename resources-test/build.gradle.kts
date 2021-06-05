@@ -11,9 +11,9 @@ plugins {
 
 kotlin {
     macosX64()
+    jvm()
     sourceSets {
         val commonMain by getting {}
-
         val appleMain by creating {
             dependsOn(commonMain)
         }

@@ -16,7 +16,7 @@ buildscript {
     repositories {
         mavenCentral()
         google()
-
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     dependencies {
         classpath("gradle:resources-deps:1")
