@@ -1,12 +1,23 @@
-name: KMP library publish
+name: Create release
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        default: '0.1.0'
+        required: true
 
 jobs:
-  build:
+  publish:
+    name: Publish library at mavenCentral
     runs-on: macOS-latest
+    env:
+      OSSRH_USER: ${{ secrets.OSSRH_USER }}
+      OSSRH_KEY: ${{ secrets.OSSRH_KEY }}
+      SIGNING_KEY_ID: ${{ secrets.SIGNING_KEYID }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      SIGNING_KEY: ${{ secrets.GPG_KEY_CONTENTS }}
 
     steps:
       - uses: actions/checkout@v1
@@ -15,6 +26,22 @@ jobs:
         with:
           java-version: 1.8
       - name: Publish plugin
-        run: ./gradlew -p plugins publishAllPublicationsToBintrayRepository -DBINTRAY_USER=${{ secrets.BINTRAY_USER }} -DBINTRAY_KEY=${{ secrets.BINTRAY_KEY }}
+        run: ./gradlew -p resources-generator publishMavenJavaPublicationToOSSRHRepository
       - name: Publish library
-        run: ./gradlew publishAllPublicationsToBintrayRepository -DBINTRAY_USER=${{ secrets.BINTRAY_USER }} -DBINTRAY_KEY=${{ secrets.BINTRAY_KEY }}
+        run: ./gradlew publish
+  release:
+    name: Create release
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commitish: ${{ github.ref }}
+          tag_name: release/${{ github.event.inputs.version }}
+          release_name: Release ${{ github.event.inputs.version }}
+          body: "Will be filled later"
+          draft: true

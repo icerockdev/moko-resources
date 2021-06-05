@@ -15,9 +15,9 @@ class StringResourcesTestEn : StringResourcesTest() {
     override val locale: String = "en"
 
     override val stringAndPluralsCheck: String
-        get() = "test\ntest 2\ntest 3\nTest Project\nsome raw string\nother\none\nother\nother\nnested test"
+        get() = "test\ntest 2\ntest 3\nTest Project\nsome raw string\nother\none\nother\nother\nfirst line\nsecond line\nthird line.\nAlex009 said \"hello world\" & \"write tests\".\nnested test"
 
     override val stringDescsCheck: String
-        get() = "test\ntest\nTest data 9\nother\nother\n10 items\nraw string\nraw string" +
+        get() = "test\ntest\nTest data 9\nother\nother\n10 items\n10 items\nraw string\nraw string" +
                 "\ntestraw string\nCHOOSE PORTFOLIO & AMOUNT\nsecond string str first decimal 9"
 }

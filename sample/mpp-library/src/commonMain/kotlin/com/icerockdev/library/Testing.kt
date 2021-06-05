@@ -33,6 +33,9 @@ object Testing {
             MR.plurals.test_plural.desc(1),
             MR.plurals.test_plural.desc(2),
             MR.plurals.test_plural.desc(3),
+            MR.strings.multilined.desc(),
+            MR.strings.quotes.desc(),
+            nestedTest(),
             MR.plurals.test_plural.desc(7),
 //            nestedTest()
         )
@@ -85,6 +88,7 @@ object Testing {
             simplePlural,
             simplePluralExt,
             formattedPlural,
+            formattedPluralExt,
             simpleRaw,
             simpleRawExt,
             composition,

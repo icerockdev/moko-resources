@@ -3,11 +3,11 @@
  */
 
 plugins {
-    plugin(Deps.Plugins.androidLibrary)
-    plugin(Deps.Plugins.kotlinMultiplatform)
-    plugin(Deps.Plugins.mobileMultiplatform)
-    plugin(Deps.Plugins.appleFramework)
-    plugin(Deps.Plugins.mokoResources)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.multiplatform")
+    id("dev.icerock.mobile.multiplatform")
+    id("dev.icerock.mobile.multiplatform.apple-framework")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 android {
@@ -25,6 +25,13 @@ dependencies {
     commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
     commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
     commonMainImplementation(project("$path:nested-module"))
+
+    androidTestImplementation(Deps.Libs.Android.Tests.kotlinTestJUnit)
+    androidTestImplementation(Deps.Libs.Android.Tests.testCore)
+
+    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
+    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
+    commonTestImplementation(Deps.Libs.MultiPlatform.mokoResourcesTest)
 }
 
 multiplatformResources {

@@ -3,8 +3,8 @@
  */
 
 plugins {
-    plugin(Deps.Plugins.androidApplication)
-    plugin(Deps.Plugins.kotlinAndroid)
+    id("com.android.application")
+    id("kotlin-android")
 }
 
 android {
