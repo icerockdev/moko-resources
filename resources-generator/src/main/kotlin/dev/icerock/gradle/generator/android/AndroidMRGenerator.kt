@@ -21,6 +21,10 @@ class AndroidMRGenerator(
     mrClassPackage = mrClassPackage,
     generators = generators
 ) {
+    init {
+        setupGenerationDirs()
+    }
+
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun apply(generationTask: Task, project: Project) {

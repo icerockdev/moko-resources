@@ -28,6 +28,15 @@ class JvmMRGenerator(
     generators = generators
 ) {
 
+    override val resourcesGenerationDir: File = File(
+        generatedDir,
+        "${sourceSet.name}/${mrClassPackage.replace(".", "")}/res"
+    )
+
+    init {
+        setupGenerationDirs()
+    }
+
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {

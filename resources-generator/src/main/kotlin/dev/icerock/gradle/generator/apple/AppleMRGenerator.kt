@@ -50,6 +50,10 @@ class AppleMRGenerator(
 
     private var assetsDirectory: File? = null
 
+    init {
+        setupGenerationDirs()
+    }
+
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
