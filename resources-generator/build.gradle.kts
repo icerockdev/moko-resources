@@ -6,7 +6,7 @@ import java.util.Base64
 import kotlin.text.String
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.4.31")
+    id("org.jetbrains.kotlin.jvm") version ("1.5.10")
     id("org.gradle.maven-publish")
     id("io.gitlab.arturbosch.detekt") version ("1.15.0")
     id("signing")
@@ -18,35 +18,26 @@ buildscript {
         google()
 
     }
-    dependencies {
-        classpath("gradle:resources-deps:1")
-    }
 }
 
 repositories {
     mavenCentral()
     google()
-
-    jcenter {
-        content {
-            includeGroup("org.jetbrains.trove4j")
-            includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
-        }
-    }
 }
 
 group = "dev.icerock.moko"
-version = Deps.mokoResourcesVersion
+version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
     implementation(gradleKotlinDsl())
-    compileOnly(Deps.Libs.Jvm.kotlinGradlePlugin)
-    compileOnly(Deps.Libs.Jvm.androidGradlePlugin)
-    implementation(Deps.Libs.Jvm.kotlinPoet)
-    implementation(Deps.Libs.Jvm.kotlinxSerialization)
-    implementation(Deps.Libs.Jvm.apacheCommonsText)
-    implementation(Deps.Libs.Jvm.kotlinCompilerEmbeddable)
-    detektPlugins(Deps.Libs.Jvm.detektFormatting)
+    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10")
+    compileOnly("com.android.tools.build:gradle:4.1.2")
+    implementation(libs.kotlinPoet)
+    implementation(libs.kotlinxSerialization)
+    implementation(libs.apacheCommonsText)
+    implementation(libs.kotlinCompilerEmbeddable)
+    //"detektPlugins"(libs.detektFormatting)
+    "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
 }
 
 java {

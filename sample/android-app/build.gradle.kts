@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Deps.Android.compileSdk)
+    compileSdkVersion(libs.versions.compileSdk.get().toInt())
 
     buildFeatures.dataBinding = true
 
@@ -17,8 +17,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion(Deps.Android.minSdk)
-        targetSdkVersion(Deps.Android.targetSdk)
+        minSdkVersion(libs.versions.minSdk.get().toInt())
+        targetSdkVersion(libs.versions.targetSdk.get().toInt())
 
         applicationId = "dev.icerock.moko.samples.resources"
 
@@ -46,12 +46,12 @@ android {
 }
 
 dependencies {
-    implementation(Deps.Libs.Android.appCompat)
+    implementation(libs.appCompat)
 
-    implementation(project(":sample:mpp-library"))
+    implementation(projects.sample.mppLibrary)
 
-    androidTestImplementation(Deps.Libs.Android.Tests.espressoCore)
-    androidTestImplementation(Deps.Libs.Android.Tests.testRunner)
-    androidTestImplementation(Deps.Libs.Android.Tests.testRules)
-    androidTestImplementation(Deps.Libs.Android.Tests.testExtJunit)
+    "androidTestImplementation"(libs.espressoCore)
+    "androidTestImplementation"(libs.testRunner)
+    "androidTestImplementation"(libs.testRules)
+    "androidTestImplementation"(libs.testExtJunit)
 }

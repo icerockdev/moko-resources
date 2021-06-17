@@ -14,8 +14,11 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("dev.icerock.moko:resources-generator") // composite build used
-        classpath("gradle:resources-deps:1")
+        classpath("dev.icerock.moko:resources-generator:0.15.1")
+
+        classpath("dev.icerock:mobile-multiplatform:0.9.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10")
+        classpath("com.android.tools.build:gradle:4.2.1")
     }
 }
 
@@ -23,13 +26,6 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-
-        jcenter {
-            content {
-                includeGroup("org.jetbrains.trove4j")
-                includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
-            }
-        }
     }
 
     apply(plugin = "io.gitlab.arturbosch.detekt")
@@ -39,16 +35,17 @@ allprojects {
     }
 
     dependencies {
-        "detektPlugins"(Deps.Libs.Jvm.detektFormatting)
+        //"detektPlugins"(libs.detektFormatting)
+        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
     }
 
-    plugins.withId(Deps.Plugins.androidLibrary.id) {
+    plugins.withId("com.android.library") {
         configure<com.android.build.gradle.LibraryExtension> {
-            compileSdkVersion(Deps.Android.compileSdk)
+            compileSdkVersion(libs.versions.compileSdk.get().toInt())
 
             defaultConfig {
-                minSdkVersion(Deps.Android.minSdk)
-                targetSdkVersion(Deps.Android.targetSdk)
+                minSdkVersion(libs.versions.minSdk.get().toInt())
+                targetSdkVersion(libs.versions.targetSdk.get().toInt())
             }
         }
     }

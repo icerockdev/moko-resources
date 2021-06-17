@@ -62,13 +62,13 @@ kotlin {
 }
 
 dependencies {
-    "clientMainApi"(Deps.Libs.MultiPlatform.mokoResources)
+    "clientMainApi"(libs.mokoResources)
 
-    androidTestImplementation(Deps.Libs.Android.Tests.kotlinTestJUnit)
-    androidTestImplementation(Deps.Libs.Android.Tests.testCore)
-    androidTestImplementation(Deps.Libs.Android.Tests.robolectric)
-    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
-    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
+    "androidTestImplementation"(libs.kotlinTestJUnit)
+    "androidTestImplementation"(libs.testCore)
+    "androidTestImplementation"(libs.robolectric)
+    "commonTestImplementation"(libs.kotlinTest)
+    "commonTestImplementation"(libs.kotlinTestAnnotations)
 }
 
 multiplatformResources {

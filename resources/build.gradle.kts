@@ -15,13 +15,13 @@ plugins {
 }
 
 group = "dev.icerock.moko"
-version = Deps.mokoResourcesVersion
+version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
-    commonMainApi(Deps.Libs.MultiPlatform.mokoParcelize)
-    commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
+    commonMainApi(libs.mokoParcelize)
+    commonMainApi(libs.mokoGraphics)
 
-    androidMainImplementation(Deps.Libs.Android.appCompat)
+    "androidMainImplementation"(libs.appCompat)
 }
 
 val javadocJar by tasks.registering(Jar::class) {

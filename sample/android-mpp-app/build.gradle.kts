@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Deps.Android.compileSdk)
+    compileSdkVersion(libs.versions.compileSdk.get().toInt())
 
     buildFeatures.dataBinding = true
 
@@ -18,8 +18,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion(Deps.Android.minSdk)
-        targetSdkVersion(Deps.Android.targetSdk)
+        minSdkVersion(libs.versions.minSdk.get().toInt())
+        targetSdkVersion(libs.versions.targetSdk.get().toInt())
 
         applicationId = "dev.icerock.moko.samples.resources.mpp"
 
@@ -52,9 +52,9 @@ kotlin {
 }
 
 dependencies {
-    "androidMainImplementation"(Deps.Libs.Android.appCompat)
+    "androidMainImplementation"(libs.appCompat)
 
-    commonMainImplementation(Deps.Libs.MultiPlatform.mokoResources)
+    commonMainImplementation(libs.mokoResources)
 }
 
 multiplatformResources {

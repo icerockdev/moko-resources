@@ -32,7 +32,7 @@ kotlin {
 }
 
 dependencies {
-    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
+    commonMainApi(projects.mokoResources)
 }
 
 multiplatformResources {

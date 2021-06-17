@@ -18,11 +18,16 @@ android {
 
 kotlin {
     macosX64()
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java).all {
+        binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class.java).all {
+            export(projects.resources)
+        }
+    }
 }
 
 dependencies {
-    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
-    commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
+    commonMainApi(libs.mokoResources)
+    commonMainApi(libs.mokoGraphics)
     commonMainImplementation(project("$path:nested-module"))
 }
 
@@ -30,7 +35,3 @@ multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
 
-framework {
-    export(Deps.Libs.MultiPlatform.mokoGraphics)
-    export(project(":resources"))
-}
