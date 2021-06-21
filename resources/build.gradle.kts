@@ -21,7 +21,7 @@ dependencies {
     commonMainApi(libs.mokoParcelize)
     commonMainApi(libs.mokoGraphics)
 
-    "androidMainImplementation"(libs.appCompat)
+    androidMainImplementation(libs.appCompat)
 }
 
 val javadocJar by tasks.registering(Jar::class) {

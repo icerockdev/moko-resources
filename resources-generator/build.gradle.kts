@@ -36,8 +36,7 @@ dependencies {
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
     implementation(libs.kotlinCompilerEmbeddable)
-    //"detektPlugins"(libs.detektFormatting)
-    "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
+    "detektPlugins"(rootProject.libs.detektFormatting)
 }
 
 java {

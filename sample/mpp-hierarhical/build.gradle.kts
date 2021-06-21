@@ -37,7 +37,7 @@ kotlin {
     // export correct artifact to use all classes of moko-resources directly from Swift
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java).all {
         binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class.java).all {
-            export(project(":resources"))
+            export(projects.resources)
         }
     }
 
@@ -62,7 +62,7 @@ kotlin {
 }
 
 dependencies {
-    "clientMainApi"(libs.mokoResources)
+    "clientMainApi"(projects.resources)
 
     "androidTestImplementation"(libs.kotlinTestJUnit)
     "androidTestImplementation"(libs.testCore)

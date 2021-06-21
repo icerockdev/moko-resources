@@ -26,9 +26,9 @@ kotlin {
 }
 
 dependencies {
-    commonMainApi(libs.mokoResources)
+    commonMainApi(projects.resources)
     commonMainApi(libs.mokoGraphics)
-    commonMainImplementation(project("$path:nested-module"))
+    commonMainImplementation(projects.sample.mppLibrary.nestedModule)
 }
 
 multiplatformResources {

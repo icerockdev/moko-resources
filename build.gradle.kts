@@ -16,17 +16,13 @@ buildscript {
     dependencies {
         classpath("dev.icerock.moko:resources-generator:0.15.1")
 
-        classpath("dev.icerock:mobile-multiplatform:0.9.2")
+        classpath("dev.icerock:mobile-multiplatform:0.10.0")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10")
         classpath("com.android.tools.build:gradle:4.2.1")
     }
 }
 
 allprojects {
-    repositories {
-        mavenCentral()
-        google()
-    }
 
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
@@ -35,8 +31,7 @@ allprojects {
     }
 
     dependencies {
-        //"detektPlugins"(libs.detektFormatting)
-        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
+        "detektPlugins"(rootProject.libs.detektFormatting)
     }
 
     plugins.withId("com.android.library") {

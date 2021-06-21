@@ -54,7 +54,7 @@ kotlin {
 dependencies {
     "androidMainImplementation"(libs.appCompat)
 
-    commonMainImplementation(libs.mokoResources)
+    commonMainImplementation(projects.resources)
 }
 
 multiplatformResources {
