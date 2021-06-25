@@ -2,10 +2,6 @@
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-plugins {
-    id("io.gitlab.arturbosch.detekt") version("1.15.0") apply(false)
-}
-
 buildscript {
     repositories {
         mavenCentral()
@@ -14,6 +10,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
+        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.15.0")
         classpath("dev.icerock.moko:resources-generator:0.15.1")
 
         classpath("dev.icerock:mobile-multiplatform:0.10.0")
