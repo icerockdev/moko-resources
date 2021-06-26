@@ -23,7 +23,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - **FatFrameworkWithResourcesTask** Gradle task.
 
 ## Requirements
-- Gradle version 6.0+
+- Gradle version 6.8.3+
 - Android API 16+
 - iOS version 9.0+
 
