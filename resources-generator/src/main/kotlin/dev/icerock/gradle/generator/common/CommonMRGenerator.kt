@@ -28,5 +28,11 @@ class CommonMRGenerator(
         project.tasks
             .matching { it is KotlinCompileCommon }
             .configureEach { it.dependsOn(generationTask) }
+
+        project.rootProject.tasks.matching {
+            it.name.contains("prepareKotlinBuildScriptModel")
+        }.configureEach {
+            it.dependsOn(generationTask)
+        }
     }
 }

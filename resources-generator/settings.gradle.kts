@@ -32,3 +32,4 @@ dependencyResolutionManagement {
     }
 }
 
+includeBuild("../resources-build-logic")

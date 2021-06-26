@@ -18,8 +18,10 @@ dependencyResolutionManagement {
     }
 }
 
+includeBuild("resources-build-logic")
 includeBuild("resources-generator")
 include(":resources")
+include(":resources-test")
 
 include(":sample:android-app")
 include(":sample:android-mpp-app")

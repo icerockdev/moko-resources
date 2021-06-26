@@ -28,11 +28,15 @@ framework {
 
 dependencies {
     commonMainApi(projects.resources)
-    commonMainApi(libs.mokoGraphics)
     commonMainImplementation(projects.sample.mppLibrary.nestedModule)
+
+    commonTestImplementation(libs.kotlinTest)
+    commonTestImplementation(libs.kotlinTestAnnotations)
+    commonTestImplementation(projects.resourcesTest)
+
+    androidTestImplementation(libs.kotlinTestJUnit)
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
-
