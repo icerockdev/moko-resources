@@ -4,7 +4,7 @@
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version ("1.5.20")
-    id("io.gitlab.arturbosch.detekt") version ("1.15.0")
+    id("detekt-convention")
     id("publication-convention")
 }
 
@@ -19,7 +19,6 @@ dependencies {
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
     implementation(libs.kotlinCompilerEmbeddable)
-    "detektPlugins"(rootProject.libs.detektFormatting)
 }
 
 java {

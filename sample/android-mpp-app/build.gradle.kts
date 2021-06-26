@@ -3,14 +3,13 @@
  */
 
 plugins {
-    id("com.android.application")
+    id("android-app-convention")
     id("org.jetbrains.kotlin.multiplatform")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("detekt-convention")
 }
 
 android {
-    compileSdkVersion(libs.versions.compileSdk.get().toInt())
-
     buildFeatures.dataBinding = true
 
     dexOptions {
@@ -18,9 +17,6 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion(libs.versions.minSdk.get().toInt())
-        targetSdkVersion(libs.versions.targetSdk.get().toInt())
-
         applicationId = "dev.icerock.moko.samples.resources.mpp"
 
         versionCode = 1

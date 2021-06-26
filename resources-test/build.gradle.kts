@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("android-base-convention")
     id("dev.icerock.mobile.multiplatform.android-manifest")
+    id("detekt-convention")
     id("javadoc-stub-convention")
     id("publication-convention")
 }
