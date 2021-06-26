@@ -12,7 +12,6 @@ dependencyResolutionManagement {
 
         jcenter {
             content {
-                includeGroup("org.jetbrains.trove4j")
                 includeGroup("org.jetbrains.kotlinx")
             }
         }

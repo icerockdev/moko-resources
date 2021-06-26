@@ -6,23 +6,10 @@ import java.util.Base64
 import kotlin.text.String
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.5.10")
-    id("org.gradle.maven-publish")
+    id("org.jetbrains.kotlin.jvm") version ("1.5.20")
     id("io.gitlab.arturbosch.detekt") version ("1.15.0")
+    id("org.gradle.maven-publish")
     id("signing")
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-
-    }
-}
-
-repositories {
-    mavenCentral()
-    google()
 }
 
 group = "dev.icerock.moko"
@@ -30,8 +17,8 @@ version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
     implementation(gradleKotlinDsl())
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10")
-    compileOnly("com.android.tools.build:gradle:4.1.2")
+    compileOnly(libs.kotlinGradlePlugin)
+    compileOnly(libs.androidGradlePlugin)
     implementation(libs.kotlinPoet)
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
@@ -64,6 +51,8 @@ publishing {
                 url.set("https://github.com/icerockdev/moko-resources")
                 licenses {
                     license {
+                        name.set("Apache-2.0")
+                        distribution.set("repo")
                         url.set("https://github.com/icerockdev/moko-resources/blob/master/LICENSE.md")
                     }
                 }

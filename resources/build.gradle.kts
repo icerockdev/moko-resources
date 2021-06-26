@@ -8,7 +8,7 @@ import kotlin.text.String
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform")
+    id("dev.icerock.mobile.multiplatform.android-manifest")
     id("kotlin-parcelize")
     id("org.gradle.maven-publish")
     id("signing")
@@ -17,11 +17,44 @@ plugins {
 group = "dev.icerock.moko"
 version = libs.versions.mokoResourcesVersion.get()
 
+kotlin {
+    android {
+        publishLibraryVariants("release", "debug")
+    }
+    ios()
+    macosX64()
+    sourceSets {
+        val commonMain by getting {}
+
+        val appleMain by creating {
+            dependsOn(commonMain)
+        }
+        val iosMain by getting {
+            dependsOn(appleMain)
+        }
+        val macosX64Main by getting {
+            dependsOn(appleMain)
+        }
+    }
+
+    targets
+        .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
+        .configureEach {
+            this as org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
+            compilations.getByName("main") {
+                val pluralizedString by cinterops.creating {
+                    defFile(project.file("src/appleMain/def/pluralizedString.def"))
+                }
+            }
+        }
+}
+
 dependencies {
     commonMainApi(libs.mokoParcelize)
     commonMainApi(libs.mokoGraphics)
 
-    androidMainImplementation(libs.appCompat)
+    "androidMainImplementation"(libs.appCompat)
 }
 
 val javadocJar by tasks.registering(Jar::class) {
@@ -49,6 +82,8 @@ publishing {
             url.set("https://github.com/icerockdev/moko-resources")
             licenses {
                 license {
+                    name.set("Apache-2.0")
+                    distribution.set("repo")
                     url.set("https://github.com/icerockdev/moko-resources/blob/master/LICENSE.md")
                 }
             }
@@ -95,34 +130,6 @@ publishing {
             sign(publishing.publications)
         }
     }
-}
-
-kotlin {
-    macosX64()
-    sourceSets {
-        val commonMain by getting {}
-
-        val appleMain by creating {
-            dependsOn(commonMain)
-        }
-        val iosMain by getting {
-            dependsOn(appleMain)
-        }
-        val macosX64Main by getting {
-            dependsOn(appleMain)
-        }
-    }
-    targets
-        .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
-        .configureEach {
-            this as org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
-            compilations.getByName("main") {
-                val pluralizedString by cinterops.creating {
-                    defFile(project.file("src/appleMain/def/pluralizedString.def"))
-                }
-            }
-        }
 }
 
 tasks.named("publishToMavenLocal") {
