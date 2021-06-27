@@ -24,12 +24,9 @@ kotlin {
     macosX64()
 }
 
-framework {
-    export(projects.resources)
-}
-
 dependencies {
     commonMainApi(projects.resources)
+    commonMainApi(libs.mokoGraphics)
     commonMainImplementation(projects.sample.mppLibrary.nestedModule)
 
     commonTestImplementation(libs.kotlinTest)
@@ -41,4 +38,9 @@ dependencies {
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
+}
+
+framework {
+    export(projects.resources)
+    export(libs.mokoGraphics)
 }
