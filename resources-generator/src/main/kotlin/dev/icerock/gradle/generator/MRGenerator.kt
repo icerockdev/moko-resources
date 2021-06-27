@@ -18,10 +18,11 @@ abstract class MRGenerator(
     generatedDir: File,
     protected val sourceSet: SourceSet,
     protected val mrClassPackage: String,
-    private val generators: List<Generator>
+    internal val generators: List<Generator>
 ) {
-    private val sourcesGenerationDir = File(generatedDir, "${sourceSet.name}/src")
-    protected val resourcesGenerationDir = File(generatedDir, "${sourceSet.name}/res")
+    internal val outputDir = File(generatedDir, sourceSet.name)
+    private val sourcesGenerationDir = File(outputDir, "src")
+    protected val resourcesGenerationDir = File(outputDir, "res")
 
     init {
         sourcesGenerationDir.mkdirs()
@@ -31,7 +32,7 @@ abstract class MRGenerator(
         sourceSet.addResourcesDir(resourcesGenerationDir)
     }
 
-    private fun generate() {
+    internal fun generate() {
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
 
@@ -74,10 +75,11 @@ abstract class MRGenerator(
         val genTaskName = "generateMR$name"
         val genTask = runCatching {
             project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
-        }.getOrNull() ?: project.tasks.create(genTaskName, GenerateMultiplatformResourcesTask::class.java) {
-            it.doLast {
-                this@MRGenerator.generate()
-            }
+        }.getOrNull() ?: project.tasks.create(
+            genTaskName,
+            GenerateMultiplatformResourcesTask::class.java
+        ) {
+            it.generator = this
         }
 
         apply(generationTask = genTask, project = project)
@@ -101,6 +103,7 @@ abstract class MRGenerator(
     interface Generator : ObjectBodyExtendable {
         val mrObjectName: String
         val resourceClassName: ClassName
+        val inputFiles: Iterable<File>
 
         fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
         fun getImports(): List<ClassName>

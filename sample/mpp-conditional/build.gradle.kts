@@ -4,8 +4,10 @@
 
 plugins {
     id("com.android.library")
+    id("android-base-convention")
     id("org.jetbrains.kotlin.multiplatform")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("detekt-convention")
 }
 
 android {
@@ -32,7 +34,7 @@ kotlin {
 }
 
 dependencies {
-    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
+    commonMainApi(projects.resources)
 }
 
 multiplatformResources {

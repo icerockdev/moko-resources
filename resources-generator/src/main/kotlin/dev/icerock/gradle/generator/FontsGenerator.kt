@@ -19,6 +19,7 @@ abstract class FontsGenerator(
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
+    override val inputFiles: Iterable<File> get() = inputFileTree.files
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
     override val mrObjectName: String = "fonts"
 

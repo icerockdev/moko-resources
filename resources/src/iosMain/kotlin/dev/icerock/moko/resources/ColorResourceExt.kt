@@ -17,6 +17,7 @@ fun ColorResource.getColor(userInterfaceStyle: UIUserInterfaceStyle): Color {
                 UIUserInterfaceStyle.UIUserInterfaceStyleDark -> dark
                 UIUserInterfaceStyle.UIUserInterfaceStyleLight -> light
                 UIUserInterfaceStyle.UIUserInterfaceStyleUnspecified -> light
+                else -> light
             }
         }
     }

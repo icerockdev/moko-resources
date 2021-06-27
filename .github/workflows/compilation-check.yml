@@ -12,11 +12,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up JDK 1.8
+      - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
       - name: Plugin check
-        run: ./gradlew -p resources-generator detekt build publishToMavenLocal
+        run: ./gradlew -p resources-generator build publishToMavenLocal
       - name: Library check
-        run: ./gradlew detekt build publishToMavenLocal check
+        run: ./gradlew build publishToMavenLocal
+      - name: Install pods
+        run: cd sample/ios-app && pod install
+      - name: Check iOS
+        run: cd sample/ios-app && xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty

@@ -4,8 +4,10 @@
 
 plugins {
     id("com.android.library")
+    id("android-base-convention")
     id("org.jetbrains.kotlin.multiplatform")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("detekt-convention")
 }
 
 android {
@@ -45,9 +47,12 @@ kotlin {
 }
 
 dependencies {
-    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
+    commonMainApi(projects.resources)
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
+
+// skip task because it's failed on gradle 7 and we not use results of this processing
+tasks.getByName("iosX64ProcessResources").enabled = false
