@@ -11,33 +11,13 @@ plugins {
 android {
     buildFeatures.dataBinding = true
 
-    dexOptions {
-        javaMaxHeapSize = "2g"
-    }
-
     defaultConfig {
         applicationId = "dev.icerock.moko.samples.resources"
 
         versionCode = 1
         versionName = "0.1.0"
 
-        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-        }
-        getByName("debug") {
-            isDebuggable = true
-            applicationIdSuffix = ".debug"
-        }
-    }
-
-    packagingOptions {
-        exclude("META-INF/*.kotlin_module")
     }
 }
 

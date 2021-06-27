@@ -5,6 +5,7 @@
 package com.icerockdev
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import android.preference.PreferenceManager
@@ -22,8 +23,10 @@ object LocaleHandler {
         Locale.setDefault(newLocale)
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            newBase.resources.configuration.locales = LocaleList(newLocale)
-            newBase.createConfigurationContext(newBase.resources.configuration)
+            val configuration: Configuration = newBase.resources.configuration
+            val newLocales = LocaleList(newLocale)
+            configuration.setLocales(newLocales)
+            newBase.createConfigurationContext(configuration)
         } else {
             newBase.resources.configuration.locale = newLocale
             newBase.resources.updateConfiguration(newBase.resources.configuration, newBase.resources.displayMetrics)
