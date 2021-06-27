@@ -28,6 +28,10 @@ java {
     withSourcesJar()
 }
 
+publishing.publications.register("mavenJava", MavenPublication::class) {
+    from(components["java"])
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "1.8"
 }
