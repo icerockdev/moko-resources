@@ -53,3 +53,6 @@ dependencies {
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
+
+// skip task because it's failed on gradle 7 and we not use results of this processing
+tasks.getByName("iosX64ProcessResources").enabled = false
