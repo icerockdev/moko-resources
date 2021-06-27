@@ -17,8 +17,8 @@ jobs:
         with:
           java-version: 1.8
       - name: Plugin check
-        run: ./gradlew -p resources-generator detekt build publishToMavenLocal
+        run: ./gradlew -p resources-generator build publishToMavenLocal
       - name: Library check
-        run: ./gradlew detekt build publishToMavenLocal check
+        run: ./gradlew build publishToMavenLocal
       - name: Check iOS
         run: cd sample/ios-app && xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
