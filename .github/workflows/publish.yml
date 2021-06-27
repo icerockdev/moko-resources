@@ -42,6 +42,6 @@ jobs:
         with:
           commitish: ${{ github.ref }}
           tag_name: release/${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
+          release_name: ${{ github.event.inputs.version }}
           body: "Will be filled later"
           draft: true

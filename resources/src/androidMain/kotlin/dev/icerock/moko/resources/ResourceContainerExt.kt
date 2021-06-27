@@ -12,7 +12,7 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String)
     } else ""
     val methodName = StringBuilder()
         .append("get")
-        .append(fileName[0].toUpperCase())
+        .append(fileName[0].uppercaseChar())
         .append(lastNamePart).toString()
 
     return this::class.java.methods

@@ -4,9 +4,11 @@
 
 plugins {
     id("com.android.library")
+    id("android-base-convention")
     id("org.jetbrains.kotlin.multiplatform")
     id("dev.icerock.mobile.multiplatform-resources")
     id("org.jetbrains.kotlin.native.cocoapods")
+    id("detekt-convention")
 }
 
 android {
@@ -37,15 +39,26 @@ kotlin {
     // export correct artifact to use all classes of moko-resources directly from Swift
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java).all {
         binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class.java).all {
-            export(project(":resources"))
+            export(projects.resources)
         }
     }
 
     sourceSets {
         val commonMain by getting
-        val commonTest by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlinTest)
+                implementation(libs.kotlinTestAnnotations)
+            }
+        }
 
-        val clientMain by creating { dependsOn(commonMain) }
+        val clientMain by creating { 
+            dependsOn(commonMain) 
+
+            dependencies {
+                api(projects.resources)
+            }
+        }
         val clientTest by creating { dependsOn(commonTest) }
 
         val iosMain by getting { dependsOn(clientMain) }
@@ -55,20 +68,18 @@ kotlin {
         val macosTest by getting { dependsOn(clientTest) }
 
         val androidMain by getting  { dependsOn(clientMain) }
-        val androidTest by getting { dependsOn(clientTest) }
+        val androidTest by getting { 
+            dependsOn(clientTest) 
+
+            dependencies {
+                implementation(libs.kotlinTestJUnit)
+                implementation(libs.testCore)
+                implementation(libs.robolectric)
+            }
+        }
 
         val jvmMain by getting
     }
-}
-
-dependencies {
-    "clientMainApi"(Deps.Libs.MultiPlatform.mokoResources)
-
-    androidTestImplementation(Deps.Libs.Android.Tests.kotlinTestJUnit)
-    androidTestImplementation(Deps.Libs.Android.Tests.testCore)
-    androidTestImplementation(Deps.Libs.Android.Tests.robolectric)
-    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
-    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
 }
 
 multiplatformResources {
