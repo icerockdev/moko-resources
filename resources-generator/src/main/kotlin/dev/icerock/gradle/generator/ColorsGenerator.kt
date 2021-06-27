@@ -21,6 +21,7 @@ abstract class ColorsGenerator(
     private val colorsFileTree: FileTree
 ) : MRGenerator.Generator {
 
+    override val inputFiles: Iterable<File> get() = colorsFileTree.files
     override val resourceClassName: ClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource")
     override val mrObjectName: String = "colors"
