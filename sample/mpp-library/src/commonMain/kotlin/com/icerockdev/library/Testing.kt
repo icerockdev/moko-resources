@@ -21,7 +21,7 @@ import dev.icerock.moko.resources.desc.plus
 import dev.icerock.moko.resources.format
 import dev.icerock.moko.resources.getImageByFileName
 
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "TooManyFunctions")
 object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(
