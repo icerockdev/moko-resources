@@ -8,19 +8,23 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="100dp"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
-        android:contentDescription="@null" />
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        tools:srcCompat="@drawable/homeblack" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:text="@string/test_simple" />
 
     <TextView
         android:id="@+id/stringDescTextView"
-        android:textColor="@color/textColor"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:text="@string/nested_test"
+        tools:textColor="@color/textColor" />
 </LinearLayout>

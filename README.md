@@ -366,6 +366,7 @@ Colors files is `xml` with format:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- format: #RRGGBB[AA] or 0xRRGGBB[AA] or RRGGBB[AA] where [AA] - optional -->
     <color name="valueColor">#B02743FF</color>
     <color name="referenceColor">@color/valueColor</color>
     <color name="themedColor">
