@@ -13,7 +13,7 @@ kotlinxSerializationVersion = "1.2.1"
 detektVersion = "1.15.0"
 mokoGraphicsVersion = "0.7.0"
 mokoParcelizeVersion = "0.7.1"
-mokoResourcesVersion = "0.16.1"
+mokoResourcesVersion = "0.16.2"
 
 [libraries]
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
