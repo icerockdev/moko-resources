@@ -1,36 +1,30 @@
+/*
+ * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
 plugins {
     id("android-app-convention")
     id("dev.icerock.mobile.multiplatform-resources")
-    kotlin(module = "android")
+    id("kotlin-android")
 }
 
 dependencies {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-    }
-    implementation(dependencyNotation = "dev.icerock.moko:resources:0.16.2")
-    implementation(dependencyNotation = "androidx.appcompat:appcompat:1.4.0-alpha03")
-    implementation(dependencyNotation = "androidx.compose.ui:ui:1.0.0-rc02")
-    implementation(dependencyNotation = "androidx.compose.ui:ui-tooling:1.0.0-rc02")
-    implementation(dependencyNotation = "androidx.compose.ui:ui-tooling-preview:1.0.0-rc02")
-    implementation(dependencyNotation = "androidx.compose.runtime:runtime:1.0.0-rc02")
-    implementation(dependencyNotation = "androidx.compose.material:material:1.0.0-rc02")
-    implementation(dependencyNotation = "androidx.compose.foundation:foundation:1.0.0-rc02")
-    implementation(dependencyNotation = "androidx.activity:activity-compose:1.3.0-rc02")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation(projects.sample.mppLibrary)
+    implementation(libs.mokoResources)
+    implementation(libs.appCompatAlpha)
+    implementation(libs.composeUi)
+    implementation(libs.composeUiTooling)
+    implementation(libs.composeUiToolingPreview)
+    implementation(libs.composeRuntime)
+    implementation(libs.composeMaterial)
+    implementation(libs.composeFoundation)
+    implementation(libs.composeActivity)
+    implementation(libs.constraintLayout)
 }
 
 android {
-    compileSdk = 31
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 31
-        versionCode = 1
-        versionName = "1.0"
-        applicationId = "dev.arturmavl.mrfjci"
+        applicationId = "dev.icerock.moko.samples.compose"
     }
 
     buildFeatures {
@@ -45,7 +39,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerVersion = "1.5.10"
-        kotlinCompilerExtensionVersion = "1.0.0-beta08"
+        kotlinCompilerVersion = "1.5.20"
+        kotlinCompilerExtensionVersion = "1.0.0-rc02"
     }
 }
