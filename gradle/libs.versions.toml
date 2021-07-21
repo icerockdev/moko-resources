@@ -2,7 +2,6 @@
 kotlinVersion = "1.5.20"
 androidGradleVersion = "4.1.2"
 androidAppCompatVersion = "1.2.0"
-androidAppCompatAlphaVersion = "1.4.0-alpha03"
 espressoCoreVersion = "3.2.0"
 testRunnerVersion = "1.2.0"
 testExtJunitVersion = "1.1.1"
@@ -21,7 +20,6 @@ composeActivityVersion = "1.3.0-rc02"
 
 [libraries]
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
-appCompatAlpha = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatAlphaVersion" }
 espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
 kotlinTestJUnit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinVersion" }
 testCore = { module = "androidx.test:core", version.ref = "testCoreVersion" }

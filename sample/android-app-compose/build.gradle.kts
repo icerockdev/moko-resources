@@ -9,8 +9,7 @@ plugins {
 
 dependencies {
     implementation(projects.sample.mppLibrary)
-    implementation(libs.mokoResources)
-    implementation(libs.appCompatAlpha)
+    implementation(libs.appCompat)
     implementation(libs.composeUi)
     implementation(libs.composeUiTooling)
     implementation(libs.composeUiToolingPreview)
@@ -25,21 +24,20 @@ android {
 
     defaultConfig {
         applicationId = "dev.icerock.moko.samples.compose"
-    }
-
-    buildFeatures {
-        compose = true
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
-        freeCompilerArgs = freeCompilerArgs +
-                "-Xopt-in=kotlin.RequiresOptIn" +
-                "-Xexplicit-api=strict"
+        minSdkVersion(21)
     }
 
     composeOptions {
-        kotlinCompilerVersion = "1.5.20"
+        kotlinCompilerVersion = "1.5.10"
         kotlinCompilerExtensionVersion = "1.0.0-rc02"
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+        )
     }
 }
