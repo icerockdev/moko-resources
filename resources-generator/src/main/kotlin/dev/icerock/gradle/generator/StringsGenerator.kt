@@ -21,6 +21,7 @@ abstract class StringsGenerator(
     private val stringsFileTree: FileTree
 ) : BaseGenerator<String>() {
 
+    override val inputFiles: Iterable<File> get() = stringsFileTree.files
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "StringResource")
     override val mrObjectName: String = "strings"
 

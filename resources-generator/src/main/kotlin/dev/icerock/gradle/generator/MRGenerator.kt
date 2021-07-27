@@ -18,9 +18,10 @@ abstract class MRGenerator(
     generatedDir: File,
     protected val sourceSet: SourceSet,
     protected val mrClassPackage: String,
-    private val generators: List<Generator>
+    internal val generators: List<Generator>
 ) {
 
+    internal val outputDir = File(generatedDir, sourceSet.name)
     protected open val sourcesGenerationDir = File(generatedDir, "${sourceSet.name}/src")
     protected open val resourcesGenerationDir = File(generatedDir, "${sourceSet.name}/res")
 
@@ -32,7 +33,7 @@ abstract class MRGenerator(
         sourceSet.addResourcesDir(resourcesGenerationDir)
     }
 
-    private fun generate() {
+    internal fun generate() {
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
 
@@ -105,6 +106,7 @@ abstract class MRGenerator(
     interface Generator : ObjectBodyExtendable {
         val mrObjectName: String
         val resourceClassName: ClassName
+        val inputFiles: Iterable<File>
 
         fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
         fun getImports(): List<ClassName>

@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 actual class FontResource(
     @FontRes
-    private val fontResourceId: Int
+    val fontResourceId: Int
 ) : Parcelable {
 
     fun getTypeface(context: Context): Typeface? {

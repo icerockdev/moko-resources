@@ -13,6 +13,7 @@ import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
@@ -91,58 +92,65 @@ class AppleMRGenerator(
         val compileTask: KotlinNativeCompile = compilation.compileKotlinTask
         compileTask.dependsOn(generationTask)
 
-        compileTask.doLast { task ->
-            task as KotlinNativeCompile
+        // lambda will broke gradle UP-TO-DATE mark!
+        @Suppress("ObjectLiteralToLambda")
+        compileTask.doLast(object : Action<Task> {
+            override fun execute(task: Task) {
+                task as KotlinNativeCompile
 
-            val klibFile = task.outputFile.get()
-            val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
-            val defaultDir = File(repackDir, "default")
-            val resRepackDir = File(defaultDir, "resources")
+                val klibFile = task.outputFile.get()
+                val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
+                val defaultDir = File(repackDir, "default")
+                val resRepackDir = File(defaultDir, "resources")
 
-            unzipTo(zipFile = klibFile, outputDirectory = repackDir)
+                unzipTo(zipFile = klibFile, outputDirectory = repackDir)
 
-            val manifestFile = File(defaultDir, "manifest")
-            val manifest = Properties()
-            manifest.load(manifestFile.inputStream())
+                val manifestFile = File(defaultDir, "manifest")
+                val manifest = Properties()
+                manifest.load(manifestFile.inputStream())
 
-            val uniqueName = manifest["unique_name"] as String
+                val uniqueName = manifest["unique_name"] as String
 
-            val loadableBundle = LoadableBundle(
-                directory = resRepackDir,
-                bundleName = uniqueName,
-                developmentRegion = baseLocalizationRegion,
-                identifier = bundleIdentifier
-            )
-            loadableBundle.write()
-
-            assetsDirectory?.let { assetsDir ->
-                val process = Runtime.getRuntime().exec(
-                    "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
-                    emptyArray(),
-                    assetsDir.parentFile
+                val loadableBundle = LoadableBundle(
+                    directory = resRepackDir,
+                    bundleName = uniqueName,
+                    developmentRegion = baseLocalizationRegion,
+                    identifier = bundleIdentifier
                 )
-                val errors = process.errorStream.bufferedReader().readText()
-                val input = process.inputStream.bufferedReader().readText()
-                val result = process.waitFor()
-                if (result != 0) {
-                    println("can't compile assets - $result")
-                    println(input)
-                    println(errors)
-                } else {
-                    assetsDir.deleteRecursively()
+                loadableBundle.write()
+
+                assetsDirectory?.let { assetsDir ->
+                    val process = Runtime.getRuntime().exec(
+                        "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
+                        emptyArray(),
+                        assetsDir.parentFile
+                    )
+                    val errors = process.errorStream.bufferedReader().readText()
+                    val input = process.inputStream.bufferedReader().readText()
+                    val result = process.waitFor()
+                    if (result != 0) {
+                        println("can't compile assets - $result")
+                        println(input)
+                        println(errors)
+                    } else {
+                        assetsDir.deleteRecursively()
+                    }
                 }
+
+                resourcesGenerationDir.copyRecursively(
+                    loadableBundle.resourcesDir,
+                    overwrite = true
+                )
+
+                val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
+                val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
+
+                klibFile.delete()
+                repackKonan.zipDirAs(klibKonan)
+
+                repackDir.deleteRecursively()
             }
-
-            resourcesGenerationDir.copyRecursively(loadableBundle.resourcesDir, overwrite = true)
-
-            val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
-            val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
-
-            klibFile.delete()
-            repackKonan.zipDirAs(klibKonan)
-
-            repackDir.deleteRecursively()
-        }
+        })
     }
 
     private fun setupFrameworkResources() {
@@ -156,11 +164,15 @@ class AppleMRGenerator(
 
                 val linkTask = framework.linkTask
 
-                linkTask.doLast { task ->
-                    task as KotlinNativeLink
+                // lambda will broke gradle UP-TO-DATE mark!
+                @Suppress("ObjectLiteralToLambda")
+                linkTask.doLast(object : Action<Task> {
+                    override fun execute(task: Task) {
+                        task as KotlinNativeLink
 
-                    copyKlibsResourcesIntoFramework(task)
-                }
+                        copyKlibsResourcesIntoFramework(task)
+                    }
+                })
 
                 if (framework.isStatic) {
                     val resourcesExtension =
@@ -241,13 +253,19 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                 val executable = it as TestExecutable
 
                 val linkTask = executable.linkTask
-                linkTask.doLast {
-                    copyResourcesFromLibraries(
-                        linkTask = linkTask,
-                        project = project,
-                        outputDir = executable.outputDirectory
-                    )
-                }
+
+                // lambda will broke gradle UP-TO-DATE mark!
+                @Suppress("ObjectLiteralToLambda")
+                linkTask.doLast(object : Action<Task> {
+                    override fun execute(task: Task) {
+                        task as KotlinNativeLink
+                        copyResourcesFromLibraries(
+                            linkTask = task,
+                            project = project,
+                            outputDir = executable.outputDirectory
+                        )
+                    }
+                })
             }
     }
 

@@ -6,6 +6,7 @@ package com.icerockdev.library
 
 import com.icerockdev.library.nested.nestedFile
 import com.icerockdev.library.nested.nestedTest
+import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.Plural
@@ -20,7 +21,7 @@ import dev.icerock.moko.resources.desc.plus
 import dev.icerock.moko.resources.format
 import dev.icerock.moko.resources.getImageByFileName
 
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "TooManyFunctions")
 object Testing {
     fun getStrings(): List<StringDesc> {
         return listOf(
@@ -117,5 +118,16 @@ object Testing {
 
     fun getNestedJsonFile(): FileResource {
         return nestedFile()
+    }
+
+    fun getGradientColors(): List<ColorResource> {
+        return listOf(
+            MR.colors.valueColor,
+            MR.colors.valueColor2,
+        )
+    }
+
+    fun getTextColor(): ColorResource {
+        return MR.colors.textColor
     }
 }

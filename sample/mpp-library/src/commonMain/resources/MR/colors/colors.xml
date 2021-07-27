@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- format: #RRGGBB[AA] or 0xRRGGBB[AA] or RRGGBB[AA] where [AA] - optional -->
     <color name="valueColor">#B02743FF</color>
     <color name="valueColor2">0xB52743FF</color>
     <color name="referenceColor">@color/valueColor2</color>

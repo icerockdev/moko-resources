@@ -3,28 +3,15 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform")
-    id("org.gradle.maven-publish")
+    id("multiplatform-library-convention")
+    id("apple-main-convention")
+    id("detekt-convention")
+    id("javadoc-stub-convention")
+    id("publication-convention")
 }
 
-kotlin {
-    macosX64()
-    jvm()
-    sourceSets {
-        val commonMain by getting {}
-        val appleMain by creating {
-            dependsOn(commonMain)
-        }
-        val iosMain by getting {
-            dependsOn(appleMain)
-        }
-        val macosX64Main by getting {
-            dependsOn(appleMain)
-        }
-    }
-}
+group = "dev.icerock.moko"
+version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
     commonMainApi(project(":resources"))

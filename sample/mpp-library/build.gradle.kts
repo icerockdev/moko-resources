@@ -4,10 +4,12 @@
 
 plugins {
     id("com.android.library")
+    id("android-base-convention")
     id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform")
+    id("dev.icerock.mobile.multiplatform.android-manifest")
     id("dev.icerock.mobile.multiplatform.apple-framework")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("detekt-convention")
 }
 
 android {
@@ -17,21 +19,22 @@ android {
 }
 
 kotlin {
+    android()
+    ios()
     macosX64()
     jvm()
 }
 
 dependencies {
-    commonMainApi(Deps.Libs.MultiPlatform.mokoResources)
-    commonMainApi(Deps.Libs.MultiPlatform.mokoGraphics.common)
-    commonMainImplementation(project("$path:nested-module"))
+    commonMainApi(projects.resources)
+    commonMainApi(libs.mokoGraphics)
+    commonMainImplementation(projects.sample.mppLibrary.nestedModule)
 
-    androidTestImplementation(Deps.Libs.Android.Tests.kotlinTestJUnit)
-    androidTestImplementation(Deps.Libs.Android.Tests.testCore)
+    commonTestImplementation(libs.kotlinTest)
+    commonTestImplementation(libs.kotlinTestAnnotations)
+    commonTestImplementation(projects.resourcesTest)
 
-    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTest)
-    commonTestImplementation(Deps.Libs.MultiPlatform.Tests.kotlinTestAnnotations)
-    commonTestImplementation(Deps.Libs.MultiPlatform.mokoResourcesTest)
+    androidTestImplementation(libs.kotlinTestJUnit)
 }
 
 multiplatformResources {
@@ -39,6 +42,6 @@ multiplatformResources {
 }
 
 framework {
-    export(Deps.Libs.MultiPlatform.mokoGraphics)
-    export(project(":resources"))
+    export(projects.resources)
+    export(libs.mokoGraphics)
 }
