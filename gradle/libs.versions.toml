@@ -2,9 +2,10 @@
 kotlinVersion = "1.5.21"
 androidGradleVersion = "4.1.2"
 androidAppCompatVersion = "1.2.0"
-espressoCoreVersion = "3.2.0"
-testRunnerVersion = "1.2.0"
-testExtJunitVersion = "1.1.1"
+espressoCoreVersion = "3.3.0"
+testRunnerVersion = "1.3.0"
+testRulesVersion = "1.3.0"
+testExtJunitVersion = "1.1.2"
 testCoreVersion = "1.3.0"
 robolectricVersion = "4.5.1"
 apacheCommonsTextVersion = "1.3"
@@ -25,12 +26,12 @@ kotlinTestJUnit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.r
 testCore = { module = "androidx.test:core", version.ref = "testCoreVersion" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectricVersion" }
 testRunner = { module = "androidx.test:runner", version.ref = "testRunnerVersion" }
-testRules = { module =  "androidx.test:rules", version.ref = "testRunnerVersion" }
+testRules = { module =  "androidx.test:rules", version.ref = "testRulesVersion" }
 testExtJunit = { module = "androidx.test.ext:junit", version.ref = "testExtJunitVersion" }
 mokoResources = { module = "dev.icerock.moko:resources", version.ref = "mokoResourcesVersion" }
 mokoParcelize = { module = "dev.icerock.moko:parcelize", version.ref = "mokoParcelizeVersion" }
 mokoGraphics = { module = "dev.icerock.moko:graphics", version.ref = "mokoGraphicsVersion" }
-kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test-common", version.ref = "kotlinVersion" }
+kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinVersion" }
 kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlinVersion" }
 kotlinPoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinPoetVersion" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationVersion" }
