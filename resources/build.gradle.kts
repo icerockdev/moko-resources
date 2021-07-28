@@ -4,6 +4,7 @@
 
 plugins {
     id("multiplatform-library-convention")
+    id("multiplatform-android-publish-convention")
     id("apple-main-convention")
     id("kotlin-parcelize")
     id("detekt-convention")

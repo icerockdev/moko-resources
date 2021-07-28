@@ -3,15 +3,11 @@
  */
 
 plugins {
-    id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
-    id("android-base-convention")
-    id("dev.icerock.mobile.multiplatform.android-manifest")
 }
 
 kotlin {
-    jvm()
-    android()
-    ios()
-    macosX64()
+    android {
+        publishLibraryVariants("release", "debug")
+    }
 }

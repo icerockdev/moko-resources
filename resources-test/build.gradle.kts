@@ -4,6 +4,7 @@
 
 plugins {
     id("multiplatform-library-convention")
+    id("multiplatform-android-publish-convention")
     id("apple-main-convention")
     id("detekt-convention")
     id("javadoc-stub-convention")
@@ -14,5 +15,5 @@ group = "dev.icerock.moko"
 version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
-    commonMainApi(project(":resources"))
+    commonMainApi(projects.resources)
 }

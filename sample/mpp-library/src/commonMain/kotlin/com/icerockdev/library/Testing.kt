@@ -55,16 +55,16 @@ object Testing {
         val simpleStringExt = MR.strings.test_simple.desc()
 
         // create formatted string
-        val formattedString = StringDesc.ResourceFormatted(MR.strings.format, 3)
-        val formattedStringExt = MR.strings.format.format(3)
+        val formattedString = StringDesc.ResourceFormatted(MR.strings.format, 9)
+        val formattedStringExt = MR.strings.format.format(9)
 
         // create plural
-        val simplePlural = StringDesc.Plural(MR.plurals.test_plural, 6)
-        val simplePluralExt = MR.plurals.test_plural.desc(6)
+        val simplePlural = StringDesc.Plural(MR.plurals.test_plural, 10)
+        val simplePluralExt = MR.plurals.test_plural.desc(10)
 
         // create formatted plural
-        val formattedPlural = StringDesc.PluralFormatted(MR.plurals.my_plural, 7, 7)
-        val formattedPluralExt = MR.plurals.my_plural.format(7, 7)
+        val formattedPlural = StringDesc.PluralFormatted(MR.plurals.my_plural, 10, 10)
+        val formattedPluralExt = MR.plurals.my_plural.format(10, 10)
 
         // raw string
         val simpleRaw = StringDesc.Raw("raw string")
