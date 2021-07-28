@@ -33,9 +33,9 @@ dependencies {
     commonTestImplementation(libs.kotlinTest)
     commonTestImplementation(libs.kotlinTestAnnotations)
     commonTestImplementation(projects.resourcesTest)
-    commonTestImplementation(libs.kotlinTestJUnit)
-
-    androidTestImplementation(libs.testCore)
+ 
+    "androidTestImplementation"(libs.kotlinTestJUnit)
+    "androidTestImplementation"(libs.testCore)
 }
 
 multiplatformResources {
