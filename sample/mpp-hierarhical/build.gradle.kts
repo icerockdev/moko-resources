@@ -45,9 +45,20 @@ kotlin {
 
     sourceSets {
         val commonMain by getting
-        val commonTest by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlinTest)
+                implementation(libs.kotlinTestAnnotations)
+            }
+        }
 
-        val clientMain by creating { dependsOn(commonMain) }
+        val clientMain by creating {
+            dependsOn(commonMain)
+
+            dependencies {
+                api(projects.resources)
+            }
+        }
         val clientTest by creating { dependsOn(commonTest) }
 
         val iosMain by getting { dependsOn(clientMain) }

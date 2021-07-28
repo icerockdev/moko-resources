@@ -80,9 +80,7 @@ abstract class MRGenerator(
             genTaskName,
             GenerateMultiplatformResourcesTask::class.java
         ) {
-            it.doLast {
-                this@MRGenerator.generate()
-            }
+            it.generator = this
         }
 
         apply(generationTask = genTask, project = project)
