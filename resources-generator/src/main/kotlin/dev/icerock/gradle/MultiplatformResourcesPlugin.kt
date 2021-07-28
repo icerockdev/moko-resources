@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
+@Suppress("TooManyFunctions")
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val mrExtension =
@@ -187,7 +188,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             generators = features.map { it.createAndroidGenerator() }
         ).apply(target)
     }
-
+    @Suppress("LongParameterList")
     private fun setupJvmGenerator(
         commonSourceSet: KotlinSourceSet,
         targets: List<KotlinTarget>,
@@ -298,6 +299,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         return manifest.attributes.getNamedItem("package").textContent
     }
 
+    @Suppress("ReturnCount")
     private fun KotlinSourceSet.isDependsOn(sourceSet: KotlinSourceSet): Boolean {
         if (dependsOn.contains(sourceSet)) return true
         dependsOn.forEach { parent ->

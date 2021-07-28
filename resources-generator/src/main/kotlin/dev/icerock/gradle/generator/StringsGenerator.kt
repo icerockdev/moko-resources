@@ -5,7 +5,6 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.apple.AppleStringsGenerator
