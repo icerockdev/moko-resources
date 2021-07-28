@@ -24,7 +24,7 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation(project(":sample:mpp-library"))
+                implementation(projects.sample.mppLibrary)
             }
         }
     }
