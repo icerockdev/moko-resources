@@ -34,24 +34,22 @@ fun main() {
     Window("moko-resources", IntSize(1080, 960)) {
         Surface(Modifier.fillMaxSize()) {
             Column {
-                Row {
-                    testing.getStrings().forEach { stringDesc ->
-                        Text(
-                            text = stringDesc.localized(),
-                            color = Color(MR.colors.textColor.color.argb),
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                }
-                Text(text = testing.getStringDesc().localized())
-                Text(text = testing.getTextFile().readText())
-                Text(text = testing.getJsonFile().readText())
-                Text(text = testing.getNestedJsonFile().readText())
                 Image(
                     bitmap = testing.getDrawable().image.toImageBitmap(),
                     contentDescription = null,
                     modifier = Modifier.size(56.dp)
                 )
+                testing.getStrings().forEach { stringDesc ->
+                    Text(
+                        text = stringDesc.localized(),
+                        color = Color(MR.colors.textColor.color.argb),
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Text(text = testing.getStringDesc().localized())
+                Text(text = testing.getTextFile().readText())
+                Text(text = testing.getJsonFile().readText())
+                Text(text = testing.getNestedJsonFile().readText())
             }
         }
     }
