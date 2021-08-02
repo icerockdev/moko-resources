@@ -461,6 +461,9 @@ Please see more examples in the [sample directory](sample).
 
 Sample `mpp-hierarhical` contains usage of `org.jetbrains.kotlin.native.cocoapods` plugin and unit
  tests with resources usage. 
+`Jvm-sample` to run it you should use IntelliJ IDEA.  
+`macOS-sample` it contains two schemes. TestProj is the sample app and TestHierarchical is a splash-screen.  
+`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at once, the second one allows to choose language before starting the sample.  
 
 ## Set Up Locally 
 - The [resources directory](resources) contains the `resources` library;
