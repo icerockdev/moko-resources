@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.apple.AppleFontsGenerator
+import dev.icerock.gradle.utils.withoutExtension
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -24,7 +25,7 @@ abstract class FontsGenerator(
     override val mrObjectName: String = "fonts"
 
     override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
-        val typeSpec = createTypeSpec(inputFileTree.map { it.nameWithoutExtension }.sorted(), objectBuilder)
+        val typeSpec = createTypeSpec(inputFileTree.map { it.name }.sorted(), objectBuilder)
         generateResources(resourcesGenerationDir, inputFileTree.map {
             FontFile(
                 key = it.nameWithoutExtension,
@@ -34,26 +35,28 @@ abstract class FontsGenerator(
         return typeSpec
     }
 
-    private fun createTypeSpec(keys: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
+    /*
+    @param keys: names of files like anastasia-regular.ttf
+     */
+    private fun createTypeSpec(fileNames: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
         @Suppress("SpreadOperator")
         objectBuilder.addModifiers(*getClassModifiers())
 
         /*
-        * 1. Group keys by family name (split('-').first())
+        * 1. Group fileNames by family name (split('-').first())
         * 2. Generate subtype for each family `classBuilder.addType(...)`
         * 3. Generate properties in family subtype for each font style
         * */
 
-        val familyGroups = keys.groupBy { key ->
-            key.substringBefore("-")
+        val familyGroups = fileNames.groupBy { fileName ->
+            fileName.withoutExtension.substringBefore("-")
         }
 
         familyGroups.forEach { group ->
             // TODO Make pairs: "style name" - "font file"
             val stylePairs = group
                 .value
-                .map { it.substringAfter("-") to it }
-                .toList()
+                .map { it.withoutExtension.substringAfter("-") to it }
 
             objectBuilder.addType(
                 generateFontFamilySpec(
@@ -70,7 +73,9 @@ abstract class FontsGenerator(
 
     @Suppress("SpreadOperator")
     private fun generateFontFamilySpec(
+        //like anastasia
         familyName: String,
+        //key like bold to filename like anastasia-bold.ttf
         fontStyleFiles: List<Pair<String, String>>
     ): TypeSpec {
         val spec = TypeSpec
@@ -101,6 +106,7 @@ abstract class FontsGenerator(
 
     abstract fun getPropertyModifiers(): Array<KModifier>
 
+    // complete file name with extension like anastasia-bold.ttf
     abstract fun getPropertyInitializer(fontFileName: String): CodeBlock?
 
     data class FontFile(
@@ -110,7 +116,7 @@ abstract class FontsGenerator(
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FontsGenerator> {
         private val stringsFileTree = info.commonResources.matching {
-            it.include("MR/fonts/**.ttf")
+            it.include("MR/fonts/**.ttf", "MR/fonts/**.otf")
         }
 
         override fun createCommonGenerator(): FontsGenerator {

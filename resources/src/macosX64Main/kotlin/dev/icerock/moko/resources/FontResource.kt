@@ -25,7 +25,7 @@ actual class FontResource(
     private val fontRef: CGFontRef
 
     init {
-        val pathForResourceString = bundle.pathForResource(name = "$fontName.ttf", ofType = null)!!
+        val pathForResourceString = bundle.pathForResource(name = fontName, ofType = null)!!
         val fontData = NSData.create(contentsOfFile = pathForResourceString)!!
         val cfDataRef = CFDataCreate(
             kCFAllocatorDefault,
