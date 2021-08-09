@@ -20,7 +20,7 @@ kotlin {
         val commonMain by getting
         val jvmMain by getting {
             dependencies {
-                implementation("com.ibm.icu:icu4j:68.2")
+                implementation(libs.icu4j)
             }
         }
     }

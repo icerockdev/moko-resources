@@ -79,8 +79,8 @@ class JvmMRGenerator(
     companion object {
         const val STRINGS_BUNDLE_PROPERTY_NAME = "stringsBundle"
         const val PLURALS_BUNDLE_PROPERTY_NAME = "pluralsBundle"
-        const val STRINGS_BUNDLE_NAME = "MokoBundle"
-        const val PLURALS_BUNDLE_NAME = "MokoPluralsBundle"
+        const val STRINGS_BUNDLE_NAME = "mokoBundle"
+        const val PLURALS_BUNDLE_NAME = "mokoPluralsBundle"
         const val LOCALIZATION_DIR = "localization"
     }
 }
