@@ -21,6 +21,7 @@ dependencyResolutionManagement {
 includeBuild("resources-build-logic")
 includeBuild("resources-generator")
 include(":resources")
+include(":resources-compose")
 include(":resources-test")
 
 include(":sample:android-app")
