@@ -8,7 +8,6 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FontsGenerator
-import dev.icerock.gradle.utils.withoutExtension
 import org.gradle.api.file.FileTree
 import java.io.File
 import java.util.Locale
@@ -23,8 +22,8 @@ class AndroidFontsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fontFileName: String): CodeBlock? {
-        return CodeBlock.of("FontResource(fontResourceId = R.font.%L)", keyToResourceId(fontFileName.withoutExtension))
+    override fun getPropertyInitializer(fontFile: File): CodeBlock {
+        return CodeBlock.of("FontResource(fontResourceId = R.font.%L)", keyToResourceId(fontFile.nameWithoutExtension))
     }
 
     override fun getImports(): List<ClassName> = listOf(
