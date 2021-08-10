@@ -3,9 +3,10 @@
  */
 
 plugins {
-    id("multiplatform-library-convention")
+    id("com.android.library")
+    id("android-base-convention")
+    id("org.jetbrains.kotlin.multiplatform")
     id("detekt-convention")
-    id("publication-convention")
 }
 
 android {
@@ -16,6 +17,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.0.1"
     }
+}
+
+kotlin {
+    android()
 }
 
 dependencies {
