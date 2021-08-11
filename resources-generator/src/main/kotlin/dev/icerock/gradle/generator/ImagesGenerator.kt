@@ -17,13 +17,13 @@ import java.io.File
 
 abstract class ImagesGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.Generator {
+) : MRGenerator.GeneratorWithClass {
 
     override val inputFiles: Iterable<File> get() = inputFileTree.files
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"
 
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         val keyFileMap = inputFileTree.groupBy { file ->
             file.name.substringBefore("@")
         }

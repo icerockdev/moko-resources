@@ -17,13 +17,13 @@ import java.io.File
 
 abstract class FilesGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.Generator {
+) : MRGenerator.GeneratorWithClass {
 
     override val inputFiles: Iterable<File> get() = inputFileTree.files
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FileResource")
     override val mrObjectName: String = "files"
 
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         val fileSpecs = inputFileTree.map { file ->
             FileSpec(
                 key = processKey(file.nameWithoutExtension),

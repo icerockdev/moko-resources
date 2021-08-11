@@ -23,6 +23,7 @@ abstract class MRGenerator(
     internal val outputDir = File(generatedDir, sourceSet.name)
     private val sourcesGenerationDir = File(outputDir, "src")
     protected val resourcesGenerationDir = File(outputDir, "res")
+    protected val assetsGenerationDir = File(outputDir, "assets")
 
     init {
         sourcesGenerationDir.mkdirs()
@@ -43,13 +44,20 @@ abstract class MRGenerator(
             .addModifiers(*getMRClassModifiers())
 
         generators.forEach { generator ->
-            val builder = TypeSpec.objectBuilder(generator.mrObjectName)
+            if (generator is GeneratorWithClass) {
+                val builder = TypeSpec.objectBuilder(generator.mrObjectName)
 
-            val fileResourceInterfaceClassName =
-                ClassName("dev.icerock.moko.resources", "ResourceContainer")
-            builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
+                val fileResourceInterfaceClassName =
+                    ClassName("dev.icerock.moko.resources", "ResourceContainer")
+                builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
 
-            mrClassSpec.addType(generator.generate(resourcesGenerationDir, builder))
+                mrClassSpec.addType(generator.generate(assetsGenerationDir, resourcesGenerationDir, builder))
+            } else if (generator is GeneratorWithoutClass) {
+                generator.generate(assetsGenerationDir, resourcesGenerationDir)
+            } else {
+                throw IllegalStateException("unexpected generator class ${generator::class.simpleName}")
+            }
+
         }
 
         processMRClass(mrClassSpec)
@@ -59,7 +67,7 @@ abstract class MRGenerator(
         val fileSpec = FileSpec.builder(mrClassPackage, mrClassName)
             .addType(mrClass)
 
-        generators
+        generators.filterIsInstance(GeneratorWithClass::class.java)
             .flatMap { it.getImports() }
             .plus(getImports())
             .forEach { fileSpec.addImport(it.packageName, it.simpleName) }
@@ -100,13 +108,20 @@ abstract class MRGenerator(
         const val mrClassName = "MR"
     }
 
-    interface Generator : ObjectBodyExtendable {
+    interface Generator {
+        val inputFiles: Iterable<File>
+    }
+
+    interface GeneratorWithClass : ObjectBodyExtendable, Generator {
         val mrObjectName: String
         val resourceClassName: ClassName
-        val inputFiles: Iterable<File>
 
-        fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
+        fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
         fun getImports(): List<ClassName>
+    }
+
+    interface GeneratorWithoutClass: Generator {
+        fun generate(assetsGenerationDir: File, resourcesGenerationDir: File)
     }
 
     interface SourceSet {
@@ -114,5 +129,6 @@ abstract class MRGenerator(
 
         fun addSourceDir(directory: File)
         fun addResourcesDir(directory: File)
+        fun addAssetsDir(directory: File)
     }
 }

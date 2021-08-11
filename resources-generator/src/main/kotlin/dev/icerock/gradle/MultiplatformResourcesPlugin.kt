@@ -7,15 +7,7 @@ package dev.icerock.gradle
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.BasePlugin
 import com.android.build.gradle.api.AndroidSourceSet
-import dev.icerock.gradle.generator.ColorsGenerator
-import dev.icerock.gradle.generator.FilesGenerator
-import dev.icerock.gradle.generator.FontsGenerator
-import dev.icerock.gradle.generator.ImagesGenerator
-import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.ResourceGeneratorFeature
-import dev.icerock.gradle.generator.SourceInfo
-import dev.icerock.gradle.generator.StringsGenerator
+import dev.icerock.gradle.generator.*
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
@@ -95,7 +87,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             ImagesGenerator.Feature(sourceInfo),
             FontsGenerator.Feature(sourceInfo),
             FilesGenerator.Feature(sourceInfo),
-            ColorsGenerator.Feature(sourceInfo)
+            ColorsGenerator.Feature(sourceInfo),
+            AssetsGenerator.Feature(sourceInfo)
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
@@ -225,6 +218,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             override fun addResourcesDir(directory: File) {
                 kotlinSourceSet.resources.srcDir(directory)
             }
+
+            override fun addAssetsDir(directory: File) {
+                // nothing
+            }
+
         }
     }
 
@@ -242,6 +240,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
             override fun addResourcesDir(directory: File) {
                 androidSourceSet.res.srcDir(directory)
+            }
+
+            override fun addAssetsDir(directory: File) {
+                androidSourceSet.assets.srcDir(directory)
             }
         }
     }

@@ -10,9 +10,9 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 
-abstract class BaseGenerator<T> : MRGenerator.Generator {
+abstract class BaseGenerator<T> : MRGenerator.GeneratorWithClass {
 
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         // language - key - value
         val languageMap: Map<LanguageType, Map<KeyType, T>> = loadLanguageMap()
         val languageKeyValues = languageMap[BASE_LANGUAGE].orEmpty()

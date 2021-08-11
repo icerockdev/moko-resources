@@ -5,6 +5,7 @@
 package com.icerockdev
 
 import android.content.Context
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.icerockdev.library.Testing
 import dev.icerock.moko.graphics.colorInt
+import dev.icerock.moko.resources.AssetResource
 import dev.icerock.moko.resources.getColor
 
 class MainActivity : AppCompatActivity() {
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         textView.setTextColor(textColorFromRes)
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
-        stringDescTextView.typeface = Testing.getFont2().getTypeface(context = this)
+        stringDescTextView.typeface = Typeface.createFromAsset(assets, Testing.getFontAssetsPath())//Testing.getFont2().getTypeface(context = this)
 
         val textColorFromLib = Testing.getTextColor().getColor(context = this).colorInt()
         stringDescTextView.setTextColor(textColorFromLib)

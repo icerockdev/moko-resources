@@ -19,7 +19,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class ColorsGenerator(
     private val colorsFileTree: FileTree
-) : MRGenerator.Generator {
+) : MRGenerator.GeneratorWithClass {
 
     override val inputFiles: Iterable<File> get() = colorsFileTree.files
     override val resourceClassName: ClassName =
@@ -32,7 +32,7 @@ abstract class ColorsGenerator(
         ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
 
     @Suppress("SpreadOperator")
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
         extendObjectBody(objectBuilder)
 

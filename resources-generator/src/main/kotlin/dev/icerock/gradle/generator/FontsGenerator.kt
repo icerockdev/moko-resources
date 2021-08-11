@@ -17,13 +17,13 @@ import java.io.File
 
 abstract class FontsGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.Generator {
+) : MRGenerator.GeneratorWithClass {
 
     override val inputFiles: Iterable<File> get() = inputFileTree.files
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
     override val mrObjectName: String = "fonts"
 
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
         val typeSpec = createTypeSpec(inputFileTree.map { it.nameWithoutExtension }.sorted(), objectBuilder)
         generateResources(resourcesGenerationDir, inputFileTree.map {
             FontFile(
