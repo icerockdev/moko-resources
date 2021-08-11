@@ -20,6 +20,10 @@ class AppleAssetsGenerator(inputFile: FileTree) : AssetsGenerator(inputFile) {
         if (relativePathFixed.startsWith(File.separatorChar))
             relativePathFixed = relativePathFixed.substring(1)
 
-        return relativePathFixed.replace(File.separatorChar, '_')
+        return relativePathFixed.replace(File.separatorChar, APPLE_PATH_DELIMITER)
+    }
+
+    companion object {
+        const val APPLE_PATH_DELIMITER = '_'
     }
 }
