@@ -34,7 +34,13 @@ android {
 }
 
 dependencies {
-    implementation(projects.resourcesCompose)
+    implementation(libs.composeUiTooling)
+    implementation(libs.composeUiToolingPreview)
+    implementation(libs.composeRuntime)
+    implementation(libs.composeMaterial)
+    implementation(libs.composeFoundation)
+    implementation(libs.composeActivity)
+    implementation(libs.constraintLayout)
     implementation(projects.sample.mppLibrary)
     implementation(libs.appCompat)
 }

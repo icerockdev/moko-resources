@@ -19,8 +19,22 @@ android {
     }
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
 kotlin {
     android()
+    jvm()
+    sourceSets {
+        named("jvmMain") {
+            dependencies {
+                implementation(projects.sample.mppLibrary)
+            }
+        }
+    }
 }
 
 dependencies {
