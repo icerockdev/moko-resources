@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         val imageView: ImageView = findViewById(R.id.imageView)
         val textView: TextView = findViewById(R.id.textView)
         val stringDescTextView: TextView = findViewById(R.id.stringDescTextView)
+        val otfFontsTestTextView: TextView = findViewById(R.id.stringOtfFontsTest)
 
         val strings = Testing.getStrings()
         val text = strings.joinToString("\n") { it.toString(context = this) }
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         textView.text = text
-        textView.typeface = Testing.getFont1().getTypeface(context = this)
+        textView.typeface = Testing.getFontTtf1().getTypeface(context = this)
 
         val textColorFromRes = ContextCompat.getColor(this, R.color.textColor)
         textView.setTextColor(textColorFromRes)
@@ -59,6 +60,10 @@ class MainActivity : AppCompatActivity() {
             Testing.getJsonFile().readText(context = this),
             Testing.getNestedJsonFile().readText(context = this)
         ).forEach { Log.d(MainActivity::class.java.simpleName, it) }
+
+        otfFontsTestTextView.typeface = Testing.getFontOtf1().getTypeface(context = this)
+        otfFontsTestTextView.typeface = Testing.getFontOtf2().getTypeface(context = this)
+        otfFontsTestTextView.typeface = Testing.getFontOtf3().getTypeface(context = this)
     }
 
     /**
