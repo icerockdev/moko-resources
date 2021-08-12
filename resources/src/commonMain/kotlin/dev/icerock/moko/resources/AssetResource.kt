@@ -7,10 +7,11 @@ expect object AssetResource {
 internal object AssetResourceHelper {
     fun getPlatformPath(path: String, pathIntoOneName: Boolean): String {
 
-        val checkedPath: String = if (path[0] == '/')
+        val checkedPath: String = if (path[0] == '/') {
             path.substring(1)
-        else
+        } else {
             path
+        }
 
         return if (pathIntoOneName) checkedPath.replace('/', '_') else checkedPath
     }

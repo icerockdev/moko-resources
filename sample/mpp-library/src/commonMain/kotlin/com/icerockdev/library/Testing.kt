@@ -6,7 +6,10 @@ package com.icerockdev.library
 
 import com.icerockdev.library.nested.nestedFile
 import com.icerockdev.library.nested.nestedTest
-import dev.icerock.moko.resources.*
+import dev.icerock.moko.resources.AssetResource
+import dev.icerock.moko.resources.ColorResource
+import dev.icerock.moko.resources.FileResource
+import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.Plural
 import dev.icerock.moko.resources.desc.PluralFormatted
 import dev.icerock.moko.resources.desc.Raw
@@ -16,6 +19,8 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.joinToStringDesc
 import dev.icerock.moko.resources.desc.plus
+import dev.icerock.moko.resources.format
+import dev.icerock.moko.resources.getImageByFileName
 
 @Suppress("MagicNumber", "TooManyFunctions")
 object Testing {

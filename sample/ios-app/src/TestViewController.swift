@@ -27,7 +27,8 @@ class TestViewController: UIViewController {
         textView.textColor = textColor.toUIColor()
 
         stringDescTextView.text = testing.getStringDesc().localized()
-        stringDescTextView.font = testing.getFontTtf2().uiFont(withSize: 14.0)
+        stringDescTextView.font = FontResource(fontName: testing.getFontAssetsPath(),
+                         bundle: MokoResourcesBundle().bundle).uiFont(withSize: 14.0)
 
         [
         testing.getTextFile(),
