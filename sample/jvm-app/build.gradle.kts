@@ -24,6 +24,7 @@ kotlin {
     sourceSets {
         named("jvmMain") {
             dependencies {
+                implementation(projects.resourcesCompose)
                 implementation(compose.desktop.currentOs)
                 implementation(projects.sample.mppLibrary)
             }

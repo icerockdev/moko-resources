@@ -3,20 +3,15 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("android-base-convention")
     id("org.jetbrains.kotlin.multiplatform")
     id("detekt-convention")
+    id("org.jetbrains.compose")
+    id("publication-convention")
 }
 
-android {
-    buildFeatures {
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.1"
-    }
+repositories {
+    jcenter()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 java {
@@ -26,23 +21,12 @@ java {
 }
 
 kotlin {
-    android()
     jvm()
     sourceSets {
         named("jvmMain") {
             dependencies {
-                implementation(projects.sample.mppLibrary)
+                implementation(compose.desktop.currentOs)
             }
         }
     }
-}
-
-dependencies {
-    implementation(libs.composeUiTooling)
-    implementation(libs.composeUiToolingPreview)
-    implementation(libs.composeRuntime)
-    implementation(libs.composeMaterial)
-    implementation(libs.composeFoundation)
-    implementation(libs.composeActivity)
-    implementation(libs.constraintLayout)
 }
