@@ -23,7 +23,11 @@ abstract class FontsGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
     override val mrObjectName: String = "fonts"
 
-    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder
+    ): TypeSpec {
         val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
         generateResources(resourcesGenerationDir, inputFileTree.map {
             FontFile(

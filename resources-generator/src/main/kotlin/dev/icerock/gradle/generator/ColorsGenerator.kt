@@ -32,7 +32,11 @@ abstract class ColorsGenerator(
         ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
 
     @Suppress("SpreadOperator")
-    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder
+    ): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
         extendObjectBody(objectBuilder)
 
@@ -158,8 +162,16 @@ abstract class ColorsGenerator(
     protected fun replaceColorAlpha(color: String?): String? {
         if (color == null) return color
 
-        val alpha = if (isRgbFormat(color)) DefaultAlpha else color.substring(color.length - 2, color.length)
-        return if (isRgbFormat(color)) "$alpha$color" else "$alpha${color.removeRange(color.length - 2, color.length)}"
+        val alpha = if (isRgbFormat(color)) DefaultAlpha else color.substring(
+            color.length - 2,
+            color.length
+        )
+        return if (isRgbFormat(color)) "$alpha$color" else "$alpha${
+            color.removeRange(
+                color.length - 2,
+                color.length
+            )
+        }"
     }
 
     private fun isRgbFormat(color: String): Boolean = color.length == RgbFormatLength

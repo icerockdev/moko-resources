@@ -29,6 +29,5 @@ abstract class AssetsGenerator(
         override fun createAndroidGenerator(): AssetsGenerator {
             return AndroidAssetsGenerator(assetsFileTree)
         }
-
     }
 }

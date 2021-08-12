@@ -4,7 +4,6 @@ import dev.icerock.gradle.generator.AssetsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
-
 class AndroidAssetsGenerator(inputFile: FileTree) : AssetsGenerator(inputFile) {
 
     override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File) {

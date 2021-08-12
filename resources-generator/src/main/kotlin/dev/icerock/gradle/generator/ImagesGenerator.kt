@@ -23,7 +23,11 @@ abstract class ImagesGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"
 
-    override fun generate(assetsGenerationDir: File, resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder
+    ): TypeSpec {
         val keyFileMap = inputFileTree.groupBy { file ->
             file.name.substringBefore("@")
         }

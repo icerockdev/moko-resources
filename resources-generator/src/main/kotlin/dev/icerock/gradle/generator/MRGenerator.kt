@@ -57,7 +57,6 @@ abstract class MRGenerator(
             } else {
                 throw IllegalStateException("unexpected generator class ${generator::class.simpleName}")
             }
-
         }
 
         processMRClass(mrClassSpec)
@@ -120,7 +119,7 @@ abstract class MRGenerator(
         fun getImports(): List<ClassName>
     }
 
-    interface GeneratorWithoutClass: Generator {
+    interface GeneratorWithoutClass : Generator {
         fun generate(assetsGenerationDir: File, resourcesGenerationDir: File)
     }
 
