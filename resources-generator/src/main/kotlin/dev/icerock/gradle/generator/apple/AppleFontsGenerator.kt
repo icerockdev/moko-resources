@@ -19,10 +19,10 @@ class AppleFontsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fontFileName: String): CodeBlock? {
+    override fun getPropertyInitializer(fontFile: File): CodeBlock {
         return CodeBlock.of(
             "FontResource(fontName = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            fontFileName
+            fontFile.name
         )
     }
 

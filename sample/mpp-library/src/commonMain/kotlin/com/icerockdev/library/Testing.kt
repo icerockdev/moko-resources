@@ -99,9 +99,13 @@ object Testing {
         return list.joinToStringDesc("\n")
     }
 
-    fun getFont1() = MR.fonts.Raleway.italic
+    fun getFontTtf1() = MR.fonts.Raleway.italic
 
-    fun getFont2() = MR.fonts.Raleway.bold
+    fun getFontTtf2() = MR.fonts.Raleway.bold
+
+    fun getFontOtf1() = MR.fonts.cormorant.regular
+    fun getFontOtf2() = MR.fonts.cormorant.italic
+    fun getFontOtf3() = MR.fonts.cormorant.light
 
     fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)

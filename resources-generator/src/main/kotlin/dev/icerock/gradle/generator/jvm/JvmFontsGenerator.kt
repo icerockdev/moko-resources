@@ -18,11 +18,10 @@ class JvmFontsGenerator(
     override fun getClassModifiers() = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers() = arrayOf(KModifier.ACTUAL)
-
-    override fun getPropertyInitializer(fontFileName: String) =
+    override fun getPropertyInitializer(fontFile: File): CodeBlock? =
         CodeBlock.of(
             "FontResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
-            "$FONTS_DIR/$fontFileName.ttf"
+            "$FONTS_DIR/$fontFile.ttf"
         )
 
     override fun generateResources(resourcesGenerationDir: File, files: List<FontFile>) {

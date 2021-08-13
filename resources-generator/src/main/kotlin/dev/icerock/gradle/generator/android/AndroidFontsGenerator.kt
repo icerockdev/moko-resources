@@ -22,8 +22,9 @@ class AndroidFontsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fontFileName: String) =
-        CodeBlock.of("FontResource(fontResourceId = R.font.%L)", keyToResourceId(fontFileName))
+    override fun getPropertyInitializer(fontFile: File): CodeBlock {
+        return CodeBlock.of("FontResource(fontResourceId = R.font.%L)", keyToResourceId(fontFile.nameWithoutExtension))
+    }
 
     override fun getImports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
