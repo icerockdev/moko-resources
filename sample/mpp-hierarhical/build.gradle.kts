@@ -77,8 +77,12 @@ kotlin {
                 implementation(libs.robolectric)
             }
         }
-        
-        val jvmMain by getting
+
+        val jvmMain by getting { 
+            dependsOn(clientMain) }
+        val jvmTest by getting {
+            dependsOn(clientTest)
+        }
     }
 }
 
