@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
-import dev.icerock.moko.resourcesCompose.toImageBitmap
+import dev.icerock.moko.resources.compose.toImageBitmap
 
 fun main() {
     val testing = Testing

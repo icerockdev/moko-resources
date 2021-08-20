@@ -8,13 +8,6 @@ plugins {
     id("detekt-convention")
 }
 
-kotlin {
-    android()
-    ios()
-    macosX64()
-    jvm()
-}
-
 dependencies {
     commonMainApi(projects.resources)
 }

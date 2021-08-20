@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 plugins {
@@ -7,11 +7,6 @@ plugins {
     id("detekt-convention")
     id("org.jetbrains.compose")
     id("publication-convention")
-}
-
-repositories {
-    jcenter()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 java {

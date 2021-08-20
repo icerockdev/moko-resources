@@ -18,11 +18,7 @@ version = libs.versions.mokoResourcesVersion.get()
 kotlin {
     sourceSets {
         val commonMain by getting
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.icu4j)
-            }
-        }
+        val jvmMain by getting
     }
     targets
         .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
@@ -38,6 +34,7 @@ kotlin {
 }
 
 dependencies {
+    jvmImplementation(libs.icu4j)
     commonMainApi(libs.mokoParcelize)
     commonMainApi(libs.mokoGraphics)
 

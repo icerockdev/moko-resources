@@ -10,6 +10,8 @@ dependencyResolutionManagement {
         mavenCentral()
         google()
 
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+        
         jcenter {
             content {
                 includeGroup("org.jetbrains.kotlinx")
