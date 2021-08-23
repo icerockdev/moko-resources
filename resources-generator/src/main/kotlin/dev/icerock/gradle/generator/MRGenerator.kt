@@ -22,8 +22,8 @@ abstract class MRGenerator(
 ) {
 
     internal val outputDir = File(generatedDir, sourceSet.name)
-    protected open val sourcesGenerationDir = File(generatedDir, "${sourceSet.name}/src")
-    protected open val resourcesGenerationDir = File(generatedDir, "${sourceSet.name}/res")
+    protected open val sourcesGenerationDir = File(outputDir, "src")
+    protected open val resourcesGenerationDir = File(outputDir, "res")
 
     protected open fun setupGenerationDirs() {
         sourcesGenerationDir.mkdirs()
