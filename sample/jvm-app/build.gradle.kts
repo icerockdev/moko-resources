@@ -8,11 +8,6 @@ plugins {
     id("publication-convention")
 }
 
-repositories {
-    jcenter()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
