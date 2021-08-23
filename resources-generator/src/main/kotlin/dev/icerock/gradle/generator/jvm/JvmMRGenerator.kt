@@ -32,10 +32,7 @@ class JvmMRGenerator(
         generatedDir,
         "${sourceSet.name}/${mrClassPackage.replace(".", "")}/res"
     )
-
-    init {
-        setupGenerationDirs()
-    }
+    
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
