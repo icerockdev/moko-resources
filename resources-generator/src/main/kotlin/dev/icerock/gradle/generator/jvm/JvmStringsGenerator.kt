@@ -63,7 +63,7 @@ class JvmStringsGenerator(
             while (androidFormatRegex.containsMatchIn(formattedValue)) {
                 formattedValue = formattedValue.replaceFirst(androidFormatRegex, "{${paramNr++}}")
             }
-            return formattedValue.replace("\n","\\n")
+            return formattedValue.replace("\n", "\\n")
         }
     }
 }
