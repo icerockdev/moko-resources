@@ -63,6 +63,16 @@ multiplatformResources {
 }
 ```
 
+If your project includes a build type, for example `staging` which isn't in moko-resources. That isn't an issue. Use matchingFallbacks to specify alternative matches for a given build type, as shown below
+```
+buildTypes {
+    staging {
+        initWith debug
+        matchingFallbacks = ['debug']
+    }
+}
+```
+
 ios-app Info.plist:
 ```xml
 <key>CFBundleLocalizations</key>
