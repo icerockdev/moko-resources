@@ -474,6 +474,11 @@ Then just launch task:
 ./gradlew :sample:mpp-library:debugFatFramework
 ```
 
+### Example 10 - plain file resource access
+You have different ways how to read any file-resource placed in MR directory
+All of use-cases are [here](https://github.com/icerockdev/moko-resources/blob/master/sample/mpp-library/src/commonMain/kotlin/com/icerockdev/library/Testing.kt#L107)
+On platforms you can read files with using [FileResource](https://github.com/icerockdev/moko-resources/blob/master/resources/src/commonMain/kotlin/dev/icerock/moko/resources/FileResource.kt). By adding new expect/actual functions to FileResource will allow you to customize work with your file. There is only text reader function out of box
+
 ## Samples
 Please see more examples in the [sample directory](sample).
 
