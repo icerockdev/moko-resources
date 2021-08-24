@@ -5,8 +5,8 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.BasePlugin
-import com.android.build.gradle.api.AndroidSourceSet
+import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.gradle.internal.plugins.BasePlugin
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator
@@ -50,7 +50,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 target.extensions.getByType(KotlinMultiplatformExtension::class.java)
 
             target.plugins.withType(BasePlugin::class.java) {
-                val extension = it.getExtension()
+                val extension = it.extension
 
                 target.afterEvaluate {
                     configureGenerators(
