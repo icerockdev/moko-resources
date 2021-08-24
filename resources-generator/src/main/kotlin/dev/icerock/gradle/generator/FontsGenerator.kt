@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.apple.AppleFontsGenerator
+import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -41,6 +42,8 @@ abstract class FontsGenerator(
         @Suppress("SpreadOperator")
         objectBuilder.addModifiers(*getClassModifiers())
 
+        extendObjectBodyAtStart(objectBuilder)
+
         /*
         * 1. Group fileNames by family name (split('-').first())
         * 2. Generate subtype for each family `classBuilder.addType(...)`
@@ -64,7 +67,7 @@ abstract class FontsGenerator(
                 )
             )
         }
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
         return objectBuilder.build()
     }
 
@@ -97,8 +100,6 @@ abstract class FontsGenerator(
     ) {
     }
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     abstract fun getClassModifiers(): Array<KModifier>
 
     abstract fun getPropertyModifiers(): Array<KModifier>
@@ -115,19 +116,15 @@ abstract class FontsGenerator(
             it.include("MR/fonts/**.ttf", "MR/fonts/**.otf")
         }
 
-        override fun createCommonGenerator(): FontsGenerator {
-            return CommonFontsGenerator(stringsFileTree)
-        }
+        override fun createCommonGenerator() = CommonFontsGenerator(stringsFileTree)
 
-        override fun createIosGenerator(): FontsGenerator {
-            return AppleFontsGenerator(stringsFileTree)
-        }
+        override fun createIosGenerator() = AppleFontsGenerator(stringsFileTree)
 
-        override fun createAndroidGenerator(): FontsGenerator {
-            return AndroidFontsGenerator(
-                stringsFileTree,
-                info.androidRClassPackage
-            )
-        }
+        override fun createAndroidGenerator() = AndroidFontsGenerator(
+            stringsFileTree,
+            info.androidRClassPackage
+        )
+
+        override fun createJvmGenerator() = JvmFontsGenerator(stringsFileTree)
     }
 }

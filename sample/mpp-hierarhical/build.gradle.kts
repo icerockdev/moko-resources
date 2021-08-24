@@ -14,6 +14,7 @@ plugins {
 android {
     lintOptions {
         disable("ImpliedQuantity")
+        isIgnoreTestSources = true
     }
 
     testOptions {
@@ -52,8 +53,8 @@ kotlin {
             }
         }
 
-        val clientMain by creating { 
-            dependsOn(commonMain) 
+        val clientMain by creating {
+            dependsOn(commonMain)
 
             dependencies {
                 api(projects.resources)
@@ -64,12 +65,12 @@ kotlin {
         val iosMain by getting { dependsOn(clientMain) }
         val iosTest by getting { dependsOn(clientTest) }
 
-        val macosMain by getting  { dependsOn(clientMain) }
+        val macosMain by getting { dependsOn(clientMain) }
         val macosTest by getting { dependsOn(clientTest) }
 
-        val androidMain by getting  { dependsOn(clientMain) }
-        val androidTest by getting { 
-            dependsOn(clientTest) 
+        val androidMain by getting { dependsOn(clientMain) }
+        val androidTest by getting {
+            dependsOn(clientTest)
 
             dependencies {
                 implementation(libs.kotlinTestJUnit)
@@ -78,7 +79,11 @@ kotlin {
             }
         }
 
-        val jvmMain by getting
+        val jvmMain by getting { 
+            dependsOn(clientMain) }
+        val jvmTest by getting {
+            dependsOn(clientTest)
+        }
     }
 }
 

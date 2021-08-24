@@ -26,8 +26,8 @@ dependencies {
 
     implementation(projects.sample.mppLibrary)
 
-    "androidTestImplementation"(libs.espressoCore)
-    "androidTestImplementation"(libs.testRunner)
-    "androidTestImplementation"(libs.testRules)
-    "androidTestImplementation"(libs.testExtJunit)
+    androidTestImplementation(libs.espressoCore)
+    androidTestImplementation(libs.testRunner)
+    androidTestImplementation(libs.testRules)
+    androidTestImplementation(libs.testExtJunit)
 }

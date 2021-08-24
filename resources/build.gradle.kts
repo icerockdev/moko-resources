@@ -4,6 +4,7 @@
 
 plugins {
     id("multiplatform-library-convention")
+    id("multiplatform-android-publish-convention")
     id("apple-main-convention")
     id("kotlin-parcelize")
     id("detekt-convention")
@@ -32,7 +33,9 @@ dependencies {
     commonMainApi(libs.mokoParcelize)
     commonMainApi(libs.mokoGraphics)
 
-    "androidMainImplementation"(libs.appCompat)
+    jvmMainImplementation(libs.icu4j)
+
+    androidMainImplementation(libs.appCompat)
 }
 
 tasks.named("publishToMavenLocal") {

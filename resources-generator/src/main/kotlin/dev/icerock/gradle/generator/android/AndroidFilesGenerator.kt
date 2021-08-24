@@ -8,6 +8,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FilesGenerator
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 import java.util.Locale
@@ -15,25 +17,19 @@ import java.util.Locale
 class AndroidFilesGenerator(
     inputFileTree: FileTree,
     private val androidRClassPackage: String
-) : FilesGenerator(
-    inputFileTree = inputFileTree
-) {
+) : FilesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? {
-        return CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileSpec.key))
-    }
+    override fun getPropertyInitializer(fileSpec: FileSpec) =
+        CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileSpec.key))
 
-    override fun getImports(): List<ClassName> = listOf(
+    override fun getImports() = listOf(
         ClassName(androidRClassPackage, "R")
     )
 
-    override fun generateResources(
-        resourcesGenerationDir: File,
-        files: List<FileSpec>
-    ) {
+    override fun generateResources(resourcesGenerationDir: File, files: List<FileSpec>) {
         val targetDir = File(resourcesGenerationDir, "raw")
         targetDir.mkdirs()
 
@@ -43,7 +39,5 @@ class AndroidFilesGenerator(
         }
     }
 
-    private fun keyToResourceId(key: String): String {
-        return key.toLowerCase(Locale.ROOT)
-    }
+    private fun keyToResourceId(key: String) = key.toLowerCase(Locale.ROOT)
 }
