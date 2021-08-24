@@ -475,8 +475,43 @@ Then just launch task:
 ```
 
 ### Example 10 - plain file resource access
-You have different ways how to read any file-resource placed in MR directory
-All of use-cases are [here](https://github.com/icerockdev/moko-resources/blob/master/sample/mpp-library/src/commonMain/kotlin/com/icerockdev/library/Testing.kt#L107)
+The first step is a create a resource file `test.txt` for example, in `commonMain/resources/MR/files`
+After gradle sync we can get file by id `MR.files.test`
+Moko-resources has out of box realisation function for read text files - `readText()`
+
+Android:
+```
+fun readText(context: Context): String {
+    val resources: Resources = context.resources
+    val inputStream: InputStream = resources.openRawResource(rawResId)
+    val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+    return bufferedReader.use { it.readText() }
+}
+```
+Apple:
+```
+    fun readText(): String {
+        val filePath = path
+        val (result: String?, error: NSError?) = memScoped {
+            val p = alloc<ObjCObjectVar<NSError?>>()
+            val result: String? = runCatching {
+                NSString.stringWithContentsOfFile(
+                    path = filePath,
+                    encoding = NSUTF8StringEncoding,
+                    error = p.ptr
+                )
+            }.getOrNull()
+            result to p.value
+        }
+
+        if (error != null) throw ReadFileTextException(fileResource = this, error = error)
+        else return result!!
+    }
+```
+
+To add another function for reading resource file only that you need, you should create an actual realisation for FileResource class with your needed methods for reading files```
+
+```
 On platforms you can read files with using [FileResource](https://github.com/icerockdev/moko-resources/blob/master/resources/src/commonMain/kotlin/dev/icerock/moko/resources/FileResource.kt). By adding new expect/actual functions to FileResource will allow you to customize work with your file. There is only text reader function out of box
 
 ## Samples
