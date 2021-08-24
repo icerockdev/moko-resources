@@ -28,11 +28,11 @@ class JvmMRGenerator(
     generators = generators
 ) {
 
-    override val resourcesGenerationDir: File = File(
-        generatedDir,
-        "${sourceSet.name}/${mrClassPackage.replace(".", "")}/res"
-    )
-    
+    override val resourcesGenerationDir: File 
+        get() = File(
+            outputDir,
+            "${mrClassPackage.replace(".", "")}/res"
+        )
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

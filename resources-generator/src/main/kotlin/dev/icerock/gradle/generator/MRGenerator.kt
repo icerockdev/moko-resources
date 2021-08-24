@@ -22,13 +22,15 @@ abstract class MRGenerator(
 ) {
 
     internal val outputDir = File(generatedDir, sourceSet.name)
-    protected open val sourcesGenerationDir = File(outputDir, "src")
-    protected open val resourcesGenerationDir = File(outputDir, "res")
+    protected open val sourcesGenerationDir 
+        get() = File(outputDir, "src")
+    protected open val resourcesGenerationDir 
+        get() = File(outputDir, "res")
 
     init {
         setupGenerationDirs()
     }
-    
+
     private fun setupGenerationDirs() {
         sourcesGenerationDir.mkdirs()
         sourceSet.addSourceDir(sourcesGenerationDir)
