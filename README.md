@@ -424,6 +424,14 @@ val color: UIColor = MR.colors.valueColor.getColor(UIScreen.main.traitCollection
 @Environment(\.colorScheme) var colorScheme
 ```
 
+You can get Color from resource on IOS with toUIColor
+For use it you should export moko-resources library to IOS
+```
+framework {
+    export(libs.mokoResources)
+}
+```
+
 ### Gradle task for creating Fat Framework with resources 
 
 If you want to create Fat Framework for iOS with all resources from KMP Gradle module you should use
