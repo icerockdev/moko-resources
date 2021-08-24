@@ -28,7 +28,7 @@ class JvmMRGenerator(
     generators = generators
 ) {
 
-    override val resourcesGenerationDir: File 
+    override val resourcesGenerationDir: File
         get() = File(
             outputDir,
             "${mrClassPackage.replace(".", "")}/res"

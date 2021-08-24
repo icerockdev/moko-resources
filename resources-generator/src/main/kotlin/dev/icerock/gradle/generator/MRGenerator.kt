@@ -22,9 +22,9 @@ abstract class MRGenerator(
 ) {
 
     internal val outputDir = File(generatedDir, sourceSet.name)
-    protected open val sourcesGenerationDir 
+    protected open val sourcesGenerationDir
         get() = File(outputDir, "src")
-    protected open val resourcesGenerationDir 
+    protected open val resourcesGenerationDir
         get() = File(outputDir, "res")
 
     init {
