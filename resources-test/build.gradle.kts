@@ -11,9 +11,6 @@ plugins {
     id("publication-convention")
 }
 
-group = "dev.icerock.moko"
-version = libs.versions.mokoResourcesVersion.get()
-
 dependencies {
     commonMainApi(projects.resources)
 }

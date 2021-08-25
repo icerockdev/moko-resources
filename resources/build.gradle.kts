@@ -12,9 +12,6 @@ plugins {
     id("publication-convention")
 }
 
-group = "dev.icerock.moko"
-version = libs.versions.mokoResourcesVersion.get()
-
 kotlin {
     targets
         .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }

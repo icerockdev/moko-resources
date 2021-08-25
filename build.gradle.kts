@@ -17,3 +17,10 @@ buildscript {
         classpath(":resources-build-logic")
     }
 }
+
+allprojects {
+    plugins.withId("org.gradle.maven-publish") {
+        group = "dev.icerock.moko"
+        version = libs.versions.mokoResourcesVersion.get()
+    }
+}
