@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("detekt-convention")
     id("org.jetbrains.compose")
+    id("javadoc-stub-convention")
     id("publication-convention")
 }
 
