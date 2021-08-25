@@ -7,5 +7,6 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.TypeSpec
 
 interface ObjectBodyExtendable {
-    fun extendObjectBody(classBuilder: TypeSpec.Builder)
+    fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder)
+    fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder)
 }

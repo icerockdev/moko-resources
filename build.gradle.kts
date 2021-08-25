@@ -7,10 +7,13 @@ buildscript {
         mavenCentral()
         google()
 
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+
         gradlePluginPortal()
     }
     dependencies {
         classpath("dev.icerock.moko:resources-generator")
+        classpath("org.jetbrains.compose:compose-gradle-plugin:0.5.0-build270")
         classpath(":resources-build-logic")
     }
 }

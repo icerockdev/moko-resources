@@ -34,20 +34,22 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     private fun createTypeSpec(keys: List<KeyType>, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
+        extendObjectBodyAtStart(objectBuilder)
+
         keys.forEach { key ->
             val name = key.replace(".", "_")
             val property =
                 PropertySpec.builder(name, resourceClassName)
             property.addModifiers(*getPropertyModifiers())
-            getPropertyInitializer(key)?.let { property.initializer(it) }
+            getPropertyInitializer(
+                key
+            )?.let { property.initializer(it) }
             objectBuilder.addProperty(property.build())
         }
 
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
         return objectBuilder.build()
     }
-
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
 
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
     protected abstract fun getPropertyInitializer(key: String): CodeBlock?

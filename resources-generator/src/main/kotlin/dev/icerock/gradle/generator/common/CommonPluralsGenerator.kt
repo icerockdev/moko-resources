@@ -5,13 +5,15 @@
 package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.CodeBlock
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
 
 class CommonPluralsGenerator(
     pluralsFileTree: FileTree
-) : PluralsGenerator(
-    pluralsFileTree = pluralsFileTree
-) {
-    override fun getPropertyInitializer(key: String): CodeBlock? = null
+) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    override fun getPropertyInitializer(
+        key: String
+    ): CodeBlock? = null
 }

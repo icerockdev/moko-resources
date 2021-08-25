@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.apple.AppleFontsGenerator
+import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -24,7 +25,7 @@ abstract class FontsGenerator(
     override val mrObjectName: String = "fonts"
 
     override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
-        val typeSpec = createTypeSpec(inputFileTree.map { it.nameWithoutExtension }.sorted(), objectBuilder)
+        val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
         generateResources(resourcesGenerationDir, inputFileTree.map {
             FontFile(
                 key = it.nameWithoutExtension,
@@ -34,26 +35,30 @@ abstract class FontsGenerator(
         return typeSpec
     }
 
-    private fun createTypeSpec(keys: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
+    /*
+    @param keys: names of files like anastasia-regular.ttf
+     */
+    private fun createTypeSpec(files: List<File>, objectBuilder: TypeSpec.Builder): TypeSpec {
         @Suppress("SpreadOperator")
         objectBuilder.addModifiers(*getClassModifiers())
 
+        extendObjectBodyAtStart(objectBuilder)
+
         /*
-        * 1. Group keys by family name (split('-').first())
+        * 1. Group fileNames by family name (split('-').first())
         * 2. Generate subtype for each family `classBuilder.addType(...)`
         * 3. Generate properties in family subtype for each font style
         * */
 
-        val familyGroups = keys.groupBy { key ->
-            key.substringBefore("-")
+        val familyGroups = files.groupBy { file ->
+            file.nameWithoutExtension.substringBefore("-")
         }
 
         familyGroups.forEach { group ->
             // TODO Make pairs: "style name" - "font file"
             val stylePairs = group
                 .value
-                .map { it.substringAfter("-") to it }
-                .toList()
+                .map { it.nameWithoutExtension.substringAfter("-") to it }
 
             objectBuilder.addType(
                 generateFontFamilySpec(
@@ -62,7 +67,7 @@ abstract class FontsGenerator(
                 )
             )
         }
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
         return objectBuilder.build()
     }
 
@@ -71,17 +76,17 @@ abstract class FontsGenerator(
     @Suppress("SpreadOperator")
     private fun generateFontFamilySpec(
         familyName: String,
-        fontStyleFiles: List<Pair<String, String>>
+        fontStyleFiles: List<Pair<String, File>>
     ): TypeSpec {
         val spec = TypeSpec
             .objectBuilder(familyName)
             .addModifiers(*getClassModifiers())
         fontStyleFiles
-            .forEach { (styleName, fileName) ->
+            .forEach { (styleName, file) ->
                 val styleProperty = PropertySpec
                     .builder(styleName.decapitalize(), resourceClassName)
                     .addModifiers(*getPropertyModifiers())
-                getPropertyInitializer(fileName)?.let { codeBlock ->
+                getPropertyInitializer(file)?.let { codeBlock ->
                     styleProperty.initializer(codeBlock)
                 }
                 spec.addProperty(styleProperty.build())
@@ -95,13 +100,11 @@ abstract class FontsGenerator(
     ) {
     }
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     abstract fun getClassModifiers(): Array<KModifier>
 
     abstract fun getPropertyModifiers(): Array<KModifier>
 
-    abstract fun getPropertyInitializer(fontFileName: String): CodeBlock?
+    abstract fun getPropertyInitializer(fontFile: File): CodeBlock?
 
     data class FontFile(
         val key: String,
@@ -110,22 +113,18 @@ abstract class FontsGenerator(
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FontsGenerator> {
         private val stringsFileTree = info.commonResources.matching {
-            it.include("MR/fonts/**.ttf")
+            it.include("MR/fonts/**.ttf", "MR/fonts/**.otf")
         }
 
-        override fun createCommonGenerator(): FontsGenerator {
-            return CommonFontsGenerator(stringsFileTree)
-        }
+        override fun createCommonGenerator() = CommonFontsGenerator(stringsFileTree)
 
-        override fun createIosGenerator(): FontsGenerator {
-            return AppleFontsGenerator(stringsFileTree)
-        }
+        override fun createIosGenerator() = AppleFontsGenerator(stringsFileTree)
 
-        override fun createAndroidGenerator(): FontsGenerator {
-            return AndroidFontsGenerator(
-                stringsFileTree,
-                info.androidRClassPackage
-            )
-        }
+        override fun createAndroidGenerator() = AndroidFontsGenerator(
+            stringsFileTree,
+            info.androidRClassPackage
+        )
+
+        override fun createJvmGenerator() = JvmFontsGenerator(stringsFileTree)
     }
 }

@@ -8,6 +8,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -16,17 +18,14 @@ import org.apache.commons.text.StringEscapeUtils
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
     private val androidRClassPackage: String
-) : StringsGenerator(
-    stringsFileTree = stringsFileTree
-) {
+) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
-        val processedKey = processKey(key)
-        return CodeBlock.of("StringResource(R.string.%L)", processedKey)
-    }
+    override fun getPropertyInitializer(key: String) =
+        CodeBlock.of("StringResource(R.string.%L)", processKey(key))
 
     override fun getImports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")

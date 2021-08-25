@@ -5,10 +5,10 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.apple.AppleStringsGenerator
+import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -70,29 +70,26 @@ abstract class StringsGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     class Feature(
         private val info: SourceInfo,
-        private val iosBaseLocalizationRegion: String
+        private val iosBaseLocalizationRegion: String,
+        private val mrClassPackage: String
     ) : ResourceGeneratorFeature<StringsGenerator> {
-        private val stringsFileTree = info.commonResources.matching { it.include("MR/**/strings*.xml") }
-        override fun createCommonGenerator(): StringsGenerator {
-            return CommonStringsGenerator(stringsFileTree)
-        }
+        private val stringsFileTree =
+            info.commonResources.matching { it.include("MR/**/strings*.xml") }
 
-        override fun createIosGenerator(): StringsGenerator {
-            return AppleStringsGenerator(
-                stringsFileTree,
-                iosBaseLocalizationRegion
-            )
-        }
+        override fun createCommonGenerator() = CommonStringsGenerator(stringsFileTree)
 
-        override fun createAndroidGenerator(): StringsGenerator {
-            return AndroidStringsGenerator(
-                stringsFileTree,
-                info.androidRClassPackage
-            )
-        }
+        override fun createIosGenerator() = AppleStringsGenerator(
+            stringsFileTree,
+            iosBaseLocalizationRegion
+        )
+
+        override fun createAndroidGenerator() = AndroidStringsGenerator(
+            stringsFileTree,
+            info.androidRClassPackage
+        )
+
+        override fun createJvmGenerator() = JvmStringsGenerator(stringsFileTree, mrClassPackage)
     }
 }

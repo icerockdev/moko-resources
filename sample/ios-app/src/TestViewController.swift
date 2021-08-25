@@ -23,11 +23,11 @@ class TestViewController: UIViewController {
 
         let textColor = MR.colors().textColor.color
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
-        textView.font = testing.getFont1().uiFont(withSize: 14.0)
+        textView.font = testing.getFontTtf1().uiFont(withSize: 14.0)
         textView.textColor = textColor.toUIColor()
 
         stringDescTextView.text = testing.getStringDesc().localized()
-        stringDescTextView.font = testing.getFont2().uiFont(withSize: 14.0)
+        stringDescTextView.font = testing.getFontTtf2().uiFont(withSize: 14.0)
 
         [
         testing.getTextFile(),
