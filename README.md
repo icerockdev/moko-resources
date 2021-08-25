@@ -481,11 +481,11 @@ Moko-resources has out of box implementation function for read text files from c
 
 Usage on Android:
 ```
-val text = MR.files.test.getText()
+val text = MR.files.test.getText(context = this)
 ```
 Usage on Apple:
 ```
-val text = FileResource("test", "txt").readText()
+val text = MR.files.test.readText()
 ```
 If you want to read files not as text, add your own implementation to expect/actual FileResource
 
