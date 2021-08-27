@@ -37,7 +37,7 @@ root build.gradle
 ```groovy
 buildscript {
     repositories {
-        mavenCentral()
+        gradlePluginPortal()
     }
 
     dependencies {
