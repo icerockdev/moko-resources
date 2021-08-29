@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+        <key>stringFormatted</key>
+		<dict>
+			<key>NSStringLocalizedFormatKey</key>
+			<string>%#@pluraled@</string>
+			<key>pluraled</key>
+			<dict>
+				<key>NSStringFormatSpecTypeKey</key>
+				<string>NSStringPluralRuleType</string>
+				<key>NSStringFormatValueTypeKey</key>
+				<string>d</string>
+				<key>zero</key>
+				<string>%%s found</string>
+				<key>one</key>
+				<string>%%s item</string>
+				<key>two</key>
+				<string>%%s items</string>
+				<key>few</key>
+				<string>%%s items</string>
+				<key>many</key>
+				<string>%%s items</string>
+				<key>other</key>
+				<string>%%s items</string>
+			</dict>
+		</dict>
+		<key>intFormatted</key>
+        <dict>
+            <key>NSStringLocalizedFormatKey</key>
+            <string>%#@pluraled@</string>
+            <key>pluraled</key>
+            <dict>
+                <key>NSStringFormatSpecTypeKey</key>
+                <string>NSStringPluralRuleType</string>
+                <key>NSStringFormatValueTypeKey</key>
+                <string>d</string>
+                <key>zero</key>
+                <string>%%d found</string>
+                <key>one</key>
+                <string>%%d item</string>
+                <key>two</key>
+                <string>%%d items</string>
+                <key>few</key>
+                <string>%%d items</string>
+                <key>many</key>
+                <string>%%d items</string>
+                <key>other</key>
+                <string>%%d items</string>
+            </dict>
+        </dict>
+	</dict>
+</plist>
