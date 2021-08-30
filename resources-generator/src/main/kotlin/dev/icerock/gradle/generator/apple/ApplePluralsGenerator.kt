@@ -50,8 +50,9 @@ class ApplePluralsGenerator(
 """
 
             val items = pluralMap.map { (quantity, value) ->
+                val processedValue = value.escapeFormatArguments()
                 """				<key>$quantity</key>
-				<string>$value</string>"""
+				<string>$processedValue</string>"""
             }.joinToString(separator = "\n")
 
             val end = """
@@ -91,5 +92,9 @@ class ApplePluralsGenerator(
             val regionFile = File(regionDir, "Localizable.stringsdict")
             writeStringsFile(regionFile, strings)
         }
+    }
+
+    private fun String.escapeFormatArguments(): String {
+        return this.replace(Regex("%(((?:\\.|\\d|\\$)*)[abcdefs])"), "%%$1")
     }
 }

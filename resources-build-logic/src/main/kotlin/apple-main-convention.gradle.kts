@@ -19,5 +19,16 @@ kotlin {
         val macosX64Main by getting {
             dependsOn(appleMain)
         }
+
+        val commonTest by getting {}
+        val appleTest by creating {
+            dependsOn(commonTest)
+        }
+        val iosTest by getting {
+            dependsOn(appleTest)
+        }
+        val macosX64Test by getting {
+            dependsOn(appleTest)
+        }
     }
 }
