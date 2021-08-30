@@ -27,8 +27,10 @@ jobs:
           java-version: 11
       - name: Publish plugin
         run: ./gradlew -p resources-generator publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PLUGIN_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PLUGIN_PORTAL_SECRET }}
+      - name: Prebuild library
+        run: ./gradlew publishToMavenLocal
       - name: Publish library
-        run: ./gradlew publish
+        run: ./gradlew publish --no-parallel
   release:
     name: Create release
     needs: publish
