@@ -5,10 +5,10 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
+import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Element
 import java.io.File
@@ -43,8 +43,6 @@ abstract class PluralsGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     private fun loadLanguagePlurals(pluralsFile: File): Map<KeyType, PluralMap> {
         val dbFactory = DocumentBuilderFactory.newInstance()
         val dBuilder = dbFactory.newDocumentBuilder()
@@ -78,7 +76,8 @@ abstract class PluralsGenerator(
 
     class Feature(
         private val info: SourceInfo,
-        private val iosBaseLocalizationRegion: String
+        private val iosBaseLocalizationRegion: String,
+        private val mrClassPackage: String
     ) : ResourceGeneratorFeature<PluralsGenerator> {
         private val stringsFileTree = info.commonResources.matching { it.include("MR/**/plurals*.xml") }
         override fun createCommonGenerator(): PluralsGenerator {
@@ -98,5 +97,7 @@ abstract class PluralsGenerator(
                 info.androidRClassPackage
             )
         }
+
+        override fun createJvmGenerator() = JvmPluralsGenerator(stringsFileTree, mrClassPackage)
     }
 }

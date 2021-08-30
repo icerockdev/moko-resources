@@ -12,46 +12,52 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.apple.AppleImagesGenerator
+import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
 abstract class ImagesGenerator(
     private val inputFileTree: FileTree
-) : MRGenerator.GeneratorWithClass {
+) : MRGenerator.Generator {
 
     override val inputFiles: Iterable<File> get() = inputFileTree.files
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"
 
-    override fun generate(
-        assetsGenerationDir: File,
-        resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder
-    ): TypeSpec {
-        val keyFileMap = inputFileTree.groupBy { file ->
-            file.name.substringBefore("@")
+    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+        val fileMap = inputFileTree.groupBy { file ->
+            "${file.name.substringBefore("@")}.${file.extension}"
         }
 
-        val typeSpec = createTypeSpec(keyFileMap.keys.sorted(), objectBuilder)
+        val typeSpec = createTypeSpec(fileMap.keys.sorted(), objectBuilder)
 
-        generateResources(resourcesGenerationDir, keyFileMap)
+        generateResources(
+            resourcesGenerationDir,
+            fileMap.mapKeys { (key, _) ->
+                key.substringBeforeLast(".") // Remove file extension from keys
+            })
 
         return typeSpec
     }
 
     @Suppress("SpreadOperator")
-    fun createTypeSpec(keys: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
+    fun createTypeSpec(fileNames: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
-        keys.forEach { key ->
-            val name = key.replace(".", "_")
-            val property = PropertySpec.builder(name, resourceClassName)
+        extendObjectBodyAtStart(objectBuilder)
+
+        fileNames.forEach { fileName ->
+            val updatedFileName = fileName.substringBeforeLast(".")
+                .replace(".", "_") + ".${fileName.substringAfterLast(".")}"
+            val propertyName = updatedFileName.substringBeforeLast(".")
+            val property = PropertySpec.builder(propertyName, resourceClassName)
+
             property.addModifiers(*getPropertyModifiers())
-            getPropertyInitializer(name)?.let { property.initializer(it) }
+            getPropertyInitializer(updatedFileName)?.let { property.initializer(it) }
             objectBuilder.addProperty(property.build())
         }
 
-        extendObjectBody(objectBuilder)
+        extendObjectBodyAtEnd(objectBuilder)
 
         return objectBuilder.build()
     }
@@ -64,32 +70,27 @@ abstract class ImagesGenerator(
     ) {
     }
 
-    override fun extendObjectBody(classBuilder: TypeSpec.Builder) = Unit
-
     abstract fun getClassModifiers(): Array<KModifier>
 
     abstract fun getPropertyModifiers(): Array<KModifier>
 
-    abstract fun getPropertyInitializer(key: String): CodeBlock?
+    abstract fun getPropertyInitializer(fileName: String): CodeBlock?
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
             it.include("MR/images/**/*.png", "MR/images/**/*.jpg")
         }
 
-        override fun createCommonGenerator(): ImagesGenerator {
-            return CommonImagesGenerator(stringsFileTree)
-        }
+        override fun createCommonGenerator() =
+            CommonImagesGenerator(stringsFileTree)
 
-        override fun createIosGenerator(): ImagesGenerator {
-            return AppleImagesGenerator(stringsFileTree)
-        }
+        override fun createIosGenerator() = AppleImagesGenerator(stringsFileTree)
 
-        override fun createAndroidGenerator(): ImagesGenerator {
-            return AndroidImagesGenerator(
-                stringsFileTree,
-                info.androidRClassPackage
-            )
-        }
+        override fun createAndroidGenerator() = AndroidImagesGenerator(
+            stringsFileTree,
+            info.androidRClassPackage
+        )
+
+        override fun createJvmGenerator() = JvmImagesGenerator(stringsFileTree)
     }
 }

@@ -1,5 +1,10 @@
 ![moko-resources](img/logo.png)  
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://img.shields.io/maven-central/v/dev.icerock.moko/resources) ](https://repo1.maven.org/maven2/dev/icerock/moko/resources) ![kotlin-version](https://kotlin-version.aws.icerock.dev/kotlin-version?group=dev.icerock.moko&name=resources)
+![badge][badge-android]
+![badge][badge-iosx64]
+![badge][badge-iosarm64]
+![badge][badge-macos64]
+![badge][badge-jvm]
 
 # Mobile Kotlin resources
 This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
@@ -32,11 +37,11 @@ root build.gradle
 ```groovy
 buildscript {
     repositories {
-        mavenCentral()
+        gradlePluginPortal()
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.16.2"
+        classpath "dev.icerock.moko:resources-generator:0.17.0"
     }
 }
 
@@ -53,13 +58,23 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.16.2")
+    commonMainApi("dev.icerock.moko:resources:0.17.0")
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "org.example.library" // required
     iosBaseLocalizationRegion = "en" // optional, default "en"
     multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
+}
+```
+
+If your project includes a build type, for example `staging` which isn't in moko-resources. That isn't an issue. Use matchingFallbacks to specify alternative matches for a given build type, as shown below
+```
+buildTypes {
+    staging {
+        initWith debug
+        matchingFallbacks = ['debug']
+    }
 }
 ```
 
@@ -424,6 +439,14 @@ val color: UIColor = MR.colors.valueColor.getColor(UIScreen.main.traitCollection
 @Environment(\.colorScheme) var colorScheme
 ```
 
+You can get Color from resource on IOS with toUIColor
+For use it you should export moko-resources library to IOS
+```
+framework {
+    export(libs.mokoResources)
+}
+```
+
 ### Gradle task for creating Fat Framework with resources 
 
 If you want to create Fat Framework for iOS with all resources from KMP Gradle module you should use
@@ -456,11 +479,29 @@ Then just launch task:
 ./gradlew :sample:mpp-library:debugFatFramework
 ```
 
+### Example 10 - plain file resource access
+The first step is a create a resource file `test.txt` for example, in `commonMain/resources/MR/files`
+After gradle sync we can get file by id `MR.files.test`
+Moko-resources has out of box implementation function for read text files from common code - `readText()`
+
+Usage on Android:
+```
+val text = MR.files.test.getText(context = this)
+```
+Usage on Apple:
+```
+val text = MR.files.test.readText()
+```
+If you want to read files not as text, add your own implementation to expect/actual FileResource
+
 ## Samples
 Please see more examples in the [sample directory](sample).
 
 Sample `mpp-hierarhical` contains usage of `org.jetbrains.kotlin.native.cocoapods` plugin and unit
  tests with resources usage. 
+`Jvm-sample` to run it you should use IntelliJ IDEA.  
+`macOS-sample` it contains two schemes. TestProj is the sample app and TestHierarchical is a splash-screen.  
+`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at once, the second one allows to choose language before starting the sample.  
 
 ## Set Up Locally 
 - The [resources directory](resources) contains the `resources` library;
@@ -489,3 +530,18 @@ For more details on contributing please see the [contributing guide](CONTRIBUTIN
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+    
+[badge-android]: http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat
+[badge-ios]: http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat
+[badge-js]: http://img.shields.io/badge/platform-js-F8DB5D.svg?style=flat
+[badge-jvm]: http://img.shields.io/badge/platform-jvm-DB413D.svg?style=flat
+[badge-linux]: http://img.shields.io/badge/platform-linux-2D3F6C.svg?style=flat 
+[badge-windows]: http://img.shields.io/badge/platform-windows-4D76CD.svg?style=flat
+[badge-mac]: http://img.shields.io/badge/platform-macos-111111.svg?style=flat
+[badge-watchos]: http://img.shields.io/badge/platform-watchos-C0C0C0.svg?style=flat
+[badge-tvos]: http://img.shields.io/badge/platform-tvos-808080.svg?style=flat
+[badge-wasm]: https://img.shields.io/badge/platform-wasm-624FE8.svg?style=flat
+[badge-nodejs]: https://img.shields.io/badge/platform-nodejs-68a063.svg?style=flat
+[badge-iosx64]: https://img.shields.io/badge/platform-iosx64-CDCDCD?style=flat
+[badge-iosarm64]: https://img.shields.io/badge/platform-iosarm64-CDCDCD?style=flat
+[badge-macos64]: https://img.shields.io/badge/platform-macos64-111111?style=flat    

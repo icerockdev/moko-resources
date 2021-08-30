@@ -12,7 +12,6 @@ import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.ASSETS_DIR_
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleImagesGenerator(
     inputFileTree: FileTree
 ) : ImagesGenerator(
@@ -23,10 +22,10 @@ class AppleImagesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
+    override fun getPropertyInitializer(fileName: String): CodeBlock? {
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            key
+            fileName.substringBefore(".")
         )
     }
 

@@ -8,4 +8,20 @@
         <item quantity="many">many</item>
         <item quantity="other">other</item>
     </plural>
+    <plural name="test.plural.intformat">
+        <item quantity="zero">%.2d zero</item>
+        <item quantity="one">%.2d one</item>
+        <item quantity="two">%.2d two</item>
+        <item quantity="few">%.2d few</item>
+        <item quantity="many">%.2d many</item>
+        <item quantity="other">%.2d other</item>
+    </plural>
+    <plural name="test.plural.stringformat">
+        <item quantity="zero">zero %%</item>
+        <item quantity="one">%s one</item>
+        <item quantity="two">%s two</item>
+        <item quantity="few">%s few</item>
+        <item quantity="many">%s many</item>
+        <item quantity="other">%s other</item>
+    </plural>
 </resources>

@@ -22,6 +22,7 @@ class CommonMRGenerator(
     mrClassPackage = mrClassPackage,
     generators = generators
 ) {
+
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.EXPECT)
 
     override fun apply(generationTask: Task, project: Project) {

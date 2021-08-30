@@ -13,7 +13,6 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class ApplePluralsGenerator(
     pluralsFileTree: FileTree,
     private val baseLocalizationRegion: String
@@ -25,12 +24,10 @@ class ApplePluralsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
-        return CodeBlock.of(
-            "PluralsResource(resourceId = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            key
-        )
-    }
+    override fun getPropertyInitializer(key: String) = CodeBlock.of(
+        "PluralsResource(resourceId = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+        key
+    )
 
     private fun writeStringsFile(file: File, strings: Map<KeyType, PluralMap>) {
         val head = """<?xml version="1.0" encoding="UTF-8"?>
@@ -53,8 +50,9 @@ class ApplePluralsGenerator(
 """
 
             val items = pluralMap.map { (quantity, value) ->
+                val processedValue = value.escapeFormatArguments()
                 """				<key>$quantity</key>
-				<string>$value</string>"""
+				<string>$processedValue</string>"""
             }.joinToString(separator = "\n")
 
             val end = """
@@ -94,5 +92,9 @@ class ApplePluralsGenerator(
             val regionFile = File(regionDir, "Localizable.stringsdict")
             writeStringsFile(regionFile, strings)
         }
+    }
+
+    private fun String.escapeFormatArguments(): String {
+        return this.replace(Regex("%(((?:\\.|\\d|\\$)*)[abcdefs])"), "%%$1")
     }
 }

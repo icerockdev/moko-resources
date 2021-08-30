@@ -11,7 +11,6 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class AppleFilesGenerator(
     inputFileTree: FileTree
 ) : FilesGenerator(
@@ -22,13 +21,11 @@ class AppleFilesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock? {
-        return CodeBlock.of(
-            "FileResource(fileName = %S, extension = %S,bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            fileSpec.file.nameWithoutExtension,
-            fileSpec.file.extension
-        )
-    }
+    override fun getPropertyInitializer(fileSpec: FileSpec) = CodeBlock.of(
+        "FileResource(fileName = %S, extension = %S,bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+        fileSpec.file.nameWithoutExtension,
+        fileSpec.file.extension
+    )
 
     override fun generateResources(
         resourcesGenerationDir: File,

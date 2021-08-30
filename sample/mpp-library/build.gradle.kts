@@ -3,10 +3,7 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("android-base-convention")
-    id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform.android-manifest")
+    id("multiplatform-library-convention")
     id("dev.icerock.mobile.multiplatform.apple-framework")
     id("dev.icerock.mobile.multiplatform-resources")
     id("detekt-convention")
@@ -18,12 +15,6 @@ android {
     }
 }
 
-kotlin {
-    android()
-    ios()
-    macosX64()
-}
-
 dependencies {
     commonMainApi(projects.resources)
     commonMainApi(libs.mokoGraphics)
@@ -32,8 +23,9 @@ dependencies {
     commonTestImplementation(libs.kotlinTest)
     commonTestImplementation(libs.kotlinTestAnnotations)
     commonTestImplementation(projects.resourcesTest)
-
+ 
     androidTestImplementation(libs.kotlinTestJUnit)
+    androidTestImplementation(libs.testCore)
 }
 
 multiplatformResources {

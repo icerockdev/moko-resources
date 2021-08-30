@@ -4,15 +4,13 @@
 
 plugins {
     id("multiplatform-library-convention")
+    id("multiplatform-android-publish-convention")
     id("apple-main-convention")
     id("kotlin-parcelize")
     id("detekt-convention")
     id("javadoc-stub-convention")
     id("publication-convention")
 }
-
-group = "dev.icerock.moko"
-version = libs.versions.mokoResourcesVersion.get()
 
 kotlin {
     targets
@@ -32,7 +30,11 @@ dependencies {
     commonMainApi(libs.mokoParcelize)
     commonMainApi(libs.mokoGraphics)
 
-    "androidMainImplementation"(libs.appCompat)
+    jvmMainImplementation(libs.icu4j)
+
+    androidMainImplementation(libs.appCompat)
+
+    iosTestImplementation(libs.mokoTestCore)
 }
 
 tasks.named("publishToMavenLocal") {
@@ -40,3 +42,10 @@ tasks.named("publishToMavenLocal") {
         .task(":publishToMavenLocal")
     dependsOn(pluginPublish)
 }
+
+val copyIosTestResources = tasks.register<Copy>("copyIosTestResources") {
+    from("src/iosTest/resources")
+    into("build/bin/iosX64/debugTest")
+}
+
+tasks.findByName("iosX64Test")!!.dependsOn(copyIosTestResources)

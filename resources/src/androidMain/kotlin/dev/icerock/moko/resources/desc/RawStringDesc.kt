@@ -9,8 +9,6 @@ import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.parcelize.Parcelize
 
 @Parcelize
-actual data class RawStringDesc actual constructor(
-    val string: String
-) : StringDesc, Parcelable {
-    override fun toString(context: Context): String = string
+actual data class RawStringDesc actual constructor(val string: String) : StringDesc, Parcelable {
+    override fun toString(context: Context) = string
 }

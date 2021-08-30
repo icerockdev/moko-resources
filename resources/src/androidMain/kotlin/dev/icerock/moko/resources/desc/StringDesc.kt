@@ -11,6 +11,8 @@ actual interface StringDesc {
     fun toString(context: Context): String
 
     actual sealed class LocaleType {
+        abstract val systemLocale: Locale?
+
         actual object System : LocaleType() {
             override val systemLocale: Locale? = null
         }
@@ -20,8 +22,6 @@ actual interface StringDesc {
         ) : LocaleType() {
             override val systemLocale: Locale = Locale(locale)
         }
-
-        abstract val systemLocale: Locale?
     }
 
     actual companion object {

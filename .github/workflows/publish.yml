@@ -21,10 +21,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up JDK 1.8
+      - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
       - name: Publish plugin
         run: ./gradlew -p resources-generator publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PLUGIN_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PLUGIN_PORTAL_SECRET }}
       - name: Publish library
