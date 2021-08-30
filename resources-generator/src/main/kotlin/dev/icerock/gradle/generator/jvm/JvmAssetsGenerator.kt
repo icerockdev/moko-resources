@@ -1,35 +1,31 @@
-/*
- * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
- */
-
 package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.FilesGenerator
+import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
-class JvmFilesGenerator(
+class JvmAssetsGenerator(
     inputFileTree: FileTree
-) : FilesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+) : AssetsGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: FileSpec) = CodeBlock.of(
+    override fun getPropertyInitializer(fileSpec: AssetSpec) = CodeBlock.of(
         "FileResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
-        "$FILES_DIR/${fileSpec.file.name}"
+        File(FILES_DIR, fileSpec.pathRelativeToBase).path
     )
 
     override fun generateResources(
-        assetsGenerationDir: File, resourcesGenerationDir: File, files: List<FileSpec>
+        assetsGenerationDir: File, resourcesGenerationDir: File, files: List<AssetSpec>
     ) {
         val fileResDir = File(resourcesGenerationDir, FILES_DIR).apply { mkdirs() }
         files.forEach {
-            it.file.copyTo(File(fileResDir, it.file.name))
+            it.file.copyTo(File(fileResDir, it.pathRelativeToBase))
         }
     }
 

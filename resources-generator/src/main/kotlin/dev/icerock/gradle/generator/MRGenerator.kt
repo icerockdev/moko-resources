@@ -59,7 +59,13 @@ abstract class MRGenerator(
                 ClassName("dev.icerock.moko.resources", "ResourceContainer")
             builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
 
-            mrClassSpec.addType(generator.generate(resourcesGenerationDir, builder))
+            mrClassSpec.addType(
+                generator.generate(
+                    assetsGenerationDir,
+                    resourcesGenerationDir,
+                    builder
+                )
+            )
         }
 
         processMRClass(mrClassSpec)
@@ -115,7 +121,12 @@ abstract class MRGenerator(
         val resourceClassName: ClassName
         val inputFiles: Iterable<File>
 
-        fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
+        fun generate(
+            assetsGenerationDir: File,
+            resourcesGenerationDir: File,
+            objectBuilder: TypeSpec.Builder
+        ): TypeSpec
+
         fun getImports(): List<ClassName>
     }
 

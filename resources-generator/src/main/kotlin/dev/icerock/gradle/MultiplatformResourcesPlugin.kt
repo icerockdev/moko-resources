@@ -7,6 +7,7 @@ package dev.icerock.gradle
 import com.android.build.gradle.BaseExtension
 import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.internal.plugins.BasePlugin
+import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator

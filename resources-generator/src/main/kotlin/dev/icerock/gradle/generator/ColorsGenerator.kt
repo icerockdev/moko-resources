@@ -20,7 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class ColorsGenerator(
     private val colorsFileTree: FileTree
-) : MRGenerator.GeneratorWithClass {
+) : MRGenerator.Generator {
 
     override val inputFiles: Iterable<File> get() = colorsFileTree.files
     override val resourceClassName: ClassName =

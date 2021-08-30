@@ -28,14 +28,15 @@ class AppleFilesGenerator(
     )
 
     override fun generateResources(
+        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         files: List<FileSpec>
     ) {
         val targetDir = File(resourcesGenerationDir, "files")
         targetDir.mkdirs()
 
-        files.forEach { (_, file) ->
-            file.copyTo(File(targetDir, file.name))
+        files.forEach { it ->
+            it.file.copyTo(File(targetDir, it.file.name))
         }
     }
 }

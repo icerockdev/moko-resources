@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 
-abstract class BaseGenerator<T> : MRGenerator.GeneratorWithClass {
+abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     override fun generate(
         assetsGenerationDir: File,
