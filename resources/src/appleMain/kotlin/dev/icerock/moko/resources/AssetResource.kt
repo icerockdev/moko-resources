@@ -1,7 +1,13 @@
+/*
+ * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package dev.icerock.moko.resources
 
-actual object AssetResource {
-    actual fun getPlatformPath(path: String): String {
-        return AssetResourceHelper.getPlatformPath(path, pathIntoOneName = true)
-    }
-}
+import platform.Foundation.NSBundle
+
+actual class AssetResource(
+    fileName: String,
+    extension: String,
+    bundle: NSBundle = NSBundle.mainBundle
+) : FileResource(fileName, extension, bundle)

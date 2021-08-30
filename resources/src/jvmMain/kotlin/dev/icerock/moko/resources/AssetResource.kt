@@ -4,4 +4,5 @@
 
 package dev.icerock.moko.resources
 
-expect class AssetResource
+actual class AssetResource(resourcesClassLoader: ClassLoader, filePath: String) :
+    FileResource(resourcesClassLoader, filePath)

@@ -19,11 +19,18 @@ class AppleAssetsGenerator(inputFileTree: FileTree) : AssetsGenerator(inputFileT
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: AssetSpec) =
-        CodeBlock.of(
-            "AssetResource(path = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
-            fileSpec.key
+    override fun getPropertyInitializer(fileSpec: AssetSpec): CodeBlock {
+        val ext = fileSpec.file.extension
+
+        val nameWithoutExt = if (ext.isEmpty()) fileSpec.key else
+            fileSpec.key.substring(0, fileSpec.key.length - ext.length - 1)
+
+        return CodeBlock.of(
+            "FileResource(fileName = %S, extension = %S,bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+            nameWithoutExt,
+            ext
         )
+    }
 
     override fun generateResources(
         assetsGenerationDir: File,

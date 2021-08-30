@@ -22,3 +22,7 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(
         null
     }
 }
+
+actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource {
+    return AssetResource(resourcesClassLoader, filePath)
+}
