@@ -33,6 +33,8 @@ dependencies {
     jvmMainImplementation(libs.icu4j)
 
     androidMainImplementation(libs.appCompat)
+
+    iosTestImplementation(libs.mokoTestCore)
 }
 
 tasks.named("publishToMavenLocal") {
@@ -40,3 +42,10 @@ tasks.named("publishToMavenLocal") {
         .task(":publishToMavenLocal")
     dependsOn(pluginPublish)
 }
+
+val copyIosTestResources = tasks.register<Copy>("copyIosTestResources") {
+    from("src/iosTest/resources")
+    into("build/bin/iosX64/debugTest")
+}
+
+tasks.findByName("iosX64Test")!!.dependsOn(copyIosTestResources)
