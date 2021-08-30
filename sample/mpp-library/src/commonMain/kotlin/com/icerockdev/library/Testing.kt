@@ -10,6 +10,7 @@ import dev.icerock.moko.resources.AssetResource
 import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
+import dev.icerock.moko.resources.ResourceContainer
 import dev.icerock.moko.resources.desc.Plural
 import dev.icerock.moko.resources.desc.PluralFormatted
 import dev.icerock.moko.resources.desc.Raw
@@ -20,6 +21,7 @@ import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.joinToStringDesc
 import dev.icerock.moko.resources.desc.plus
 import dev.icerock.moko.resources.format
+import dev.icerock.moko.resources.getAssetByFilePath
 import dev.icerock.moko.resources.getImageByFileName
 
 @Suppress("MagicNumber", "TooManyFunctions")
@@ -108,7 +110,8 @@ object Testing {
     fun getFontOtf2() = MR.fonts.cormorant.italic
     fun getFontOtf3() = MR.fonts.cormorant.light
 
-    fun getFontAssetsPath(): String = AssetResource.getPlatformPath("fonts/script/dancing-script.ttf")
+    fun getFontAssetsPath(): AssetResource =
+        MR.assets.getAssetByFilePath("fonts/script/dancing-script.ttf")
 
     fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)

@@ -50,7 +50,10 @@ class MainActivity : AppCompatActivity() {
         textView.setTextColor(textColorFromRes)
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
-        stringDescTextView.typeface = Typeface.createFromAsset(assets, Testing.getFontAssetsPath())//Testing.getFont2().getTypeface(context = this)
+        stringDescTextView.typeface = Typeface.createFromAsset(
+            assets,
+            Testing.getFontAssetsPath().path
+        )//Testing.getFont2().getTypeface(context = this)
 
         val textColorFromLib = Testing.getTextColor().getColor(context = this).colorInt()
         stringDescTextView.setTextColor(textColorFromLib)
