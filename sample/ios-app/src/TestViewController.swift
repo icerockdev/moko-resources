@@ -27,15 +27,13 @@ class TestViewController: UIViewController {
         textView.textColor = textColor.toUIColor()
 
         stringDescTextView.text = testing.getStringDesc().localized()
-
-        let fontAsset = testing.getFontAssetsPath()
-        stringDescTextView.font = FontResource(fontName: fontAsset.fileName + "." + fontAsset.extension, bundle: fontAsset.bundle)
-                .uiFont(withSize: 14.0)
+        stringDescTextView.font = testing.getFontTtf2().uiFont(withSize: 14.0)
 
         [
         testing.getTextFile(),
         testing.getJsonFile(),
-        testing.getNestedJsonFile()
+        testing.getNestedJsonFile(),
+        testing.getTextFromAssets()
         ].map { $0.readText() }
         .forEach { print($0) }
     }
@@ -44,7 +42,7 @@ class TestViewController: UIViewController {
 class LanguageTableViewController: UITableViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "") {
+        if(segue.identifier == "") {
             Testing().locale(lang: nil)
         } else {
             Testing().locale(lang: segue.identifier)

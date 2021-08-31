@@ -41,6 +41,7 @@ fun main() {
                 Text(text = testing.getTextFile().readText())
                 Text(text = testing.getJsonFile().readText())
                 Text(text = testing.getNestedJsonFile().readText())
+                Text(text = testing.getTextFromAssets().readText())
             }
         }
     }

@@ -21,13 +21,13 @@ actual open class FileResource(
     val extension: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {
-    val path: String
+    open val path: String
         get() = bundle.pathForResource(
             name = fileName,
             ofType = extension,
             inDirectory = "files"
         )!!
-    val url: NSURL
+    open val url: NSURL
         get() = bundle.URLForResource(
             name = fileName,
             withExtension = extension,

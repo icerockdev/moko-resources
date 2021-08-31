@@ -16,7 +16,7 @@ class JvmAssetsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileSpec: AssetSpec) = CodeBlock.of(
-        "FileResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
+        "AssetResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
         File(FILES_DIR, fileSpec.pathRelativeToBase).path
     )
 

@@ -110,8 +110,9 @@ object Testing {
     fun getFontOtf2() = MR.fonts.cormorant.italic
     fun getFontOtf3() = MR.fonts.cormorant.light
 
-    fun getFontAssetsPath(): AssetResource =
-        MR.assets.getAssetByFilePath("fonts/script/dancing-script.ttf")
+    fun getTextFromAssets(): AssetResource {
+        return MR.assets.getAssetByFilePath("texts/test.txt")
+    }
 
     fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)

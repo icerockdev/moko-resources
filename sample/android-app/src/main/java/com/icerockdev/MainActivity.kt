@@ -5,7 +5,6 @@
 package com.icerockdev
 
 import android.content.Context
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.icerockdev.library.Testing
 import dev.icerock.moko.graphics.colorInt
-import dev.icerock.moko.resources.AssetResource
 import dev.icerock.moko.resources.getColor
 
 class MainActivity : AppCompatActivity() {
@@ -50,10 +48,7 @@ class MainActivity : AppCompatActivity() {
         textView.setTextColor(textColorFromRes)
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
-        stringDescTextView.typeface = Typeface.createFromAsset(
-            assets,
-            Testing.getFontAssetsPath().path
-        )//Testing.getFont2().getTypeface(context = this)
+        stringDescTextView.typeface = Testing.getFontTtf2().getTypeface(context = this)
 
         val textColorFromLib = Testing.getTextColor().getColor(context = this).colorInt()
         stringDescTextView.setTextColor(textColorFromLib)
@@ -61,7 +56,8 @@ class MainActivity : AppCompatActivity() {
         listOf(
             Testing.getTextFile().readText(context = this),
             Testing.getJsonFile().readText(context = this),
-            Testing.getNestedJsonFile().readText(context = this)
+            Testing.getNestedJsonFile().readText(context = this),
+            Testing.getTextFromAssets().readText(context = this)
         ).forEach { Log.d(MainActivity::class.java.simpleName, it) }
 
         otfFontsTestTextView.typeface = Testing.getFontOtf1().getTypeface(context = this)
