@@ -54,7 +54,6 @@ abstract class AbsFilesGenerator<FSpec : AbsFilesGenerator.FileSpec>(
             .build()
     }
 
-
     abstract fun getClassModifiers(): Array<KModifier>
 
     abstract fun getPropertyModifiers(): Array<KModifier>
@@ -67,7 +66,6 @@ abstract class AbsFilesGenerator<FSpec : AbsFilesGenerator.FileSpec>(
         resourcesGenerationDir: File
     ): FSpec
 
-
     protected open fun generateResources(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
@@ -76,7 +74,6 @@ abstract class AbsFilesGenerator<FSpec : AbsFilesGenerator.FileSpec>(
     }
 
     open class FileSpec(
-        //used to generate property name in MR class
         val key: String,
         val file: File
     ) {

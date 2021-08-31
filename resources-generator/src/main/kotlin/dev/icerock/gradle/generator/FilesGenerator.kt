@@ -20,7 +20,6 @@ abstract class FilesGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FileResource")
     override val mrObjectName: String = "files"
 
-
     override fun createFileSpec(
         file: File,
         assetsGenerationDir: File,

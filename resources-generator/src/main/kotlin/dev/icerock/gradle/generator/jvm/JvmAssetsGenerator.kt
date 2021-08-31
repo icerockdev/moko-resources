@@ -1,3 +1,7 @@
+/*
+ * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.CodeBlock
@@ -21,7 +25,9 @@ class JvmAssetsGenerator(
     )
 
     override fun generateResources(
-        assetsGenerationDir: File, resourcesGenerationDir: File, files: List<AssetSpec>
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        files: List<AssetSpec>
     ) {
         val fileResDir = File(resourcesGenerationDir, FILES_DIR).apply { mkdirs() }
         files.forEach {

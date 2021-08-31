@@ -10,7 +10,6 @@ import dev.icerock.moko.resources.AssetResource
 import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
-import dev.icerock.moko.resources.ResourceContainer
 import dev.icerock.moko.resources.desc.Plural
 import dev.icerock.moko.resources.desc.PluralFormatted
 import dev.icerock.moko.resources.desc.Raw

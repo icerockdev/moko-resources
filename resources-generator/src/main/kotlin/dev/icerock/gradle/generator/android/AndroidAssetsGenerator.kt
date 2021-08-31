@@ -18,7 +18,6 @@ class AndroidAssetsGenerator(
     private val androidRClassPackage: String
 ) : AssetsGenerator(inputFile), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
-
     override fun generateResources(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
@@ -35,7 +34,6 @@ class AndroidAssetsGenerator(
 
     override fun getPropertyInitializer(fileSpec: AssetSpec) =
         CodeBlock.of("AssetResource(path = %S)", fileSpec.key)
-
 
     override fun getImports() = listOf(
         ClassName(androidRClassPackage, "R")

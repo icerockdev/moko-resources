@@ -25,7 +25,9 @@ class JvmFilesGenerator(
     )
 
     override fun generateResources(
-        assetsGenerationDir: File, resourcesGenerationDir: File, files: List<FileSpec>
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        files: List<FileSpec>
     ) {
         val fileResDir = File(resourcesGenerationDir, FILES_DIR).apply { mkdirs() }
         files.forEach {

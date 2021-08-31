@@ -35,7 +35,6 @@ abstract class AssetsGenerator(
         }
         newFilePath = newFilePath.replacePathChars()
 
-        //remove extension and replace - symbol
         val key = newFilePath.substringBeforeLast('.').replace('-', '_')
 
         return AssetSpec(
