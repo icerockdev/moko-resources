@@ -7,14 +7,14 @@ import UIKit
 import MultiPlatformLibrary
 
 class TestViewController: UIViewController {
-    
+
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textView: UITextView!
     @IBOutlet private var stringDescTextView: UITextView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let testing = Testing()
         let drawable = testing.getDrawable()
         let strings = testing.getStrings()
@@ -27,8 +27,10 @@ class TestViewController: UIViewController {
         textView.textColor = textColor.toUIColor()
 
         stringDescTextView.text = testing.getStringDesc().localized()
-        stringDescTextView.font = FontResource(fontName: testing.getFontAssetsPath(),
-                         bundle: MokoResourcesBundle().bundle).uiFont(withSize: 14.0)
+
+        let fontAsset = testing.getFontAssetsPath()
+        stringDescTextView.font = FontResource(fontName: fontAsset.fileName + "." + fontAsset.extension, bundle: fontAsset.bundle)
+                .uiFont(withSize: 14.0)
 
         [
         testing.getTextFile(),
@@ -40,9 +42,9 @@ class TestViewController: UIViewController {
 }
 
 class LanguageTableViewController: UITableViewController {
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if(segue.identifier == "") {
+        if (segue.identifier == "") {
             Testing().locale(lang: nil)
         } else {
             Testing().locale(lang: segue.identifier)

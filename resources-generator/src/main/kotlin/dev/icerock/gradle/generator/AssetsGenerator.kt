@@ -28,13 +28,22 @@ abstract class AssetsGenerator(
         if (file.path.contains('_')) {
             throw IllegalStateException("file path can't have underscore. We use them as separators.")
         }
-        val fileName = getBaseDir(assetsGenerationDir.name, file)
-        var key = fileName.substringBeforeLast('.')
-        if (key.startsWith(File.separatorChar)) {
-            key = key.substring(1)
+        val pathRelativeToBase = getBaseDir(assetsGenerationDir.name, file)
+        var newFilePath = pathRelativeToBase
+        if (newFilePath.startsWith(File.separatorChar)) {
+            newFilePath = newFilePath.substring(1)
         }
-        key = key.replacePathChars()
-        return AssetSpec(fileName, key, file)
+        newFilePath = newFilePath.replacePathChars()
+
+        //remove extension and replace - symbol
+        val key = newFilePath.substringBeforeLast('.').replace('-', '_')
+
+        return AssetSpec(
+            pathRelativeToBase = pathRelativeToBase,
+            newFilePath = newFilePath,
+            key = key,
+            file
+        )
     }
 
     private fun getBaseDir(baseDirName: String, file: File): String {
@@ -43,9 +52,15 @@ abstract class AssetsGenerator(
     }
 
     /*
-     * @param fileName used to copy necessary resources in AssetsGenerator
+     * @param pathRelativeToBase used to copy necessary resources in AssetsGenerator
+     * @param newFilePath is a new name a of copied resource for systems which do not support path with / symbol
      */
-    class AssetSpec(val pathRelativeToBase: String, key: String, file: File) :
+    class AssetSpec(
+        val pathRelativeToBase: String,
+        val newFilePath: String,
+        key: String,
+        file: File
+    ) :
         AbsFilesGenerator.FileSpec(key, file)
 
     class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<AssetsGenerator> {

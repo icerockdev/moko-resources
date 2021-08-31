@@ -35,7 +35,7 @@ class AppleFilesGenerator(
         val targetDir = File(resourcesGenerationDir, "files")
         targetDir.mkdirs()
 
-        files.forEach { it ->
+        files.forEach {
             it.file.copyTo(File(targetDir, it.file.name))
         }
     }

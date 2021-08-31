@@ -84,16 +84,13 @@ abstract class AbsFilesGenerator<FSpec : AbsFilesGenerator.FileSpec>(
             if (this === other) return true
             if (other !is FileSpec) return false
 
-            if (key != other.key) return false
             if (file != other.file) return false
 
             return true
         }
 
         override fun hashCode(): Int {
-            var result = key.hashCode()
-            result = 31 * result + file.hashCode()
-            return result
+            return file.hashCode()
         }
     }
 }

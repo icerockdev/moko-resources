@@ -7,13 +7,12 @@ package dev.icerock.gradle.generator.apple
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.AssetsGenerator
-import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleAssetsGenerator(inputFileTree: FileTree) : AssetsGenerator(inputFileTree),
-    ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -21,12 +20,10 @@ class AppleAssetsGenerator(inputFileTree: FileTree) : AssetsGenerator(inputFileT
 
     override fun getPropertyInitializer(fileSpec: AssetSpec): CodeBlock {
         val ext = fileSpec.file.extension
-
-        val nameWithoutExt = if (ext.isEmpty()) fileSpec.key else
-            fileSpec.key.substring(0, fileSpec.key.length - ext.length - 1)
+        val nameWithoutExt = fileSpec.newFilePath.substringBeforeLast('.')
 
         return CodeBlock.of(
-            "FileResource(fileName = %S, extension = %S,bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+            "AssetResource(fileName = %S, extension = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
             nameWithoutExt,
             ext
         )
@@ -38,9 +35,7 @@ class AppleAssetsGenerator(inputFileTree: FileTree) : AssetsGenerator(inputFileT
         files: List<AssetSpec>
     ) {
         files.forEach {
-
-            val extension = it.file.extension
-            val newName = if (extension.isEmpty()) it.key else it.key + "." + extension
+            val newName = it.newFilePath
             it.file.copyTo(File(resourcesGenerationDir, newName))
         }
     }

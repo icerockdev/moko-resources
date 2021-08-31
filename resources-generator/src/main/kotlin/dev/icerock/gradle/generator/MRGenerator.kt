@@ -40,11 +40,15 @@ abstract class MRGenerator(
 
         resourcesGenerationDir.mkdirs()
         sourceSet.addResourcesDir(resourcesGenerationDir)
+
+        assetsGenerationDir.mkdirs()
+        sourceSet.addAssetsDir(assetsGenerationDir)
     }
 
     internal fun generate() {
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
+        assetsGenerationDir.deleteRecursively()
 
         beforeMRGeneration()
 
