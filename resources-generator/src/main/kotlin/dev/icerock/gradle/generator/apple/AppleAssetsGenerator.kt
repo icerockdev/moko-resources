@@ -8,17 +8,18 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import org.gradle.api.file.FileTree
+import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
-class AppleAssetsGenerator(inputFileTree: FileTree) : AssetsGenerator(inputFileTree),
+class AppleAssetsGenerator(sourceDirectorySet: SourceDirectorySet) :
+    AssetsGenerator(sourceDirectorySet),
     ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: AssetSpec): CodeBlock {
+    override fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock {
         val ext = fileSpec.file.extension
         val nameWithoutExt = fileSpec.newFilePath.substringBeforeLast('.')
 
@@ -35,8 +36,12 @@ class AppleAssetsGenerator(inputFileTree: FileTree) : AssetsGenerator(inputFileT
         files: List<AssetSpec>
     ) {
         files.forEach {
-            val newName = it.newFilePath
-            it.file.copyTo(File(resourcesGenerationDir, newName))
+            if (it is AssetSpecFile) {
+                val newName = it.newFilePath
+                it.file.copyTo(File(resourcesGenerationDir, newName))
+            } else if (it is AssetSpecDirectory) {
+                generateResources(assetsGenerationDir, resourcesGenerationDir, it.assets)
+            }
         }
     }
 }

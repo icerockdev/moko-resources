@@ -4,19 +4,17 @@
 
 package dev.icerock.gradle.generator.android
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import org.gradle.api.file.FileTree
+import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
 class AndroidAssetsGenerator(
-    inputFile: FileTree,
-    private val androidRClassPackage: String
-) : AssetsGenerator(inputFile), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    sourceDirectorySet: SourceDirectorySet
+) : AssetsGenerator(sourceDirectorySet), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun generateResources(
         assetsGenerationDir: File,
@@ -24,7 +22,11 @@ class AndroidAssetsGenerator(
         files: List<AssetSpec>
     ) {
         files.forEach {
-            it.file.copyTo(File(assetsGenerationDir, it.pathRelativeToBase))
+            if (it is AssetSpecFile) {
+                it.file.copyTo(File(assetsGenerationDir, it.pathRelativeToBase))
+            } else if (it is AssetSpecDirectory) {
+                generateResources(assetsGenerationDir, resourcesGenerationDir, it.assets)
+            }
         }
     }
 
@@ -32,10 +34,6 @@ class AndroidAssetsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileSpec: AssetSpec) =
-        CodeBlock.of("AssetResource(path = %S)", fileSpec.key)
-
-    override fun getImports() = listOf(
-        ClassName(androidRClassPackage, "R")
-    )
+    override fun getPropertyInitializer(fileSpec: AssetSpecFile) =
+        CodeBlock.of("AssetResource(path = %S)", fileSpec.pathRelativeToBase)
 }

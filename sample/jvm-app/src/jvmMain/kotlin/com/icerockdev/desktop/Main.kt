@@ -22,6 +22,11 @@ import dev.icerock.moko.resources.compose.toImageBitmap
 
 fun main() {
     val testing = Testing
+
+    testing.getTextsFromAssets().forEach {
+        println(it.readText())
+    }
+
     Window("moko-resources", IntSize(1080, 960)) {
         Surface(Modifier.fillMaxSize()) {
             Column {
@@ -41,7 +46,6 @@ fun main() {
                 Text(text = testing.getTextFile().readText())
                 Text(text = testing.getJsonFile().readText())
                 Text(text = testing.getNestedJsonFile().readText())
-                Text(text = testing.getTextFromAssets().readText())
             }
         }
     }

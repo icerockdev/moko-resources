@@ -24,6 +24,7 @@ import dev.icerock.gradle.generator.jvm.JvmMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.SourceSet
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -76,7 +77,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
         val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
-        val commonResources = commonSourceSet.resources
+        val commonResources: SourceDirectorySet = commonSourceSet.resources
 
         val manifestFile = androidMainSourceSet.manifest.srcFile
         val androidPackage = getAndroidPackage(manifestFile)

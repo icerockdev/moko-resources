@@ -32,10 +32,12 @@ class TestViewController: UIViewController {
         [
         testing.getTextFile(),
         testing.getJsonFile(),
-        testing.getNestedJsonFile(),
-        testing.getTextFromAssets()
+        testing.getNestedJsonFile()
         ].map { $0.readText() }
         .forEach { print($0) }
+
+        testing.getTextsFromAssets().map { $0.readText() }
+                .forEach { print($0) }
     }
 }
 

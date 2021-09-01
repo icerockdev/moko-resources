@@ -25,7 +25,6 @@ class JvmFilesGenerator(
     )
 
     override fun generateResources(
-        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         files: List<FileSpec>
     ) {

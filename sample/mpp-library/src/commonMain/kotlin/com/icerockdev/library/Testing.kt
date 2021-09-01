@@ -109,8 +109,12 @@ object Testing {
     fun getFontOtf2() = MR.fonts.cormorant.italic
     fun getFontOtf3() = MR.fonts.cormorant.light
 
-    fun getTextFromAssets(): AssetResource {
-        return MR.assets.getAssetByFilePath("texts/test.txt")
+    fun getTextsFromAssets(): List<AssetResource> {
+        return listOf(
+            MR.assets.test1,
+            MR.assets.getAssetByFilePath("texts/test2.txt"),
+            MR.assets.texts.inner.test3
+        )
     }
 
     fun locale(lang: String?) {

@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             Testing.getTextFile().readText(context = this),
             Testing.getJsonFile().readText(context = this),
             Testing.getNestedJsonFile().readText(context = this),
-            Testing.getTextFromAssets().readText(context = this)
+            *Testing.getTextsFromAssets().map { it.readText(context = this) }.toTypedArray()
         ).forEach { Log.d(MainActivity::class.java.simpleName, it) }
 
         otfFontsTestTextView.typeface = Testing.getFontOtf1().getTypeface(context = this)

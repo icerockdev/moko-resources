@@ -28,7 +28,7 @@ abstract class MRGenerator(
         get() = File(outputDir, "res")
 
     protected open val assetsGenerationDir: File
-        get() = File(outputDir, "assets")
+        get() = File(outputDir, AssetsGenerator.ASSETS_DIR_NAME)
 
     init {
         setupGenerationDirs()
