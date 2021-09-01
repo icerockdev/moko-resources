@@ -35,9 +35,9 @@ class JvmAssetsGenerator(
 
     private fun generateResourcesInner(files: List<AssetSpec>, fileResDir: File) {
         files.forEach {
-            if (it is AssetSpecFile)
+            if (it is AssetSpecFile) {
                 it.file.copyTo(File(fileResDir, it.pathRelativeToBase))
-            else if (it is AssetSpecDirectory) {
+            } else if (it is AssetSpecDirectory) {
                 generateResourcesInner(it.assets, fileResDir)
             }
         }

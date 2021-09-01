@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle.generator
 
-import org.gradle.api.file.FileTree
 import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 

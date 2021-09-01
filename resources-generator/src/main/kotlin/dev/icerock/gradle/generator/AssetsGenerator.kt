@@ -16,13 +16,13 @@ import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
 import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
+@Suppress("TooManyFunctions")
 abstract class AssetsGenerator(
     private val sourceDirectorySet: SourceDirectorySet
 ) : MRGenerator.Generator {
     override val inputFiles: Iterable<File> = sourceDirectorySet.files
     override val mrObjectName: String = ASSETS_DIR_NAME
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "AssetResource")
-
 
     private fun getBaseDir(file: File): String {
         val relativePathToAssets = file.path.substringAfterLast(RES_ROOT)
@@ -43,17 +43,17 @@ abstract class AssetsGenerator(
             } else {
 
                 // skip empty files, like .DS_Store
-                if (it.nameWithoutExtension.isEmpty())
+                if (it.nameWithoutExtension.isEmpty()) {
                     continue
-
+                }
 
                 val pathRelativeToBase = getBaseDir(it)
 
                 if (pathRelativeToBase.contains('_')) {
-                    throw IllegalStateException("file path ${pathRelativeToBase}, ${it.nameWithoutExtension} can't have underscore. We use them as separators.")
+                    throw IllegalStateException("file path can't have underscore. We use them as separators.")
                 }
 
-                val newFilePath = pathRelativeToBase.replacePathChars()
+                val newFilePath = pathRelativeToBase.replace(File.separatorChar, PATH_DELIMITER)
                 val key = newFilePath.substringBeforeLast('.').replace('-', '_')
 
                 res.add(
@@ -102,9 +102,9 @@ abstract class AssetsGenerator(
 
     private fun createTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder): TypeSpec {
         @Suppress("SpreadOperator")
+        objectBuilder.addModifiers(*getClassModifiers())
 
         extendObjectBodyAtStart(objectBuilder)
-        objectBuilder.addModifiers(*getClassModifiers())
 
         createInnerTypeSpec(keys, objectBuilder)
 
@@ -113,6 +113,7 @@ abstract class AssetsGenerator(
         return objectBuilder.build()
     }
 
+    @Suppress("SpreadOperator")
     private fun createInnerTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder) {
 
         for (key in keys) {
@@ -126,7 +127,6 @@ abstract class AssetsGenerator(
                     styleProperty.initializer(codeBlock)
                 }
                 objectBuilder.addProperty(styleProperty.build())
-
             } else if (key is AssetSpecDirectory) {
                 val spec = TypeSpec
                     .objectBuilder(key.name)
@@ -141,7 +141,6 @@ abstract class AssetsGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
-
     protected open fun generateResources(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
@@ -154,7 +153,6 @@ abstract class AssetsGenerator(
     abstract fun getPropertyModifiers(): Array<KModifier>
 
     abstract fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock?
-
 
     /*
      * @param pathRelativeToBase used to copy necessary resources in AssetsGenerator
@@ -172,7 +170,6 @@ abstract class AssetsGenerator(
         val file: File
     ) : AssetSpec()
 
-
     class Feature(val info: SourceInfo) : ResourceGeneratorFeature<AssetsGenerator> {
 
         override fun createCommonGenerator() = CommonAssetsGenerator(info.commonResources)
@@ -186,8 +183,6 @@ abstract class AssetsGenerator(
         override fun createJvmGenerator() = JvmAssetsGenerator(info.commonResources)
     }
 
-    private fun String.replacePathChars() = this.replace(File.separatorChar, PATH_DELIMITER)
-
     companion object {
         const val ASSETS_DIR_NAME: String = "assets"
 
@@ -198,6 +193,5 @@ abstract class AssetsGenerator(
         private const val PATH_DELIMITER = '_'
 
         private val RES_ROOT = "MR${File.separatorChar}$ASSETS_DIR_NAME"
-
     }
 }
