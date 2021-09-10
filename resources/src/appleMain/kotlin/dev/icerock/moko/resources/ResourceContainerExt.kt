@@ -8,7 +8,7 @@ actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String)
     //get name without extension and extension
     val ext = filePath.substringAfterLast('.')
     val name = filePath.substringBeforeLast('.')
-        .replace('/', '_')
+        .replace('/', '+')
 
     return AssetResource(name, ext, nsBundle)
 }
