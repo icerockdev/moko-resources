@@ -10,13 +10,13 @@ plugins {
     id("java-gradle-plugin")
 }
 
-group = "dev.icerock.moko"
+group = "github.vkrot.moko-resources"
 version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
     implementation(gradleKotlinDsl())
-    compileOnly(libs.kotlinGradlePlugin)
-    compileOnly(libs.androidGradlePlugin)
+    compileOnly(libs.kotlinGradlePlug)
+    compileOnly(libs.androidGradlePlug)
     implementation(libs.kotlinPoet)
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
@@ -41,15 +41,15 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 gradlePlugin {
     plugins {
         create("multiplatform-resources") {
-            id = "dev.icerock.mobile.multiplatform-resources"
+            id = "github.vkrot.multiplatform-resources"
             implementationClass = "dev.icerock.gradle.MultiplatformResourcesPlugin"
         }
     }
 }
 
 pluginBundle {
-    website = "https://github.com/icerockdev/moko-resources"
-    vcsUrl = "https://github.com/icerockdev/moko-resources"
+    website = "https://github.com/vkrot/moko-resources"
+    vcsUrl = "https://github.com/vkrot/moko-resources"
     description = "Plugin to provide access to the resources on iOS & Android"
     tags = listOf("moko-resources", "moko", "kotlin", "kotlin-multiplatform")
 

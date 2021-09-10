@@ -31,7 +31,7 @@ robolectricVersion = "4.5.1"
 mokoGraphicsVersion = "0.7.0"
 mokoParcelizeVersion = "0.7.1"
 mokoTestVersion = "0.4.1"
-mokoResourcesVersion = "0.17.2"
+mokoResourcesVersion = "0.17.2-assets"
 
 [libraries]
 # kotlinx
@@ -72,6 +72,6 @@ kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotli
 kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlinVersion" }
 
 # gradle
-kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
-androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
+kotlinGradlePlug = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
+androidGradlePlug = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlinVersion" }
