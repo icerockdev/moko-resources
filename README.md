@@ -10,7 +10,7 @@ difference between raw files and assets is that assets can be structured by fold
 
 And you can look up for asset by name. MR.assets.getAssetByFilePath(filePath = "your file path")
 
-+ symbol is reserved for ios path delimiter, so avoid using it in folder/file names.
+Plus symbol is reserved for ios path delimiter, so avoid using it in folder/file names.
 
 Assets as well as files have out of box implementation function for read text files from common code
 
