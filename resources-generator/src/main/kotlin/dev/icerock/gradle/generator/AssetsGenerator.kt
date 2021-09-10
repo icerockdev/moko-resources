@@ -49,8 +49,8 @@ abstract class AssetsGenerator(
 
                 val pathRelativeToBase = getBaseDir(it)
 
-                if (pathRelativeToBase.contains('_')) {
-                    throw IllegalStateException("file path can't have underscore. We use them as separators.")
+                if (pathRelativeToBase.contains(PATH_DELIMITER)) {
+                    throw IllegalStateException("file path can't have this symbol ${PATH_DELIMITER}. We use them as separators.")
                 }
 
                 val newFilePath = pathRelativeToBase.replace(File.separatorChar, PATH_DELIMITER)
@@ -190,7 +190,7 @@ abstract class AssetsGenerator(
         This is used for property name in MR class as well as a replacement of / for platforms which
         don't support it like apple.
         */
-        private const val PATH_DELIMITER = '_'
+        private const val PATH_DELIMITER = '+'
 
         private val RES_ROOT = "MR${File.separatorChar}$ASSETS_DIR_NAME"
     }
