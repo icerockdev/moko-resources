@@ -1,12 +1,4 @@
-![moko-resources](img/logo.png)  
-[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://img.shields.io/maven-central/v/dev.icerock.moko/resources) ](https://repo1.maven.org/maven2/dev/icerock/moko/resources) ![kotlin-version](https://kotlin-version.aws.icerock.dev/kotlin-version?group=dev.icerock.moko&name=resources)
-![badge][badge-android]
-![badge][badge-iosx64]
-![badge][badge-iosarm64]
-![badge][badge-macos64]
-![badge][badge-jvm]
-
-# Mobile Kotlin resources
+# About
 
 This is a fork of https://github.com/icerockdev/moko-resources
 with this change https://github.com/icerockdev/moko-resources/pull/233
