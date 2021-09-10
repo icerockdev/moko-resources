@@ -56,7 +56,7 @@ project build.gradle
 apply plugin: "github.vkrot.multiplatform-resources"
 
 dependencies {
- commonMainApi("github.vkrot:resources:0.17.2-assets")
+    commonMainApi("com.github.krottv:moko-resources:0.17.2-assets1")
 }
 
 multiplatformResources {
