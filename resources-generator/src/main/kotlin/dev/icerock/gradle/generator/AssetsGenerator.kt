@@ -50,7 +50,10 @@ abstract class AssetsGenerator(
                 val pathRelativeToBase = getBaseDir(it)
 
                 if (pathRelativeToBase.contains(PATH_DELIMITER)) {
-                    throw IllegalStateException("file path can't have this symbol ${PATH_DELIMITER}. We use them as separators.")
+                    throw IllegalStateException(
+                        "file path can't have this symbol " +
+                                PATH_DELIMITER + ". We use them as separators."
+                    )
                 }
 
                 val newFilePath = pathRelativeToBase.replace(File.separatorChar, PATH_DELIMITER)
