@@ -12,7 +12,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("dev.icerock.moko:resources-generator")
+        classpath("com.github.krottv:resources-generator")
         classpath("org.jetbrains.compose:compose-gradle-plugin:0.5.0-build270")
         classpath(":resources-build-logic")
     }
@@ -20,7 +20,7 @@ buildscript {
 
 allprojects {
     plugins.withId("org.gradle.maven-publish") {
-        group = "dev.icerock.moko"
+        group = "com.github.krottv"
         version = libs.versions.mokoResourcesVersion.get()
     }
 }

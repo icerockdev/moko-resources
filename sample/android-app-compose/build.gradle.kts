@@ -4,7 +4,7 @@
 
 plugins {
     id("android-app-convention")
-    id("dev.icerock.mobile.multiplatform-resources")
+    id("com.github.krottv.multiplatform-resources")
     id("kotlin-android")
 }
 

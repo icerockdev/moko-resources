@@ -5,7 +5,7 @@
 plugins {
     id("android-app-convention")
     id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform-resources")
+    id("com.github.krottv.multiplatform-resources")
     id("detekt-convention")
 }
 

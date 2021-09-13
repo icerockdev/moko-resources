@@ -18,42 +18,52 @@ Assets as well as files have out of box implementation function for read text fi
 
 Usage on Android:
 
-```
+```kotlin
 val text = MR.assets.test.getText(context = this)
 ```
 
 Usage on Apple:
 
-```
+```kotlin
 val text = MR.assets.test.readText()
 ```
 
 ## Installation
+
+For local publishing run in terminal the following commands:
+
+```text
+./gradlew -p resources-generator build publishToMavenLocal
+./gradlew -p resources build publishToMavenLocal
+```
 
 root build.gradle
 
 ```groovy
 buildscript {
  repositories {
-  gradlePluginPortal()
+  mavelLocal()
  }
 
  dependencies {
-  classpath "github.vkrot:resources-generator:0.17.2-assets"
+  classpath "com.github.krottv:resources-generator:0.17.2-assets1"
  }
 }
 
+```
 
-allprojects {
-    repositories {
-        mavenCentral()
-    }
+For every project where Moko Resource is used provide:
+
+```groovy
+repositories {
+    mavenLocal()
 }
 ```
 
 project build.gradle
+
 ```groovy
-apply plugin: "github.vkrot.multiplatform-resources"
+apply plugin: "com.github.krottv.multiplatform-resources"
 
 dependencies {
     commonMainApi("com.github.krottv:moko-resources:0.17.2-assets1")

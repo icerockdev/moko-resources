@@ -10,7 +10,7 @@ plugins {
     id("java-gradle-plugin")
 }
 
-group = "github.vkrot.moko-resources"
+group = "com.github.krottv"
 version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
@@ -41,7 +41,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 gradlePlugin {
     plugins {
         create("multiplatform-resources") {
-            id = "github.vkrot.multiplatform-resources"
+            id = "com.github.krottv.multiplatform-resources"
             implementationClass = "dev.icerock.gradle.MultiplatformResourcesPlugin"
         }
     }
