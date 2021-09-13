@@ -24,9 +24,11 @@ class AppleAssetsGenerator(sourceDirectorySet: SourceDirectorySet) :
         val nameWithoutExt = fileSpec.newFilePath.substringBeforeLast('.')
 
         return CodeBlock.of(
-            "AssetResource(fileName = %S, extension = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+            "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = %S)",
+            fileSpec.pathRelativeToBase,
             nameWithoutExt,
-            ext
+            ext,
+            AppleMRGenerator.BUNDLE_PROPERTY_NAME
         )
     }
 

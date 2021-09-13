@@ -4,4 +4,16 @@
 
 package dev.icerock.moko.resources
 
-expect class AssetResource
+expect class AssetResource {
+    val originalPath: String
+}
+
+internal fun String.removeFirstSlash(): String {
+
+    val originalPath: String = if (this.startsWith('/')) {
+        this.substring(1)
+    } else {
+        this
+    }
+    return originalPath
+}

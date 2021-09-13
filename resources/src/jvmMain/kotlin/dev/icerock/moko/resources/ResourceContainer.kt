@@ -25,5 +25,12 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(
 }
 
 actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource {
-    return AssetResource(resourcesClassLoader, "files${File.separatorChar}$filePath")
+
+    val originalPath: String = filePath.removeFirstSlash()
+
+    return AssetResource(
+        resourcesClassLoader,
+        originalPath,
+        "files${File.separatorChar}$originalPath"
+    )
 }
