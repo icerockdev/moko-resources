@@ -8,6 +8,7 @@ import platform.Foundation.NSBundle
 import platform.Foundation.NSURL
 
 actual class AssetResource(
+    actual val originalPath: String,
     fileName: String,
     extension: String,
     bundle: NSBundle = NSBundle.mainBundle
@@ -22,4 +23,17 @@ actual class AssetResource(
             name = fileName,
             withExtension = extension
         )!!
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is AssetResource) return false
+
+        if (originalPath != other.originalPath) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return originalPath.hashCode()
+    }
 }

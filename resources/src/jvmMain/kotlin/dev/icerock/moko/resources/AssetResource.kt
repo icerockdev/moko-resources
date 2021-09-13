@@ -4,5 +4,22 @@
 
 package dev.icerock.moko.resources
 
-actual class AssetResource(resourcesClassLoader: ClassLoader, filePath: String) :
-    FileResource(resourcesClassLoader, filePath)
+actual class AssetResource(
+    resourcesClassLoader: ClassLoader,
+    actual val originalPath: String,
+    path: String
+) : FileResource(resourcesClassLoader, path) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is AssetResource) return false
+
+        if (originalPath != other.originalPath) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return originalPath.hashCode()
+    }
+}

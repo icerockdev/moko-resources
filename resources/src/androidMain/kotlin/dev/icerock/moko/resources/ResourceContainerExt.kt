@@ -21,5 +21,5 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String)
 }
 
 actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource {
-    return AssetResource(filePath)
+    return AssetResource(filePath.removeFirstSlash())
 }
