@@ -46,7 +46,7 @@ buildscript {
  }
 
     dependencies {
-        classpath "com.github.krottv:resources-generator:0.17.2-assets3"
+        classpath "com.github.krottv:resources-generator:0.17.2-assets4"
     }
 }
 
@@ -66,7 +66,7 @@ project build.gradle
 apply plugin: "com.github.krottv.multiplatform-resources"
 
 dependencies {
-    commonMainApi("com.github.krottv:moko-resources:0.17.2-assets3")
+    commonMainApi("com.github.krottv:moko-resources:0.17.2-assets4")
 }
 
 multiplatformResources {
