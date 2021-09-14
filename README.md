@@ -45,9 +45,9 @@ buildscript {
   mavelLocal()
  }
 
- dependencies {
-  classpath "com.github.krottv:resources-generator:0.17.2-assets2"
- }
+    dependencies {
+        classpath "com.github.krottv:resources-generator:0.17.2-assets3"
+    }
 }
 
 ```
@@ -66,7 +66,7 @@ project build.gradle
 apply plugin: "com.github.krottv.multiplatform-resources"
 
 dependencies {
-    commonMainApi("com.github.krottv:moko-resources:0.17.2-assets2")
+    commonMainApi("com.github.krottv:moko-resources:0.17.2-assets3")
 }
 
 multiplatformResources {
