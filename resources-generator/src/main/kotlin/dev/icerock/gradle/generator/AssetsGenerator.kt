@@ -57,13 +57,11 @@ abstract class AssetsGenerator(
                 }
 
                 val newFilePath = pathRelativeToBase.replace(File.separatorChar, PATH_DELIMITER)
-                val key = it.nameWithoutExtension.replace('-', '_')
 
                 res.add(
                     AssetSpecFile(
                         pathRelativeToBase = pathRelativeToBase,
                         newFilePath = newFilePath,
-                        key = key,
                         file = it
                     )
                 )
@@ -123,7 +121,7 @@ abstract class AssetsGenerator(
             if (specs is AssetSpecFile) {
 
                 val styleProperty = PropertySpec
-                    .builder(specs.key, resourceClassName)
+                    .builder(specs.file.nameWithoutExtension.replace('-', '_'), resourceClassName)
                     .addModifiers(*getPropertyModifiers())
 
                 getPropertyInitializer(specs)?.let { codeBlock ->
@@ -132,7 +130,7 @@ abstract class AssetsGenerator(
                 objectBuilder.addProperty(styleProperty.build())
             } else if (specs is AssetSpecDirectory) {
                 val spec = TypeSpec
-                    .objectBuilder(specs.name)
+                    .objectBuilder(specs.name.replace('-', '_'))
                     .addModifiers(*getClassModifiers())
 
                 createInnerTypeSpec(specs.assets, spec)
@@ -169,7 +167,6 @@ abstract class AssetsGenerator(
     class AssetSpecFile(
         val pathRelativeToBase: String,
         val newFilePath: String,
-        val key: String,
         val file: File
     ) : AssetSpec()
 

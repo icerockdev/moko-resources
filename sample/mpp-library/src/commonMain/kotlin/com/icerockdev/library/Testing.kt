@@ -113,7 +113,7 @@ object Testing {
         return listOf(
             MR.assets.test_1,
             MR.assets.getAssetByFilePath("texts/test2.txt"),
-            MR.assets.texts.inner.test3
+            MR.assets.texts.inner_1.test3
         )
     }
 
