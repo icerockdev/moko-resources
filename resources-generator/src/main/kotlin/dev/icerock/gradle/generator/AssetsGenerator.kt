@@ -57,7 +57,7 @@ abstract class AssetsGenerator(
                 }
 
                 val newFilePath = pathRelativeToBase.replace(File.separatorChar, PATH_DELIMITER)
-                val key = newFilePath.substringBeforeLast('.').replace('-', '_')
+                val key = it.nameWithoutExtension.replace('-', '_')
 
                 res.add(
                     AssetSpecFile(
@@ -119,23 +119,23 @@ abstract class AssetsGenerator(
     @Suppress("SpreadOperator")
     private fun createInnerTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder) {
 
-        for (key in keys) {
-            if (key is AssetSpecFile) {
+        for (specs in keys) {
+            if (specs is AssetSpecFile) {
 
                 val styleProperty = PropertySpec
-                    .builder(key.file.nameWithoutExtension, resourceClassName)
+                    .builder(specs.key, resourceClassName)
                     .addModifiers(*getPropertyModifiers())
 
-                getPropertyInitializer(key)?.let { codeBlock ->
+                getPropertyInitializer(specs)?.let { codeBlock ->
                     styleProperty.initializer(codeBlock)
                 }
                 objectBuilder.addProperty(styleProperty.build())
-            } else if (key is AssetSpecDirectory) {
+            } else if (specs is AssetSpecDirectory) {
                 val spec = TypeSpec
-                    .objectBuilder(key.name)
+                    .objectBuilder(specs.name)
                     .addModifiers(*getClassModifiers())
 
-                createInnerTypeSpec(key.assets, spec)
+                createInnerTypeSpec(specs.assets, spec)
 
                 objectBuilder.addType(spec.build())
             }
