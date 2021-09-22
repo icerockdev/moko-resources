@@ -26,10 +26,13 @@ abstract class AssetsGenerator(
 
     private fun getBaseDir(file: File): String {
         val relativePathToAssets = file.path.substringAfterLast(RES_ROOT)
-        val res = File(relativePathToAssets).path
-        if (res.startsWith(File.separatorChar)) {
-            return res.substring(1)
-        } else return res
+        val fixedRelativePath = File(relativePathToAssets).path
+
+        val result = if (fixedRelativePath.startsWith(File.separatorChar)) {
+            fixedRelativePath.substring(1)
+        } else fixedRelativePath
+
+        return if (File.separatorChar == '/') result else result.replace(File.separatorChar, '/')
     }
 
     private fun parseRootContentInner(folders: Array<File>): List<AssetSpec> {
@@ -56,12 +59,9 @@ abstract class AssetsGenerator(
                     )
                 }
 
-                val newFilePath = pathRelativeToBase.replace(File.separatorChar, PATH_DELIMITER)
-
                 res.add(
                     AssetSpecFile(
                         pathRelativeToBase = pathRelativeToBase,
-                        newFilePath = newFilePath,
                         file = it
                     )
                 )
@@ -166,7 +166,6 @@ abstract class AssetsGenerator(
 
     class AssetSpecFile(
         val pathRelativeToBase: String,
-        val newFilePath: String,
         val file: File
     ) : AssetSpec()
 
@@ -190,7 +189,7 @@ abstract class AssetsGenerator(
         This is used for property name in MR class as well as a replacement of / for platforms which
         don't support it like apple.
         */
-        private const val PATH_DELIMITER = '+'
+        const val PATH_DELIMITER = '+'
 
         private val RES_ROOT = "MR${File.separatorChar}$ASSETS_DIR_NAME"
     }

@@ -21,13 +21,17 @@ class AppleAssetsGenerator(sourceDirectorySet: SourceDirectorySet) :
 
     override fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock {
         val ext = fileSpec.file.extension
-        val nameWithoutExt = fileSpec.newFilePath.substringBeforeLast('.')
+
+        val relativePathWithoutExt = fileSpec
+            .pathRelativeToBase
+            .replace('/', PATH_DELIMITER)
+            .substringBeforeLast('.')
 
         return CodeBlock.of(
             "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = " +
                     AppleMRGenerator.BUNDLE_PROPERTY_NAME + ")",
             fileSpec.pathRelativeToBase,
-            nameWithoutExt,
+            relativePathWithoutExt,
             ext
         )
     }
@@ -39,7 +43,8 @@ class AppleAssetsGenerator(sourceDirectorySet: SourceDirectorySet) :
     ) {
         files.forEach {
             if (it is AssetSpecFile) {
-                val newName = it.newFilePath
+                val newName = it.pathRelativeToBase
+                    .replace('/', PATH_DELIMITER)
                 it.file.copyTo(File(resourcesGenerationDir, newName))
             } else if (it is AssetSpecDirectory) {
                 generateResources(assetsGenerationDir, resourcesGenerationDir, it.assets)
