@@ -6,17 +6,15 @@ plugins {
     id("android-app-convention")
     id("dev.icerock.mobile.multiplatform-resources")
     id("kotlin-android")
+    id("org.jetbrains.compose")
 }
 
 android {
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "dev.icerock.moko.samples.compose"
         minSdk = 21
-    }
-
-    buildFeatures {
-        compose = true
     }
 
     compileOptions {
@@ -27,20 +25,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeVersion.get()
-    }
 }
 
 dependencies {
-    implementation(libs.composeUiTooling)
-    implementation(libs.composeUiToolingPreview)
-    implementation(libs.composeRuntime)
-    implementation(libs.composeMaterial)
-    implementation(libs.composeFoundation)
+    implementation(projects.resourcesCompose)
+    implementation(projects.sample.mppLibrary)
+    implementation(compose.runtime)
+    implementation(compose.foundation)
+    implementation(compose.material)
+    implementation(compose.ui)
+    implementation(compose.uiTooling)
+    implementation(compose.preview)
     implementation(libs.composeActivity)
     implementation(libs.constraintLayout)
-    implementation(projects.sample.mppLibrary)
     implementation(libs.appCompat)
 }

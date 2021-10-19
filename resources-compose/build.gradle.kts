@@ -3,11 +3,15 @@
  */
 
 plugins {
+    id("com.android.library")
+    id("android-base-convention")
     id("org.jetbrains.kotlin.multiplatform")
     id("detekt-convention")
     id("org.jetbrains.compose")
     id("javadoc-stub-convention")
+    id("multiplatform-android-publish-convention")
     id("publication-convention")
+    id("dev.icerock.mobile.multiplatform.android-manifest")
 }
 
 java {
@@ -17,11 +21,20 @@ java {
 }
 
 kotlin {
+    android()
     jvm()
     sourceSets {
+        commonMain {
+            dependencies {
+                implementation(projects.resources)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+            }
+        }
+
         named("jvmMain") {
             dependencies {
-                implementation(compose.desktop.currentOs)
+                api(compose.desktop.common)
             }
         }
     }
