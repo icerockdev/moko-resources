@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 /*
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
@@ -11,7 +13,7 @@ dependencyResolutionManagement {
         google()
 
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-        
+
         jcenter {
             content {
                 includeGroup("org.jetbrains.kotlinx")
@@ -31,7 +33,12 @@ include(":sample:android-app-compose")
 include(":sample:android-mpp-app")
 include(":sample:mpp-library")
 include(":sample:mpp-library:nested-module")
-include(":sample:mpp-conditional")
-include(":sample:mpp-hierarhical")
-include(":sample:mpp-mixed")
+
+// TODO: fix `resources` linking is incompatible with Windows due path separator (`/`)
+if (!OperatingSystem.current().isWindows) {
+    include(":sample:mpp-conditional")
+    include(":sample:mpp-hierarhical")
+    include(":sample:mpp-mixed")
+}
+
 include(":sample:jvm-app")

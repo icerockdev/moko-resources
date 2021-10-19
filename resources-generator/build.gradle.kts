@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.5.21")
+    id("org.jetbrains.kotlin.jvm") version ("1.5.31")
     id("detekt-convention")
     id("publication-convention")
     id("com.gradle.plugin-publish") version ("0.15.0")
