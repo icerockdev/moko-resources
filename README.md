@@ -364,7 +364,7 @@ Font name should be this pattern: `<fontFamily>-<fontStyle>` like:
 - `Raleway-Bold.ttf`
 - `Raleway-Regular.ttf`
 - `Raleway-Italic.ttf`
-Supported only `ttf` resources for now.
+Supports `ttf` and `otf` resources.
 
 If we add to `commonMain/resources/MR/fonts` files:
 - `Raleway-Bold.ttf`
