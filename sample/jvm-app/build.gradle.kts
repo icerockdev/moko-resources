@@ -17,6 +17,11 @@ java {
 kotlin {
     jvm()
     sourceSets {
+        commonMain {
+            dependencies {
+                implementation(projects.resources)
+            }
+        }
         named("jvmMain") {
             dependencies {
                 implementation(projects.resourcesCompose)
@@ -27,13 +32,15 @@ kotlin {
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "com.icerockdev.desktop.MainKt"
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "MokoDesktopApp"
-            version = "1.0.0"
+compose {
+    desktop {
+        application {
+            mainClass = "com.icerockdev.desktop.MainKt"
+            nativeDistributions {
+                targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+                packageName = "MokoDesktopApp"
+                version = "1.0.0"
+            }
         }
     }
 }
