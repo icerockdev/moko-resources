@@ -4,9 +4,8 @@
 
 package dev.icerock.gradle
 
-import com.android.build.gradle.BaseExtension
 import com.android.build.api.dsl.AndroidSourceSet
-import com.android.build.gradle.internal.plugins.BasePlugin
+import com.android.build.gradle.BaseExtension
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator
@@ -17,8 +16,8 @@ import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
-import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
+import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Plugin
@@ -39,12 +38,10 @@ import javax.xml.parsers.DocumentBuilderFactory
 @Suppress("TooManyFunctions")
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val mrExtension =
-            target.extensions.create(
-                "multiplatformResources",
-                MultiplatformResourcesPluginExtension::class.java
-            )
-
+        val mrExtension = target.extensions.create(
+            "multiplatformResources",
+            MultiplatformResourcesPluginExtension::class.java
+        )
 
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
             val multiplatformExtension =
@@ -98,8 +95,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target
         )
 
-        target.plugins.withType(BasePlugin::class.java) {
-            val androidExtension = it.extension
+        val setupAndroid = {
+            val androidExtension = target.extensions.getByType(BaseExtension::class.java)
 
             target.afterEvaluate {
                 val androidMainSourceSet =
@@ -119,6 +116,13 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                     target
                 )
             }
+        }
+
+        target.plugins.withId("com.android.application") {
+            setupAndroid()
+        }
+        target.plugins.withId("com.android.library") {
+            setupAndroid()
         }
 
         setupJvmGenerator(
