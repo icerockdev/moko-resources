@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle
 
-import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.BaseExtension
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -15,11 +14,12 @@ import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.StringsGenerator
-import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
+import dev.icerock.gradle.utils.getDependedFrom
+import dev.icerock.gradle.utils.isDependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
@@ -28,7 +28,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
@@ -98,23 +97,24 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val setupAndroid = {
             val androidExtension = target.extensions.getByType(BaseExtension::class.java)
 
+            val androidLogic = AndroidPluginLogic(
+                commonSourceSet,
+                targets,
+                generatedDir,
+                mrClassPackage,
+                features,
+                target
+            )
+
             target.afterEvaluate {
-                val androidMainSourceSet =
-                    androidExtension.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+                val androidMainSourceSet = androidExtension.sourceSets
+                    .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
                 val manifestFile = androidMainSourceSet.manifest.srcFile
                 val androidPackage = getAndroidPackage(manifestFile)
 
                 sourceInfo.setAndroidRClassPackage(androidPackage)
 
-                setupAndroidGenerator(
-                    commonSourceSet,
-                    targets,
-                    androidMainSourceSet,
-                    generatedDir,
-                    mrClassPackage,
-                    features,
-                    target
-                )
+                androidLogic.setup(androidMainSourceSet)
             }
         }
 
@@ -165,34 +165,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             commonGeneratorSourceSet,
             mrClassPackage,
             generators = features.map { it.createCommonGenerator() }
-        ).apply(target)
-    }
-
-    @Suppress("LongParameterList")
-    private fun setupAndroidGenerator(
-        commonSourceSet: KotlinSourceSet,
-        targets: List<KotlinTarget>,
-        androidMainSourceSet: AndroidSourceSet,
-        generatedDir: File,
-        mrClassPackage: String,
-        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-        target: Project
-    ) {
-        val kotlinSourceSets: List<KotlinSourceSet> = targets
-            .filterIsInstance<KotlinAndroidTarget>()
-            .flatMap { it.compilations }
-            .filter { compilation ->
-                compilation.kotlinSourceSets.any { it.isDependsOn(commonSourceSet) }
-            }
-            .map { it.defaultSourceSet }
-
-        val androidSourceSet: MRGenerator.SourceSet =
-            createSourceSet(androidMainSourceSet, kotlinSourceSets)
-        AndroidMRGenerator(
-            generatedDir,
-            androidSourceSet,
-            mrClassPackage,
-            generators = features.map { it.createAndroidGenerator() }
         ).apply(target)
     }
 
@@ -257,12 +229,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
-    private fun KotlinSourceSet.getDependedFrom(sourceSets: Collection<KotlinSourceSet>): KotlinSourceSet? {
-        return sourceSets.firstOrNull { this.dependsOn.contains(it) } ?: this.dependsOn
-            .mapNotNull { it.getDependedFrom(sourceSets) }
-            .firstOrNull()
-    }
-
     private fun createSourceSet(kotlinSourceSet: KotlinSourceSet): MRGenerator.SourceSet {
         return object : MRGenerator.SourceSet {
             override val name: String
@@ -278,24 +244,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
-    private fun createSourceSet(
-        androidSourceSet: AndroidSourceSet,
-        kotlinSourceSets: List<KotlinSourceSet>
-    ): MRGenerator.SourceSet {
-        return object : MRGenerator.SourceSet {
-            override val name: String
-                get() = "android${androidSourceSet.name.capitalize()}"
-
-            override fun addSourceDir(directory: File) {
-                kotlinSourceSets.forEach { it.kotlin.srcDir(directory) }
-            }
-
-            override fun addResourcesDir(directory: File) {
-                androidSourceSet.res.srcDir(directory)
-            }
-        }
-    }
-
     private fun getAndroidPackage(manifestFile: File): String {
         val dbFactory = DocumentBuilderFactory.newInstance()
         val dBuilder = dbFactory.newDocumentBuilder()
@@ -305,14 +253,5 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val manifest = manifestNodes.item(0)
 
         return manifest.attributes.getNamedItem("package").textContent
-    }
-
-    @Suppress("ReturnCount")
-    private fun KotlinSourceSet.isDependsOn(sourceSet: KotlinSourceSet): Boolean {
-        if (dependsOn.contains(sourceSet)) return true
-        dependsOn.forEach { parent ->
-            if (parent.isDependsOn(sourceSet)) return true
-        }
-        return false
     }
 }
