@@ -8,8 +8,6 @@
     <string name="format">datos de prueba %d</string>
     <string name="encoding">ELIJA LA CARTERA Y LA CANTIDAD</string>
     <string name="positional">segunda cadena %2$s primer decimal %1$d</string>
-    <string name="multilined">primera línea
-segunda línea
-tercera línea.</string>
+    <string name="multilined">primera línea\nsegunda línea\ntercera línea.</string>
     <string name="quotes">Alex009 dijo "hola mundo" &amp; "escribir pruebas".</string>
 </resources>

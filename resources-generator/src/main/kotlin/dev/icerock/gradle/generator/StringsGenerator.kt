@@ -9,6 +9,7 @@ import dev.icerock.gradle.generator.android.AndroidStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.apple.AppleStringsGenerator
 import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
+import dev.icerock.gradle.utils.removeLineWraps
 import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -54,7 +55,7 @@ abstract class StringsGenerator(
             val name = stringNode.attributes.getNamedItem("name").textContent
             val value = stringNode.textContent
 
-            mutableMap[name] = value
+            mutableMap[name] = value.removeLineWraps()
         }
 
         val incorrectKeys = mutableMap

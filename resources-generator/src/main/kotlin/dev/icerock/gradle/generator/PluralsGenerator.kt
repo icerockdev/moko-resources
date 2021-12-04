@@ -9,6 +9,7 @@ import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
+import dev.icerock.gradle.utils.removeLineWraps
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Element
 import java.io.File
@@ -65,7 +66,7 @@ abstract class PluralsGenerator(
                 val quantity = item.attributes.getNamedItem("quantity").textContent
                 val value = item.textContent
 
-                pluralMap[quantity] = value
+                pluralMap[quantity] = value.removeLineWraps()
             }
 
             mutableMap[name] = pluralMap
