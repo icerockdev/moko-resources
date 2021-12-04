@@ -63,7 +63,6 @@ class JvmMRGenerator(
 
     override fun apply(generationTask: Task, project: Project) {
         project.tasks.apply {
-            getByName("preBuild").dependsOn(generationTask)
             withType(KotlinCompile::class.java).all {
                 it.dependsOn(generationTask)
             }

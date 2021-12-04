@@ -20,6 +20,8 @@ jobs:
         run: ./gradlew -p resources-generator build publishToMavenLocal
       - name: Library check
         run: ./gradlew build publishToMavenLocal
+      - name: Check custom samples
+        run: cd sample/clean-compose-jvm-app && ./gradlew build
       - name: Install pods
         run: cd sample/ios-app && pod install
       - name: Check iOS
