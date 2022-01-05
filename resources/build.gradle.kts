@@ -24,6 +24,20 @@ kotlin {
                 }
             }
         }
+
+    js {
+        nodejs()
+    }
+
+    sourceSets {
+        getByName("jsMain") {
+            dependencies {
+                npm("bcp-47", "1.0.8")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.6.0")
+            }
+        }
+    }
 }
 
 dependencies {
