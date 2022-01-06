@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.apple.AppleImagesGenerator
+import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -92,5 +93,7 @@ abstract class ImagesGenerator(
         )
 
         override fun createJvmGenerator() = JvmImagesGenerator(stringsFileTree)
+
+        override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(stringsFileTree)
     }
 }

@@ -27,12 +27,15 @@ kotlin {
 
     js {
         nodejs()
+        browser()
+        useCommonJs()
     }
 
     sourceSets {
         getByName("jsMain") {
             dependencies {
-                npm("bcp-47", "1.0.8")
+                api(npm("bcp-47", "1.0.8"))
+                api(npm("sprintf-js", "1.1.2"))
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.6.0")
             }

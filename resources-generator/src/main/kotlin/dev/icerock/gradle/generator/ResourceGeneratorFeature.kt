@@ -9,4 +9,5 @@ interface ResourceGeneratorFeature<T : MRGenerator.Generator> {
     fun createIosGenerator(): T
     fun createAndroidGenerator(): T
     fun createJvmGenerator(): T
+    fun createJsGenerator(): T
 }

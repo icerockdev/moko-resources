@@ -5,6 +5,9 @@
 package dev.icerock.moko.resources.desc
 
 actual class CompositionStringDesc actual constructor(
-    args: Iterable<StringDesc>,
-    separator: String?
-) : StringDesc
+    val args: Iterable<StringDesc>,
+    val separator: String?
+) : StringDesc {
+
+    override suspend fun localized() = args.map { it.localized() }.joinToString(separator = separator ?: "") { it }
+}

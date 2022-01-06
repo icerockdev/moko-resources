@@ -9,4 +9,6 @@ import dev.icerock.moko.resources.StringResource
 actual class ResourceFormattedStringDesc actual constructor(
     stringRes: StringResource,
     args: List<Any>
-) : StringDesc
+) : StringDesc {
+    override suspend fun localized(): String = ""
+}

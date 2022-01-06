@@ -17,6 +17,8 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         val languageMap: Map<LanguageType, Map<KeyType, T>> = loadLanguageMap()
         val languageKeyValues = languageMap[BASE_LANGUAGE].orEmpty()
 
+        beforeGenerateResources(objectBuilder, languageMap)
+
         val stringsClass = createTypeSpec(languageKeyValues.keys.toList(), objectBuilder)
 
         languageMap.forEach { (language, strings) ->
@@ -56,6 +58,12 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     protected open fun getClassModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
+
+    protected open fun beforeGenerateResources(
+        objectBuilder: TypeSpec.Builder,
+        languageMap: Map<LanguageType, Map<KeyType, T>>
+    ) = Unit
+
     protected open fun generateResources(
         resourcesGenerationDir: File,
         language: String?,

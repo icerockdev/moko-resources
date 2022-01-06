@@ -4,9 +4,13 @@
 
 package dev.icerock.moko.resources.desc
 
+import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.PluralsResource
 
 actual class PluralStringDesc actual constructor(
-    pluralsRes: PluralsResource,
-    number: Int
-) : StringDesc, Parcelable
+    val pluralsRes: PluralsResource,
+    val number: Int,
+) : StringDesc, Parcelable {
+
+    override suspend fun localized() = "pluralsRes.localized(quantity = number)"
+}

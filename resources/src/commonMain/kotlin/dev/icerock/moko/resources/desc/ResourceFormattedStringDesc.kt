@@ -6,8 +6,6 @@ package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.StringResource
 
-expect class ResourceFormattedStringDesc(stringRes: StringResource, args: List<Any>) : StringDesc
-
 @Suppress("FunctionName")
 fun StringDesc.Companion.ResourceFormatted(
     stringRes: StringResource,
@@ -19,3 +17,5 @@ fun StringDesc.Companion.ResourceFormatted(
     stringRes: StringResource,
     vararg args: Any
 ) = ResourceFormattedStringDesc(stringRes, args.asList())
+
+expect class ResourceFormattedStringDesc(stringRes: StringResource, args: List<Any>) : StringDesc

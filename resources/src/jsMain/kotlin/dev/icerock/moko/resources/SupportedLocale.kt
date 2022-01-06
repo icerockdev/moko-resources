@@ -5,5 +5,5 @@
 package dev.icerock.moko.resources
 
 data class SupportedLocale(val locale: String, val stringFileUri: String) {
-    val parsedLocale: ParsedLocale = parse(locale)
+    val parsedLocale: ParsedLocale = parseBcpLocale(locale)
 }

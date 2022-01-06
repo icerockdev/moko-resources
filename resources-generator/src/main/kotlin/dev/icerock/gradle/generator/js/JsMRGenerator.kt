@@ -4,12 +4,11 @@
 
 package dev.icerock.gradle.generator.js
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
 class JsMRGenerator(
@@ -24,32 +23,27 @@ class JsMRGenerator(
     generators = generators
 ) {
 
-    override val sourcesGenerationDir: File
-        get() = super.sourcesGenerationDir
     override val resourcesGenerationDir: File
-        get() = super.resourcesGenerationDir
+        get() = outputDir.resolve("resources")
 
-    override fun beforeMRGeneration() {
-        super.beforeMRGeneration()
-    }
+    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun afterMRGeneration() {
-        super.afterMRGeneration()
-    }
-
-    override fun getMRClassModifiers(): Array<KModifier> {
-        TODO("Not yet implemented")
+    override fun processMRClass(mrClass: TypeSpec.Builder) {
     }
 
     override fun apply(generationTask: Task, project: Project) {
-        TODO("Not yet implemented")
+        project.tasks.apply {
+            withType(KotlinCompile::class.java).all {
+                it.dependsOn(generationTask)
+            }
+        }
     }
 
-    override fun processMRClass(mrClass: TypeSpec.Builder) {
-        super.processMRClass(mrClass)
-    }
+    companion object {
+        const val STRINGS_JSON_NAME = "stringsJson"
 
-    override fun getImports(): List<ClassName> {
-        return super.getImports()
+        const val SUPPORTED_LOCALES_PROPERTY_NAME = "supportedLocales"
+        const val STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME = "stringsFallbackFileUri"
+        const val LOCALIZATION_DIR = "localization"
     }
 }

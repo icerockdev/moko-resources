@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
+import dev.icerock.gradle.generator.js.JsPluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Element
@@ -99,5 +100,7 @@ abstract class PluralsGenerator(
         }
 
         override fun createJvmGenerator() = JvmPluralsGenerator(stringsFileTree, mrClassPackage)
+
+        override fun createJsGenerator(): PluralsGenerator = JsPluralsGenerator(stringsFileTree, mrClassPackage)
     }
 }

@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources
 
+import dev.icerock.moko.resources.bcp_47.parse
 import kotlinx.browser.window
 import kotlin.js.Json
 
@@ -52,7 +53,7 @@ fun findMatchingLocale(
     return userLanguages
         .asSequence()
         .map { localeString ->
-            val parsedLocale = parse(localeString)
+            val parsedLocale = parseBcpLocale(localeString)
 
             val potentialLanguages =
                 supportedLocales.getLocalesForLanguage(parsedLocale.primaryLanguageTag)
@@ -93,27 +94,23 @@ private fun calculateMatchingScore(desiredLocale: ParsedLocale, candidate: Suppo
             } else false
         }
 
-    if (!listComparison(desiredLocale.extendedLanguageSubtag, candidate.extendedLanguageSubtag)) return -1
+    if (!listComparison(desiredLocale.extendedLanguageSubtag, candidate.parsedLocale.extendedLanguageSubtag)) return -1
 
-    if (desiredLocale.script == candidate.script) {
+    if (desiredLocale.script == candidate.parsedLocale.script) {
         score++
-    } else if (desiredLocale.script.isNotEmpty() && candidate.script.isNotEmpty()) return -1
+    } else if (desiredLocale.script.isNotEmpty() && candidate.parsedLocale.script.isNotEmpty()) return -1
 
-    if (desiredLocale.region == candidate.region) {
+    if (desiredLocale.region == candidate.parsedLocale.region) {
         score++
-    } else if (desiredLocale.region.isNotEmpty() && candidate.script.isNotEmpty()) return -1
+    } else if (desiredLocale.region.isNotEmpty() && candidate.parsedLocale.script.isNotEmpty()) return -1
 
-    if (!listComparison(desiredLocale.variants, candidate.variants)) return -1
-    if (!listComparison(desiredLocale.extensions, candidate.extensions)) return -1
-    if (!listComparison(desiredLocale.privateuse, candidate.privateuse)) return -1
+    if (!listComparison(desiredLocale.variants, candidate.parsedLocale.variants)) return -1
+    if (!listComparison(desiredLocale.extensions, candidate.parsedLocale.extensions)) return -1
+    if (!listComparison(desiredLocale.privateuse, candidate.parsedLocale.privateuse)) return -1
 
     return score
 }
 
 private class CachedLocale(val usedLanguages: Array<out String>, val locale: SupportedLocale?)
 
-@JsModule("bcp-47")
-@JsName("parse")
-private external fun parseImpl(tag: String): Json
-
-fun parse(tag: String): ParsedLocale = ParsedLocale(parseImpl(tag))
+fun parseBcpLocale(tag: String): ParsedLocale = ParsedLocale(parse(tag))

@@ -16,6 +16,7 @@ import dev.icerock.gradle.generator.SourceInfo
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
+import dev.icerock.gradle.generator.js.JsMRGenerator
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.getDependedFrom
@@ -29,6 +30,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.KotlinJsTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
@@ -133,6 +135,16 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             features,
             target
         )
+
+        setupJsGenerator(
+            commonSourceSet,
+            targets,
+            generatedDir,
+            mrClassPackage,
+            features,
+            target
+        )
+
         if (HostManager.hostIsMac) {
             setupAppleGenerator(
                 commonSourceSet,
@@ -189,6 +201,31 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 createSourceSet(kotlinSourceSet),
                 mrClassPackage,
                 generators = features.map { it.createJvmGenerator() }
+            ).apply(target)
+        }
+    }
+
+    @Suppress("LongParameterList")
+    private fun setupJsGenerator(
+        commonSourceSet: KotlinSourceSet,
+        targets: List<KotlinTarget>,
+        generatedDir: File,
+        mrClassPackage: String,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
+        target: Project
+    ) {
+        val kotlinSourceSets: List<KotlinSourceSet> = targets
+            .filterIsInstance<KotlinJsTarget>()
+            .flatMap { it.compilations }
+            .map { it.defaultSourceSet }
+            .filter { it.isDependsOn(commonSourceSet) }
+
+        kotlinSourceSets.forEach { kotlinSourceSet ->
+            JsMRGenerator(
+                generatedDir,
+                createSourceSet(kotlinSourceSet),
+                mrClassPackage,
+                generators = features.map { it.createJsGenerator() }
             ).apply(target)
         }
     }

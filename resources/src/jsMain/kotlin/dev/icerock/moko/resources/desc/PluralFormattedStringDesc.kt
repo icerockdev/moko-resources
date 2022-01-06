@@ -7,7 +7,10 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.resources.PluralsResource
 
 actual class PluralFormattedStringDesc actual constructor(
-    pluralsRes: PluralsResource,
-    number: Int,
-    args: List<Any>
-) : StringDesc
+    val pluralsRes: PluralsResource,
+    val number: Int,
+    val args: List<Any>
+) : StringDesc {
+
+    override suspend fun localized() = ""
+}

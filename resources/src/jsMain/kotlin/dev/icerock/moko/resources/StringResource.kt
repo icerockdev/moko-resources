@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources
 
+import dev.icerock.moko.resources.sprintf_js.sprintf
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.sync.Mutex
@@ -11,7 +12,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.js.Json
 
 actual class StringResource(
-    val resName: String,
+    private val key: String,
     private val supportedLocales: SupportedLocales,
     private val fallbackFileUri: String
 ) {
@@ -68,16 +69,16 @@ actual class StringResource(
     }
 
     suspend fun localized(locale: String? = null): String {
-        return loadLocalizedString(resName, findMatchingLocale(locale), fallbackFileUri)
+        return loadLocalizedString(key, findMatchingLocale(locale), fallbackFileUri)
     }
 
     suspend fun localized(locale: String? = null, vararg args: Any): String {
-        val string = loadLocalizedString(resName, findMatchingLocale(locale), fallbackFileUri)
-        return MessageFormat.format(string, *args)
+        val string = loadLocalizedString(key, findMatchingLocale(locale), fallbackFileUri)
+        return sprintf(string, args)
     }
 
     private fun findMatchingLocale(locale: String?) =
-        if (locale == null) findMatchingLocale(supportedLocales) else findMatchingLocale(
+        if (locale == null) getLanguageLocale(supportedLocales) else findMatchingLocale(
             supportedLocales,
             arrayOf(locale)
         )

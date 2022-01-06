@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFilesGenerator
 import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.apple.AppleFilesGenerator
+import dev.icerock.gradle.generator.js.JsFilesGenerator
 import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -98,5 +99,7 @@ abstract class FilesGenerator(
         )
 
         override fun createJvmGenerator() = JvmFilesGenerator(fileTree)
+
+        override fun createJsGenerator(): FilesGenerator = JsFilesGenerator(fileTree)
     }
 }

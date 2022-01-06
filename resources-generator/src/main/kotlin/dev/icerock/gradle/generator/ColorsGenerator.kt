@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidColorsGenerator
 import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.apple.AppleColorsGenerator
+import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -144,6 +145,8 @@ abstract class ColorsGenerator(
         override fun createAndroidGenerator() = AndroidColorsGenerator(colorsFileTree)
 
         override fun createJvmGenerator() = JvmColorsGenerator(colorsFileTree)
+
+        override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(colorsFileTree)
     }
 
     protected fun replaceColorAlpha(color: String?): String? {
