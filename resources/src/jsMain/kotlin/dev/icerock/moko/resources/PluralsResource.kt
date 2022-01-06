@@ -4,4 +4,44 @@
 
 package dev.icerock.moko.resources
 
-actual class PluralsResource
+import dev.icerock.moko.resources.message_format.CompiledPlural
+import dev.icerock.moko.resources.message_format.MessageFormat
+import dev.icerock.moko.resources.sprintf_js.sprintf
+
+actual class PluralsResource(
+    private val key: String,
+    private val supportedLocales: SupportedLocales,
+    private val fallbackFileUri: String
+) {
+    private var cachedValue: CachedValue? = null
+
+    companion object {
+        private val pluralsResourceLoader = LocalizedStringLoader()
+    }
+
+    suspend fun localized(locale: String? = null, quantity: Int, vararg args: Any): String {
+        val currentCache = cachedValue
+        if (currentCache != null && currentCache.locale == locale) {
+            return currentCache.plural.evaluate(quantity, args)
+        }
+
+        //Cache miss
+        val usedLocale = findMatchingLocale(supportedLocales, locale)
+        val localizedString = pluralsResourceLoader.loadLocalizedString(
+            key,
+            usedLocale,
+            fallbackFileUri
+        )
+
+        val compiledPlural = CompiledPlural(
+            MessageFormat(arrayOf(usedLocale?.locale ?: "en"))
+                .compile(localizedString)
+        )
+
+        cachedValue = CachedValue(locale, compiledPlural)
+
+        return compiledPlural.evaluate(quantity, args)
+    }
+
+    private class CachedValue(val locale: String?, val plural: CompiledPlural)
+}

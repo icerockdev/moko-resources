@@ -41,9 +41,11 @@ class JsMRGenerator(
 
     companion object {
         const val STRINGS_JSON_NAME = "stringsJson"
+        const val PLURALS_JSON_NAME = "pluralsJson"
 
         const val SUPPORTED_LOCALES_PROPERTY_NAME = "supportedLocales"
         const val STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME = "stringsFallbackFileUri"
+        const val PLURALS_FALLBACK_FILE_URI_PROPERTY_NAME = "stringsFallbackFileUri"
         const val LOCALIZATION_DIR = "localization"
     }
 }

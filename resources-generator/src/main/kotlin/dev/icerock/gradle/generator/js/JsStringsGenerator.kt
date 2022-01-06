@@ -7,11 +7,10 @@ package dev.icerock.gradle.generator.js
 import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.LanguageType
-import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME
 import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.SUPPORTED_LOCALES_PROPERTY_NAME
-import dev.icerock.gradle.generator.jvm.ClassLoaderExtender
+import dev.icerock.gradle.generator.js_jvm_common.generateFallbackAndSupportedLanguageProperties
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
@@ -44,46 +43,14 @@ class JsStringsGenerator(
         objectBuilder: TypeSpec.Builder,
         languageMap: Map<LanguageType, Map<KeyType, String>>
     ) {
-        objectBuilder.addProperty(
-            PropertySpec
-                .builder(STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME, String::class, KModifier.PRIVATE)
-                .initializer(
-                    CodeBlock.of(
-                        "js(%S) as %T",
-                        "require(\"${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}.json\")",
-                        String::class
-                    )
-                )
-                .build()
-        )
-
-        val supportedLocales = ClassName("dev.icerock.moko.resources", "SupportedLocales")
-        val supportedLocale = ClassName("dev.icerock.moko.resources", "SupportedLocale")
-        objectBuilder.addProperty(
-            PropertySpec
-                .builder(SUPPORTED_LOCALES_PROPERTY_NAME, supportedLocales, KModifier.PRIVATE)
-                .initializer(
-                    CodeBlock
-                        .builder()
-                        .apply {
-                            add("%T(listOf(\n", supportedLocales)
-                            languageMap.keys.filter { it != "base" }.forEach { language ->
-                                val fileName =
-                                    "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language.json"
-                                add(
-                                    "%T(%S, js(%S) as %T),\n",
-                                    supportedLocale,
-                                    language,
-                                    "require(\"$fileName\")",
-                                    String::class
-                                )
-                            }
-                            add("))")
-                        }
-                        .build()
-                )
-                .build()
-        )
+        objectBuilder
+            .generateFallbackAndSupportedLanguageProperties(
+                languages = languageMap.keys.toList(),
+                fallbackFilePropertyName = STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME,
+                fallbackFile = "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}.json",
+                supportedLocalesPropertyName = SUPPORTED_LOCALES_PROPERTY_NAME,
+                getFileNameForLanguage = { language -> "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language.json" }
+            )
     }
 
     override fun generateResources(resourcesGenerationDir: File, language: String?, strings: Map<KeyType, String>) {

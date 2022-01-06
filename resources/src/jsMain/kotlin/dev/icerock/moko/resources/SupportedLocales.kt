@@ -10,6 +10,10 @@ class SupportedLocales(private val locales: List<SupportedLocale>) {
         locales
             .groupBy { it.parsedLocale.primaryLanguageTag }
 
+    private val localeMap: Map<String, SupportedLocale> = locales.associateBy { it.locale }
+
     fun getLocalesForLanguage(primaryLanguageSubtag: String): List<SupportedLocale> =
         languageMap[primaryLanguageSubtag] ?: emptyList()
+
+    fun getForLocale(locale: String): SupportedLocale = localeMap[locale]!!
 }

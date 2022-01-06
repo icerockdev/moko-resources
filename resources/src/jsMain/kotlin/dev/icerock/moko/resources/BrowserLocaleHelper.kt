@@ -38,13 +38,19 @@ fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
     val currentCache = cachedLocale
     val userLanguages = window.navigator.languages
     return if (currentCache != null && currentCache.usedLanguages.contentEquals(userLanguages)) {
-        currentCache.locale
+        supportedLocales.getForLocale(currentCache.locale ?: return null)
     } else {
         val foundLocale = findMatchingLocale(supportedLocales)
-        cachedLocale = CachedLocale(userLanguages, foundLocale)
+        cachedLocale = CachedLocale(userLanguages, foundLocale?.locale)
         return foundLocale
     }
 }
+
+fun findMatchingLocale(supportedLocales: SupportedLocales, locale: String?) =
+    if (locale == null) getLanguageLocale(supportedLocales) else findMatchingLocale(
+        supportedLocales,
+        arrayOf(locale)
+    )
 
 fun findMatchingLocale(
     supportedLocales: SupportedLocales,
@@ -111,6 +117,6 @@ private fun calculateMatchingScore(desiredLocale: ParsedLocale, candidate: Suppo
     return score
 }
 
-private class CachedLocale(val usedLanguages: Array<out String>, val locale: SupportedLocale?)
+private class CachedLocale(val usedLanguages: Array<out String>, val locale: String?)
 
 fun parseBcpLocale(tag: String): ParsedLocale = ParsedLocale(parse(tag))

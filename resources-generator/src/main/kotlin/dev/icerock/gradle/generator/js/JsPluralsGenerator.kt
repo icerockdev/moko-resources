@@ -7,25 +7,122 @@ package dev.icerock.gradle.generator.js
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.LanguageType
+import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
+import dev.icerock.gradle.generator.js_jvm_common.generateFallbackAndSupportedLanguageProperties
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
+import java.io.File
 
 class JsPluralsGenerator(
     pluralsFileTree: FileTree,
     private val mrClassPackage: String
 ) : PluralsGenerator(pluralsFileTree) {
 
+    private val flattenClassPackage = mrClassPackage.replace(".", "")
+
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(key: String): CodeBlock? {
-        return CodeBlock.of("")
+    override fun getPropertyInitializer(key: String): CodeBlock {
+        return CodeBlock.of(
+            "PluralsResource(key = %S, supportedLocales = %N, fallbackFileUri = %N)",
+            key,
+            JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
+            JsMRGenerator.PLURALS_FALLBACK_FILE_URI_PROPERTY_NAME
+        )
+    }
+
+    override fun beforeGenerateResources(
+        objectBuilder: TypeSpec.Builder,
+        languageMap: Map<LanguageType, Map<KeyType, PluralMap>>
+    ) {
+        objectBuilder
+            .generateFallbackAndSupportedLanguageProperties(
+                languages = languageMap.keys.toList(),
+                fallbackFilePropertyName = JsMRGenerator.PLURALS_FALLBACK_FILE_URI_PROPERTY_NAME,
+                fallbackFile = "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
+                supportedLocalesPropertyName = JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
+                getFileNameForLanguage = { language -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language.json" }
+            )
     }
 
     override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) {
     }
 
     override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) {
+    }
+
+    override fun generateResources(resourcesGenerationDir: File, language: String?, strings: Map<KeyType, PluralMap>) {
+        val fileDirName = when (language) {
+            null -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}"
+            else -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language"
+        }
+
+        val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {
+            mkdirs()
+        }
+
+        val pluralsFile = File(localizationDir, "$fileDirName.json")
+
+        val content = buildJsonObject {
+            strings.forEach { (key, pluralMap) ->
+                val messageFormatString = StringBuilder().apply {
+                    append("{ PLURAL, plural, ")
+                    pluralMap.forEach { (pluralKey, pluralString) ->
+                        //Zero isn't allowed in english (which is default for base), but we support it through =0
+                        val actPluralKey = if (language == null && pluralKey == "zero") "=0" else pluralKey
+
+                        append(actPluralKey)
+                        append(" ")
+                        append("{")
+                        append(pluralString.replaceAndroidParams())
+                        append("}")
+                    }
+
+                    append("}")
+                }.toString()
+
+                put(key, messageFormatString)
+            }
+        }.toString()
+
+        pluralsFile.writeText(content)
+    }
+
+    companion object {
+        private val androidParamRegex = "%(.)(?:\\\$(.))?".toRegex()
+
+        private fun String.replaceAndroidParams(): String {
+            val allMatches = androidParamRegex
+                .findAll(this)
+
+            if (allMatches.count() == 0) return this
+
+            var counter = 0
+            var result = this
+
+            //First go through the positioned args
+            allMatches
+                .filter { matchResult -> matchResult.groupValues[2].isNotEmpty() }
+                .map { matchResult -> matchResult.groupValues[0] }
+                .distinct()
+                .forEach {
+                    result = result.replace(it, "{$counter}")
+                    counter++
+                }
+
+            //Now remove the not positioned args
+            while (androidParamRegex.containsMatchIn(result)) {
+                result = androidParamRegex.replaceFirst(result, "{$counter}")
+                counter++
+            }
+
+            return result
+        }
     }
 }

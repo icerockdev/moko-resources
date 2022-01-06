@@ -36,6 +36,7 @@ kotlin {
             dependencies {
                 api(npm("bcp-47", "1.0.8"))
                 api(npm("sprintf-js", "1.1.2"))
+                api(npm("@messageformat/core", "3.0.0"))
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.6.0")
             }
