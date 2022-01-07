@@ -4,4 +4,13 @@
 
 package dev.icerock.moko.resources
 
-actual class FileResource
+import kotlinx.browser.window
+import kotlinx.coroutines.await
+
+actual class FileResource(val fileUrl: String) {
+    suspend fun getText(): String {
+        return retryIO {
+            window.fetch(fileUrl).await().text().await()
+        }
+    }
+}
