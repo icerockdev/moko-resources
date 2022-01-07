@@ -63,7 +63,7 @@ abstract class PluralsGenerator(
             for (j in 0 until itemNodes.length) {
                 val item = itemNodes.item(j)
 
-                val quantity = item.attributes.getNamedItem("quantity").textContent
+                val quantity = item.attributes.getNamedItem("quantity").textContent.trim()
                 val value = item.textContent
 
                 pluralMap[quantity] = value
@@ -72,7 +72,36 @@ abstract class PluralsGenerator(
             mutableMap[name] = pluralMap
         }
 
-        return mutableMap
+        return processLanguagePlurals(mutableMap)
+    }
+
+    /**
+     * Called after the language plurals have been loaded.
+     */
+    protected open fun processLanguagePlurals(languagePlurals: Map<KeyType, PluralMap>): Map<KeyType, PluralMap> {
+        //Replace =0 with zero. =1 with one and =2 and two
+        //if both =0 and zero are present, =0 will be discarded. Same with =1 and one and =2 with two
+
+        val manipulateMap: MutableMap<String, String>.(equals: String, literal: String) -> Unit = { equals, literal ->
+            val hasEquals = equals in this
+            val hasLiteral = literal in this
+
+            if (hasEquals && hasLiteral) {
+                this -= equals
+            } else if (hasEquals) {
+                this[literal] = this.remove(equals)!!
+            }
+        }
+
+        return languagePlurals.map { (keyType, pluralMap) ->
+            val newPluralMap = pluralMap.toMutableMap()
+
+            newPluralMap.manipulateMap("=0", "zero")
+            newPluralMap.manipulateMap("=1", "one")
+            newPluralMap.manipulateMap("=2", "two")
+
+            keyType to newPluralMap
+        }.toMap()
     }
 
     class Feature(

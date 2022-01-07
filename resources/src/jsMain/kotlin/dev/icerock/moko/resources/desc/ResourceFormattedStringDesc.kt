@@ -7,8 +7,8 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.resources.StringResource
 
 actual class ResourceFormattedStringDesc actual constructor(
-    stringRes: StringResource,
-    args: List<Any>
+    val stringRes: StringResource,
+    val args: List<Any>
 ) : StringDesc {
-    override suspend fun localized(): String = ""
+    override suspend fun localized(): String = stringRes.localized(null, args)
 }

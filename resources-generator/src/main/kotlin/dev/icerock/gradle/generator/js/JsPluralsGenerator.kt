@@ -94,35 +94,6 @@ class JsPluralsGenerator(
         pluralsFile.writeText(content)
     }
 
-    companion object {
-        private val androidParamRegex = "%(.)(?:\\\$(.))?".toRegex()
-
-        private fun String.replaceAndroidParams(): String {
-            val allMatches = androidParamRegex
-                .findAll(this)
-
-            if (allMatches.count() == 0) return this
-
-            var counter = 0
-            var result = this
-
-            //First go through the positioned args
-            allMatches
-                .filter { matchResult -> matchResult.groupValues[2].isNotEmpty() }
-                .map { matchResult -> matchResult.groupValues[0] }
-                .distinct()
-                .forEach {
-                    result = result.replace(it, "{$counter}")
-                    counter++
-                }
-
-            //Now remove the not positioned args
-            while (androidParamRegex.containsMatchIn(result)) {
-                result = androidParamRegex.replaceFirst(result, "{$counter}")
-                counter++
-            }
-
-            return result
-        }
-    }
+    //For JS we can use =0 and zero
+    override fun processLanguagePlurals(languagePlurals: Map<KeyType, PluralMap>): Map<KeyType, PluralMap> = languagePlurals
 }

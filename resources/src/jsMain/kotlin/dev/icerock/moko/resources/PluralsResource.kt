@@ -6,7 +6,6 @@ package dev.icerock.moko.resources
 
 import dev.icerock.moko.resources.message_format.CompiledPlural
 import dev.icerock.moko.resources.message_format.MessageFormat
-import dev.icerock.moko.resources.sprintf_js.sprintf
 
 actual class PluralsResource(
     private val key: String,

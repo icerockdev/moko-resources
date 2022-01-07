@@ -8,6 +8,10 @@ import dev.icerock.moko.resources.bcp_47.parse
 import kotlinx.browser.window
 import kotlin.js.Json
 
+/*
+ * Maybe this entire file can be replaced by MessageFormat
+ */
+
 @Suppress("UNCHECKED_CAST")
 class ParsedLocale(parseResult: Json) {
     val primaryLanguageTag: String = parseResult["language"] as? String
@@ -32,6 +36,9 @@ class ParsedLocale(parseResult: Json) {
 private var cachedLocale: CachedLocale? = null
 
 /**
+ * Gets the supported locale that fits the browser defined locales the most.
+ * The result will be cached.
+ *
  * @return the locale that can be used to localize strings or null if no locale was found that matches this user's preferences
  */
 fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
@@ -40,19 +47,27 @@ fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
     return if (currentCache != null && currentCache.usedLanguages.contentEquals(userLanguages)) {
         supportedLocales.getForLocale(currentCache.locale ?: return null)
     } else {
-        val foundLocale = findMatchingLocale(supportedLocales)
+        val foundLocale = findMatchingLocale(supportedLocales, userLanguages)
         cachedLocale = CachedLocale(userLanguages, foundLocale?.locale)
         return foundLocale
     }
 }
 
+/**
+ * Finds a matching locale in the supported locales.
+ * @param locale if null, the user defined locales of the browsers will be used.
+ */
 fun findMatchingLocale(supportedLocales: SupportedLocales, locale: String?) =
     if (locale == null) getLanguageLocale(supportedLocales) else findMatchingLocale(
         supportedLocales,
         arrayOf(locale)
     )
 
-fun findMatchingLocale(
+/**
+ * Iterates through all user languages and for each tries to find the best fitting
+ * supported locale. If
+ */
+private fun findMatchingLocale(
     supportedLocales: SupportedLocales,
     userLanguages: Array<out String> = window.navigator.languages
 ): SupportedLocale? {

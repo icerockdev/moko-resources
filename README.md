@@ -161,6 +161,12 @@ iOS:
 ```swift
 let string = getMyString().localized()
 ```
+
+JS:
+```kotlin
+val string = getMyString().localized()
+```
+
 Note: `StringDesc` is a multiple-source container for Strings: in StringDesc we can use a resource, plurals, formatted variants, or raw string. To convert `StringDesc` to `String` on Android call `toString(context)` (a context is required for the resources usage), on iOS - call `localized()`.
 
 #### MR directly from native side
@@ -221,6 +227,9 @@ iOS:
 let string = getMyFormatDesc(input: "hello").localized()
 ```
 
+Warning: Do no mix positioned placeholders with unpositioned ones within a string, as this may lead to
+different behaviour on different platforms. Stick to one style for each string.
+
 ### Example 3 - plural string
 The first step is to create a file `plurals.xml` in `commonMain/resources/MR/base` with the following content:
 ```xml
@@ -252,6 +261,27 @@ iOS:
 ```swift
 let string = getMyPluralDesc(quantity: 10).localized()
 ```
+
+JS:
+Kotlin/JS is stricter than the other platforms when it comes to plurals, 
+as it internally uses the library messageformat. Please refer to the 
+[messageformat documentation](https://messageformat.github.io/messageformat/guide/#pluralformat).
+Therefore, you cannot use e.g. quantity zero in english (which is default for the base declaration) if you
+want to refer to the quantity being 0. Therefore, when also targeting JS, use this syntax instead:
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="my_plural">
+        <item quantity="=0">no items</item>
+        <item quantity="=1">%d item</item>
+        <item quantity="=2">%d items</item>
+        <item quantity="other">%d items</item>
+    </plural>
+</resources>
+```
+On all other platforms, =0 will be replaced with zero, =1 with one and =2 with two. 
+But on JS =0 only matches the quantity being 0. If you declare both =0 and zero, on all other platform =0 will be
+discarded.
 
 ### Example 4 - plural formatted string
 The first step is to create file `plurals.xml` in `commonMain/resources/MR/base` with the following content:

@@ -67,7 +67,7 @@ class JsStringsGenerator(
 
         val content = buildJsonObject {
             strings.forEach { (key, value) ->
-                put(key, value)
+                put(key, value.replaceAndroidParams())
             }
         }.toString()
 

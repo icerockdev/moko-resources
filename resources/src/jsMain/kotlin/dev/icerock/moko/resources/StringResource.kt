@@ -4,7 +4,8 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.resources.sprintf_js.sprintf
+import dev.icerock.moko.resources.message_format.CompiledVariableString
+import dev.icerock.moko.resources.message_format.MessageFormat
 
 actual class StringResource(
     private val key: String,
@@ -12,21 +13,31 @@ actual class StringResource(
     private val fallbackFileUri: String
 ) {
 
+    private var cachedValue: CachedValue? = null
+
     companion object {
         private val stringResourceLoader = LocalizedStringLoader()
     }
 
-    suspend fun localized(locale: String? = null): String {
-        return stringResourceLoader.loadLocalizedString(
-            key,
-            findMatchingLocale(supportedLocales, locale),
-            fallbackFileUri
+    suspend fun localized(locale: String? = null, vararg args: Any): String {
+        val currentCache = cachedValue
+        if (currentCache != null && currentCache.locale == locale) {
+            return currentCache.compiledVariableString.evaluate(args)
+        }
+
+        val usedLocale = findMatchingLocale(supportedLocales, locale)
+
+        val localizedString = stringResourceLoader.loadLocalizedString(key, usedLocale, fallbackFileUri)
+
+        val compiledVariableString = CompiledVariableString(
+            MessageFormat(arrayOf(usedLocale?.locale ?: "en"))
+                .compile(localizedString)
         )
+
+        cachedValue = CachedValue(locale, compiledVariableString)
+
+        return compiledVariableString.evaluate(args)
     }
 
-    suspend fun localized(locale: String? = null, vararg args: Any): String {
-        val string =
-            stringResourceLoader.loadLocalizedString(key, findMatchingLocale(supportedLocales, locale), fallbackFileUri)
-        return sprintf(string, args)
-    }
+    private class CachedValue(val locale: String?, val compiledVariableString: CompiledVariableString)
 }
