@@ -90,6 +90,33 @@ ios-app Info.plist:
 ```
 in array should be added all used languages.
 
+For JS/Browser you will have to add the following file to your JS-Projects [webpack.config.d](https://kotlinlang.org/docs/js-project-setup.html#webpack-configuration-file) folder:
+```js
+const path = require('path');
+
+/*
+ * your current path is root-project-folder/build/js/packages/project_name-js
+ * this path has to link to root-project-folder/your-common-project/build/generated/moko/jsMain/resources
+ * 
+ * So for example "../../../../common/build/generated/moko/jsMain/resources"
+ */
+const mokoResourcePath = path.resolve("REPLACE_WITH_YOUR_PATH_AS_IN_COMMONT")
+
+config.module.rules.push(
+    {
+        test: /\.(.*)/,
+        include: [
+            path.resolve(mokoResourcePath)
+        ],
+        type: 'asset/resource'
+    }
+);
+
+config.resolve.modules.push(
+    path.resolve(mokoResourcePath)
+)
+```
+
 ### Static kotlin frameworks support
 If project configured with static framework output (for example by `org.jetbrains.kotlin.native.cocoapods` plugin)
 in Xcode project should be added `Build Phase` (at end of list) with script:
