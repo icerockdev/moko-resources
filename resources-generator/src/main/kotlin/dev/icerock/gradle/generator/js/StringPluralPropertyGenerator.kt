@@ -8,12 +8,14 @@ import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.LanguageType
 
 /**
+ * @param folder the folder, where the localization files are in.
  * @param languages the language codes supported
  * @param fallbackFilePropertyName the property name in the MR object
  * @param fallbackFile the name of the file webpack will use, e.g. my_plurals.json
  */
 fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
     languages: List<LanguageType>,
+    folder: String,
     fallbackFilePropertyName: String,
     fallbackFile: String,
     supportedLocalesPropertyName: String,
@@ -25,7 +27,7 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
             .initializer(
                 CodeBlock.of(
                     "js(%S) as %T",
-                    "require(\"$fallbackFile\")",
+                    "require(\"$folder/$fallbackFile\")",
                     String::class
                 )
             )
@@ -48,7 +50,7 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
                                 "%T(%S, js(%S) as %T),\n",
                                 supportedLocale,
                                 language,
-                                "require(\"$fileName\")",
+                                "require(\"$folder/$fileName\")",
                                 String::class
                             )
                         }

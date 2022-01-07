@@ -44,6 +44,7 @@ class JsPluralsGenerator(
         objectBuilder
             .generateFallbackAndSupportedLanguageProperties(
                 languages = languageMap.keys.toList(),
+                folder = JsMRGenerator.LOCALIZATION_DIR,
                 fallbackFilePropertyName = JsMRGenerator.PLURALS_FALLBACK_FILE_URI_PROPERTY_NAME,
                 fallbackFile = "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
                 supportedLocalesPropertyName = JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,

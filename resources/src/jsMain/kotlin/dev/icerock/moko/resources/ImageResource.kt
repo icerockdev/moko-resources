@@ -4,4 +4,4 @@
 
 package dev.icerock.moko.resources
 
-actual class ImageResource
+actual class ImageResource(val fileUrl: String)

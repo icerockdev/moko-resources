@@ -46,6 +46,7 @@ class JsStringsGenerator(
         objectBuilder
             .generateFallbackAndSupportedLanguageProperties(
                 languages = languageMap.keys.toList(),
+                folder = JsMRGenerator.LOCALIZATION_DIR,
                 fallbackFilePropertyName = STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME,
                 fallbackFile = "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}.json",
                 supportedLocalesPropertyName = SUPPORTED_LOCALES_PROPERTY_NAME,
