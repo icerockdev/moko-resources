@@ -25,12 +25,6 @@ kotlin {
             }
         }
 
-    js {
-        nodejs()
-        browser()
-        useCommonJs()
-    }
-
     sourceSets {
         getByName("jsMain") {
             dependencies {

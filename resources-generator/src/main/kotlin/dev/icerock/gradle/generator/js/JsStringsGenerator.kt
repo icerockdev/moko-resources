@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.LanguageType
 import dev.icerock.gradle.generator.StringsGenerator
-import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME
+import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME
 import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.SUPPORTED_LOCALES_PROPERTY_NAME
 import dev.icerock.gradle.generator.js_jvm_common.generateFallbackAndSupportedLanguageProperties
 import kotlinx.serialization.json.buildJsonObject
@@ -18,7 +18,7 @@ import java.io.File
 
 class JsStringsGenerator(
     stringsFileTree: FileTree,
-    private val mrClassPackage: String
+    mrClassPackage: String
 ) : StringsGenerator(stringsFileTree) {
 
     private val flattenClassPackage = mrClassPackage.replace(".", "")
@@ -32,7 +32,7 @@ class JsStringsGenerator(
             "StringResource(key = %S, supportedLocales = %N, fallbackFileUri = %N)",
             key,
             SUPPORTED_LOCALES_PROPERTY_NAME,
-            STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME
+            STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME
         )
 
     override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
@@ -47,7 +47,7 @@ class JsStringsGenerator(
             .generateFallbackAndSupportedLanguageProperties(
                 languages = languageMap.keys.toList(),
                 folder = JsMRGenerator.LOCALIZATION_DIR,
-                fallbackFilePropertyName = STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME,
+                fallbackFilePropertyName = STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME,
                 fallbackFile = "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}.json",
                 supportedLocalesPropertyName = SUPPORTED_LOCALES_PROPERTY_NAME,
                 getFileNameForLanguage = { language -> "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language.json" }

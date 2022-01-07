@@ -18,15 +18,22 @@ class JsFontsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fontFile: File): CodeBlock? {
-        return CodeBlock.of("")
+    override fun getPropertyInitializer(fontFile: File): CodeBlock {
+        return CodeBlock.of("FontResource(fileUrl = js(\"require(\\\"${FONTS_DIR}/${fontFile.name}\\\")\") as String)")
     }
 
-    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) {
-
+    override fun generateResources(resourcesGenerationDir: File, files: List<FontFile>) {
+        val fontsDir = File(resourcesGenerationDir, FONTS_DIR).apply { mkdirs() }
+        files.forEach { (_, file) ->
+            file.copyTo(File(fontsDir, file.name))
+        }
     }
 
-    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) {
+    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
 
+    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) = Unit
+
+    companion object {
+        const val FONTS_DIR = "fonts"
     }
 }

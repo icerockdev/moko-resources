@@ -18,15 +18,11 @@ class JsColorsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getImports(): List<ClassName> {
-        return emptyList()
-    }
+    override fun getImports() = listOf(
+        ClassName("dev.icerock.moko.graphics", "Color")
+    )
 
-    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) {
+    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
 
-    }
-
-    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) {
-
-    }
+    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) = Unit
 }

@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import java.io.File
 
 class JsMRGenerator(
@@ -33,7 +33,7 @@ class JsMRGenerator(
 
     override fun apply(generationTask: Task, project: Project) {
         project.tasks.apply {
-            withType(KotlinCompile::class.java).all {
+            withType(KotlinJsCompile::class.java).all {
                 it.dependsOn(generationTask)
             }
         }
@@ -44,8 +44,8 @@ class JsMRGenerator(
         const val PLURALS_JSON_NAME = "pluralsJson"
 
         const val SUPPORTED_LOCALES_PROPERTY_NAME = "supportedLocales"
-        const val STRINGS_FALLBACK_FILE_URI_PROPERTY_NAME = "stringsFallbackFileUri"
-        const val PLURALS_FALLBACK_FILE_URI_PROPERTY_NAME = "stringsFallbackFileUri"
+        const val STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME = "stringsFallbackFileUrl"
+        const val PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME = "stringsFallbackFileUrl"
         const val LOCALIZATION_DIR = "localization"
     }
 }

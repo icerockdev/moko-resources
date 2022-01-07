@@ -14,6 +14,10 @@ kotlin {
     android()
     ios()
     macosX64()
+    js(IR) {
+        browser()
+        useCommonJs()
+    }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.CInteropProcess::class.java) {

@@ -24,7 +24,7 @@ class LocalizedStringLoader {
                 cachedLocalizationFiles[locale]
             }
             else -> {
-                loadLocalizationFile(locale.fileUri)
+                loadLocalizationFile(locale.fileUrl)
             }
         } ?: throw RuntimeException("Could not load localized string")
 

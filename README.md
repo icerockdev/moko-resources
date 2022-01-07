@@ -5,9 +5,11 @@
 ![badge][badge-iosarm64]
 ![badge][badge-macos64]
 ![badge][badge-jvm]
+![badge][badge-js]
 
 # Mobile Kotlin resources
-This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
+This is a Kotlin MultiPlatform library that provides access to the resources on iOS, Android the JVM and JS/Browser 
+with the support of the default system localization.
 
 ## Table of Contents
 - [Features](#features)

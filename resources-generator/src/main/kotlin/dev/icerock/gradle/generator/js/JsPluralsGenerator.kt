@@ -19,7 +19,7 @@ import java.io.File
 
 class JsPluralsGenerator(
     pluralsFileTree: FileTree,
-    private val mrClassPackage: String
+    mrClassPackage: String
 ) : PluralsGenerator(pluralsFileTree) {
 
     private val flattenClassPackage = mrClassPackage.replace(".", "")
@@ -33,7 +33,7 @@ class JsPluralsGenerator(
             "PluralsResource(key = %S, supportedLocales = %N, fallbackFileUri = %N)",
             key,
             JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
-            JsMRGenerator.PLURALS_FALLBACK_FILE_URI_PROPERTY_NAME
+            JsMRGenerator.PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME
         )
     }
 
@@ -45,7 +45,7 @@ class JsPluralsGenerator(
             .generateFallbackAndSupportedLanguageProperties(
                 languages = languageMap.keys.toList(),
                 folder = JsMRGenerator.LOCALIZATION_DIR,
-                fallbackFilePropertyName = JsMRGenerator.PLURALS_FALLBACK_FILE_URI_PROPERTY_NAME,
+                fallbackFilePropertyName = JsMRGenerator.PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME,
                 fallbackFile = "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
                 supportedLocalesPropertyName = JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
                 getFileNameForLanguage = { language -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language.json" }
