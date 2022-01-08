@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.KotlinJsTarget
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
@@ -215,7 +216,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         target: Project
     ) {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
-            .filterIsInstance<KotlinJsTarget>()
+            .filterIsInstance<KotlinJsIrTarget>()
             .flatMap { it.compilations }
             .map { it.defaultSourceSet }
             .filter { it.isDependsOn(commonSourceSet) }

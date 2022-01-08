@@ -9,6 +9,9 @@ import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
 class JsMRGenerator(
@@ -33,7 +36,7 @@ class JsMRGenerator(
 
     override fun apply(generationTask: Task, project: Project) {
         project.tasks.apply {
-            withType(KotlinJsCompile::class.java).all {
+            withType(Kotlin2JsCompile::class.java).all {
                 it.dependsOn(generationTask)
             }
         }
