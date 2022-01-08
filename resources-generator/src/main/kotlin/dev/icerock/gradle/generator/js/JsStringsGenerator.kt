@@ -29,7 +29,7 @@ class JsStringsGenerator(
 
     override fun getPropertyInitializer(key: String) =
         CodeBlock.of(
-            "StringResource(key = %S, supportedLocales = %N, fallbackFileUri = %N)",
+            "StringResource(key = %S, supportedLocales = %N, fallbackFileUrl = %N)",
             key,
             SUPPORTED_LOCALES_PROPERTY_NAME,
             STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME
