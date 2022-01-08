@@ -24,4 +24,13 @@
         <item quantity="many">%s many</item>
         <item quantity="other">%s other</item>
     </plural>
+    <!-- Verify that we can use the 'plurals' element. -->
+    <plurals name="test.plural.interop">
+        <item quantity="zero">interop: zero</item>
+        <item quantity="one">interop: one</item>
+        <item quantity="two">interop: two</item>
+        <item quantity="few">interop: few</item>
+        <item quantity="many">interop: many</item>
+        <item quantity="other">interop: other</item>
+    </plurals>
 </resources>

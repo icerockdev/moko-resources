@@ -40,7 +40,9 @@ object Testing {
             MR.strings.multilined.desc(),
             MR.strings.quotes.desc(),
             nestedTest(),
-            MR.plurals.test_plural.desc(7)
+            MR.plurals.test_plural.desc(7),
+            MR.plurals.test_plural_interop.desc(0),
+            MR.plurals.test_plural_interop.desc(1),
         )
     }
 
