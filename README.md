@@ -100,7 +100,7 @@ const path = require('path');
  * 
  * So for example "../../../../common/build/generated/moko/jsMain/resources"
  */
-const mokoResourcePath = path.resolve("REPLACE_WITH_YOUR_PATH_AS_IN_COMMONT")
+const mokoResourcePath = path.resolve("REPLACE_WITH_YOUR_PATH_AS_IN_COMMENT")
 
 config.module.rules.push(
     {

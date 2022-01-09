@@ -21,6 +21,8 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
     supportedLocalesPropertyName: String,
     getFileNameForLanguage: (language: String) -> String
 ) {
+    if (languages.isEmpty()) return
+
     addProperty(
         PropertySpec
             .builder(fallbackFilePropertyName, String::class, KModifier.PRIVATE)
