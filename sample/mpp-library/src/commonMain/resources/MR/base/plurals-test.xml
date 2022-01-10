@@ -26,11 +26,11 @@
     </plural>
     <!-- Verify that we can use the 'plurals' element. -->
     <plurals name="test.plural.interop">
-        <item quantity="zero">interop: zero</item>
-        <item quantity="one">interop: one</item>
-        <item quantity="two">interop: two</item>
-        <item quantity="few">interop: few</item>
-        <item quantity="many">interop: many</item>
-        <item quantity="other">interop: other</item>
+        <item quantity="zero">\'plurals\': zero</item>
+        <item quantity="one">\'plurals\': one</item>
+        <item quantity="two">\'plurals\': two</item>
+        <item quantity="few">\'plurals\': few</item>
+        <item quantity="many">\'plurals\': many</item>
+        <item quantity="other">\'plurals\': other</item>
     </plurals>
 </resources>

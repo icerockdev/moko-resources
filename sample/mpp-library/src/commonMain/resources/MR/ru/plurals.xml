@@ -8,6 +8,15 @@
         <item quantity="many">много</item>
         <item quantity="other">другое</item>
     </plural>
+    <!-- Verify that we can use the 'plurals' element. -->
+    <plurals name="test.plural.interop">
+        <item quantity="zero">\'plurals\': ноль</item>
+        <item quantity="one">\'plurals\': один</item>
+        <item quantity="two">\'plurals\': два</item>
+        <item quantity="few">\'plurals\': несколько</item>
+        <item quantity="many">\'plurals\': много</item>
+        <item quantity="other">\'plurals\': другое</item>
+    </plurals>
     <plural name="my_plural">
         <item quantity="zero">нет элементов</item>
         <item quantity="one">%d элемент</item>
