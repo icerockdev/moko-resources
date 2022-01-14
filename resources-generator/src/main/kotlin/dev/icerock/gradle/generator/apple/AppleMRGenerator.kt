@@ -8,11 +8,14 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
+import dev.icerock.gradle.utils.toEnumeration
+import org.apache.commons.codec.digest.DigestUtils
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -27,6 +30,7 @@ import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.InputStream
+import java.io.SequenceInputStream
 import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
@@ -66,6 +70,21 @@ class AppleMRGenerator(
                 .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"$bundleIdentifier\") }"))
                 .build()
         )
+
+        mrClass.addProperty(
+            PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
+                .initializer("%S", calculateResourcesHash())
+                .build()
+        )
+    }
+
+    private fun calculateResourcesHash(): String {
+        val inputStreams: List<InputStream> = resourcesGenerationDir.walkTopDown()
+            .filterNot { it.isDirectory }
+            .map { it.inputStream() }.toList()
+        val singleInputStream: InputStream = SequenceInputStream(inputStreams.toEnumeration())
+
+        return singleInputStream.use { DigestUtils.md5Hex(it) }
     }
 
     override fun getImports(): List<ClassName> = listOf(
