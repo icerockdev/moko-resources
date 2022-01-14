@@ -1,0 +1,69 @@
+/*
+ * Copyright 2022 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+@file:Suppress("IllegalIdentifier")
+
+package com.icerock.library
+
+import BaseUnitTest
+import com.icerockdev.library.Testing
+import dev.icerock.moko.resources.desc.StringDesc
+import getString
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class StringResourceTests: BaseUnitTest() {
+
+    @Test
+    fun `check ru strings`() {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("ru")
+        val rawString: String = Testing.getStringDesc().getString()
+
+        assertEquals(
+            expected = "тест\nтест\nТестовые данные 9\nмного\nмного\n10 элементов\n10 элементов\n" +
+                    "raw string\nraw string\nтестraw string\nВыберите портфель и сумму\n" +
+                    "вторая строка str первое число 9",
+            actual = rawString
+        )
+    }
+
+    @Test
+    fun `check en strings`() {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("en")
+        val rawString: String = Testing.getStringDesc().getString()
+
+        assertEquals(
+            expected = "test\ntest\nTest data 9\nother\nother\n10 items\n10 items\nraw string\n" +
+                    "raw string\ntestraw string\nCHOOSE PORTFOLIO & AMOUNT\n" +
+                    "second string str first decimal 9",
+            actual = rawString
+        )
+    }
+
+    @Test
+    fun `check ru strings list`() {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("ru")
+        val rawString: String = Testing.getStrings().joinToString("\n") { it.getString() }
+
+        assertEquals(
+            expected = "тест\nтест 2\nтест 3\nТестовый проект\nsome raw string\nмного\nодин\n" +
+                    "несколько\nнесколько\nпервая строка\nвторая строка\nтретья строка.\n" +
+                    "Alex009 сказал \"привет мир\" & \"пишите тесты\".\nтест вложенный\nмного",
+            actual = rawString
+        )
+    }
+
+    @Test
+    fun `check en strings list`() {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("en")
+        val rawString: String = Testing.getStrings().joinToString("\n") { it.getString() }
+
+        assertEquals(
+            expected = "test\ntest 2\ntest 3\nTest Project\nsome raw string\nother\none\nother\n" +
+                    "other\nfirst line\nsecond line\nthird line.\n" +
+                    "Alex009 said \"hello world\" & \"write tests\".\nnested test\nother",
+            actual = rawString
+        )
+    }
+}
