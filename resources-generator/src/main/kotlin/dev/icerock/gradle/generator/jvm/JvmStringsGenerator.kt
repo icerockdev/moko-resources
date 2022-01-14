@@ -46,24 +46,9 @@ class JvmStringsGenerator(
         val stringsFile = File(localizationDir, "$fileDirName.properties")
 
         val content = strings.map { (key, value) ->
-            "$key = ${value.replaceAndroidFormatParameters()}"
+            "$key = ${convertXmlStringToJvmLocalization(value)}"
         }.joinToString("\n")
 
         stringsFile.writeText(content)
-    }
-
-    companion object {
-        private val androidFormatRegex = "%.(\\$.)?".toRegex()
-
-        fun String.replaceAndroidFormatParameters(): String {
-
-            var formattedValue = this
-            var paramNr = 0
-
-            while (androidFormatRegex.containsMatchIn(formattedValue)) {
-                formattedValue = formattedValue.replaceFirst(androidFormatRegex, "{${paramNr++}}")
-            }
-            return formattedValue.replace("\n", "\\n")
-        }
     }
 }
