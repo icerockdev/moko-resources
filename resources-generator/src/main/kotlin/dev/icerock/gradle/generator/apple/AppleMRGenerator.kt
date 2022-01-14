@@ -16,6 +16,7 @@ import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -172,7 +173,7 @@ class AppleMRGenerator(
 
                 if (framework.isStatic) {
                     val resourcesExtension =
-                        project.extensions.getByType(MultiplatformResourcesPluginExtension::class.java)
+                        project.extensions.getByType<MultiplatformResourcesPluginExtension>()
                     if (resourcesExtension.disableStaticFrameworkWarning.not()) {
                         project.logger.warn(
                             """
