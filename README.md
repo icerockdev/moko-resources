@@ -33,7 +33,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - iOS version 11.0+
 
 ## Installation
-root build.gradle  
+root build.gradle
 ```groovy
 buildscript {
     repositories {
@@ -41,7 +41,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.17.2"
+        classpath "dev.icerock.moko:resources-generator:0.17.4"
     }
 }
 
@@ -58,7 +58,7 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.17.2")
+    commonMainApi("dev.icerock.moko:resources:0.17.4")
 }
 
 multiplatformResources {
@@ -82,15 +82,15 @@ ios-app Info.plist:
 ```xml
 <key>CFBundleLocalizations</key>
 <array>
-    <string>en</string>
-    <string>ru</string>
+<string>en</string>
+<string>ru</string>
 </array>
 ```
 in array should be added all used languages.
 
 ### Static kotlin frameworks support
 If project configured with static framework output (for example by `org.jetbrains.kotlin.native.cocoapods` plugin)
- in Xcode project should be added `Build Phase` (at end of list) with script:
+in Xcode project should be added `Build Phase` (at end of list) with script:
 ```shell script
 "$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
     -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
@@ -110,7 +110,7 @@ multiplatformResources {
 
 #### With Pods dependencies in Kotlin
 When you use `org.jetbrains.kotlin.native.cocoapods` plugin and also kotlin module depends to Pods -
- you also need to pass extra properties:
+you also need to pass extra properties:
 ```shell script
 "$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyFrameworkResourcesToApp \
     -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
@@ -149,7 +149,7 @@ Next - create a file `strings.xml` with localized strings in `commonMain/resourc
 After adding the resources we can call a gradle sync or execute a gradle task `generateMRcommonMain`. This will generate a `MR` class containing `MR.strings.my_string`, which we can use in `commonMain`:
 ```kotlin
 fun getMyString(): StringDesc {
-  return StringDesc.Resource(MR.strings.my_string)
+    return StringDesc.Resource(MR.strings.my_string)
 }
 ``` 
 After this we can use our functions on the platform side:  
@@ -161,7 +161,7 @@ iOS:
 ```swift
 let string = getMyString().localized()
 ```
-Note: `StringDesc` is a multiple-source container for Strings: in StringDesc we can use a resource, plurals, formatted variants, or raw string. To convert `StringDesc` to `String` on Android call `toString(context)` (a context is required for the resources usage), on iOS - call `localized()`. 
+Note: `StringDesc` is a multiple-source container for Strings: in StringDesc we can use a resource, plurals, formatted variants, or raw string. To convert `StringDesc` to `String` on Android call `toString(context)` (a context is required for the resources usage), on iOS - call `localized()`.
 
 #### MR directly from native side
 Android:
@@ -202,13 +202,13 @@ Then add the localized values for other languages like in example #1.
 Now create the following function in `commonMain`:
 ```kotlin
 fun getMyFormatDesc(input: String): StringDesc {
-  return StringDesc.ResourceFormatted(MR.strings.my_string_formatted, input)
+    return StringDesc.ResourceFormatted(MR.strings.my_string_formatted, input)
 }
 ```
 To create formatted strings from resources you can also use extension `format`:
 ```kotlin
 fun getMyFormatDesc(input: String): StringDesc {
-  return MR.strings.my_string_formatted.format(input)
+    return MR.strings.my_string_formatted.format(input)
 }
 ```
 Now add support on the platform side like in example #1:  
@@ -240,7 +240,7 @@ Then add the localized values for other languages like in example #1.
 Next, create a function in `commonMain`:
 ```kotlin
 fun getMyPluralDesc(quantity: Int): StringDesc {
-  return StringDesc.Plural(MR.plurals.my_plural, quantity)
+    return StringDesc.Plural(MR.plurals.my_plural, quantity)
 }
 ```
 Now add support on the platform side like in example #1:  
@@ -272,15 +272,15 @@ Then add the localized values for other languages like in example #1.
 Next, create a function in `commonMain`:
 ```kotlin
 fun getMyPluralFormattedDesc(quantity: Int): StringDesc {
-  // we pass quantity as selector for correct plural string and for pass quantity as argument for formatting
-  return StringDesc.PluralFormatted(MR.plurals.my_plural, quantity, quantity)  
+    // we pass quantity as selector for correct plural string and for pass quantity as argument for formatting
+    return StringDesc.PluralFormatted(MR.plurals.my_plural, quantity, quantity)
 }
 ```
 To create formatted plural strings from resources you can also use extension `format`:
 ```kotlin
 fun getMyPluralFormattedDesc(quantity: Int): StringDesc {
-  // we pass quantity as selector for correct plural string and for pass quantity as argument for formatting
-  return MR.plurals.my_plural.format(quantity, quantity)  
+    // we pass quantity as selector for correct plural string and for pass quantity as argument for formatting
+    return MR.plurals.my_plural.format(quantity, quantity)
 }
 ```
 And like in example #1, add the platform-side support:  
@@ -297,11 +297,11 @@ let string = getMyPluralFormattedDesc(quantity: 10).localized()
 If we already use some resources as a placeholder value, we can use `StringDesc` to change the string source:
 ```kotlin
 fun getUserName(user: User?): StringDesc {
-  if(user != null) {
-    return StringDesc.Raw(user.name)
-  } else {
-    return StringDesc.Resource(MR.strings.name_placeholder)
-  }  
+    if(user != null) {
+        return StringDesc.Raw(user.name)
+    } else {
+        return StringDesc.Resource(MR.strings.name_placeholder)
+    }
 }
 ```
 And just like in example 1 usage on platform side:  
@@ -317,7 +317,7 @@ let string2 = getUserName(user: null).localized() // we got name_placeholder fro
 ```
 
 ### Example 6 - Select localization in runtime
-You can force `StringDesc` to use preferred localization in common code: 
+You can force `StringDesc` to use preferred localization in common code:
 ```kotlin
 StringDesc.localeType = StringDesc.LocaleType.Custom("es")
 ```
@@ -328,14 +328,14 @@ StringDesc.localeType = StringDesc.LocaleType.System()
 
 ### Example 7 - pass image
 Image resources directory is `commonMain/resources/MR/images` with support of nested directories.  
-Image name should be end with one of: 
+Image name should be end with one of:
 - `@0.75x` - android ldpi;
 - `@1x` - android mdpi, ios 1x;
 - `@1.5x` - android hdpi;
 - `@2x` - android xhdpi, ios 2x;
 - `@3x` - android xxhdpi, ios 3x;
-- `@4x` - android xxxhdpi. 
-Supported `png` and `jpg` resources for now.
+- `@4x` - android xxxhdpi.
+  Supported `png` and `jpg` resources for now.
 
 If we add to `commonMain/resources/MR/images` files:
 - `home_black_18@1x.png`
@@ -350,8 +350,8 @@ You can get images by their name too
 in `commonMain` create a `Resources.kt` file with the content below
 ```kotlin
 fun getImageByFileName(name: String): ImageResource {
-  val fallbackImage = MR.images.transparent
-  return MR.images.getImageByFileName(name) ?: fallbackImage
+    val fallbackImage = MR.images.transparent
+    return MR.images.getImageByFileName(name) ?: fallbackImage
 }
 ```
 
@@ -364,7 +364,7 @@ Font name should be this pattern: `<fontFamily>-<fontStyle>` like:
 - `Raleway-Bold.ttf`
 - `Raleway-Regular.ttf`
 - `Raleway-Italic.ttf`
-Supports `ttf` and `otf` resources.
+  Supports `ttf` and `otf` resources.
 
 If we add to `commonMain/resources/MR/fonts` files:
 - `Raleway-Bold.ttf`
@@ -447,29 +447,27 @@ framework {
 }
 ```
 
-### Gradle task for creating Fat Framework with resources 
+### Gradle task for creating Fat Framework with resources
 
 If you want to create Fat Framework for iOS with all resources from KMP Gradle module you should use
-extended Gradle task `FatFrameworkWithResourcesTask`. There is example of 
+extended Gradle task `FatFrameworkWithResourcesTask`. There is example of
 `FatFrameworkWithResourcesTask` task using for the `mpp-library` module of the Sample. In the end
-of the `sample/mpp-library/build.gradle.kts` file: 
+of the `sample/mpp-library/build.gradle.kts` file:
 
 ```kotlin
-kotlin {
-    tasks.register("debugFatFramework", dev.icerock.gradle.generator.FatFrameworkWithResourcesTask::class) {
-        baseName = "multiplatform"
+tasks.register("debugFatFramework", dev.icerock.gradle.tasks.FatFrameworkWithResourcesTask::class) {
+    baseName = "multiplatform"
 
-        val targets = mapOf(
-            "iosX64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosX64"),
-            "iosArm64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosArm64")
-        )
+    val targets = mapOf(
+        "iosX64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosX64"),
+        "iosArm64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosArm64")
+    )
 
-        from(
-            targets.toList().map {
-                it.second.binaries.getFramework("MultiPlatformLibrary", org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG)
-            }
-        )
-    }
+    from(
+        targets.toList().map {
+            it.second.binaries.getFramework("MultiPlatformLibrary", org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG)
+        }
+    )
 }
 ``` 
 
@@ -498,12 +496,12 @@ If you want to read files not as text, add your own implementation to expect/act
 Please see more examples in the [sample directory](sample).
 
 Sample `mpp-hierarhical` contains usage of `org.jetbrains.kotlin.native.cocoapods` plugin and unit
- tests with resources usage. 
+tests with resources usage.
 `Jvm-sample` to run it you should use IntelliJ IDEA.  
 `macOS-sample` it contains two schemes. TestProj is the sample app and TestHierarchical is a splash-screen.  
-`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at once, the second one allows to choose language before starting the sample.  
+`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at once, the second one allows to choose language before starting the sample.
 
-## Set Up Locally 
+## Set Up Locally
 - The [resources directory](resources) contains the `resources` library;
 - The [gradle-plugin directory](gradle-plugin) contains a gradle plugin with a `MR` class generator;
 - The [sample directory](sample) contains sample apps for Android and iOS; plus the mpp-library connected to the apps.
@@ -516,7 +514,7 @@ The `develop` branch is pushed to `master` on release.
 For more details on contributing please see the [contributing guide](CONTRIBUTING.md).
 
 ## License
-        
+
     Copyright 2019 IceRock MAG Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -530,12 +528,12 @@ For more details on contributing please see the [contributing guide](CONTRIBUTIN
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-    
+
 [badge-android]: http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat
 [badge-ios]: http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat
 [badge-js]: http://img.shields.io/badge/platform-js-F8DB5D.svg?style=flat
 [badge-jvm]: http://img.shields.io/badge/platform-jvm-DB413D.svg?style=flat
-[badge-linux]: http://img.shields.io/badge/platform-linux-2D3F6C.svg?style=flat 
+[badge-linux]: http://img.shields.io/badge/platform-linux-2D3F6C.svg?style=flat
 [badge-windows]: http://img.shields.io/badge/platform-windows-4D76CD.svg?style=flat
 [badge-mac]: http://img.shields.io/badge/platform-macos-111111.svg?style=flat
 [badge-watchos]: http://img.shields.io/badge/platform-watchos-C0C0C0.svg?style=flat

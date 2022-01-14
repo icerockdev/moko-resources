@@ -26,7 +26,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(projects.resources)
+                api(projects.resources)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
             }
@@ -35,6 +35,7 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 api(compose.desktop.common)
+                implementation(compose.desktop.currentOs)
             }
         }
     }

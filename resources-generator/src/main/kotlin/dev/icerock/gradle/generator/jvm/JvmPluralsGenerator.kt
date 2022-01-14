@@ -10,7 +10,6 @@ import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.jvm.JvmStringsGenerator.Companion.replaceAndroidFormatParameters
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -52,7 +51,7 @@ class JvmPluralsGenerator(
             }
 
             keysWithPlurals.joinToString("\n") { (key, value) ->
-                "$key = ${value.replaceAndroidFormatParameters()}"
+                "$key = ${convertXmlStringToJvmLocalization(value)}"
             }
         }.joinToString("\n")
 

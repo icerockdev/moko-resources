@@ -13,6 +13,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -20,6 +22,8 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
+import dev.icerock.moko.resources.compose.toComposeFont
+import dev.icerock.moko.resources.compose.toImageBitmap
 
 fun main() {
     val testing = Testing
@@ -41,8 +45,15 @@ fun main() {
                         modifier = Modifier.padding(8.dp)
                     )
                 }
-                Text(text = testing.getStringDesc().localized())
-                Text(text = testing.getTextFile().readText())
+
+                Text(
+                    text = testing.getStringDesc().localized(),
+                    fontFamily = FontFamily(testing.getFontTtf1().toComposeFont())
+                )
+                Text(
+                    text = testing.getTextFile().readText(),
+                    fontFamily = FontFamily(testing.getFontOtf1().toComposeFont())
+                )
                 Text(text = testing.getJsonFile().readText())
                 Text(text = testing.getNestedJsonFile().readText())
             }

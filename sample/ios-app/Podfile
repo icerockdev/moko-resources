@@ -10,6 +10,9 @@ platform :ios, '11.0'
 # need for correct invalidate of cache MultiPlatformLibrary.framework
 install! 'cocoapods', :disable_input_output_paths => true
 
+project 'TestProj',
+  'Release' => :release, 'Debug' => :debug, 'Stage' => :debug
+
 pre_install do |installer|
   puts "prebuild kotlin frameworks to correct integration by CocoaPods..."
   puts "prebuild mpp-library..."

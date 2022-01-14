@@ -6,11 +6,12 @@ package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.StringResource
-import java.util.Locale
 
 actual class ResourceStringDesc actual constructor(
     val stringRes: StringResource
 ) : StringDesc, Parcelable {
 
-    override fun localized(): String = stringRes.localized(locale = Locale.getDefault())
+    override fun localized(): String = stringRes.localized(
+        locale = StringDesc.localeType.currentLocale
+    )
 }

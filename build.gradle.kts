@@ -13,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath("dev.icerock.moko:resources-generator")
-        classpath("org.jetbrains.compose:compose-gradle-plugin:1.0.0-alpha4-build411")
+        classpath("org.jetbrains.compose:compose-gradle-plugin:1.0.0")
         classpath(":resources-build-logic")
     }
 }

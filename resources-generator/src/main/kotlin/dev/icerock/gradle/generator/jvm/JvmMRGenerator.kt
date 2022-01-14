@@ -13,6 +13,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
@@ -63,12 +64,11 @@ class JvmMRGenerator(
 
     override fun apply(generationTask: Task, project: Project) {
         project.tasks.apply {
-            getByName("preBuild").dependsOn(generationTask)
-            withType(KotlinCompile::class.java).all {
+            withType<KotlinCompile>().all {
                 it.dependsOn(generationTask)
             }
         }
-        project.tasks.withType(Jar::class.java).configureEach {
+        project.tasks.withType<Jar>().configureEach {
             it.exclude("MR/**")
         }
     }

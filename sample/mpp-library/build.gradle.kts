@@ -13,6 +13,11 @@ android {
     lintOptions {
         disable("ImpliedQuantity")
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -20,12 +25,8 @@ dependencies {
     commonMainApi(libs.mokoGraphics)
     commonMainImplementation(projects.sample.mppLibrary.nestedModule)
 
-    commonTestImplementation(libs.kotlinTest)
-    commonTestImplementation(libs.kotlinTestAnnotations)
     commonTestImplementation(projects.resourcesTest)
- 
-    androidTestImplementation(libs.kotlinTestJUnit)
-    androidTestImplementation(libs.testCore)
+    commonTestImplementation(projects.sample.testUtils)
 }
 
 multiplatformResources {
@@ -35,4 +36,19 @@ multiplatformResources {
 framework {
     export(projects.resources)
     export(libs.mokoGraphics)
+}
+
+tasks.register("debugFatFramework", dev.icerock.gradle.tasks.FatFrameworkWithResourcesTask::class) {
+    baseName = "multiplatform"
+
+    val targets = mapOf(
+        "iosX64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosX64"),
+        "iosArm64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosArm64")
+    )
+
+    from(
+        targets.toList().map {
+            it.second.binaries.getFramework("MultiPlatformLibrary", org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG)
+        }
+    )
 }

@@ -38,5 +38,6 @@ dependencies {
     implementation(compose.preview)
     implementation(libs.composeActivity)
     implementation(libs.constraintLayout)
+    implementation(projects.sample.mppLibrary)
     implementation(libs.appCompat)
 }
