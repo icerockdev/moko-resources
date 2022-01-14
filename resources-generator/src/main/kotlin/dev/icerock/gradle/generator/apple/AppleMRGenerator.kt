@@ -256,8 +256,10 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             CopyFrameworkResourcesToAppEntryPointTask::class.java
         )
         val multiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
-        val cocoapodsExtension = (multiplatformExtension as? ExtensionAware)?.extensions?.findByType<CocoapodsExtension>()
-        xcodeTask.configurationMapper = cocoapodsExtension?.xcodeConfigurationToNativeBuildType ?: emptyMap()
+        xcodeTask.configurationMapper = (multiplatformExtension as? ExtensionAware)?.extensions
+            ?.findByType<CocoapodsExtension>()
+            ?.xcodeConfigurationToNativeBuildType
+            ?: emptyMap()
 
         if (framework.target.konanTarget == xcodeTask.konanTarget &&
             framework.buildType.getName() == xcodeTask.configuration?.toLowerCase()
