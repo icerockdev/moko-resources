@@ -18,6 +18,12 @@ jobs:
           java-version: 11
       - name: Plugin check
         run: ./gradlew -p resources-generator build publishToMavenLocal
+      - name: check android only build
+        run: ./gradlew clean assembleDebug
+      - name: check jvm only build
+        run: ./gradlew clean jvmJar
+      - name: check ios only build
+        run: ./gradlew clean compileKotlinIosX64
       - name: Library check
         run: ./gradlew build publishToMavenLocal
       - name: Check custom samples
