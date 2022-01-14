@@ -2,6 +2,8 @@
  * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+
 plugins {
     id("com.android.library")
     id("android-base-convention")
@@ -12,7 +14,7 @@ plugins {
 }
 
 android {
-    lintOptions {
+    lint {
         disable("ImpliedQuantity")
         isIgnoreTestSources = true
     }
@@ -35,6 +37,8 @@ kotlin {
         // Configure fields required by CocoaPods.
         summary = "Some description for a Kotlin/Native module"
         homepage = "Link to a Kotlin/Native module homepage"
+
+        xcodeConfigurationToNativeBuildType["Stage"] = NativeBuildType.RELEASE
     }
 
     // export correct artifact to use all classes of moko-resources directly from Swift
