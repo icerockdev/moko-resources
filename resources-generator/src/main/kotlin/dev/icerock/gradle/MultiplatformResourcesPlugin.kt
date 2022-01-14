@@ -23,6 +23,7 @@ import dev.icerock.gradle.utils.isDependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
@@ -147,9 +148,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target.logger.warn("MR file generation for iOS is not supported on your system!")
         }
 
-        val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
-        generationTasks.filter { it != commonGenerationTask }
-            .forEach { it.dependsOn(commonGenerationTask) }
+        target.tasks.withType<GenerateMultiplatformResourcesTask>()
+            .matching { it != commonGenerationTask }
+            .configureEach { it.dependsOn(commonGenerationTask) }
     }
 
     private fun setupCommonGenerator(

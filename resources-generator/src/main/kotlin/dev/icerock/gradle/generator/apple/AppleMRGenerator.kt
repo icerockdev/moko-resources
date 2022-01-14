@@ -8,14 +8,22 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
+import dev.icerock.gradle.utils.toEnumeration
+import org.apache.commons.codec.digest.DigestUtils
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -26,6 +34,7 @@ import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.InputStream
+import java.io.SequenceInputStream
 import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
@@ -65,6 +74,21 @@ class AppleMRGenerator(
                 .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"$bundleIdentifier\") }"))
                 .build()
         )
+
+        mrClass.addProperty(
+            PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
+                .initializer("%S", calculateResourcesHash())
+                .build()
+        )
+    }
+
+    private fun calculateResourcesHash(): String {
+        val inputStreams: List<InputStream> = resourcesGenerationDir.walkTopDown()
+            .filterNot { it.isDirectory }
+            .map { it.inputStream() }.toList()
+        val singleInputStream: InputStream = SequenceInputStream(inputStreams.toEnumeration())
+
+        return singleInputStream.use { DigestUtils.md5Hex(it) }
     }
 
     override fun getImports(): List<ClassName> = listOf(
@@ -172,7 +196,7 @@ class AppleMRGenerator(
 
                 if (framework.isStatic) {
                     val resourcesExtension =
-                        project.extensions.getByType(MultiplatformResourcesPluginExtension::class.java)
+                        project.extensions.getByType<MultiplatformResourcesPluginExtension>()
                     if (resourcesExtension.disableStaticFrameworkWarning.not()) {
                         project.logger.warn(
                             """
@@ -231,9 +255,14 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             "copyFrameworkResourcesToApp",
             CopyFrameworkResourcesToAppEntryPointTask::class.java
         )
+        val multiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
+        xcodeTask.configurationMapper = (multiplatformExtension as? ExtensionAware)?.extensions
+            ?.findByType<CocoapodsExtension>()
+            ?.xcodeConfigurationToNativeBuildType
+            ?: emptyMap()
 
         if (framework.target.konanTarget == xcodeTask.konanTarget &&
-            framework.buildType.getName() == xcodeTask.configuration
+            framework.buildType.getName() == xcodeTask.configuration?.toLowerCase()
         ) {
             xcodeTask.dependsOn(copyTask)
         }
