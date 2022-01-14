@@ -8,9 +8,15 @@ import mpp_hierarhical
 
 class ViewController: UIViewController {
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
+    @IBOutlet weak var text: UILabel!
     
-    TestHierarhical.test()
-  }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+      
+        let string: StringResource = MR.strings().test_simple
+        let stringDesc = string.desc()
+        let outputString = stringDesc.localized()
+        
+        text.text = outputString
+    }
 }

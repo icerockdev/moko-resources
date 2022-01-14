@@ -19,7 +19,11 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -251,9 +255,12 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             "copyFrameworkResourcesToApp",
             CopyFrameworkResourcesToAppEntryPointTask::class.java
         )
+        val multiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
+        val cocoapodsExtension = (multiplatformExtension as? ExtensionAware)?.extensions?.findByType<CocoapodsExtension>()
+        xcodeTask.configurationMapper = cocoapodsExtension?.xcodeConfigurationToNativeBuildType ?: emptyMap()
 
         if (framework.target.konanTarget == xcodeTask.konanTarget &&
-            framework.buildType.getName() == xcodeTask.configuration
+            framework.buildType.getName() == xcodeTask.configuration?.toLowerCase()
         ) {
             xcodeTask.dependsOn(copyTask)
         }
