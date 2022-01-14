@@ -8,16 +8,29 @@ import java.awt.Font
 import java.awt.GraphicsEnvironment
 import java.io.File
 import java.io.FileNotFoundException
-import java.net.URL
+import java.io.InputStream
 
 actual class FontResource(
     val resourcesClassLoader: ClassLoader,
     val filePath: String
 ) {
-    val font: Font = run {
-        val resourceUrl: URL = resourcesClassLoader.getResource(filePath)
+    val file: File by lazy {
+        val resourceStream: InputStream = resourcesClassLoader.getResourceAsStream(filePath)
             ?: throw FileNotFoundException("Couldn't find font resource at: $filePath")
-        val file: File = File(resourceUrl.toURI())
+
+        resourceStream.use { inputStream ->
+            val file = File.createTempFile("moko-resources-font-cache", null)
+            file.deleteOnExit()
+
+            file.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+
+            file
+        }
+    }
+
+    val font: Font by lazy {
         Font.createFont(Font.TRUETYPE_FONT, file)
     }
 
