@@ -13,6 +13,11 @@ android {
     lintOptions {
         disable("ImpliedQuantity")
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -20,12 +25,8 @@ dependencies {
     commonMainApi(libs.mokoGraphics)
     commonMainImplementation(projects.sample.mppLibrary.nestedModule)
 
-    commonTestImplementation(libs.kotlinTest)
-    commonTestImplementation(libs.kotlinTestAnnotations)
     commonTestImplementation(projects.resourcesTest)
- 
-    androidTestImplementation(libs.kotlinTestJUnit)
-    androidTestImplementation(libs.testCore)
+    commonTestImplementation(projects.sample.testUtils)
 }
 
 multiplatformResources {

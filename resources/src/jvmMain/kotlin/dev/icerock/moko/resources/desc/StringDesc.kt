@@ -10,16 +10,16 @@ actual interface StringDesc {
     fun localized(): String
 
     actual sealed class LocaleType {
-        abstract val systemLocale: Locale?
+        abstract val currentLocale: Locale
 
         actual object System : LocaleType() {
-            override val systemLocale: Locale? = null
+            override val currentLocale: Locale get() = Locale.getDefault()
         }
 
         actual class Custom actual constructor(
-            locale: String
+            private val locale: String
         ) : LocaleType() {
-            override val systemLocale: Locale = Locale(locale)
+            override val currentLocale: Locale get() = Locale(locale)
         }
     }
 

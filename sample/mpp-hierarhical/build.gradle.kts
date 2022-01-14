@@ -60,7 +60,12 @@ kotlin {
                 api(projects.resources)
             }
         }
-        val clientTest by creating { dependsOn(commonTest) }
+        val clientTest by creating {
+            dependsOn(commonTest)
+            dependencies {
+                implementation(projects.sample.testUtils)
+            }
+        }
 
         val iosMain by getting { dependsOn(clientMain) }
         val iosTest by getting { dependsOn(clientTest) }
