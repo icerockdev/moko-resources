@@ -20,6 +20,6 @@ actual class StringResource(
     fun localized(locale: Locale = Locale.getDefault(), vararg args: Any): String {
         val resourceBundle = resourcesClassLoader.getResourceBundle(bundleName, locale)
         val string = resourceBundle.getString(key)
-        return MessageFormat.format(string, *args)
+        return String.format(locale = locale, string, *args)
     }
 }
