@@ -30,6 +30,12 @@ kotlin {
             isStatic = false
         }
     }
+    iosSimulatorArm64 {
+        binaries.framework {
+            baseName = "MultiPlatformLibrary"
+            isStatic = false
+        }
+    }
 
     sourceSets {
         val iosX64Main by getting {}
@@ -41,6 +47,12 @@ kotlin {
             dependsOn(iosMiddle)
         }
         val iosArm64Test by getting {
+            dependsOn(iosX64Test)
+        }
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMiddle)
+        }
+        val iosSimulatorArm64Test by getting {
             dependsOn(iosX64Test)
         }
     }
