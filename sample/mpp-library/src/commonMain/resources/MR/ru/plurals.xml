@@ -10,12 +10,12 @@
     </plural>
     <!-- Verify that we can use the 'plurals' element. -->
     <plurals name="test.plural.interop">
-        <item quantity="zero">\'plurals\': ноль</item>
-        <item quantity="one">\'plurals\': один</item>
-        <item quantity="two">\'plurals\': два</item>
-        <item quantity="few">\'plurals\': несколько</item>
-        <item quantity="many">\'plurals\': много</item>
-        <item quantity="other">\'plurals\': другое</item>
+        <item quantity="zero">plurals-interop: ноль</item>
+        <item quantity="one">plurals-interop: один</item>
+        <item quantity="two">plurals-interop: два</item>
+        <item quantity="few">plurals-interop: несколько</item>
+        <item quantity="many">plurals-interop: много</item>
+        <item quantity="other">plurals-interop: другое</item>
     </plurals>
     <plural name="my_plural">
         <item quantity="zero">нет элементов</item>

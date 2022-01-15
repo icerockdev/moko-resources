@@ -50,7 +50,7 @@ class StringResourceTests: BaseUnitTest() {
             expected = "тест\nтест 2\nтест 3\nТестовый проект\nsome raw string\nодин\n" +
                     "несколько\nнесколько\nпервая строка\nвторая строка\nтретья строка.\n" +
                     "Alex009 сказал \"привет мир\" & \"пишите тесты\".\nтест вложенный\nмного\n" +
-                    "'plurals': много\n'plurals': один",
+                    "plurals-interop: один\nplurals-interop: несколько\nplurals-interop: много",
             actual = rawString
         )
     }
@@ -64,7 +64,7 @@ class StringResourceTests: BaseUnitTest() {
             expected = "test\ntest 2\ntest 3\nTest Project\nsome raw string\none\nother\n" +
                     "other\nfirst line\nsecond line\nthird line.\n" +
                     "Alex009 said \"hello world\" & \"write tests\".\nnested test\nother\n" +
-                    "'plurals': other\n'plurals': one",
+                    "plurals-interop: one\nplurals-interop: other\nplurals-interop: other",
             actual = rawString
         )
     }
