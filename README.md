@@ -3,6 +3,7 @@
 ![badge][badge-android]
 ![badge][badge-iosx64]
 ![badge][badge-iosarm64]
+![badge][badge-iosSimulatorArm64]
 ![badge][badge-macos64]
 ![badge][badge-jvm]
 
@@ -542,4 +543,5 @@ For more details on contributing please see the [contributing guide](CONTRIBUTIN
 [badge-nodejs]: https://img.shields.io/badge/platform-nodejs-68a063.svg?style=flat
 [badge-iosx64]: https://img.shields.io/badge/platform-iosx64-CDCDCD?style=flat
 [badge-iosarm64]: https://img.shields.io/badge/platform-iosarm64-CDCDCD?style=flat
-[badge-macos64]: https://img.shields.io/badge/platform-macos64-111111?style=flat    
+[badge-iosSimulatorArm64]: https://img.shields.io/badge/platform-iosSimulatorArm64-CDCDCD?style=flat
+[badge-macos64]: https://img.shields.io/badge/platform-macos64-111111?style=flat
