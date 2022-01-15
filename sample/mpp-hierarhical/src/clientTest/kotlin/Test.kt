@@ -32,4 +32,11 @@ third line.""", actual = rawString)
         val rawString = stringDesc.getString()
         assertEquals(expected = """Alex009 said "hello world" & "write tests".""", actual = rawString)
     }
+
+    @Test
+    fun `test single quotes string`() {
+        val stringDesc = MR.strings.single_quotes.desc()
+        val rawString = stringDesc.getString()
+        assertEquals(expected = """Alex009 said 'hello'""", actual = rawString)
+    }
 }
