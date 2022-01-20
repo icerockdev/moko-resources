@@ -15,3 +15,7 @@ kotlin {
     ios()
     macosX64()
 }
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.CInteropProcess::class.java) {
+    settings.compilerOpts("-DNS_FORMAT_ARGUMENT(A)=")
+}

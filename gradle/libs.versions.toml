@@ -1,5 +1,5 @@
 [versions]
-kotlinVersion = "1.5.21"
+kotlinVersion = "1.5.31"
 androidGradleVersion = "4.1.2"
 
 # kotlinx
@@ -10,7 +10,7 @@ constraintLayoutVersion = "2.0.4"
 androidAppCompatVersion = "1.2.0"
 
 # android compose
-composeVersion = "1.0.1"
+composeVersion = "1.0.4"
 composeActivityVersion = "1.3.1"
 
 # jvm
@@ -25,13 +25,13 @@ testRunnerVersion = "1.3.0"
 testRulesVersion = "1.3.0"
 testExtJunitVersion = "1.1.2"
 testCoreVersion = "1.3.0"
-robolectricVersion = "4.5.1"
+robolectricVersion = "4.6"
 
 # moko
 mokoGraphicsVersion = "0.7.0"
 mokoParcelizeVersion = "0.7.1"
 mokoTestVersion = "0.4.1"
-mokoResourcesVersion = "0.17.2-assets5"
+mokoResourcesVersion = "0.17.4-assets6"
 
 [libraries]
 # kotlinx
@@ -72,6 +72,6 @@ kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotli
 kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlinVersion" }
 
 # gradle
-kotlinGradlePlug = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
-androidGradlePlug = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
+androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlinVersion" }

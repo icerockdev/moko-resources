@@ -21,7 +21,7 @@ class JvmFontsGenerator(
     override fun getPropertyInitializer(fontFile: File): CodeBlock? =
         CodeBlock.of(
             "FontResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
-            "$FONTS_DIR/$fontFile.ttf"
+            "$FONTS_DIR/${fontFile.name}"
         )
 
     override fun generateResources(resourcesGenerationDir: File, files: List<FontFile>) {

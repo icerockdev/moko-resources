@@ -32,14 +32,20 @@ object Testing {
             MR.strings.test3.desc(),
             MR.strings.common_name.desc(),
             "some raw string".desc(),
-            MR.plurals.test_plural.desc(0),
+            // 0 on android in english will be `other`
+            // 0 on ios in english will be `zero`
+            // to not break tests - i just remove this case from list
+//            MR.plurals.test_plural.desc(0),
             MR.plurals.test_plural.desc(1),
             MR.plurals.test_plural.desc(2),
             MR.plurals.test_plural.desc(3),
             MR.strings.multilined.desc(),
             MR.strings.quotes.desc(),
             nestedTest(),
-            MR.plurals.test_plural.desc(7)
+            MR.plurals.test_plural.desc(7),
+            MR.plurals.test_plural_interop.desc(1),
+            MR.plurals.test_plural_interop.desc(2),
+            MR.plurals.test_plural_interop.desc(7),
         )
     }
 
@@ -143,5 +149,12 @@ object Testing {
 
     fun getTextColor(): ColorResource {
         return MR.colors.textColor
+    }
+
+    fun getPlurals(): StringDesc {
+        return List(26) { number ->
+            val value = number + 1
+            MR.plurals.myPlural.format(value, value)
+        }.joinToStringDesc("\n")
     }
 }

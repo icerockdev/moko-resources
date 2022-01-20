@@ -13,9 +13,9 @@ EXTERNAL SOURCES:
     :path: "../mpp-library"
 
 SPEC CHECKSUMS:
-  mpp_hierarhical: 387ebb581225190b1331f52a2b24a9a93df1971d
+  mpp_hierarhical: 9406a25bc9a3b7237bdf8e36ef4edfdd80376262
   MultiPlatformLibrary: 0317a99a1dff77765bdd4ec5a77568f8a96897f0
 
-PODFILE CHECKSUM: 5d11bc587fc957d43072174282bc616d9e6fe6e3
+PODFILE CHECKSUM: f0c3cdabcc5ee37fe65b6ecd54b1f04017dbea93
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.11.2
