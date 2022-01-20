@@ -10,9 +10,8 @@ import java.io.File
 data class SourceInfo(
     val generatedDir: File,
     val commonResources: SourceDirectorySet,
-    val mrClassPackage: String,
-    val androidRClassPackage: String
-){
+    val mrClassPackage: String
+) {
     private var _androidRClassPackage: String? = null
 
     val androidRClassPackage: String get() = _androidRClassPackage!!
@@ -23,4 +22,3 @@ data class SourceInfo(
         _androidRClassPackage = value
     }
 }
-
