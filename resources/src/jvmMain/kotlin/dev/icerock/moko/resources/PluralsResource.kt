@@ -19,14 +19,15 @@ actual class PluralsResource(
         val resourceBundle = resourcesClassLoader.getResourceBundle(bundleName, locale)
 
         val pluralRules = PluralRules.forLocale(ULocale.forLocale(locale))
-        val keyWithQuantity = "$key.${pluralRules.select(quantity.toDouble())}"
+        val selectedVariant = pluralRules.select(quantity.toDouble())
+        val keyWithQuantity = "$key.$selectedVariant"
 
         return resourceBundle.getString(keyWithQuantity)
     }
 
     fun localized(locale: Locale = Locale.getDefault(), quantity: Int): String =
-        MessageFormat.format(getPluralMessage(locale, quantity))
+        getPluralMessage(locale, quantity)
 
     fun localized(locale: Locale = Locale.getDefault(), quantity: Int, vararg args: Any?): String =
-        MessageFormat.format(getPluralMessage(locale, quantity), *args)
+        String.format(locale = locale, getPluralMessage(locale, quantity), *args)
 }
