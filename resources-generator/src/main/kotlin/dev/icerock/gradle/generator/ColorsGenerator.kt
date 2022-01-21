@@ -4,17 +4,18 @@
 
 package dev.icerock.gradle.generator
 
-import com.android.utils.forEach
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidColorsGenerator
-import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.apple.AppleColorsGenerator
+import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import org.gradle.api.file.FileTree
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -102,7 +103,9 @@ abstract class ColorsGenerator(
                 var lightColor: String? = null
                 var darkColor: String? = null
                 var singleColor: String? = null
-                stringNode.childNodes.forEach { xmlNode ->
+                val nodeList: NodeList = stringNode.childNodes
+                for (nodeIdx in 0 until nodeList.length) {
+                    val xmlNode: Node = nodeList.item(nodeIdx)
                     when (xmlNode.nodeName) {
                         "light" -> {
                             lightColor = xmlNode.textContent
@@ -149,8 +152,11 @@ abstract class ColorsGenerator(
     protected fun replaceColorAlpha(color: String?): String? {
         if (color == null) return color
 
-        val alpha = if (isRgbFormat(color)) DefaultAlpha else color.substring(color.length - 2, color.length)
-        return if (isRgbFormat(color)) "$alpha$color" else "$alpha${color.removeRange(color.length - 2, color.length)}"
+        val alpha = if (isRgbFormat(color)) DefaultAlpha
+        else color.substring(color.length - 2, color.length)
+
+        return if (isRgbFormat(color)) "$alpha$color"
+        else "$alpha${color.removeRange(color.length - 2, color.length)}"
     }
 
     private fun isRgbFormat(color: String): Boolean = color.length == RgbFormatLength

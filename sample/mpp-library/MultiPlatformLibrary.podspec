@@ -15,13 +15,11 @@ Pod::Spec.new do |spec|
     spec.osx.deployment_target = '10.6'
 
     spec.pod_target_xcconfig = {
-        'MPP_LIBRARY_NAME' => 'MultiPlatformLibrary',
-        'GRADLE_TASK[sdk=iphonesimulator*][config=*ebug]' => 'syncMultiPlatformLibraryDebugFrameworkIosX64',
-        'GRADLE_TASK[sdk=iphonesimulator*][config=*elease]' => 'syncMultiPlatformLibraryReleaseFrameworkIosX64',
-        'GRADLE_TASK[sdk=iphoneos*][config=*ebug]' => 'syncMultiPlatformLibraryDebugFrameworkIosArm64',
-        'GRADLE_TASK[sdk=iphoneos*][config=*elease]' => 'syncMultiPlatformLibraryReleaseFrameworkIosArm64',
-        'GRADLE_TASK[sdk=macosx*][config=*ebug]' => 'syncMultiPlatformLibraryDebugFrameworkMacosX64',
-        'GRADLE_TASK[sdk=macosx*][config=*elease]' => 'syncMultiPlatformLibraryReleaseFrameworkMacosX64'
+        'KOTLIN_FRAMEWORK_BUILD_TYPE[config=*ebug]' => 'debug',
+        'KOTLIN_FRAMEWORK_BUILD_TYPE[config=*elease]' => 'release',
+        'CURENT_SDK[sdk=iphoneos*]' => 'iphoneos',
+        'CURENT_SDK[sdk=iphonesimulator*]' => 'iphonesimulator',
+        'CURENT_SDK[sdk=macosx*]' => 'macos'
     }
 
     spec.script_phases = [
@@ -29,12 +27,35 @@ Pod::Spec.new do |spec|
             :name => 'Compile Kotlin/Native',
             :execution_position => :before_compile,
             :shell_path => '/bin/sh',
-            #:output_files => ['$TARGET_BUILD_DIR/$PRODUCT_NAME.framework/$PRODUCT_NAME'],
             :script => <<-SCRIPT
-MPP_PROJECT_ROOT="$SRCROOT/../../mpp-library"
+if [ "$KOTLIN_FRAMEWORK_BUILD_TYPE" == "debug" ]; then
+  CONFIG="Debug"
+else
+  CONFIG="Release"
+fi
 
-MPP_OUTPUT_DIR="$MPP_PROJECT_ROOT/build/cocoapods/framework"
-MPP_OUTPUT_NAME="$MPP_OUTPUT_DIR/#{spec.name}.framework"
+if [ "$CURENT_SDK" == "iphoneos" ]; then
+  TARGET="Ios"
+  ARCH="Arm64"
+elif [ "$CURENT_SDK" == "macos" ]; then
+  TARGET="Macos"
+  if [ "$NATIVE_ARCH" == "arm64" ]; then
+    ARCH="Arm64"
+  else
+    ARCH="X64"
+  fi
+else
+  if [ "$NATIVE_ARCH" == "arm64" ]; then
+    TARGET="IosSimulator"
+    ARCH="Arm64"
+  else
+    TARGET="Ios"
+    ARCH="X64"
+  fi
+fi
+
+MPP_PROJECT_ROOT="$SRCROOT/../../mpp-library"
+GRADLE_TASK="syncMultiPlatformLibrary${CONFIG}Framework${TARGET}${ARCH}"
 
 "$MPP_PROJECT_ROOT/../gradlew" -p "$MPP_PROJECT_ROOT" "$GRADLE_TASK"
             SCRIPT
