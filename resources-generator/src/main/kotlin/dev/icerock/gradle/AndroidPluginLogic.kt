@@ -19,7 +19,7 @@ internal class AndroidPluginLogic(
     private val commonSourceSet: KotlinSourceSet,
     private val targets: List<KotlinTarget>,
     private val generatedDir: File,
-    private val mrClassPackage: String,
+    private val mrSettings: MRGenerator.MRSettings,
     private val features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
     private val target: Project
 ) {
@@ -35,9 +35,9 @@ internal class AndroidPluginLogic(
         val androidSourceSet: MRGenerator.SourceSet =
             createSourceSet(androidMainSourceSet, kotlinSourceSets)
         AndroidMRGenerator(
-            generatedDir,
-            androidSourceSet,
-            mrClassPackage,
+            generatedDir = generatedDir,
+            sourceSet = androidSourceSet,
+            mrSettings = mrSettings,
             generators = features.map { it.createAndroidGenerator() }
         ).apply(target)
     }

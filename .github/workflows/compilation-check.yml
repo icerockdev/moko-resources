@@ -18,6 +18,8 @@ jobs:
           java-version: 11
       - name: Plugin check
         run: ./gradlew -p resources-generator build publishToMavenLocal
+      - name: detekt run
+        run: ./gradlew detekt
       - name: check android only build
         run: ./gradlew clean && ./gradlew assembleDebug
       - name: check jvm only build

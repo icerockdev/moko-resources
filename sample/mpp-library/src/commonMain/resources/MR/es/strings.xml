@@ -12,4 +12,5 @@
 segunda línea
 tercera línea.</string>
     <string name="quotes">Alex009 dijo "hola mundo" &amp; "escribir pruebas".</string>
+    <string name="single_quotes">Alex009 dijo \'hola\'</string>
 </resources>

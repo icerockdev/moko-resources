@@ -16,7 +16,7 @@ kotlin {
         val iosMain by getting {
             dependsOn(appleMain)
         }
-        val macosX64Main by getting {
+        val macosMain by getting {
             dependsOn(appleMain)
         }
 
@@ -27,7 +27,7 @@ kotlin {
         val iosTest by getting {
             dependsOn(appleTest)
         }
-        val macosX64Test by getting {
+        val macosTest by getting {
             dependsOn(appleTest)
         }
     }

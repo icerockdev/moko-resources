@@ -3,10 +3,10 @@
  */
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.5.31")
+    id("org.jetbrains.kotlin.jvm") version ("1.6.10")
     id("detekt-convention")
     id("publication-convention")
-    id("com.gradle.plugin-publish") version ("0.15.0")
+    id("com.gradle.plugin-publish") version ("0.19.0")
     id("java-gradle-plugin")
 }
 
@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.kotlinPoet)
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
+    implementation(libs.commonsCodec)
     implementation(libs.kotlinCompilerEmbeddable)
 }
 

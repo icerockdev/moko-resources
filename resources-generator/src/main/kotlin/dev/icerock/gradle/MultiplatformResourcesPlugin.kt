@@ -79,6 +79,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             "multiplatformResources.multiplatformResourcesPackage is required!" +
                     " please configure moko-resources plugin correctly."
         }
+        val mrSettings = MRGenerator.MRSettings(
+            packageName = mrClassPackage,
+            visibility = mrExtension.multiplatformResourcesVisibility
+        )
         val sourceInfo = SourceInfo(
             generatedDir,
             commonResources,
@@ -97,23 +101,23 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
         val commonGenerationTask = setupCommonGenerator(
-            commonSourceSet,
-            generatedDir,
-            mrClassPackage,
-            features,
-            target
+            commonSourceSet = commonSourceSet,
+            generatedDir = generatedDir,
+            mrSettings = mrSettings,
+            features = features,
+            target = target
         )
 
         val setupAndroid = {
             val androidExtension = target.extensions.getByType(BaseExtension::class)
 
             val androidLogic = AndroidPluginLogic(
-                commonSourceSet,
-                targets,
-                generatedDir,
-                mrClassPackage,
-                features,
-                target
+                commonSourceSet = commonSourceSet,
+                targets = targets,
+                generatedDir = generatedDir,
+                mrSettings = mrSettings,
+                features = features,
+                target = target
             )
 
             target.afterEvaluate {
@@ -136,19 +140,19 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         setupJvmGenerator(
-            commonSourceSet,
-            targets,
-            generatedDir,
-            mrClassPackage,
-            features,
-            target
+            commonSourceSet = commonSourceSet,
+            targets = targets,
+            generatedDir = generatedDir,
+            mrSettings = mrSettings,
+            features = features,
+            target = target
         )
         if (HostManager.hostIsMac) {
             setupAppleGenerator(
                 commonSourceSet,
                 targets,
                 generatedDir,
-                mrClassPackage,
+                mrSettings,
                 features,
                 target,
                 iosLocalizationRegion
@@ -165,7 +169,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     private fun setupCommonGenerator(
         commonSourceSet: KotlinSourceSet,
         generatedDir: File,
-        mrClassPackage: String,
+        mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ): GenerateMultiplatformResourcesTask {
@@ -173,7 +177,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         return CommonMRGenerator(
             generatedDir,
             commonGeneratorSourceSet,
-            mrClassPackage,
+            mrSettings,
             generators = features.map { it.createCommonGenerator() }
         ).apply(target)
     }
@@ -183,7 +187,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         commonSourceSet: KotlinSourceSet,
         targets: List<KotlinTarget>,
         generatedDir: File,
-        mrClassPackage: String,
+        mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
@@ -195,9 +199,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
         kotlinSourceSets.forEach { kotlinSourceSet ->
             JvmMRGenerator(
-                generatedDir,
-                createSourceSet(kotlinSourceSet),
-                mrClassPackage,
+                generatedDir = generatedDir,
+                sourceSet = createSourceSet(kotlinSourceSet),
+                mrSettings = mrSettings,
                 generators = features.map { it.createJvmGenerator() }
             ).apply(target)
         }
@@ -208,7 +212,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         commonSourceSet: KotlinSourceSet,
         targets: List<KotlinTarget>,
         generatedDir: File,
-        mrClassPackage: String,
+        mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project,
         iosLocalizationRegion: String
@@ -229,9 +233,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
             val sourceSet = createSourceSet(depend ?: kss)
             AppleMRGenerator(
-                generatedDir,
-                sourceSet,
-                mrClassPackage,
+                generatedDir = generatedDir,
+                sourceSet = sourceSet,
+                mrSettings = mrSettings,
                 generators = features.map { it.createIosGenerator() },
                 compilation = compilation,
                 baseLocalizationRegion = iosLocalizationRegion
