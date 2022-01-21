@@ -20,6 +20,10 @@ android {
     }
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     commonMainApi(projects.resources)
     commonMainApi(libs.mokoGraphics)

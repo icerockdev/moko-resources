@@ -20,26 +20,26 @@ import java.io.File
 class JvmMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
-    mrClassPackage: String,
+    mrSettings: MRSettings,
     generators: List<Generator>
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrClassPackage = mrClassPackage,
+    mrSettings = mrSettings,
     generators = generators
 ) {
+    private val flattenClassName: String get() = mrSettings.packageName.replace(".", "")
 
     override val resourcesGenerationDir: File
         get() = File(
             outputDir,
-            "${mrClassPackage.replace(".", "")}/res"
+            "$flattenClassName/res"
         )
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         super.processMRClass(mrClass)
-        val flattenClassName = mrClassPackage.replace(".", "")
 
         mrClass.addProperty(
             PropertySpec.builder(

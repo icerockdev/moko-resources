@@ -8,6 +8,7 @@ import com.icerockdev.library.nested.nestedFile
 import com.icerockdev.library.nested.nestedTest
 import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
+import dev.icerock.moko.resources.FontResource
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.Plural
 import dev.icerock.moko.resources.desc.PluralFormatted
@@ -22,8 +23,8 @@ import dev.icerock.moko.resources.format
 import dev.icerock.moko.resources.getImageByFileName
 
 @Suppress("MagicNumber", "TooManyFunctions")
-object Testing {
-    fun getStrings(): List<StringDesc> {
+public object Testing {
+    public fun getStrings(): List<StringDesc> {
         return listOf(
             MR.strings.test_simple.desc(),
             MR.strings.test2.desc(),
@@ -40,19 +41,22 @@ object Testing {
             MR.strings.multilined.desc(),
             MR.strings.quotes.desc(),
             nestedTest(),
-            MR.plurals.test_plural.desc(7)
+            MR.plurals.test_plural.desc(7),
+            MR.plurals.test_plural_interop.desc(1),
+            MR.plurals.test_plural_interop.desc(2),
+            MR.plurals.test_plural_interop.desc(7),
         )
     }
 
-    fun getDrawable(): ImageResource {
+    public fun getDrawable(): ImageResource {
         return MR.images.home_black_18
     }
 
-    fun getDrawableByFileName(): ImageResource? {
+    public fun getDrawableByFileName(): ImageResource? {
         return MR.images.getImageByFileName("home_black_18")
     }
 
-    fun getStringDesc(): StringDesc {
+    public fun getStringDesc(): StringDesc {
         // create simple string
         val simpleString = StringDesc.Resource(MR.strings.test_simple)
         val simpleStringExt = MR.strings.test_simple.desc()
@@ -102,43 +106,43 @@ object Testing {
         return list.joinToStringDesc("\n")
     }
 
-    fun getFontTtf1() = MR.fonts.Raleway.italic
+    public fun getFontTtf1(): FontResource = MR.fonts.Raleway.italic
 
-    fun getFontTtf2() = MR.fonts.Raleway.bold
+    public fun getFontTtf2(): FontResource = MR.fonts.Raleway.bold
 
-    fun getFontOtf1() = MR.fonts.cormorant.regular
-    fun getFontOtf2() = MR.fonts.cormorant.italic
-    fun getFontOtf3() = MR.fonts.cormorant.light
+    public fun getFontOtf1(): FontResource = MR.fonts.cormorant.regular
+    public fun getFontOtf2(): FontResource = MR.fonts.cormorant.italic
+    public fun getFontOtf3(): FontResource = MR.fonts.cormorant.light
 
-    fun locale(lang: String?) {
+    public fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)
         else StringDesc.LocaleType.System
     }
 
-    fun getTextFile(): FileResource {
+    public fun getTextFile(): FileResource {
         return MR.files.test
     }
 
-    fun getJsonFile(): FileResource {
+    public fun getJsonFile(): FileResource {
         return MR.files.some
     }
 
-    fun getNestedJsonFile(): FileResource {
+    public fun getNestedJsonFile(): FileResource {
         return nestedFile()
     }
 
-    fun getGradientColors(): List<ColorResource> {
+    public fun getGradientColors(): List<ColorResource> {
         return listOf(
             MR.colors.valueColor,
             MR.colors.valueColor2,
         )
     }
 
-    fun getTextColor(): ColorResource {
+    public fun getTextColor(): ColorResource {
         return MR.colors.textColor
     }
 
-    fun getPlurals(): StringDesc {
+    public fun getPlurals(): StringDesc {
         return List(26) { number ->
             val value = number + 1
             MR.plurals.myPlural.format(value, value)
