@@ -14,12 +14,12 @@ import java.io.File
 class CommonMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
-    mrClassPackage: String,
+    mrSettings: MRSettings,
     generators: List<Generator>
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrClassPackage = mrClassPackage,
+    mrSettings = mrSettings,
     generators = generators
 ) {
 

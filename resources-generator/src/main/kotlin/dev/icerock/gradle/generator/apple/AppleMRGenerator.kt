@@ -44,19 +44,19 @@ import java.util.zip.ZipFile
 class AppleMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
-    mrClassPackage: String,
+    mrSettings: MRSettings,
     generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
     private val baseLocalizationRegion: String
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrClassPackage = mrClassPackage,
+    mrSettings = mrSettings,
     generators = generators
 ) {
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
-    private val bundleIdentifier = "$mrClassPackage.MR"
+    private val bundleIdentifier = "${mrSettings.packageName}.MR"
 
     private var assetsDirectory: File? = null
 

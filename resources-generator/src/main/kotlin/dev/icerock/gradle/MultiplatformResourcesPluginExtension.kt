@@ -10,6 +10,8 @@ open class MultiplatformResourcesPluginExtension {
     var multiplatformResourcesPackage: String? = null
     var multiplatformResourcesSourceSet: String? = null
     var iosBaseLocalizationRegion: String = "en"
-    val sourceSetName: String get() = multiplatformResourcesSourceSet ?: KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME
+    val sourceSetName: String
+        get() = multiplatformResourcesSourceSet ?: KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME
     var disableStaticFrameworkWarning = false
+    var multiplatformResourcesVisibility: MRVisibility = MRVisibility.Public
 }
