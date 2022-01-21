@@ -9,7 +9,9 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
+import dev.icerock.gradle.toModifier
 import org.gradle.api.Project
 import org.gradle.api.Task
 import java.io.File
@@ -17,7 +19,7 @@ import java.io.File
 abstract class MRGenerator(
     generatedDir: File,
     protected val sourceSet: SourceSet,
-    protected val mrClassPackage: String,
+    protected val mrSettings: MRSettings,
     internal val generators: List<Generator>
 ) {
 
@@ -48,9 +50,11 @@ abstract class MRGenerator(
         @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
             .addModifiers(*getMRClassModifiers())
+            .addModifiers(mrSettings.visibility.toModifier())
 
         generators.forEach { generator ->
             val builder = TypeSpec.objectBuilder(generator.mrObjectName)
+                .addModifiers(mrSettings.visibility.toModifier())
 
             val fileResourceInterfaceClassName =
                 ClassName("dev.icerock.moko.resources", "ResourceContainer")
@@ -63,7 +67,7 @@ abstract class MRGenerator(
 
         val mrClass = mrClassSpec.build()
 
-        val fileSpec = FileSpec.builder(mrClassPackage, mrClassName)
+        val fileSpec = FileSpec.builder(mrSettings.packageName, mrClassName)
             .addType(mrClass)
 
         generators
@@ -122,4 +126,9 @@ abstract class MRGenerator(
         fun addSourceDir(directory: File)
         fun addResourcesDir(directory: File)
     }
+
+    data class MRSettings(
+        val packageName: String,
+        val visibility: MRVisibility
+    )
 }
