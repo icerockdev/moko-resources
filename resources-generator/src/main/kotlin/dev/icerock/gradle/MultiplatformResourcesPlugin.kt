@@ -18,6 +18,7 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
+import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.getDependedFrom
 import dev.icerock.gradle.utils.isDependsOn
@@ -33,6 +34,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
@@ -237,6 +239,27 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 compilation = compilation,
                 baseLocalizationRegion = iosLocalizationRegion
             ).apply(target)
+        }
+
+        setupCopyXCFrameworkResourcesTask(target)
+    }
+
+    private fun setupCopyXCFrameworkResourcesTask(project: Project) {
+        // can't use here configureEach because we will add new task when found xcframeworktask
+        project.afterEvaluate {
+            project.tasks.filterIsInstance<XCFrameworkTask>()
+                .forEach { task ->
+                    val copyTaskName: String =
+                        task.name.replace("assemble", "copyResources").plus("ToApp")
+
+                    val copyTask = project.tasks.create(
+                        copyTaskName,
+                        CopyXCFrameworkResourcesToApp::class.java
+                    ) {
+                        it.xcFrameworkDir = task.outputDir
+                    }
+                    copyTask.dependsOn(task)
+                }
         }
     }
 

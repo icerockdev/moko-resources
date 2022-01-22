@@ -22,12 +22,14 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
+import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.file.zipDirAs
@@ -100,6 +102,7 @@ class AppleMRGenerator(
         setupKLibResources(generationTask)
         setupFrameworkResources()
         setupTestsResources()
+        setupFatFrameworkTasks()
     }
 
     override fun beforeMRGeneration() {
@@ -292,6 +295,30 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                     }
                 })
             }
+    }
+
+    private fun setupFatFrameworkTasks() {
+        val kotlinNativeTarget = compilation.target as KotlinNativeTarget
+        val project = kotlinNativeTarget.project
+
+        @Suppress("ObjectLiteralToLambda")
+        val fatAction: Action<Task> = object : Action<Task> {
+            override fun execute(task: Task) {
+                val fatTask: FatFrameworkTask = task as FatFrameworkTask
+                fatTask.frameworks.first().outputFile.listFiles()
+                    ?.asSequence()
+                    ?.filter { it.name.contains(".bundle") }
+                    ?.forEach { bundleFile ->
+                        project.copy {
+                            it.from(bundleFile)
+                            it.into(File(fatTask.fatFrameworkDir, bundleFile.name))
+                        }
+                    }
+            }
+        }
+
+        project.tasks.withType(FatFrameworkTask::class)
+            .configureEach { it.doLast(fatAction) }
     }
 
     private fun unzipTo(outputDirectory: File, zipFile: File) {

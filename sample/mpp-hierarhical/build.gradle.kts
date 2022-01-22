@@ -3,6 +3,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     id("com.android.library")
@@ -30,6 +31,7 @@ version = "1.0"
 kotlin {
     android()
     ios()
+    iosSimulatorArm64()
     macosX64("macos")
     jvm()
 
@@ -74,6 +76,9 @@ kotlin {
         val iosMain by getting { dependsOn(clientMain) }
         val iosTest by getting { dependsOn(clientTest) }
 
+        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
+        val iosSimulatorArm64Test by getting { dependsOn(iosTest) }
+
         val macosMain by getting { dependsOn(clientMain) }
         val macosTest by getting { dependsOn(clientTest) }
 
@@ -94,6 +99,15 @@ kotlin {
             dependsOn(clientTest)
         }
     }
+
+    val xcFramework = XCFramework("MPL")
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class)
+        .matching { it.konanTarget.family == org.jetbrains.kotlin.konan.target.Family.IOS }
+        .configureEach {
+            binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class)
+                .matching { it.buildType == NativeBuildType.RELEASE } // static framework not produce dSYMs and here no reasons for Debug XCFramework
+                .configureEach { xcFramework.add(this) }
+        }
 }
 
 multiplatformResources {

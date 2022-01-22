@@ -25,7 +25,7 @@ This is a Kotlin MultiPlatform library that provides access to the resources on 
 - **Colors** with light/dark mode support;
 - **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms;
 - **Static** iOS frameworks support;
-- **FatFrameworkWithResourcesTask** Gradle task.
+- **Fat and XC** frameworks support.
 
 ## Requirements
 - Gradle version 6.8.3+
@@ -447,36 +447,6 @@ framework {
 }
 ```
 
-### Gradle task for creating Fat Framework with resources
-
-If you want to create Fat Framework for iOS with all resources from KMP Gradle module you should use
-extended Gradle task `FatFrameworkWithResourcesTask`. There is example of
-`FatFrameworkWithResourcesTask` task using for the `mpp-library` module of the Sample. In the end
-of the `sample/mpp-library/build.gradle.kts` file:
-
-```kotlin
-tasks.register("debugFatFramework", dev.icerock.gradle.tasks.FatFrameworkWithResourcesTask::class) {
-    baseName = "multiplatform"
-
-    val targets = mapOf(
-        "iosX64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosX64"),
-        "iosArm64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosArm64")
-    )
-
-    from(
-        targets.toList().map {
-            it.second.binaries.getFramework("MultiPlatformLibrary", org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG)
-        }
-    )
-}
-``` 
-
-Then just launch task:
-
-```shell script
-./gradlew :sample:mpp-library:debugFatFramework
-```
-
 ### Example 10 - plain file resource access
 The first step is a create a resource file `test.txt` for example, in `commonMain/resources/MR/files`
 After gradle sync we can get file by id `MR.files.test`
@@ -491,6 +461,23 @@ Usage on Apple:
 val text = MR.files.test.readText()
 ```
 If you want to read files not as text, add your own implementation to expect/actual FileResource
+
+### Creating Fat Framework with resources
+
+Just use `FatFrameworkTask` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-universal-frameworks).
+
+### Creating XCFramework with resources
+
+Just use `XCFramework` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-xcframeworks).
+
+But if you use **static frameworks** required additional setup - add to Xcode build phase (at end):
+```bash
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMPLReleaseXCFrameworkToApp \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
+```
+
+Details you can check in sample TestStaticXCFramework in ios-app. In this sample used mpp-hierarhical kotlin module with XCFramework.
 
 ## Samples
 Please see more examples in the [sample directory](sample).
