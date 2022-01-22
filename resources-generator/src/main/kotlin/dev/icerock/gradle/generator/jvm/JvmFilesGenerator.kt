@@ -29,8 +29,8 @@ class JvmFilesGenerator(
         files: List<FileSpec>
     ) {
         val fileResDir = File(resourcesGenerationDir, FILES_DIR).apply { mkdirs() }
-        files.forEach {
-            it.file.copyTo(File(fileResDir, it.file.name))
+        files.forEach { fileSpec ->
+            fileSpec.file.copyTo(File(fileResDir, fileSpec.file.name))
         }
     }
 

@@ -21,11 +21,12 @@ class AndroidAssetsGenerator(
         resourcesGenerationDir: File,
         files: List<AssetSpec>
     ) {
-        files.forEach {
-            if (it is AssetSpecFile) {
-                it.file.copyTo(File(assetsGenerationDir, it.pathRelativeToBase))
-            } else if (it is AssetSpecDirectory) {
-                generateResources(assetsGenerationDir, resourcesGenerationDir, it.assets)
+        files.forEach { assetSpec ->
+            when (assetSpec) {
+                is AssetSpecDirectory ->
+                    generateResources(assetsGenerationDir, resourcesGenerationDir, assetSpec.assets)
+                is AssetSpecFile ->
+                    assetSpec.file.copyTo(File(assetsGenerationDir, assetSpec.pathRelativeToBase))
             }
         }
     }

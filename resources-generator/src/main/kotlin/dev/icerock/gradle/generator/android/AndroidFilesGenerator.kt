@@ -36,9 +36,9 @@ class AndroidFilesGenerator(
         val targetDir = File(resourcesGenerationDir, "raw")
         targetDir.mkdirs()
 
-        files.forEach {
-            val fileName = keyToResourceId(it.key) + "." + it.file.extension
-            it.file.copyTo(File(targetDir, fileName))
+        files.forEach { fileSpec ->
+            val fileName = keyToResourceId(fileSpec.key) + "." + fileSpec.file.extension
+            fileSpec.file.copyTo(File(targetDir, fileName))
         }
     }
 

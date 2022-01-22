@@ -11,9 +11,9 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
-class AppleAssetsGenerator(sourceDirectorySet: SourceDirectorySet) :
-    AssetsGenerator(sourceDirectorySet),
-    ObjectBodyExtendable by AppleGeneratorHelper() {
+class AppleAssetsGenerator(
+    sourceDirectorySet: SourceDirectorySet
+) : AssetsGenerator(sourceDirectorySet), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -41,13 +41,14 @@ class AppleAssetsGenerator(sourceDirectorySet: SourceDirectorySet) :
         resourcesGenerationDir: File,
         files: List<AssetSpec>
     ) {
-        files.forEach {
-            if (it is AssetSpecFile) {
-                val newName = it.pathRelativeToBase
-                    .replace('/', PATH_DELIMITER)
-                it.file.copyTo(File(resourcesGenerationDir, newName))
-            } else if (it is AssetSpecDirectory) {
-                generateResources(assetsGenerationDir, resourcesGenerationDir, it.assets)
+        files.forEach { assetSpec ->
+            when (assetSpec) {
+                is AssetSpecDirectory ->
+                    generateResources(assetsGenerationDir, resourcesGenerationDir, assetSpec.assets)
+                is AssetSpecFile -> {
+                    val newName = assetSpec.pathRelativeToBase.replace('/', PATH_DELIMITER)
+                    assetSpec.file.copyTo(File(resourcesGenerationDir, newName))
+                }
             }
         }
     }
