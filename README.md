@@ -470,6 +470,15 @@ Just use `FatFrameworkTask` [from kotlin plugin](https://kotlinlang.org/docs/mpp
 
 Just use `XCFramework` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-xcframeworks).
 
+But if you use **static frameworks** required additional setup - add to Xcode build phase (at end):
+```bash
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMPLReleaseXCFrameworkToApp \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
+```
+
+Details you can check in sample TestStaticXCFramework in ios-app. In this sample used mpp-hierarhical kotlin module with XCFramework.
+
 ## Samples
 Please see more examples in the [sample directory](sample).
 

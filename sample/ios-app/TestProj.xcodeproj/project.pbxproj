@@ -202,6 +202,7 @@
 				22BE0C5D279C026700CDA47A /* Sources */,
 				22BE0C5E279C026700CDA47A /* Frameworks */,
 				22BE0C5F279C026700CDA47A /* Resources */,
+				22BE0C76279C12A200CDA47A /* Copy MOKO Resources */,
 			);
 			buildRules = (
 			);
@@ -389,6 +390,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd ../..\n\n./gradlew :sample:mpp-hierarhical:assembleMPLReleaseXCFramework\n";
+		};
+		22BE0C76279C12A200CDA47A /* Copy MOKO Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy MOKO Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ../..\n\n./gradlew :sample:mpp-hierarhical:copyResourcesMPLReleaseXCFrameworkToApp \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH\n";
 		};
 		45658F4C2502A6250014A2AA /* mokoResources */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -302,7 +302,7 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         val project = kotlinNativeTarget.project
 
         @Suppress("ObjectLiteralToLambda")
-        val fatAction: Action<Task> = object: Action<Task> {
+        val fatAction: Action<Task> = object : Action<Task> {
             override fun execute(task: Task) {
                 val fatTask: FatFrameworkTask = task as FatFrameworkTask
                 fatTask.frameworks.first().outputFile.listFiles()

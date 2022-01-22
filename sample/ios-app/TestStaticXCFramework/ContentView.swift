@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import MPL
+import MPL // https://youtrack.jetbrains.com/issue/KT-50904
 
 struct ContentView: View {
     var body: some View {
