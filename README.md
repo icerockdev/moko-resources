@@ -1,9 +1,11 @@
 ![moko-resources](img/logo.png)  
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://img.shields.io/maven-central/v/dev.icerock.moko/resources) ](https://repo1.maven.org/maven2/dev/icerock/moko/resources) ![kotlin-version](https://kotlin-version.aws.icerock.dev/kotlin-version?group=dev.icerock.moko&name=resources)
 ![badge][badge-android]
-![badge][badge-iosx64]
-![badge][badge-iosarm64]
-![badge][badge-macos64]
+![badge][badge-iosX64]
+![badge][badge-iosArm64]
+![badge][badge-iosSimulatorArm64]
+![badge][badge-macosArm64]
+![badge][badge-macosX64]
 ![badge][badge-jvm]
 
 # Mobile Kotlin resources
@@ -41,7 +43,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.17.4"
+        classpath "dev.icerock.moko:resources-generator:0.18.0"
     }
 }
 
@@ -58,11 +60,16 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.17.4")
+    commonMainApi("dev.icerock.moko:resources:0.18.0")
+    androidMainApi("dev.icerock.moko:resources-compose:0.18.0")
+    jvmMainApi("dev.icerock.moko:resources-compose:0.18.0")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.18.0")
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "org.example.library" // required
+    multiplatformResourcesClassName = "SharedRes" // optional, default MR
+    multiplatformResourcesVisibility = MRVisibility.Internal // optional, default Public
     iosBaseLocalizationRegion = "en" // optional, default "en"
     multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
 }
@@ -461,6 +468,11 @@ Usage on Apple:
 val text = MR.files.test.readText()
 ```
 If you want to read files not as text, add your own implementation to expect/actual FileResource
+
+### Example 11 - assets access
+
+Assets allow you save directories hierarchy (in files structure is plain).
+Locate files to `commonMain/resources/MR/assets` and access to it by `MR.assets.*` 
 
 ### Creating Fat Framework with resources
 
