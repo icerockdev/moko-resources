@@ -34,7 +34,11 @@ abstract class ColorsGenerator(
         ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
 
     @Suppress("SpreadOperator")
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder
+    ): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
         extendObjectBodyAtStart(objectBuilder)
 

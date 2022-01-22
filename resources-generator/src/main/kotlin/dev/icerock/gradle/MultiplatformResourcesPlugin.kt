@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.BaseExtension
+import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator
@@ -23,6 +24,8 @@ import dev.icerock.gradle.utils.isDependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -40,12 +43,12 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val mrExtension = target.extensions.create(
             "multiplatformResources",
-            MultiplatformResourcesPluginExtension::class.java
+            MultiplatformResourcesPluginExtension::class
         )
 
-        target.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
+        target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val multiplatformExtension =
-                target.extensions.getByType(KotlinMultiplatformExtension::class.java)
+                target.extensions.getByType(KotlinMultiplatformExtension::class)
 
             target.afterEvaluate {
                 configureGenerators(
@@ -63,6 +66,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension
     ) {
+
         val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
         val commonResources = commonSourceSet.resources
 
@@ -87,7 +91,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             ImagesGenerator.Feature(sourceInfo),
             FontsGenerator.Feature(sourceInfo),
             FilesGenerator.Feature(sourceInfo),
-            ColorsGenerator.Feature(sourceInfo)
+            ColorsGenerator.Feature(sourceInfo),
+            AssetsGenerator.Feature(sourceInfo)
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
@@ -100,7 +105,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         )
 
         val setupAndroid = {
-            val androidExtension = target.extensions.getByType(BaseExtension::class.java)
+            val androidExtension = target.extensions.getByType(BaseExtension::class)
 
             val androidLogic = AndroidPluginLogic(
                 commonSourceSet = commonSourceSet,
@@ -245,6 +250,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
             override fun addResourcesDir(directory: File) {
                 kotlinSourceSet.resources.srcDir(directory)
+            }
+
+            override fun addAssetsDir(directory: File) {
+                // nothing
             }
         }
     }
