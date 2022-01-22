@@ -10,8 +10,8 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
-import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.apple.AppleImagesGenerator
+import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -80,7 +80,10 @@ abstract class ImagesGenerator(
 
     abstract fun getPropertyInitializer(fileName: String): CodeBlock?
 
-    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<ImagesGenerator> {
+    class Feature(
+        private val info: SourceInfo,
+        private val mrSettings: MRGenerator.MRSettings
+    ) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
             it.include("MR/images/**/*.png", "MR/images/**/*.jpg")
         }
@@ -95,6 +98,9 @@ abstract class ImagesGenerator(
             info.androidRClassPackage
         )
 
-        override fun createJvmGenerator() = JvmImagesGenerator(stringsFileTree)
+        override fun createJvmGenerator() = JvmImagesGenerator(
+            stringsFileTree,
+            mrSettings
+        )
     }
 }

@@ -169,7 +169,10 @@ abstract class AssetsGenerator(
         val file: File
     ) : AssetSpec()
 
-    class Feature(val info: SourceInfo) : ResourceGeneratorFeature<AssetsGenerator> {
+    class Feature(
+        private val info: SourceInfo,
+        private val mrSettings: MRGenerator.MRSettings
+    ) : ResourceGeneratorFeature<AssetsGenerator> {
 
         override fun createCommonGenerator() = CommonAssetsGenerator(info.commonResources)
 
@@ -179,7 +182,10 @@ abstract class AssetsGenerator(
             info.commonResources
         )
 
-        override fun createJvmGenerator() = JvmAssetsGenerator(info.commonResources)
+        override fun createJvmGenerator() = JvmAssetsGenerator(
+            info.commonResources,
+            mrSettings
+        )
     }
 
     companion object {

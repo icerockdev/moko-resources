@@ -7,13 +7,15 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.AssetsGenerator
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
 class JvmAssetsGenerator(
-    sourceDirectorySet: SourceDirectorySet
-) : AssetsGenerator(sourceDirectorySet), ObjectBodyExtendable by ClassLoaderExtender() {
+    sourceDirectorySet: SourceDirectorySet,
+    mrSettings: MRGenerator.MRSettings
+) : AssetsGenerator(sourceDirectorySet), ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

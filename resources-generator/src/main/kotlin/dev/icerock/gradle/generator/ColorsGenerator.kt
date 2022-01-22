@@ -28,9 +28,9 @@ abstract class ColorsGenerator(
         ClassName("dev.icerock.moko.resources", "ColorResource")
     override val mrObjectName: String = "colors"
 
-    protected val singleColorClassName =
+    private val singleColorClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource.Single")
-    protected val themedColorClassName =
+    private val themedColorClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
 
     @Suppress("SpreadOperator")
@@ -139,7 +139,10 @@ abstract class ColorsGenerator(
         return colorNodes
     }
 
-    class Feature(info: SourceInfo) : ResourceGeneratorFeature<ColorsGenerator> {
+    class Feature(
+        info: SourceInfo,
+        private val mrSettings: MRGenerator.MRSettings
+    ) : ResourceGeneratorFeature<ColorsGenerator> {
 
         private val colorsFileTree =
             info.commonResources.matching { it.include("MR/**/colors*.xml") }
@@ -150,7 +153,7 @@ abstract class ColorsGenerator(
 
         override fun createAndroidGenerator() = AndroidColorsGenerator(colorsFileTree)
 
-        override fun createJvmGenerator() = JvmColorsGenerator(colorsFileTree)
+        override fun createJvmGenerator() = JvmColorsGenerator(colorsFileTree, mrSettings)
     }
 
     protected fun replaceColorAlpha(color: String?): String? {
