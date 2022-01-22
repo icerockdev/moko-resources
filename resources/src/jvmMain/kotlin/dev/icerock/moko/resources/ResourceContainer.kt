@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources
 
+import java.io.File
 import java.io.FileNotFoundException
 
 actual interface ResourceContainer<T> {
@@ -21,4 +22,14 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(
     } catch (exc: FileNotFoundException) {
         null
     }
+}
+
+actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource {
+    val originalPath: String = filePath.removeFirstSlash()
+
+    return AssetResource(
+        resourcesClassLoader,
+        originalPath,
+        "files${File.separatorChar}$originalPath"
+    )
 }

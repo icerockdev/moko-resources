@@ -7,13 +7,15 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FilesGenerator
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmFilesGenerator(
-    inputFileTree: FileTree
-) : FilesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+    inputFileTree: FileTree,
+    mrSettings: MRGenerator.MRSettings
+) : FilesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -24,10 +26,13 @@ class JvmFilesGenerator(
         "$FILES_DIR/${fileSpec.file.name}"
     )
 
-    override fun generateResources(resourcesGenerationDir: File, files: List<FileSpec>) {
+    override fun generateResources(
+        resourcesGenerationDir: File,
+        files: List<FileSpec>
+    ) {
         val fileResDir = File(resourcesGenerationDir, FILES_DIR).apply { mkdirs() }
-        files.forEach { (_, file) ->
-            file.copyTo(File(fileResDir, file.name))
+        files.forEach { fileSpec ->
+            fileSpec.file.copyTo(File(fileResDir, fileSpec.file.name))
         }
     }
 

@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
@@ -25,6 +26,11 @@ import dev.icerock.moko.resources.compose.toImageBitmap
 
 fun main() {
     val testing = Testing
+
+    testing.getTextsFromAssets().forEach {
+        println(it.readText())
+    }
+
     singleWindowApplication(
         title = "moko-resources",
         state = WindowState(size = DpSize(1080.dp, 960.dp))
@@ -32,7 +38,7 @@ fun main() {
         Surface(Modifier.fillMaxSize()) {
             Column {
                 Image(
-                    bitmap = testing.getDrawable().image.toImageBitmap(),
+                    bitmap = testing.getDrawable().image.toComposeImageBitmap(),
                     contentDescription = null,
                     modifier = Modifier.size(56.dp)
                 )

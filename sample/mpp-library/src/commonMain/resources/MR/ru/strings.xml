@@ -12,4 +12,5 @@
 вторая строка
 третья строка.</string>
     <string name="quotes">Alex009 сказал "привет мир" &amp; "пишите тесты".</string>
+    <string name="single_quotes">Alex009 сказал \'привет\'</string>
 </resources>

@@ -2,6 +2,8 @@
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     id("multiplatform-library-convention")
     id("dev.icerock.mobile.multiplatform.apple-framework")
@@ -18,6 +20,18 @@ android {
             isIncludeAndroidResources = true
         }
     }
+}
+
+kotlin {
+    explicitApi()
+
+    val xcFramework = XCFramework("MPL")
+    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class)
+        .matching { it.konanTarget.family == org.jetbrains.kotlin.konan.target.Family.IOS }
+        .configureEach {
+            binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class)
+                .configureEach { xcFramework.add(this) }
+        }
 }
 
 dependencies {
@@ -38,7 +52,7 @@ framework {
     export(libs.mokoGraphics)
 }
 
-tasks.register("debugFatFramework", dev.icerock.gradle.tasks.FatFrameworkWithResourcesTask::class) {
+tasks.register("debugFatFramework", org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask::class) {
     baseName = "multiplatform"
 
     val targets = mapOf(

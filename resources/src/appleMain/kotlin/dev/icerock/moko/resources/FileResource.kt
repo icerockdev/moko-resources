@@ -16,13 +16,23 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.stringWithContentsOfFile
 
-actual class FileResource(
+actual open class FileResource(
     val fileName: String,
     val extension: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {
-    val path: String get() = bundle.pathForResource(name = fileName, ofType = extension, inDirectory = "files")!!
-    val url: NSURL get() = bundle.URLForResource(name = fileName, withExtension = extension, subdirectory = "files")!!
+    open val path: String
+        get() = bundle.pathForResource(
+            name = fileName,
+            ofType = extension,
+            inDirectory = "files"
+        )!!
+    open val url: NSURL
+        get() = bundle.URLForResource(
+            name = fileName,
+            withExtension = extension,
+            subdirectory = "files"
+        )!!
 
     fun readText(): String {
         val filePath = path
