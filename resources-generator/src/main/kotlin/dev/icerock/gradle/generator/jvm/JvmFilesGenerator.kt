@@ -26,10 +26,13 @@ class JvmFilesGenerator(
         "$FILES_DIR/${fileSpec.file.name}"
     )
 
-    override fun generateResources(resourcesGenerationDir: File, files: List<FileSpec>) {
+    override fun generateResources(
+        resourcesGenerationDir: File,
+        files: List<FileSpec>
+    ) {
         val fileResDir = File(resourcesGenerationDir, FILES_DIR).apply { mkdirs() }
-        files.forEach { (_, file) ->
-            file.copyTo(File(fileResDir, file.name))
+        files.forEach { fileSpec ->
+            fileSpec.file.copyTo(File(fileResDir, fileSpec.file.name))
         }
     }
 

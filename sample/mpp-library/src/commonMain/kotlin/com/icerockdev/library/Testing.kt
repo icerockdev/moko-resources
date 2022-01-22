@@ -6,6 +6,7 @@ package com.icerockdev.library
 
 import com.icerockdev.library.nested.nestedFile
 import com.icerockdev.library.nested.nestedTest
+import dev.icerock.moko.resources.AssetResource
 import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.FontResource
@@ -20,6 +21,7 @@ import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.joinToStringDesc
 import dev.icerock.moko.resources.desc.plus
 import dev.icerock.moko.resources.format
+import dev.icerock.moko.resources.getAssetByFilePath
 import dev.icerock.moko.resources.getImageByFileName
 
 @Suppress("MagicNumber", "TooManyFunctions")
@@ -113,6 +115,14 @@ public object Testing {
     public fun getFontOtf1(): FontResource = MR.fonts.cormorant.regular
     public fun getFontOtf2(): FontResource = MR.fonts.cormorant.italic
     public fun getFontOtf3(): FontResource = MR.fonts.cormorant.light
+
+    public fun getTextsFromAssets(): List<AssetResource> {
+        return listOf(
+            MR.assets.test_1,
+            MR.assets.getAssetByFilePath("texts/test2.txt"),
+            MR.assets.texts.inner_1.test3
+        )
+    }
 
     public fun locale(lang: String?) {
         StringDesc.localeType = if (lang != null) StringDesc.LocaleType.Custom(lang)

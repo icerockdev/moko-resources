@@ -57,6 +57,10 @@ internal class AndroidPluginLogic(
             override fun addResourcesDir(directory: File) {
                 androidSourceSet.res.srcDir(directory)
             }
+
+            override fun addAssetsDir(directory: File) {
+                androidSourceSet.assets.srcDir(directory)
+            }
         }
     }
 }

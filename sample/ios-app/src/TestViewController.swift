@@ -7,14 +7,14 @@ import UIKit
 import MultiPlatformLibrary
 
 class TestViewController: UIViewController {
-    
+
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textView: UITextView!
     @IBOutlet private var stringDescTextView: UITextView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let testing = Testing()
         let drawable = testing.getDrawable()
         let strings = testing.getStrings()
@@ -35,11 +35,14 @@ class TestViewController: UIViewController {
         testing.getNestedJsonFile()
         ].map { $0.readText() }
         .forEach { print($0) }
+
+        testing.getTextsFromAssets().map { $0.readText() }
+                .forEach { print($0) }
     }
 }
 
 class LanguageTableViewController: UITableViewController {
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if(segue.identifier == "") {
             Testing().locale(lang: nil)

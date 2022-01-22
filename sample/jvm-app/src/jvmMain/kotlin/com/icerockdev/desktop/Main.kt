@@ -26,6 +26,11 @@ import dev.icerock.moko.resources.compose.toImageBitmap
 
 fun main() {
     val testing = Testing
+
+    testing.getTextsFromAssets().forEach {
+        println(it.readText())
+    }
+
     singleWindowApplication(
         title = "moko-resources",
         state = WindowState(size = DpSize(1080.dp, 960.dp))

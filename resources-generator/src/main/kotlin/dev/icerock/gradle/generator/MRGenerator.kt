@@ -29,6 +29,9 @@ abstract class MRGenerator(
     protected open val resourcesGenerationDir
         get() = File(outputDir, "res")
 
+    protected open val assetsGenerationDir: File
+        get() = File(outputDir, AssetsGenerator.ASSETS_DIR_NAME)
+
     init {
         setupGenerationDirs()
     }
@@ -39,11 +42,15 @@ abstract class MRGenerator(
 
         resourcesGenerationDir.mkdirs()
         sourceSet.addResourcesDir(resourcesGenerationDir)
+
+        assetsGenerationDir.mkdirs()
+        sourceSet.addAssetsDir(assetsGenerationDir)
     }
 
     internal fun generate() {
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
+        assetsGenerationDir.deleteRecursively()
 
         beforeMRGeneration()
 
@@ -60,7 +67,13 @@ abstract class MRGenerator(
                 ClassName("dev.icerock.moko.resources", "ResourceContainer")
             builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
 
-            mrClassSpec.addType(generator.generate(resourcesGenerationDir, builder))
+            mrClassSpec.addType(
+                generator.generate(
+                    assetsGenerationDir,
+                    resourcesGenerationDir,
+                    builder
+                )
+            )
         }
 
         processMRClass(mrClassSpec)
@@ -112,7 +125,12 @@ abstract class MRGenerator(
         val resourceClassName: ClassName
         val inputFiles: Iterable<File>
 
-        fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec
+        fun generate(
+            assetsGenerationDir: File,
+            resourcesGenerationDir: File,
+            objectBuilder: TypeSpec.Builder
+        ): TypeSpec
+
         fun getImports(): List<ClassName>
     }
 
@@ -121,6 +139,7 @@ abstract class MRGenerator(
 
         fun addSourceDir(directory: File)
         fun addResourcesDir(directory: File)
+        fun addAssetsDir(directory: File)
     }
 
     data class MRSettings(
