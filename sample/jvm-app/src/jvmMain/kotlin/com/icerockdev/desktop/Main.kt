@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
@@ -32,7 +33,7 @@ fun main() {
         Surface(Modifier.fillMaxSize()) {
             Column {
                 Image(
-                    bitmap = testing.getDrawable().image.toImageBitmap(),
+                    bitmap = testing.getDrawable().image.toComposeImageBitmap(),
                     contentDescription = null,
                     modifier = Modifier.size(56.dp)
                 )
