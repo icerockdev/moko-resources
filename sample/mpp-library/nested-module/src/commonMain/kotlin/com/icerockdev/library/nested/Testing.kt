@@ -9,9 +9,9 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
 fun nestedTest(): StringDesc {
-    return MR.strings.nested_test.desc()
+    return NestedMR.strings.nested_test.desc()
 }
 
 fun nestedFile(): FileResource {
-    return MR.files.nested_test
+    return NestedMR.files.nested_test
 }

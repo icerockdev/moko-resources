@@ -73,6 +73,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
         val mrSettings = MRGenerator.MRSettings(
             packageName = mrClassPackage,
+            className = mrExtension.multiplatformResourcesClassName,
             visibility = mrExtension.multiplatformResourcesVisibility
         )
         val sourceInfo = SourceInfo(
@@ -82,12 +83,12 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         )
         val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
         val features = listOf(
-            StringsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrClassPackage),
-            PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrClassPackage),
-            ImagesGenerator.Feature(sourceInfo),
-            FontsGenerator.Feature(sourceInfo),
-            FilesGenerator.Feature(sourceInfo),
-            ColorsGenerator.Feature(sourceInfo)
+            StringsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrSettings),
+            PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrSettings),
+            ImagesGenerator.Feature(sourceInfo, mrSettings),
+            FontsGenerator.Feature(sourceInfo, mrSettings),
+            FilesGenerator.Feature(sourceInfo, mrSettings),
+            ColorsGenerator.Feature(sourceInfo, mrSettings)
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 

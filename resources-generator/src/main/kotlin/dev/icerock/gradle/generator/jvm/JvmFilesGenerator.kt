@@ -7,13 +7,15 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FilesGenerator
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmFilesGenerator(
-    inputFileTree: FileTree
-) : FilesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+    inputFileTree: FileTree,
+    mrSettings: MRGenerator.MRSettings
+) : FilesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

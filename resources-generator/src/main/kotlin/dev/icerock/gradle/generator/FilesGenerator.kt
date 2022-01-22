@@ -10,8 +10,8 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFilesGenerator
-import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.apple.AppleFilesGenerator
+import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -67,7 +67,7 @@ abstract class FilesGenerator(
     ) {
     }
 
-    protected fun processKey(key: String): String {
+    private fun processKey(key: String): String {
         return key.replace("-", "_")
     }
 
@@ -82,7 +82,10 @@ abstract class FilesGenerator(
         val file: File
     )
 
-    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FilesGenerator> {
+    class Feature(
+        private val info: SourceInfo,
+        private val mrSettings: MRGenerator.MRSettings
+    ) : ResourceGeneratorFeature<FilesGenerator> {
 
         private val fileTree = info.commonResources.matching {
             it.include("MR/files/**")
@@ -97,6 +100,9 @@ abstract class FilesGenerator(
             info.androidRClassPackage
         )
 
-        override fun createJvmGenerator() = JvmFilesGenerator(fileTree)
+        override fun createJvmGenerator() = JvmFilesGenerator(
+            fileTree,
+            mrSettings
+        )
     }
 }

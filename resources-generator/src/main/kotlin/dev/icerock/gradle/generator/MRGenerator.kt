@@ -48,7 +48,7 @@ abstract class MRGenerator(
         beforeMRGeneration()
 
         @Suppress("SpreadOperator")
-        val mrClassSpec = TypeSpec.objectBuilder(mrClassName)
+        val mrClassSpec = TypeSpec.objectBuilder(mrSettings.className)
             .addModifiers(*getMRClassModifiers())
             .addModifiers(mrSettings.visibility.toModifier())
 
@@ -67,7 +67,7 @@ abstract class MRGenerator(
 
         val mrClass = mrClassSpec.build()
 
-        val fileSpec = FileSpec.builder(mrSettings.packageName, mrClassName)
+        val fileSpec = FileSpec.builder(mrSettings.packageName, mrSettings.className)
             .addType(mrClass)
 
         generators
@@ -107,10 +107,6 @@ abstract class MRGenerator(
     protected open fun processMRClass(mrClass: TypeSpec.Builder) {}
     protected open fun getImports(): List<ClassName> = emptyList()
 
-    private companion object {
-        const val mrClassName = "MR"
-    }
-
     interface Generator : ObjectBodyExtendable {
         val mrObjectName: String
         val resourceClassName: ClassName
@@ -129,6 +125,7 @@ abstract class MRGenerator(
 
     data class MRSettings(
         val packageName: String,
+        val className: String,
         val visibility: MRVisibility
     )
 }
