@@ -7,19 +7,20 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.jvm.JvmStringsGenerator.Companion.replaceAndroidFormatParameters
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmPluralsGenerator(
     pluralsFileTree: FileTree,
-    private val mrClassPackage: String
-) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+    mrSettings: MRGenerator.MRSettings
+) : PluralsGenerator(pluralsFileTree),
+    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
-    private val flattenClassPackage = mrClassPackage.replace(".", "")
+    private val flattenClassPackage = mrSettings.packageName.replace(".", "")
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -52,7 +53,7 @@ class JvmPluralsGenerator(
             }
 
             keysWithPlurals.joinToString("\n") { (key, value) ->
-                "$key = ${value.replaceAndroidFormatParameters()}"
+                "$key = ${convertXmlStringToJvmLocalization(value)}"
             }
         }.joinToString("\n")
 

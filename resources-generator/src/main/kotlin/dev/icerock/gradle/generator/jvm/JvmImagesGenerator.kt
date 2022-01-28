@@ -7,14 +7,17 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.js_jvm_common.generateHighestQualityImageResources
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmImagesGenerator(
-    inputFileTree: FileTree
-) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+    inputFileTree: FileTree,
+    mrSettings: MRGenerator.MRSettings
+) : ImagesGenerator(inputFileTree),
+    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

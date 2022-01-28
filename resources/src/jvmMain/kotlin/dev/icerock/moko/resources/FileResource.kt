@@ -6,7 +6,7 @@ package dev.icerock.moko.resources
 
 import java.io.FileNotFoundException
 
-actual class FileResource(
+actual open class FileResource(
     val resourcesClassLoader: ClassLoader,
     val filePath: String
 ) {

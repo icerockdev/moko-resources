@@ -13,32 +13,33 @@ import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
 class JvmMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
-    mrClassPackage: String,
+    mrSettings: MRSettings,
     generators: List<Generator>
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrClassPackage = mrClassPackage,
+    mrSettings = mrSettings,
     generators = generators
 ) {
+    private val flattenClassName: String get() = mrSettings.packageName.replace(".", "")
 
     override val resourcesGenerationDir: File
         get() = File(
             outputDir,
-            "${mrClassPackage.replace(".", "")}/res"
+            "$flattenClassName/res"
         )
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         super.processMRClass(mrClass)
-        val flattenClassName = mrClassPackage.replace(".", "")
 
         mrClass.addProperty(
             PropertySpec.builder(
@@ -63,11 +64,11 @@ class JvmMRGenerator(
 
     override fun apply(generationTask: Task, project: Project) {
         project.tasks.apply {
-            withType(KotlinCompile::class.java).all {
+            withType<KotlinCompile>().all {
                 it.dependsOn(generationTask)
             }
         }
-        project.tasks.withType(Jar::class.java).configureEach {
+        project.tasks.withType<Jar>().configureEach {
             it.exclude("MR/**")
         }
     }

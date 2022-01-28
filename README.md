@@ -1,9 +1,11 @@
 ![moko-resources](img/logo.png)  
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0) [![Download](https://img.shields.io/maven-central/v/dev.icerock.moko/resources) ](https://repo1.maven.org/maven2/dev/icerock/moko/resources) ![kotlin-version](https://kotlin-version.aws.icerock.dev/kotlin-version?group=dev.icerock.moko&name=resources)
 ![badge][badge-android]
-![badge][badge-iosx64]
-![badge][badge-iosarm64]
-![badge][badge-macos64]
+![badge][badge-iosX64]
+![badge][badge-iosArm64]
+![badge][badge-iosSimulatorArm64]
+![badge][badge-macosArm64]
+![badge][badge-macosX64]
 ![badge][badge-jvm]
 ![badge][badge-js]
 
@@ -27,7 +29,7 @@ with the support of the default system localization.
 - **Colors** with light/dark mode support;
 - **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms;
 - **Static** iOS frameworks support;
-- **FatFrameworkWithResourcesTask** Gradle task.
+- **Fat and XC** frameworks support.
 
 ## Requirements
 - Gradle version 6.8.3+
@@ -43,7 +45,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.17.3"
+        classpath "dev.icerock.moko:resources-generator:0.18.0"
     }
 }
 
@@ -56,15 +58,21 @@ allprojects {
 ```
 
 project build.gradle
+
 ```groovy
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.17.3")
+    commonMainApi("dev.icerock.moko:resources:0.18.0")
+    androidMainApi("dev.icerock.moko:resources-compose:0.18.0")
+    jvmMainApi("dev.icerock.moko:resources-compose:0.18.0")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.18.0")
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "org.example.library" // required
+    multiplatformResourcesClassName = "SharedRes" // optional, default MR
+    multiplatformResourcesVisibility = MRVisibility.Internal // optional, default Public
     iosBaseLocalizationRegion = "en" // optional, default "en"
     multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
 }
@@ -506,59 +514,64 @@ framework {
 }
 ```
 
-### Gradle task for creating Fat Framework with resources
-
-If you want to create Fat Framework for iOS with all resources from KMP Gradle module you should use
-extended Gradle task `FatFrameworkWithResourcesTask`. There is example of
-`FatFrameworkWithResourcesTask` task using for the `mpp-library` module of the Sample. In the end
-of the `sample/mpp-library/build.gradle.kts` file:
-
-```kotlin
-tasks.register("debugFatFramework", dev.icerock.gradle.tasks.FatFrameworkWithResourcesTask::class) {
-    baseName = "multiplatform"
-
-    val targets = mapOf(
-        "iosX64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosX64"),
-        "iosArm64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosArm64")
-    )
-
-    from(
-        targets.toList().map {
-            it.second.binaries.getFramework("MultiPlatformLibrary", org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG)
-        }
-    )
-}
-``` 
-
-Then just launch task:
-
-```shell script
-./gradlew :sample:mpp-library:debugFatFramework
-```
-
 ### Example 10 - plain file resource access
 The first step is a create a resource file `test.txt` for example, in `commonMain/resources/MR/files`
 After gradle sync we can get file by id `MR.files.test`
 Moko-resources has out of box implementation function for read text files from common code - `readText()`
 
 Usage on Android:
+
 ```
 val text = MR.files.test.getText(context = this)
 ```
+
 Usage on Apple:
+
 ```
 val text = MR.files.test.readText()
 ```
+
 If you want to read files not as text, add your own implementation to expect/actual FileResource
 
+### Example 11 - assets access
+
+Assets allow you save directories hierarchy (in files structure is plain). Locate files
+to `commonMain/resources/MR/assets` and access to it by `MR.assets.*`
+
+### Creating Fat Framework with resources
+
+Just
+use `FatFrameworkTask` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-universal-frameworks)
+.
+
+### Creating XCFramework with resources
+
+Just
+use `XCFramework` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-xcframeworks)
+.
+
+But if you use **static frameworks** required additional setup - add to Xcode build phase (at end):
+
+```bash
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMPLReleaseXCFrameworkToApp \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
+```
+
+Details you can check in sample TestStaticXCFramework in ios-app. In this sample used
+mpp-hierarhical kotlin module with XCFramework.
+
 ## Samples
+
 Please see more examples in the [sample directory](sample).
 
 Sample `mpp-hierarhical` contains usage of `org.jetbrains.kotlin.native.cocoapods` plugin and unit
 tests with resources usage.
 `Jvm-sample` to run it you should use IntelliJ IDEA.  
-`macOS-sample` it contains two schemes. TestProj is the sample app and TestHierarchical is a splash-screen.  
-`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at once, the second one allows to choose language before starting the sample.
+`macOS-sample` it contains two schemes. TestProj is the sample app and TestHierarchical is a
+splash-screen.  
+`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at
+once, the second one allows to choose language before starting the sample.
 
 ## Set Up Locally
 - The [resources directory](resources) contains the `resources` library;

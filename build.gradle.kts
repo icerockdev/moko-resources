@@ -13,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath("dev.icerock.moko:resources-generator")
-        classpath("org.jetbrains.compose:compose-gradle-plugin:1.0.0")
+        classpath("org.jetbrains.compose:compose-gradle-plugin:1.0.1")
         classpath(":resources-build-logic")
     }
 }
@@ -23,4 +23,9 @@ allprojects {
         group = "dev.icerock.moko"
         version = libs.versions.mokoResourcesVersion.get()
     }
+}
+
+rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion =
+        "16.0.0"
 }

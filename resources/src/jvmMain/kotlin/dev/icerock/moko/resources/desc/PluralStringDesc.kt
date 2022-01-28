@@ -12,5 +12,8 @@ actual class PluralStringDesc actual constructor(
     val number: Int,
 ) : StringDesc, Parcelable {
 
-    override fun localized() = pluralsRes.localized(quantity = number)
+    override fun localized() = pluralsRes.localized(
+        locale = StringDesc.localeType.currentLocale,
+        quantity = number
+    )
 }

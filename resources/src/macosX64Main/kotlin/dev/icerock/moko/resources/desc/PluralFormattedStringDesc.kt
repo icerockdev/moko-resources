@@ -16,6 +16,7 @@ actual data class PluralFormattedStringDesc actual constructor(
         val pluralized = pluralizedString(
             bundle = StringDesc.localeType.getLocaleBundle(pluralsRes.bundle),
             baseBundle = pluralsRes.bundle,
+            locale = StringDesc.localeType.locale,
             resourceId = pluralsRes.resourceId,
             number = number
         )!!

@@ -27,7 +27,9 @@ object Utils {
             config.setLocale(StringDesc.localeType.systemLocale)
             context.createConfigurationContext(config)
         } else {
+            @Suppress("DEPRECATION")
             config.locale = StringDesc.localeType.systemLocale
+            @Suppress("DEPRECATION")
             resources.updateConfiguration(config, resources.displayMetrics)
             context
         }

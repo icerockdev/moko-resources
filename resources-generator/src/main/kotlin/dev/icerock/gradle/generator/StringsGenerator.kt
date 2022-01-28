@@ -74,7 +74,7 @@ abstract class StringsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String,
-        private val mrClassPackage: String
+        private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<StringsGenerator> {
         private val stringsFileTree =
             info.commonResources.matching { it.include("MR/**/strings*.xml") }
@@ -91,8 +91,14 @@ abstract class StringsGenerator(
             info.androidRClassPackage
         )
 
-        override fun createJvmGenerator() = JvmStringsGenerator(stringsFileTree, mrClassPackage)
+        override fun createJsGenerator(): StringsGenerator = JsStringsGenerator(
+            stringsFileTree,
+            mrSettings.packageName
+        )
 
-        override fun createJsGenerator(): StringsGenerator = JsStringsGenerator(stringsFileTree, mrClassPackage)
+        override fun createJvmGenerator() = JvmStringsGenerator(
+            stringsFileTree,
+            mrSettings
+        )
     }
 }

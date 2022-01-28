@@ -10,9 +10,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
-import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.apple.AppleImagesGenerator
 import dev.icerock.gradle.generator.js.JsImagesGenerator
+import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -25,7 +25,11 @@ abstract class ImagesGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"
 
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder
+    ): TypeSpec {
         val fileMap = inputFileTree.groupBy { file ->
             "${file.name.substringBefore("@")}.${file.extension}"
         }
@@ -77,7 +81,10 @@ abstract class ImagesGenerator(
 
     abstract fun getPropertyInitializer(fileName: String): CodeBlock?
 
-    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<ImagesGenerator> {
+    class Feature(
+        private val info: SourceInfo,
+        private val mrSettings: MRGenerator.MRSettings
+    ) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
             it.include("MR/images/**/*.png", "MR/images/**/*.jpg")
         }
@@ -92,8 +99,11 @@ abstract class ImagesGenerator(
             info.androidRClassPackage
         )
 
-        override fun createJvmGenerator() = JvmImagesGenerator(stringsFileTree)
-
         override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(stringsFileTree)
+
+        override fun createJvmGenerator() = JvmImagesGenerator(
+            stringsFileTree,
+            mrSettings
+        )
     }
 }

@@ -7,13 +7,16 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FontsGenerator
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmFontsGenerator(
-    inputFileTree: FileTree
-) : FontsGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+    inputFileTree: FileTree,
+    mrSettings: MRGenerator.MRSettings
+) : FontsGenerator(inputFileTree),
+    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     override fun getClassModifiers() = arrayOf(KModifier.ACTUAL)
 
@@ -21,7 +24,7 @@ class JvmFontsGenerator(
     override fun getPropertyInitializer(fontFile: File): CodeBlock? =
         CodeBlock.of(
             "FontResource(resourcesClassLoader = resourcesClassLoader, filePath = %S)",
-            "$FONTS_DIR/$fontFile.ttf"
+            "$FONTS_DIR/${fontFile.name}"
         )
 
     override fun generateResources(resourcesGenerationDir: File, files: List<FontFile>) {

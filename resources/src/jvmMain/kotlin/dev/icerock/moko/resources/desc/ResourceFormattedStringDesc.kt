@@ -5,7 +5,6 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.StringResource
-import java.util.Locale
 
 actual class ResourceFormattedStringDesc actual constructor(
     private val stringRes: StringResource,
@@ -13,7 +12,7 @@ actual class ResourceFormattedStringDesc actual constructor(
 ) : StringDesc {
 
     override fun localized() = stringRes.localized(
-        locale = Locale.getDefault(),
+        locale = StringDesc.localeType.currentLocale,
         *(args.toTypedArray())
     )
 }
