@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 
 class PluralFormattedStringDescIntTests {
     @Test
-    fun `test zero case`() {
+    fun testZeroCase() {
         assertEquals(
             expected = "0 found",
             actual = createPluralFormatted(0).localized()
@@ -19,7 +19,7 @@ class PluralFormattedStringDescIntTests {
     }
 
     @Test
-    fun `test one case`() {
+    fun testOneCase() {
         assertEquals(
             expected = "1 item",
             actual = createPluralFormatted(1).localized()
@@ -27,7 +27,7 @@ class PluralFormattedStringDescIntTests {
     }
 
     @Test
-    fun `test few case`() {
+    fun testFewCase() {
         assertEquals(
             expected = "3 items",
             actual = createPluralFormatted(3).localized()
@@ -35,7 +35,7 @@ class PluralFormattedStringDescIntTests {
     }
 
     @Test
-    fun `test many case`() {
+    fun `testManyCase`() {
         assertEquals(
             expected = "6 items",
             actual = createPluralFormatted(6).localized()
@@ -43,7 +43,7 @@ class PluralFormattedStringDescIntTests {
     }
 
     @Test
-    fun `test other case`() {
+    fun `testOtherCase`() {
         assertEquals(
             expected = "130 items",
             actual = createPluralFormatted(130).localized()
