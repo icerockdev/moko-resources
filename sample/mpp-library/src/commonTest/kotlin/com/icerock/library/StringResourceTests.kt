@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 class StringResourceTests : BaseUnitTest() {
 
     @Test
-    fun `check ru strings`() {
+    fun checkRuStrings() {
         StringDesc.localeType = StringDesc.LocaleType.Custom("ru")
         val rawString: String = Testing.getStringDesc().getString()
 
@@ -29,7 +29,7 @@ class StringResourceTests : BaseUnitTest() {
     }
 
     @Test
-    fun `check en strings`() {
+    fun checkEnStrings() {
         StringDesc.localeType = StringDesc.LocaleType.Custom("en")
         val rawString: String = Testing.getStringDesc().getString()
 
@@ -42,7 +42,7 @@ class StringResourceTests : BaseUnitTest() {
     }
 
     @Test
-    fun `check ru strings list`() {
+    fun checkRuStringsList() {
         StringDesc.localeType = StringDesc.LocaleType.Custom("ru")
         val rawString: String = Testing.getStrings().joinToString("\n") { it.getString() }
 
@@ -56,7 +56,7 @@ class StringResourceTests : BaseUnitTest() {
     }
 
     @Test
-    fun `check en strings list`() {
+    fun checkEnStringsList() {
         StringDesc.localeType = StringDesc.LocaleType.Custom("en")
         val rawString: String = Testing.getStrings().joinToString("\n") { it.getString() }
 
@@ -70,7 +70,7 @@ class StringResourceTests : BaseUnitTest() {
     }
 
     @Test
-    fun `check ru plurals`() {
+    fun checkRuPlurals() {
         StringDesc.localeType = StringDesc.LocaleType.Custom("ru")
         val rawString: String = Testing.getPlurals().getString()
 
@@ -108,7 +108,7 @@ class StringResourceTests : BaseUnitTest() {
     }
 
     @Test
-    fun `check en plurals`() {
+    fun checkEnPlurals() {
         StringDesc.localeType = StringDesc.LocaleType.Custom("en")
         val rawString: String = Testing.getPlurals().getString()
 

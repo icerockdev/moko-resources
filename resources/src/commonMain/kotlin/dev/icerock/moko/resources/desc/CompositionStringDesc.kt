@@ -10,4 +10,7 @@ fun StringDesc.Companion.Composition(
     separator: String? = null
 ) = CompositionStringDesc(args, separator)
 
-expect class CompositionStringDesc(args: Iterable<StringDesc>, separator: String? = null) : StringDesc
+expect class CompositionStringDesc(
+    args: Iterable<StringDesc>,
+    separator: String? = null
+) : StringDesc

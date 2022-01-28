@@ -10,7 +10,7 @@ import dev.icerock.moko.resources.message_format.MessageFormat
 actual class StringResource(
     private val key: String,
     private val supportedLocales: SupportedLocales,
-    private val fallbackFileUrl: String
+    private val fallbackFileUri: String
 ) {
 
     private var cachedValue: CachedValue? = null
@@ -27,7 +27,8 @@ actual class StringResource(
 
         val usedLocale = findMatchingLocale(supportedLocales, locale)
 
-        val localizedString = stringResourceLoader.loadLocalizedString(key, usedLocale, fallbackFileUrl)
+        val localizedString =
+            stringResourceLoader.loadLocalizedString(key, usedLocale, fallbackFileUri)
 
         val compiledVariableString = CompiledVariableString(
             MessageFormat(arrayOf(usedLocale?.locale ?: "en"))

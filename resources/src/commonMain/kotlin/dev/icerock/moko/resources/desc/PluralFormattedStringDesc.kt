@@ -20,4 +20,8 @@ fun StringDesc.Companion.PluralFormatted(
     vararg args: Any
 ) = PluralFormattedStringDesc(pluralsRes, number, args.asList())
 
-expect class PluralFormattedStringDesc(pluralsRes: PluralsResource, number: Int, args: List<Any>) : StringDesc
+expect class PluralFormattedStringDesc(
+    pluralsRes: PluralsResource,
+    number: Int,
+    args: List<Any>
+) : StringDesc

@@ -22,7 +22,7 @@ class JsAssetsGenerator(
 
     override fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock {
         val filePath = File(FILES_DIR, fileSpec.pathRelativeToBase).path
-        return CodeBlock.of("""AssetResource(fileUrl = js("require(\"$filePath\")") as String))""")
+        return CodeBlock.of("""AssetResource(originalPath = js("require(\"$filePath\")") as String)""")
     }
 
     override fun generateResources(

@@ -11,3 +11,9 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(
 ): ImageResource? {
     TODO("Not yet implemented")
 }
+
+actual fun ResourceContainer<AssetResource>.getAssetByFilePath(
+    filePath: String
+): AssetResource {
+    TODO("Not yet implemented")
+}

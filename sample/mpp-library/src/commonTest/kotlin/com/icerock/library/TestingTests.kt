@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 @Suppress("MagicNumber")
 class TestingTests {
     @Test
-    fun `test color resource mock`() {
+    fun testColorResourceMock() {
         val colorResource = createColorResourceMock()
 
         assertEquals(0, (colorResource as? ColorResource.Single)?.color?.rgba)

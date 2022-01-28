@@ -30,7 +30,7 @@ class JsPluralsGenerator(
 
     override fun getPropertyInitializer(key: String): CodeBlock {
         return CodeBlock.of(
-            "PluralsResource(key = %S, supportedLocales = %N, fallbackFileUrl = %N)",
+            "PluralsResource(key = %S, supportedLocales = %N, fallbackFileUri = %N)",
             key,
             JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
             JsMRGenerator.PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME
