@@ -154,18 +154,10 @@ you also need to pass extra properties:
     -Pmoko.resources.CONFIGURATION=$CONFIGURATION \
     -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
     -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH\
-    -Pkotlin.native.cocoapods.target=$KOTLIN_TARGET \
-    -Pkotlin.native.cocoapods.configuration=$CONFIGURATION \
-    -Pkotlin.native.cocoapods.cflags="$OTHER_CFLAGS" \
-    -Pkotlin.native.cocoapods.paths.headers="$HEADER_SEARCH_PATHS" \
-    -Pkotlin.native.cocoapods.paths.frameworks="$FRAMEWORK_SEARCH_PATHS"
+    -Pkotlin.native.cocoapods.platform=$PLATFORM_NAME \
+    -Pkotlin.native.cocoapods.archs="$ARCHS" \
+    -Pkotlin.native.cocoapods.configuration=$CONFIGURATION 
 ```
-and setup extra build settings in your xcode target:
-```
-'KOTLIN_TARGET[sdk=iphonesimulator*]' => 'ios_x64'
-'KOTLIN_TARGET[sdk=iphoneos*]' => 'ios_arm64'
-```
-[here example of changes](https://github.com/ln-12/moko-resources-issue-99/pull/2/files)
 
 ## Usage
 ### Example 1 - simple localization string
@@ -612,6 +604,8 @@ For more details on contributing please see the [contributing guide](CONTRIBUTIN
 [badge-tvos]: http://img.shields.io/badge/platform-tvos-808080.svg?style=flat
 [badge-wasm]: https://img.shields.io/badge/platform-wasm-624FE8.svg?style=flat
 [badge-nodejs]: https://img.shields.io/badge/platform-nodejs-68a063.svg?style=flat
-[badge-iosx64]: https://img.shields.io/badge/platform-iosx64-CDCDCD?style=flat
-[badge-iosarm64]: https://img.shields.io/badge/platform-iosarm64-CDCDCD?style=flat
-[badge-macos64]: https://img.shields.io/badge/platform-macos64-111111?style=flat    
+[badge-iosX64]: https://img.shields.io/badge/platform-iosX64-CDCDCD?style=flat
+[badge-iosArm64]: https://img.shields.io/badge/platform-iosArm64-CDCDCD?style=flat
+[badge-iosSimulatorArm64]: https://img.shields.io/badge/platform-iosSimulatorArm64-CDCDCD?style=flat
+[badge-macosX64]: https://img.shields.io/badge/platform-macosX64-111111?style=flat    
+[badge-macosArm64]: https://img.shields.io/badge/platform-macosArm64-111111?style=flat    

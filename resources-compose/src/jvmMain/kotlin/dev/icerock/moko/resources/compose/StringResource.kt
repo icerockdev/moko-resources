@@ -19,7 +19,7 @@ actual fun stringResource(resource: StringResource): String =
 
 @Composable
 actual fun stringResource(resource: StringResource, vararg args: Any): String =
-    StringDesc.ResourceFormatted(resource, args).localized()
+    StringDesc.ResourceFormatted(resource, *args).localized()
 
 @Composable
 actual fun stringResource(resource: PluralsResource, quantity: Int): String =
@@ -27,4 +27,4 @@ actual fun stringResource(resource: PluralsResource, quantity: Int): String =
 
 @Composable
 actual fun stringResource(resource: PluralsResource, quantity: Int, vararg args: Any): String =
-    StringDesc.PluralFormatted(resource, quantity, args).localized()
+    StringDesc.PluralFormatted(resource, quantity, *args).localized()
