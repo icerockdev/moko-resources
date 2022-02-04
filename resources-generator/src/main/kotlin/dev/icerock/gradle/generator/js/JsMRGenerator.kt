@@ -5,18 +5,27 @@
 package dev.icerock.gradle.generator.js
 
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.utils.calculateResourcesHash
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 class JsMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
     mrSettings: MRSettings,
-    generators: List<Generator>
+    generators: List<Generator>,
+    private val compilation: KotlinJsIrCompilation
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
@@ -30,13 +39,158 @@ class JsMRGenerator(
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
+        mrClass.addProperty(
+            PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
+                .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
+                .build()
+        )
     }
 
     override fun apply(generationTask: Task, project: Project) {
-        project.tasks.apply {
-            withType(Kotlin2JsCompile::class.java).all {
-                it.dependsOn(generationTask)
+        project.tasks.withType<Kotlin2JsCompile>().configureEach {
+            it.dependsOn(generationTask)
+        }
+        setupKLibResources(generationTask)
+        setupTestsResources()
+    }
+
+    private fun setupKLibResources(generationTask: Task) {
+        val compileTask: Kotlin2JsCompile = compilation.compileKotlinTask
+        compileTask.dependsOn(generationTask)
+
+        @Suppress("UNCHECKED_CAST")
+        compileTask.doLast(CopyResourcesToKLibAction(resourcesGenerationDir) as Action<in Task>)
+    }
+
+    private fun setupTestsResources() {
+        val kotlinTarget = compilation.target as KotlinJsIrTarget
+
+        kotlinTarget.compilations
+            .filter { it.compilationPurpose == "test" }
+            .map { it.compileKotlinTask }
+            .forEach { compileTask ->
+                @Suppress("UNCHECKED_CAST")
+                compileTask.doLast(CopyResourcesToExecutableAction() as Action<in Task>)
             }
+    }
+
+    class CopyResourcesToKLibAction(private val resourcesDir: File) : Action<Kotlin2JsCompile> {
+        override fun execute(task: Kotlin2JsCompile) {
+            val unpackedKLibDir: File = task.outputFileProperty.get()
+            val defaultDir = File(unpackedKLibDir, "default")
+            val resRepackDir = File(defaultDir, "resources")
+
+            val resDir = File(resRepackDir, "moko-resources-js")
+            resourcesDir.copyRecursively(
+                resDir,
+                overwrite = true
+            )
+        }
+    }
+
+    class CopyResourcesToExecutableAction : Action<Kotlin2JsCompile> {
+        override fun execute(task: Kotlin2JsCompile) {
+            val project: Project = task.project
+            val compilationOutput: File = task.outputFileProperty.get()
+            val resourcesOutput: File = File(compilationOutput, "default/resources")
+
+            task.classpath.forEach { dependency ->
+                if (dependency.isDirectory) {
+                    // classes directory case
+                    val resourcesDir: File = File(dependency, "default/resources")
+
+                    project.logger.info("copy resources from $resourcesDir into $resourcesOutput")
+                    resourcesDir.copyRecursively(
+                        target = resourcesOutput,
+                        overwrite = true
+                    )
+                } else {
+                    // klib case
+                    copyResourcesFromLibraries(
+                        inputFile = dependency,
+                        project = project,
+                        outputDir = resourcesOutput
+                    )
+                }
+            }
+
+            generateWebpackConfig(project, resourcesOutput)
+            generateKarmaConfig(project)
+        }
+
+        private fun generateWebpackConfig(project: Project, resourcesOutput: File) {
+            val webpackDir: File = File(project.projectDir, "webpack.config.d")
+            webpackDir.mkdirs()
+
+            val webpackTestConfig: File = File(webpackDir, "moko-resources-generated.js")
+            webpackTestConfig.writeText(
+                """
+                const path = require('path');
+
+                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath}/moko-resources-js")
+
+                config.module.rules.push(
+                    {
+                        test: /\.(.*)/,
+                        include: [
+                            path.resolve(mokoResourcePath)
+                        ],
+                        type: 'asset/resource'
+                    }
+                );
+
+                config.resolve.modules.push(
+                    path.resolve(mokoResourcePath)
+                )
+                """.trimIndent()
+            )
+        }
+
+        private fun generateKarmaConfig(project: Project) {
+            val webpackDir: File = File(project.projectDir, "karma.config.d")
+            webpackDir.mkdirs()
+
+            val webpackTestConfig: File = File(webpackDir, "moko-resources-generated.js")
+            val pattern = "`\${output.path}/**/*`"
+            webpackTestConfig.writeText(
+                """
+                // workaround from https://github.com/ryanclark/karma-webpack/issues/498#issuecomment-790040818
+
+                const output = {
+                  path: require("os").tmpdir() + '/' + '_karma_webpack_' + Math.floor(Math.random() * 1000000),
+                }
+                
+                config.set(
+                    {
+                        webpack: {... createWebpackConfig(), output},
+                        files: config.files.concat([{
+                                pattern: $pattern,
+                                watched: false,
+                                included: false,
+                            }]
+                        )
+                    }
+                )
+                """.trimIndent()
+            )
+        }
+
+        private fun copyResourcesFromLibraries(
+            inputFile: File,
+            project: Project,
+            outputDir: File
+        ) {
+            if (inputFile.extension != "klib") return
+
+            project.logger.info("copy resources from $inputFile into $outputDir")
+            val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
+            val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
+            val layout = klib.extractingToTemp
+
+            File(layout.resourcesDir.path).copyRecursively(
+                target = outputDir,
+                overwrite = true
+            )
         }
     }
 

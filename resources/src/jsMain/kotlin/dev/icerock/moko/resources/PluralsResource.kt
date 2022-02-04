@@ -4,13 +4,28 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.resources.internal.SupportedLocales
+import dev.icerock.moko.resources.internal.LocalizedStringLoader
+import dev.icerock.moko.resources.internal.currentLocale
+import dev.icerock.moko.resources.internal.message_format.CompiledPlural
+import dev.icerock.moko.resources.internal.message_format.MessageFormat
+import kotlin.js.Json
 
 actual class PluralsResource(
     private val key: String,
-    private val supportedLocales: SupportedLocales,
-    private val fallbackFileUri: String
+    private val loader: LocalizedStringLoader
 ) {
+    fun localized(locale: String?, quantity: Int): String {
+        val pluralString: String = loader.getString(key = key, locale = locale)
+        val pluralLocale: String = locale
+            ?: currentLocale()
+            ?: throw IllegalStateException("can't get locale")
+
+        val compiledPlural: (Json) -> String = MessageFormat(arrayOf(pluralLocale))
+            .compile(pluralString)
+
+        return CompiledPlural(compiledPlural).evaluate(quantity)
+    }
+
 //    private var cachedValue: CachedValue? = null
 //
 //    companion object {

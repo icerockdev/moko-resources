@@ -13,6 +13,6 @@ actual class PluralStringDesc actual constructor(
 ) : StringDesc, Parcelable {
 
     override fun localized(): String {
-        return TODO() // pluralsRes.localized(quantity = number)
+        return pluralsRes.localized(locale = StringDesc.localeType.locale, quantity = number)
     }
 }

@@ -12,5 +12,7 @@ actual class PluralFormattedStringDesc actual constructor(
     val args: List<Any>
 ) : StringDesc {
 
-    override fun localized() = TODO() // pluralsRes.localized(null, number, args)
+    override fun localized(): String {
+        return pluralsRes.localized(locale = StringDesc.localeType.locale, quantity = number)
+    }
 }

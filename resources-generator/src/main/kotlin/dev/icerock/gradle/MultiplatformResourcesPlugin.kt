@@ -34,8 +34,10 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJsCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
@@ -227,18 +229,20 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
-        val kotlinSourceSets: List<KotlinSourceSet> = targets
+        val kotlinSourceSets: List<Pair<KotlinJsIrCompilation, KotlinSourceSet>> = targets
             .filterIsInstance<KotlinJsIrTarget>()
             .flatMap { it.compilations }
-            .map { it.defaultSourceSet }
-            .filter { it.isDependsOn(commonSourceSet) }
+            .filterIsInstance<KotlinJsIrCompilation>()
+            .map { it to it.defaultSourceSet }
+            .filter { it.second.isDependsOn(commonSourceSet) }
 
-        kotlinSourceSets.forEach { kotlinSourceSet ->
+        kotlinSourceSets.forEach { (compilation, kotlinSourceSet) ->
             JsMRGenerator(
                 generatedDir,
                 createSourceSet(kotlinSourceSet),
                 mrSettings = mrSettings,
-                generators = features.map { it.createJsGenerator() }
+                generators = features.map { it.createJsGenerator() },
+                compilation = compilation
             ).apply(target)
         }
     }

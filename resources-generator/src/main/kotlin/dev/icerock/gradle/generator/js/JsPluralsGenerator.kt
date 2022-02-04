@@ -17,6 +17,9 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
 import java.io.File
+import java.lang.IllegalArgumentException
+import java.text.MessageFormat
+import java.util.Locale
 
 class JsPluralsGenerator(
     pluralsFileTree: FileTree,
@@ -30,12 +33,7 @@ class JsPluralsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String): CodeBlock {
-        return CodeBlock.of(
-            "PluralsResource(key = %S, supportedLocales = %N, fallbackFileUri = %N)",
-            key,
-            JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
-            JsMRGenerator.PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME
-        )
+        return CodeBlock.of("PluralsResource(key = %S, loader = stringsLoader)", key)
     }
 
     override fun beforeGenerateResources(
@@ -74,14 +72,17 @@ class JsPluralsGenerator(
                     append("{ PLURAL, plural, ")
                     pluralMap.forEach { (pluralKey, pluralString) ->
                         //Zero isn't allowed in english (which is default for base), but we support it through =0
-                        val actPluralKey =
-                            if (language == null && pluralKey == "zero") "=0" else pluralKey
+                        val actPluralKey = when (pluralKey) {
+                            "zero" -> "=0"
+                            "two" -> "=2"
+                            else -> pluralKey
+                        }
 
                         append(actPluralKey)
                         append(" ")
                         append("{")
                         append(pluralString.replaceAndroidParams())
-                        append("}")
+                        append("} ")
                     }
 
                     append("}")
