@@ -16,8 +16,8 @@ plugins {
 
 android {
     lint {
-        disable("ImpliedQuantity")
-        isIgnoreTestSources = true
+        disable += "ImpliedQuantity"
+        ignoreTestSources = true
     }
 
     testOptions {
