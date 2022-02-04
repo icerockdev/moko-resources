@@ -12,3 +12,7 @@ actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String)
 
     return AssetResource(filePath.removeFirstSlash(), name, ext, nsBundle)
 }
+
+actual suspend fun ResourceContainer<StringResource>.download() = Unit
+
+actual suspend fun ResourceContainer<PluralsResource>.download() = Unit

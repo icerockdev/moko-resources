@@ -6,6 +6,6 @@ package dev.icerock.moko.resources.internal
 
 import kotlinx.browser.window
 
-fun currentLocale(): String? {
+fun currentLocale(): String {
     return window.navigator.language
 }

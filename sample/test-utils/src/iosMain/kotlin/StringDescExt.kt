@@ -7,3 +7,5 @@ import dev.icerock.moko.resources.desc.StringDesc
 actual fun StringDesc.getString(): String {
     return localized()
 }
+
+actual suspend fun StringDesc.getStringAsync(): String = getString()

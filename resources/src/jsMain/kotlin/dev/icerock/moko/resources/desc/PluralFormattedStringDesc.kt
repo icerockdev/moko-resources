@@ -13,6 +13,10 @@ actual class PluralFormattedStringDesc actual constructor(
 ) : StringDesc {
 
     override fun localized(): String {
-        return pluralsRes.localized(locale = StringDesc.localeType.locale, quantity = number)
+        return pluralsRes.localized(
+            locale = StringDesc.localeType.locale,
+            quantity = number,
+            *args.toTypedArray()
+        )
     }
 }

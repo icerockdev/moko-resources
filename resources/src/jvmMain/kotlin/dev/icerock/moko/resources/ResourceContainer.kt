@@ -33,3 +33,8 @@ actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String)
         "files${File.separatorChar}$originalPath"
     )
 }
+
+@JvmName("downloadStringResource")
+actual suspend fun ResourceContainer<StringResource>.download() = Unit
+
+actual suspend fun ResourceContainer<PluralsResource>.download() = Unit

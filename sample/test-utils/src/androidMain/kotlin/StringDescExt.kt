@@ -10,3 +10,5 @@ actual fun StringDesc.getString(): String {
     val context = ApplicationProvider.getApplicationContext<Context>()
     return toString(context)
 }
+
+actual suspend fun StringDesc.getStringAsync(): String = getString()

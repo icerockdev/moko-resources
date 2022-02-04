@@ -5,3 +5,5 @@
 import dev.icerock.moko.resources.desc.StringDesc
 
 expect fun StringDesc.getString(): String
+
+expect suspend fun StringDesc.getStringAsync(): String
