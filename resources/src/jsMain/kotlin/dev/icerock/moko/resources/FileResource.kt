@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources
 
+import dev.icerock.moko.resources.internal.retryIO
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 

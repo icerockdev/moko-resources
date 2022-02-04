@@ -2,9 +2,13 @@
  * Copyright 2022 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.js_jvm_common
+package dev.icerock.gradle.generator.js
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.LanguageType
 
 /**
@@ -36,21 +40,25 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
             .build()
     )
 
-    val supportedLocales = ClassName("dev.icerock.moko.resources", "SupportedLocales")
-    val supportedLocale = ClassName("dev.icerock.moko.resources", "SupportedLocale")
+    val internalPackage = "dev.icerock.moko.resources.internal"
+    val supportedLocalesName = ClassName(internalPackage, "SupportedLocales")
+    val supportedLocaleName = ClassName(internalPackage, "SupportedLocale")
+    val localizedStringLoaderName = ClassName(internalPackage, "LocalizedStringLoader")
+    val loaderName = ClassName(internalPackage, "LocalizedStringLoaderHolder")
+
     addProperty(
         PropertySpec
-            .builder(supportedLocalesPropertyName, supportedLocales, KModifier.PRIVATE)
+            .builder(supportedLocalesPropertyName, supportedLocalesName, KModifier.PRIVATE)
             .initializer(
                 CodeBlock
                     .builder()
                     .apply {
-                        add("%T(listOf(\n", supportedLocales)
+                        add("%T(listOf(\n", supportedLocalesName)
                         languages.filter { it != "base" }.forEach { language ->
                             val fileName = getFileNameForLanguage(language)
                             add(
                                 "%T(%S, js(%S) as %T),\n",
-                                supportedLocale,
+                                supportedLocaleName,
                                 language,
                                 "require(\"$folder/$fileName\")",
                                 String::class
@@ -61,5 +69,21 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
                     .build()
             )
             .build()
+    )
+
+    addSuperinterface(loaderName)
+
+    addProperty(
+        PropertySpec.builder(
+            "stringsLoader",
+            localizedStringLoaderName,
+            KModifier.OVERRIDE
+        ).initializer(
+            CodeBlock.of(
+                "LocalizedStringLoader(supportedLocales = %N, fallbackFileUri = %N)",
+                supportedLocalesPropertyName,
+                fallbackFilePropertyName
+            )
+        ).build()
     )
 }

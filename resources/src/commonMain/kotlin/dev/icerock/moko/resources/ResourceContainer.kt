@@ -8,3 +8,5 @@ expect interface ResourceContainer<T>
 
 expect fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String): ImageResource?
 expect fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource
+expect suspend fun ResourceContainer<StringResource>.download()
+expect suspend fun ResourceContainer<PluralsResource>.download()

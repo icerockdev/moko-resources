@@ -10,5 +10,7 @@ actual class ResourceFormattedStringDesc actual constructor(
     val stringRes: StringResource,
     val args: List<Any>
 ) : StringDesc {
-    override suspend fun localized(): String = stringRes.localized(null, args)
+    override fun localized(): String {
+        return stringRes.localized(locale = StringDesc.localeType.locale, args = args)
+    }
 }

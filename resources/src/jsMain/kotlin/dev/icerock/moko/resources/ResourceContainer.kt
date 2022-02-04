@@ -4,6 +4,8 @@
 
 package dev.icerock.moko.resources
 
+import dev.icerock.moko.resources.internal.LocalizedStringLoaderHolder
+
 actual interface ResourceContainer<T>
 
 actual fun ResourceContainer<ImageResource>.getImageByFileName(
@@ -16,4 +18,14 @@ actual fun ResourceContainer<AssetResource>.getAssetByFilePath(
     filePath: String
 ): AssetResource {
     TODO("Not yet implemented")
+}
+
+actual suspend fun ResourceContainer<StringResource>.download() {
+    this as LocalizedStringLoaderHolder
+    this.stringsLoader.download()
+}
+
+actual suspend fun ResourceContainer<PluralsResource>.download() {
+    this as LocalizedStringLoaderHolder
+    this.stringsLoader.download()
 }

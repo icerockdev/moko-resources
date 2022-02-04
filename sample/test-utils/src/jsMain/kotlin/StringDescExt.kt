@@ -5,6 +5,5 @@
 import dev.icerock.moko.resources.desc.StringDesc
 
 actual fun StringDesc.getString(): String {
-    TODO()
-//    return localized()
+    return localized()
 }

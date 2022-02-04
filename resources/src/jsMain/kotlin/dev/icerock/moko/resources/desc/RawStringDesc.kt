@@ -6,6 +6,8 @@ package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.parcelize.Parcelable
 
-actual class RawStringDesc actual constructor(val string: String) : StringDesc, Parcelable {
-    override suspend fun localized() = string
+actual class RawStringDesc actual constructor(
+    val string: String
+) : StringDesc, Parcelable {
+    override fun localized() = string
 }

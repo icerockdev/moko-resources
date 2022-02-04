@@ -9,5 +9,7 @@ actual class CompositionStringDesc actual constructor(
     val separator: String?
 ) : StringDesc {
 
-    override suspend fun localized() = args.map { it.localized() }.joinToString(separator = separator ?: "") { it }
+    override fun localized(): String {
+        return args.map { it.localized() }.joinToString(separator = separator ?: "") { it }
+    }
 }

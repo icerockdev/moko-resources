@@ -4,41 +4,37 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.resources.message_format.CompiledVariableString
-import dev.icerock.moko.resources.message_format.MessageFormat
+import dev.icerock.moko.resources.internal.LocalizedStringLoader
+import dev.icerock.moko.resources.internal.currentLocale
 
 actual class StringResource(
     private val key: String,
-    private val supportedLocales: SupportedLocales,
-    private val fallbackFileUri: String
+    private val loader: LocalizedStringLoader
 ) {
-
-    private var cachedValue: CachedValue? = null
-
-    companion object {
-        private val stringResourceLoader = LocalizedStringLoader()
+    fun localized(locale: String?, args: List<Any> = emptyList()): String {
+        return loader.getString(key = key, locale = locale)
     }
 
-    suspend fun localized(locale: String? = null, vararg args: Any): String {
-        val currentCache = cachedValue
-        if (currentCache != null && currentCache.locale == locale) {
-            return currentCache.compiledVariableString.evaluate(args)
-        }
-
-        val usedLocale = findMatchingLocale(supportedLocales, locale)
-
-        val localizedString =
-            stringResourceLoader.loadLocalizedString(key, usedLocale, fallbackFileUri)
-
-        val compiledVariableString = CompiledVariableString(
-            MessageFormat(arrayOf(usedLocale?.locale ?: "en"))
-                .compile(localizedString)
-        )
-
-        cachedValue = CachedValue(locale, compiledVariableString)
-
-        return compiledVariableString.evaluate(args)
-    }
-
-    private class CachedValue(val locale: String?, val compiledVariableString: CompiledVariableString)
+//    suspend fun localized(locale: String? = null, vararg args: Any): String {
+//        val currentCache = cachedValue
+//        if (currentCache != null && currentCache.locale == locale) {
+//            return currentCache.compiledVariableString.evaluate(args)
+//        }
+//
+//        val usedLocale = findMatchingLocale(supportedLocales, locale)
+//
+//        val localizedString =
+//            stringResourceLoader.loadLocalizedString(key, usedLocale, fallbackFileUri)
+//
+//        val compiledVariableString = CompiledVariableString(
+//            MessageFormat(arrayOf(usedLocale?.locale ?: "en"))
+//                .compile(localizedString)
+//        )
+//
+//        cachedValue = CachedValue(locale, compiledVariableString)
+//
+//        return compiledVariableString.evaluate(args)
+//    }
+//
+//    private class CachedValue(val locale: String?, val compiledVariableString: CompiledVariableString)
 }

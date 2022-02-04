@@ -265,7 +265,7 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             ?: emptyMap()
 
         if (framework.target.konanTarget == xcodeTask.konanTarget &&
-            framework.buildType.getName() == xcodeTask.configuration?.toLowerCase()
+            framework.buildType.getName() == xcodeTask.configuration?.lowercase()
         ) {
             xcodeTask.dependsOn(copyTask)
         }

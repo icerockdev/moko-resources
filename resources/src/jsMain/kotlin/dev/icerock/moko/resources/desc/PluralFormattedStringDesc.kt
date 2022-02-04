@@ -12,5 +12,5 @@ actual class PluralFormattedStringDesc actual constructor(
     val args: List<Any>
 ) : StringDesc {
 
-    override suspend fun localized() = pluralsRes.localized(null, number, args)
+    override fun localized() = TODO() // pluralsRes.localized(null, number, args)
 }

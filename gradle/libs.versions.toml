@@ -1,6 +1,6 @@
 [versions]
 kotlinVersion = "1.6.10"
-androidGradleVersion = "7.0.4"
+androidGradleVersion = "7.1.0"
 
 # kotlinx
 kotlinxSerializationVersion = "1.2.1"
@@ -40,6 +40,7 @@ mokoResourcesVersion = "0.18.0"
 [libraries]
 # kotlinx
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationVersion" }
+coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.6.0" }
 
 # moko
 mokoParcelize = { module = "dev.icerock.moko:parcelize", version.ref = "mokoParcelizeVersion" }

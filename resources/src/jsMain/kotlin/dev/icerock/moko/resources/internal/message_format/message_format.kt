@@ -3,7 +3,7 @@
  */
 
 
-package dev.icerock.moko.resources.message_format
+package dev.icerock.moko.resources.internal.message_format
 
 import kotlin.js.Json
 import kotlin.js.json

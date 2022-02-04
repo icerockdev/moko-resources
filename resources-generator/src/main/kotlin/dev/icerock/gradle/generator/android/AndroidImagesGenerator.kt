@@ -58,6 +58,6 @@ class AndroidImagesGenerator(
     }
 
     private fun processKey(key: String): String {
-        return key.toLowerCase()
+        return key.lowercase()
     }
 }
