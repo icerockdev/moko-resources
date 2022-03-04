@@ -17,7 +17,7 @@ import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 
 suspend fun main() {
-    val strings = MR.strings.stringsLoader.getOrLoad() + MR.plurals.stringsLoader.getOrLoad()
+    val strings = MR.stringsLoader.getOrLoad()
 
     val fileText = mutableStateOf("")
 
