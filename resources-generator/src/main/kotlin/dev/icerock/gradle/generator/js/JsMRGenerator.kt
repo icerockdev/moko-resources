@@ -4,10 +4,7 @@
 
 package dev.icerock.gradle.generator.js
 
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.STRING
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.utils.calculateResourcesHash
 import org.gradle.api.Action
@@ -32,9 +29,10 @@ class JsMRGenerator(
     mrSettings = mrSettings,
     generators = generators
 ) {
+    private val flattenClassName: String get() = mrSettings.packageName.replace(".", "")
 
     override val resourcesGenerationDir: File
-        get() = outputDir.resolve("resources")
+        get() = outputDir.resolve("$flattenClassName/res")
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -44,6 +42,14 @@ class JsMRGenerator(
                 .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
                 .build()
         )
+        mrClass.addProperty(
+            PropertySpec.builder(
+                "stringsLoader",
+                ClassName("dev.icerock.moko.resources.provider", "RemoteJsStringLoader"),
+            ).initializer(
+                "strings.stringsLoader + plurals.stringsLoader"
+            ).build()
+        )
     }
 
     override fun apply(generationTask: Task, project: Project) {
@@ -51,7 +57,7 @@ class JsMRGenerator(
             it.dependsOn(generationTask)
         }
         setupKLibResources(generationTask)
-        setupTestsResources()
+        setupResources()
     }
 
     private fun setupKLibResources(generationTask: Task) {
@@ -62,15 +68,14 @@ class JsMRGenerator(
         compileTask.doLast(CopyResourcesToKLibAction(resourcesGenerationDir) as Action<in Task>)
     }
 
-    private fun setupTestsResources() {
+    private fun setupResources() {
         val kotlinTarget = compilation.target as KotlinJsIrTarget
 
         kotlinTarget.compilations
-            .filter { it.compilationPurpose == "test" }
             .map { it.compileKotlinTask }
             .forEach { compileTask ->
                 @Suppress("UNCHECKED_CAST")
-                compileTask.doLast(CopyResourcesToExecutableAction() as Action<in Task>)
+                compileTask.doLast(CopyResourcesToExecutableAction(resourcesGenerationDir) as Action<in Task>)
             }
     }
 
@@ -88,33 +93,22 @@ class JsMRGenerator(
         }
     }
 
-    class CopyResourcesToExecutableAction : Action<Kotlin2JsCompile> {
+    class CopyResourcesToExecutableAction(
+        private val resourcesGeneratedDir: File
+    ) : Action<Kotlin2JsCompile> {
         override fun execute(task: Kotlin2JsCompile) {
             val project: Project = task.project
-            val compilationOutput: File = task.outputFileProperty.get()
-            val resourcesOutput: File = File(compilationOutput, "default/resources")
 
             task.classpath.forEach { dependency ->
-                if (dependency.isDirectory) {
-                    // classes directory case
-                    val resourcesDir: File = File(dependency, "default/resources")
-
-                    project.logger.info("copy resources from $resourcesDir into $resourcesOutput")
-                    resourcesDir.copyRecursively(
-                        target = resourcesOutput,
-                        overwrite = true
-                    )
-                } else {
-                    // klib case
-                    copyResourcesFromLibraries(
-                        inputFile = dependency,
-                        project = project,
-                        outputDir = resourcesOutput
-                    )
-                }
+                println(dependency.extension)
+                copyResourcesFromLibraries(
+                    inputFile = dependency,
+                    project = project,
+                    outputDir = resourcesGeneratedDir
+                )
             }
 
-            generateWebpackConfig(project, resourcesOutput)
+            generateWebpackConfig(project, resourcesGeneratedDir)
             generateKarmaConfig(project)
         }
 
@@ -127,7 +121,7 @@ class JsMRGenerator(
                 """
                 const path = require('path');
 
-                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath}/moko-resources-js")
+                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath}")
 
                 config.module.rules.push(
                     {
@@ -187,10 +181,14 @@ class JsMRGenerator(
             val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
             val layout = klib.extractingToTemp
 
-            File(layout.resourcesDir.path).copyRecursively(
-                target = outputDir,
-                overwrite = true
-            )
+            println(layout.resourcesDir.listFiles)
+
+            File(layout.resourcesDir.path, "moko-resources-js")
+                .takeIf(File::exists)
+                ?.copyRecursively(
+                    target = outputDir,
+                    overwrite = true
+                )
         }
     }
 

@@ -43,8 +43,10 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
     val internalPackage = "dev.icerock.moko.resources.internal"
     val supportedLocalesName = ClassName(internalPackage, "SupportedLocales")
     val supportedLocaleName = ClassName(internalPackage, "SupportedLocale")
-    val localizedStringLoaderName = ClassName(internalPackage, "LocalizedStringLoader")
-    val loaderName = ClassName(internalPackage, "LocalizedStringLoaderHolder")
+    val loaderHolderName = ClassName(internalPackage, "RemoteJsStringLoaderHolder")
+
+    val loaderPackage = "dev.icerock.moko.resources.provider"
+    val loaderName = ClassName(loaderPackage, "RemoteJsStringLoader")
 
     addProperty(
         PropertySpec
@@ -71,16 +73,16 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
             .build()
     )
 
-    addSuperinterface(loaderName)
+    addSuperinterface(loaderHolderName)
 
     addProperty(
         PropertySpec.builder(
             "stringsLoader",
-            localizedStringLoaderName,
+            loaderName,
             KModifier.OVERRIDE
         ).initializer(
             CodeBlock.of(
-                "LocalizedStringLoader(supportedLocales = %N, fallbackFileUri = %N)",
+                "RemoteJsStringLoader.Impl(supportedLocales = %N, fallbackFileUri = %N)",
                 supportedLocalesPropertyName,
                 fallbackFilePropertyName
             )

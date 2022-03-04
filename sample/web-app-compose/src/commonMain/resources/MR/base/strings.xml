@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="common.name">Test Project</string>
+    <string name="format">Test data %d</string>
+    <string name="encoding">CHOOSE PORTFOLIO &amp; AMOUNT</string>
+    <string name="positional">second string %2$s first decimal %1$d</string>
+    <string name="multilined">first line
+        second line
+        third line.</string>
+    <string name="quotes">Alex009 said "hello world" &amp; "write tests".</string>
+    <string name="single_quotes">Alex009 said \'hello\'</string>
+</resources>

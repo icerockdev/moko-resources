@@ -5,9 +5,10 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.parcelize.Parcelable
+import dev.icerock.moko.resources.provider.JsStringProvider
 
 actual class RawStringDesc actual constructor(
     val string: String
 ) : StringDesc, Parcelable {
-    override fun localized() = string
+    override fun localized(provider: JsStringProvider): String = string
 }

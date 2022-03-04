@@ -4,18 +4,15 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.resources.internal.LocalizedStringLoader
 import dev.icerock.moko.resources.internal.currentLocale
 import dev.icerock.moko.resources.internal.message_format.CompiledPlural
 import dev.icerock.moko.resources.internal.message_format.MessageFormat
+import dev.icerock.moko.resources.provider.JsStringProvider
 import kotlin.js.Json
 
-actual class PluralsResource(
-    private val key: String,
-    private val loader: LocalizedStringLoader
-) {
-    fun localized(locale: String?, quantity: Int): String {
-        val pluralString: String = loader.getString(key = key, locale = locale)
+actual class PluralsResource(private val key: String) {
+    fun localized(provider: JsStringProvider, locale: String?, quantity: Int): String {
+        val pluralString: String = provider.provideString(id = key, locale = locale)
         val pluralLocale: String = locale ?: currentLocale()
 
         val compiledPlural: (Json) -> String = MessageFormat(arrayOf(pluralLocale))
@@ -24,8 +21,8 @@ actual class PluralsResource(
         return CompiledPlural(compiledPlural).evaluate(quantity)
     }
 
-    fun localized(locale: String?, quantity: Int, vararg args: Any): String {
-        val pluralString: String = loader.getString(key = key, locale = locale)
+    fun localized(provider: JsStringProvider, locale: String?, quantity: Int, vararg args: Any): String {
+        val pluralString: String = provider.provideString(id = key, locale = locale)
         val pluralLocale: String = locale ?: currentLocale()
 
         val compiledPlural = CompiledPlural(

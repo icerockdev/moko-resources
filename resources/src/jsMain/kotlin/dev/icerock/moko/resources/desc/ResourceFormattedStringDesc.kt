@@ -5,12 +5,17 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.StringResource
+import dev.icerock.moko.resources.provider.JsStringProvider
 
 actual class ResourceFormattedStringDesc actual constructor(
     val stringRes: StringResource,
     val args: List<Any>
 ) : StringDesc {
-    override fun localized(): String {
-        return stringRes.localized(locale = StringDesc.localeType.locale, *args.toTypedArray())
+    override fun localized(provider: JsStringProvider): String {
+        return stringRes.localized(
+            provider = provider,
+            locale = StringDesc.localeType.locale,
+            args = args.toTypedArray()
+        )
     }
 }

@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.PluralsResource
+import dev.icerock.moko.resources.provider.JsStringProvider
 
 actual class PluralFormattedStringDesc actual constructor(
     val pluralsRes: PluralsResource,
@@ -12,11 +13,12 @@ actual class PluralFormattedStringDesc actual constructor(
     val args: List<Any>
 ) : StringDesc {
 
-    override fun localized(): String {
+    override fun localized(provider: JsStringProvider): String {
         return pluralsRes.localized(
+            provider = provider,
             locale = StringDesc.localeType.locale,
             quantity = number,
-            *args.toTypedArray()
+            args = args.toTypedArray()
         )
     }
 }

@@ -17,6 +17,7 @@ kotlin {
                 implementation(projects.sample.mppLibrary)
 
                 implementation(compose.web.core)
+                implementation(compose.runtime)
             }
         }
     }

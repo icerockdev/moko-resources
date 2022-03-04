@@ -33,7 +33,7 @@ class JsPluralsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String): CodeBlock {
-        return CodeBlock.of("PluralsResource(key = %S, loader = stringsLoader)", key)
+        return CodeBlock.of("PluralsResource(key = %S)", key)
     }
 
     override fun beforeGenerateResources(

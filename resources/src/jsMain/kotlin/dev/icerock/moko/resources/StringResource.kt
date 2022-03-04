@@ -4,21 +4,18 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.resources.internal.LocalizedStringLoader
 import dev.icerock.moko.resources.internal.currentLocale
 import dev.icerock.moko.resources.internal.message_format.CompiledVariableString
 import dev.icerock.moko.resources.internal.message_format.MessageFormat
+import dev.icerock.moko.resources.provider.JsStringProvider
 
-actual class StringResource(
-    private val key: String,
-    private val loader: LocalizedStringLoader
-) {
-    fun localized(locale: String?): String {
-        return loader.getString(key = key, locale = locale)
+actual class StringResource(private val key: String) {
+    fun localized(provider: JsStringProvider, locale: String?): String {
+        return provider.provideString(id = key, locale = locale)
     }
 
-    fun localized(locale: String?, vararg args: Any): String {
-        val rawString: String = loader.getString(key = key, locale = locale)
+    fun localized(provider: JsStringProvider, locale: String?, vararg args: Any): String {
+        val rawString: String = provider.provideString(id = key, locale = locale)
         val compiled = CompiledVariableString(
             MessageFormat(arrayOf(locale ?: currentLocale())).compile(rawString)
         )

@@ -4,6 +4,8 @@
 
 package dev.icerock.moko.resources.internal
 
-interface LocalizedStringLoaderHolder {
-    val stringsLoader: LocalizedStringLoader
+import dev.icerock.moko.resources.provider.RemoteJsStringLoader
+
+interface RemoteJsStringLoaderHolder {
+    val stringsLoader: RemoteJsStringLoader
 }
