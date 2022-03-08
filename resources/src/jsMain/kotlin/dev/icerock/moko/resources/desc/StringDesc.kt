@@ -8,6 +8,7 @@ import dev.icerock.moko.resources.internal.currentLocale
 import dev.icerock.moko.resources.provider.JsStringProvider
 
 actual interface StringDesc {
+    suspend fun localized(): String
     fun localized(provider: JsStringProvider): String
 
     actual sealed class LocaleType {

@@ -30,13 +30,16 @@ abstract class FontsGenerator(
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder
     ): TypeSpec {
-        val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
-        generateResources(resourcesGenerationDir, inputFileTree.map {
+        val fontFiles = inputFileTree.map {
             FontFile(
                 key = it.nameWithoutExtension,
                 file = it
             )
-        })
+        }
+
+        beforeGenerateResources(objectBuilder, fontFiles)
+        val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
+        generateResources(resourcesGenerationDir, fontFiles)
         return typeSpec
     }
 
@@ -111,6 +114,8 @@ abstract class FontsGenerator(
 
     abstract fun getPropertyInitializer(fontFile: File): CodeBlock?
 
+    open fun beforeGenerateResources(objectBuilder: TypeSpec.Builder, files: List<FontFile>) {}
+
     data class FontFile(
         val key: String,
         val file: File
@@ -133,7 +138,10 @@ abstract class FontsGenerator(
             info.androidRClassPackage
         )
 
-        override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(stringsFileTree)
+        override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(
+            stringsFileTree,
+            mrSettings.packageName
+        )
 
         override fun createJvmGenerator() = JvmFontsGenerator(
             stringsFileTree,

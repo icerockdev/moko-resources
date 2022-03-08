@@ -11,6 +11,9 @@ import dev.icerock.moko.resources.provider.JsStringProvider
 actual class ResourceStringDesc actual constructor(
     val stringRes: StringResource
 ) : StringDesc, Parcelable {
+    override suspend fun localized(): String =
+        localized(stringRes.loader.getOrLoad())
+
     override fun localized(provider: JsStringProvider): String {
         return stringRes.localized(
             provider = provider,

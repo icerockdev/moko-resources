@@ -8,22 +8,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
-import dev.icerock.moko.graphics.Color
 import dev.icerock.moko.resources.ColorResource
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
+import org.w3c.dom.HTMLLinkElement
+import org.w3c.dom.get
 
 suspend fun main() {
+    MR.fonts.addFontsToPage()
+
     val strings = MR.stringsLoader.getOrLoad()
 
     val fileText = mutableStateOf("")
 
     renderComposable(rootElementId = "root") {
         val rememberFileText = remember { fileText }
-
         Div(
             attrs = {
                 style {
@@ -35,9 +40,9 @@ suspend fun main() {
             Span {
                 P(
                     attrs = {
-//                        style {
-//                            fontFamily(Testing.getFontTtf1().fileUrl)
-//                        }
+                        style {
+                            fontFamily(Testing.getFontTtf1().fontFamily)
+                        }
                     }
                 ) {
                     Text(Testing.getStringDesc().localized(strings))
@@ -55,15 +60,11 @@ suspend fun main() {
                     Text("Color Test")
                 }
                 Br()
-                Img(src = Testing.getDrawable().fileUrl)
+                Img(Testing.getDrawable().fileUrl)
                 Br()
-                Text(
-                    value = rememberFileText.value
-                )
+                Text(rememberFileText.value)
             }
         }
-
-
     }
 
     coroutineScope {
@@ -71,4 +72,6 @@ suspend fun main() {
             fileText.value = Testing.getTextFile().getText()
         }
     }
+
+    println(Testing.getTextFile().fileUrl)
 }

@@ -8,8 +8,12 @@ import dev.icerock.moko.resources.internal.currentLocale
 import dev.icerock.moko.resources.internal.message_format.CompiledVariableString
 import dev.icerock.moko.resources.internal.message_format.MessageFormat
 import dev.icerock.moko.resources.provider.JsStringProvider
+import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 
-actual class StringResource(private val key: String) {
+actual class StringResource(
+    private val key: String,
+    val loader: RemoteJsStringLoader
+) {
     fun localized(provider: JsStringProvider, locale: String?): String {
         return provider.provideString(id = key, locale = locale)
     }

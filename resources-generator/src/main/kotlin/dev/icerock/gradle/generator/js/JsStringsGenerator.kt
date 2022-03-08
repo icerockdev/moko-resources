@@ -32,7 +32,7 @@ class JsStringsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String): CodeBlock {
-        return CodeBlock.of("StringResource(key = %S)", key)
+        return CodeBlock.of("StringResource(key = %S, loader = stringsLoader)", key)
     }
 
     override fun beforeGenerateResources(

@@ -8,5 +8,10 @@ import java.util.Locale
 import java.util.ResourceBundle
 
 fun ClassLoader.getResourceBundle(bundleName: String, locale: Locale): ResourceBundle {
-    return ResourceBundle.getBundle(bundleName, locale, this)
+    return ResourceBundle.getBundle(
+        bundleName,
+        locale,
+        this,
+        ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
+    )
 }

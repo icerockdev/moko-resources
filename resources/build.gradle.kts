@@ -32,6 +32,8 @@ kotlin {
                 api(npm("@messageformat/core", "3.0.0"))
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.6.0")
+                implementation(npm("url-loader", "4.1.1"))
+                implementation(npm("file-loader", "6.2.0"))
             }
         }
     }

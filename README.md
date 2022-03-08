@@ -99,7 +99,7 @@ ios-app Info.plist:
 in array should be added all used languages.
 
 JS/Browser generates json files which is included in webpack by default.
-For more details about JS see [this](sample/web-app-compose)
+For more details about JS see [this](sample/web-app-compose) example
 
 ### Static kotlin frameworks support
 If project configured with static framework output (for example by `org.jetbrains.kotlin.native.cocoapods` plugin)
@@ -267,27 +267,6 @@ iOS:
 ```swift
 let string = getMyPluralDesc(quantity: 10).localized()
 ```
-
-JS:
-Kotlin/JS is stricter than the other platforms when it comes to plurals, 
-as it internally uses the library messageformat. Please refer to the 
-[messageformat documentation](https://messageformat.github.io/messageformat/guide/#pluralformat).
-Therefore, you cannot use e.g. quantity zero in english (which is default for the base declaration) if you
-want to refer to the quantity being 0. Therefore, when also targeting JS, use this syntax instead:
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<resources>
-    <plural name="my_plural">
-        <item quantity="=0">no items</item>
-        <item quantity="=1">%d item</item>
-        <item quantity="=2">%d items</item>
-        <item quantity="other">%d items</item>
-    </plural>
-</resources>
-```
-On all other platforms, =0 will be replaced with zero, =1 with one and =2 with two. 
-But on JS =0 only matches the quantity being 0. If you declare both =0 and zero, on all other platform =0 will be
-discarded.
 
 ### Example 4 - plural formatted string
 The first step is to create file `plurals.xml` in `commonMain/resources/MR/base` with the following content:

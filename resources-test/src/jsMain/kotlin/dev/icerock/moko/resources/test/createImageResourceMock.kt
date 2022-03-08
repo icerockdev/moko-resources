@@ -10,6 +10,7 @@ import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.internal.LocalizedStringLoader
 import dev.icerock.moko.resources.internal.SupportedLocales
+import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 
 actual fun createImageResourceMock(): ImageResource {
     return ImageResource(fileUrl = "")
@@ -18,7 +19,7 @@ actual fun createImageResourceMock(): ImageResource {
 actual fun createStringResourceMock(): StringResource {
     return StringResource(
         key = "",
-        loader = LocalizedStringLoader(
+        loader = RemoteJsStringLoader.Impl(
             supportedLocales = SupportedLocales(locales = emptyList()),
             fallbackFileUri = ""
         )
@@ -30,5 +31,5 @@ actual fun createFileResourceMock(): FileResource {
 }
 
 actual fun createFontResourceMock(): FontResource {
-    return FontResource(fileUrl = "")
+    return FontResource(fileUrl = "", fontFamily = "")
 }

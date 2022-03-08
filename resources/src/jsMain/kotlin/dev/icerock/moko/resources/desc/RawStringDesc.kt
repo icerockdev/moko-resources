@@ -10,5 +10,6 @@ import dev.icerock.moko.resources.provider.JsStringProvider
 actual class RawStringDesc actual constructor(
     val string: String
 ) : StringDesc, Parcelable {
+    override suspend fun localized(): String = string
     override fun localized(provider: JsStringProvider): String = string
 }

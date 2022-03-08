@@ -45,9 +45,11 @@ kotlin {
         val macosTest by creating
         val macosArm64Test by getting
         val macosX64Test by getting
+        val jsTest by getting
         macosArm64Test.dependsOn(macosTest)
         macosX64Test.dependsOn(macosTest)
         macosTest.dependsOn(commonTest)
+        jsTest.dependsOn(commonTest)
     }
 }
 

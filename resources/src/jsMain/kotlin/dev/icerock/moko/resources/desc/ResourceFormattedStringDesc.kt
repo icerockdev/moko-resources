@@ -11,6 +11,9 @@ actual class ResourceFormattedStringDesc actual constructor(
     val stringRes: StringResource,
     val args: List<Any>
 ) : StringDesc {
+    override suspend fun localized(): String =
+        localized(stringRes.loader.getOrLoad())
+
     override fun localized(provider: JsStringProvider): String {
         return stringRes.localized(
             provider = provider,

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackCssSupport
+
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -7,7 +9,11 @@ plugins {
 
 kotlin {
     js(IR) {
-        browser()
+        browser {
+            webpackTask {
+                cssSupport.enabled = true
+            }
+        }
         binaries.executable()
     }
     sourceSets {

@@ -4,8 +4,4 @@
 
 import dev.icerock.moko.resources.desc.StringDesc
 
-actual fun StringDesc.getString(): String {
-    return localized()
-}
-
-actual suspend fun StringDesc.getStringAsync(): String = getString()
+actual suspend fun StringDesc.getString(): String = localized()

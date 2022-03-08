@@ -10,9 +10,7 @@ import BaseUnitTest
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
 import dev.icerock.moko.resources.desc.StringDesc
-import dev.icerock.moko.resources.download
 import getString
-import getStringAsync
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -22,9 +20,6 @@ class StringResourceTests : BaseUnitTest() {
 
     @Test
     fun checkRuStrings() = runTest {
-        MR.strings.download()
-        MR.plurals.download()
-
         StringDesc.localeType = StringDesc.LocaleType.Custom("ru")
         val rawString: String = Testing.getStringDesc().getString()
 
@@ -38,9 +33,6 @@ class StringResourceTests : BaseUnitTest() {
 
     @Test
     fun checkEnStrings() = runTest {
-        MR.strings.download()
-        MR.plurals.download()
-
         StringDesc.localeType = StringDesc.LocaleType.Custom("en")
         val rawString: String = Testing.getStringDesc().getString()
 
@@ -56,7 +48,7 @@ class StringResourceTests : BaseUnitTest() {
     @Test
     fun checkRuStringsList() = runTest {
         StringDesc.localeType = StringDesc.LocaleType.Custom("ru")
-        val rawString: String = Testing.getStrings().map { it.getStringAsync() }
+        val rawString: String = Testing.getStrings().map { it.getString() }
             .joinToString("\n")
 
         assertEquals(
@@ -72,7 +64,7 @@ class StringResourceTests : BaseUnitTest() {
     @Test
     fun checkEnStringsList() = runTest {
         StringDesc.localeType = StringDesc.LocaleType.Custom("en")
-        val rawString: String = Testing.getStrings().map { it.getStringAsync() }
+        val rawString: String = Testing.getStrings().map { it.getString() }
             .joinToString("\n")
 
         assertEquals(

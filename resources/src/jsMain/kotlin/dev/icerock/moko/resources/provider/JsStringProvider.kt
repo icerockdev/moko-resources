@@ -91,19 +91,21 @@ fun interface RemoteJsStringLoader {
             if (cachedFallbackFile != null) return
             cachedFallbackFile = loadLocalizationFile(fallbackFileUri)
         }
-
-        operator fun plus(other: RemoteJsStringLoader) {
-
-        }
     }
-    class Composition(
-        val loaders: List<RemoteJsStringLoader>
-    ) : RemoteJsStringLoader {
+    class Composition(val loaders: List<RemoteJsStringLoader>) : RemoteJsStringLoader {
         override suspend fun getOrLoad(): JsStringProvider {
-            val providers = loaders.map { it.getOrLoad() }
+            val providers = coroutineScope {
+                loaders.map {
+                    async {
+                        it.getOrLoad()
+                    }
+                }.awaitAll()
+            }
             return providers.reduce { acc, jsStringProvider -> acc + jsStringProvider }
         }
     }
 
     suspend fun getOrLoad(): JsStringProvider
+
+    operator fun plus(other: RemoteJsStringLoader) = Composition(listOf(this, other))
 }

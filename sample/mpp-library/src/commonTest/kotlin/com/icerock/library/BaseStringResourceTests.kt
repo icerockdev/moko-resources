@@ -9,7 +9,6 @@ package com.icerock.library
 import BaseUnitTest
 import com.icerockdev.library.MR
 import dev.icerock.moko.resources.desc.StringDesc
-import dev.icerock.moko.resources.download
 import getString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -27,8 +26,6 @@ abstract class BaseStringResourceTests(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     protected fun stringTest(expected: String, actual: StringDesc) = runTest {
-        MR.strings.download()
-
         assertEquals(
             expected = expected,
             actual = actual.getString()
@@ -37,8 +34,6 @@ abstract class BaseStringResourceTests(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     protected fun pluralTest(expected: String, actual: StringDesc) = runTest {
-        MR.plurals.download()
-
         assertEquals(
             expected = expected,
             actual = actual.getString()

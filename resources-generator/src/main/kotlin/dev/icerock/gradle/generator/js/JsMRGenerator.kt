@@ -42,14 +42,37 @@ class JsMRGenerator(
                 .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
                 .build()
         )
-        mrClass.addProperty(
-            PropertySpec.builder(
-                "stringsLoader",
-                ClassName("dev.icerock.moko.resources.provider", "RemoteJsStringLoader"),
-            ).initializer(
-                "strings.stringsLoader + plurals.stringsLoader"
-            ).build()
-        )
+
+        @OptIn(ExperimentalStdlibApi::class)
+        val stringsLoaderInitializer = buildList {
+            val stringsObjectLoader = mrClass
+                .typeSpecs
+                .find { it.name == "strings" }
+                ?.propertySpecs
+                ?.find { it.name == "stringsLoader" }
+
+            val pluralsObjectLoader = mrClass
+                .typeSpecs
+                .find { it.name == "plurals" }
+                ?.propertySpecs
+                ?.find { it.name == "stringsLoader" }
+
+            if (stringsObjectLoader != null)
+                add("strings.stringsLoader")
+
+            if (pluralsObjectLoader != null)
+                add("plurals.stringsLoader")
+        }.takeIf(List<*>::isNotEmpty)
+            ?.joinToString(separator = " + ")
+
+        if (stringsLoaderInitializer != null)
+            mrClass.addProperty(
+                PropertySpec.builder(
+                    "stringsLoader",
+                    ClassName("dev.icerock.moko.resources.provider", "RemoteJsStringLoader"),
+                ).initializer(stringsLoaderInitializer)
+                    .build()
+            )
     }
 
     override fun apply(generationTask: Task, project: Project) {
@@ -100,7 +123,6 @@ class JsMRGenerator(
             val project: Project = task.project
 
             task.classpath.forEach { dependency ->
-                println(dependency.extension)
                 copyResourcesFromLibraries(
                     inputFile = dependency,
                     project = project,
@@ -116,12 +138,13 @@ class JsMRGenerator(
             val webpackDir: File = File(project.projectDir, "webpack.config.d")
             webpackDir.mkdirs()
 
-            val webpackTestConfig: File = File(webpackDir, "moko-resources-generated.js")
-            webpackTestConfig.writeText(
+            val webpackConfig: File = File(webpackDir, "moko-resources-generated.js")
+            webpackConfig.writeText(
+                // language=js
                 """
                 const path = require('path');
 
-                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath}")
+                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath}");
 
                 config.module.rules.push(
                     {
@@ -132,10 +155,25 @@ class JsMRGenerator(
                         type: 'asset/resource'
                     }
                 );
-
+                
+                config.module.rules.push(
+                    {
+                        test: /\.(otf|ttf)?${'$'}/,
+                        use: [
+                            {
+                                loader: 'file-loader',
+                                options: {
+                                    name: '[name].[ext]',
+                                    outputPath: 'fonts/'
+                                }
+                            }
+                        ]
+                    }
+                )
+                
                 config.resolve.modules.push(
                     path.resolve(mokoResourcePath)
-                )
+                );
                 """.trimIndent()
             )
         }
@@ -180,8 +218,6 @@ class JsMRGenerator(
             val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
             val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
             val layout = klib.extractingToTemp
-
-            println(layout.resourcesDir.listFiles)
 
             File(layout.resourcesDir.path, "moko-resources-js")
                 .takeIf(File::exists)

@@ -8,9 +8,13 @@ import dev.icerock.moko.resources.internal.currentLocale
 import dev.icerock.moko.resources.internal.message_format.CompiledPlural
 import dev.icerock.moko.resources.internal.message_format.MessageFormat
 import dev.icerock.moko.resources.provider.JsStringProvider
+import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 import kotlin.js.Json
 
-actual class PluralsResource(private val key: String) {
+actual class PluralsResource(
+    private val key: String,
+    val loader: RemoteJsStringLoader
+) {
     fun localized(provider: JsStringProvider, locale: String?, quantity: Int): String {
         val pluralString: String = provider.provideString(id = key, locale = locale)
         val pluralLocale: String = locale ?: currentLocale()
