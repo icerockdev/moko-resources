@@ -7,7 +7,10 @@ package dev.icerock.moko.resources.provider
 import dev.icerock.moko.resources.internal.SupportedLocale
 import dev.icerock.moko.resources.internal.SupportedLocales
 import kotlinx.browser.window
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.await
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.w3c.fetch.Response
 import kotlin.js.Json
 
@@ -56,12 +59,14 @@ fun interface RemoteJsStringLoader {
 
         private suspend fun loadLocalizationFile(fileUri: String): Json {
             val response: Response = window.fetch(fileUri).await()
-            if (!response.ok) throw IllegalStateException("response not ok for $fileUri - ${response.statusText} ${response.body}")
+            if (!response.ok) {
+                error("response not ok for $fileUri - ${response.statusText} ${response.body}")
+            }
 
             @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
             val json: Json? = response.json().await() as Json?
 
-            return json ?: throw RuntimeException("Could not read json at $fileUri")
+            return json ?: error("Could not read json at $fileUri")
         }
 
         override suspend fun getOrLoad(): JsStringProvider {

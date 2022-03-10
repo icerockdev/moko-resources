@@ -9,16 +9,22 @@ import androidx.compose.runtime.remember
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
 import dev.icerock.moko.resources.ColorResource
-import kotlinx.browser.document
-import kotlinx.browser.window
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.web.ExperimentalComposeWebApi
-import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.*
+import org.jetbrains.compose.web.css.DisplayStyle
+import org.jetbrains.compose.web.css.FlexDirection
+import org.jetbrains.compose.web.css.color
+import org.jetbrains.compose.web.css.display
+import org.jetbrains.compose.web.css.flexDirection
+import org.jetbrains.compose.web.css.fontFamily
+import org.jetbrains.compose.web.css.rgba
+import org.jetbrains.compose.web.dom.Br
+import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Img
+import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.Span
+import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
-import org.w3c.dom.HTMLLinkElement
-import org.w3c.dom.get
 
 suspend fun main() {
     MR.fonts.addFontsToPage()

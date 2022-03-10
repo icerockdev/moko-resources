@@ -5,8 +5,8 @@
 package dev.icerock.moko.resources
 
 import dev.icerock.moko.resources.internal.currentLocale
-import dev.icerock.moko.resources.internal.message_format.CompiledPlural
-import dev.icerock.moko.resources.internal.message_format.MessageFormat
+import dev.icerock.moko.resources.internal.messageFormat.CompiledPlural
+import dev.icerock.moko.resources.internal.messageFormat.MessageFormat
 import dev.icerock.moko.resources.provider.JsStringProvider
 import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 import kotlin.js.Json

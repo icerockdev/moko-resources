@@ -4,8 +4,6 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.resources.internal.RemoteJsStringLoaderHolder
-
 actual interface ResourceContainer<T>
 
 actual fun ResourceContainer<ImageResource>.getImageByFileName(

@@ -6,14 +6,15 @@ package dev.icerock.moko.resources.internal
 
 import kotlinx.coroutines.delay
 
-//From: https://stackoverflow.com/a/46890009/5608927
+// From: https://stackoverflow.com/a/46890009/5608927
+@Suppress("TooGenericExceptionCaught")
 suspend fun <T> retryIO(
     times: Int = Int.MAX_VALUE,
     initialDelay: Long = 100, // 0.1 second
-    maxDelay: Long = 1000,    // 1 second
+    maxDelay: Long = 1000, // 1 second
     factor: Double = 2.0,
-    block: suspend () -> T): T
-{
+    block: suspend () -> T
+): T {
     var currentDelay = initialDelay
     repeat(times - 1) {
         try {

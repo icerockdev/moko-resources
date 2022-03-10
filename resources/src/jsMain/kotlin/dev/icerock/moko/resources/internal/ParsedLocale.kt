@@ -29,8 +29,6 @@ class ParsedLocale(parseResult: Json) {
     val extensions: List<String> = (parseResult["extensions"] as? Array<String>)?.toList().orEmpty()
 
     val privateuse: List<String> = (parseResult["privateuse"] as? Array<String>)?.toList().orEmpty()
-
-    //For now we skip irregular and regular.
 }
 
 private var cachedLocale: CachedLocale? = null
@@ -39,18 +37,20 @@ private var cachedLocale: CachedLocale? = null
  * Gets the supported locale that fits the browser defined locales the most.
  * The result will be cached.
  *
- * @return the locale that can be used to localize strings or null if no locale was found that matches this user's preferences
+ * @return the locale that can be used to localize strings or null if no locale was found
+ * that matches this user's preferences
  */
 fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
     val currentCache = cachedLocale
     val userLanguages = window.navigator.languages
-    return if (currentCache != null && currentCache.usedLanguages.contentEquals(userLanguages)) {
-        supportedLocales.getForLocale(currentCache.locale ?: return null)
-    } else {
-        val foundLocale = findMatchingLocale(supportedLocales, userLanguages)
-        cachedLocale = CachedLocale(userLanguages, foundLocale?.locale)
-        return foundLocale
+
+    if (currentCache != null && currentCache.usedLanguages.contentEquals(userLanguages)) {
+        return currentCache.locale?.let(supportedLocales::getForLocale)
     }
+
+    val foundLocale = findMatchingLocale(supportedLocales, userLanguages)
+    cachedLocale = CachedLocale(userLanguages, foundLocale?.locale)
+    return foundLocale
 }
 
 /**
@@ -99,14 +99,17 @@ private fun findMatchingLocale(
  * Calculates a score that reflects how much of a match the candidate is.
  * A score of -1 means that the locale does not match.
  *
- * If the desired locale is de_DE and the candidate is de_DE, there is a perfect match and it will have the highest score.
+ * If the desired locale is de_DE and the candidate is de_DE, there is a perfect
+ * match and it will have the highest score.
  * For de_DE and candidate de the score will be below de_DE but not 0
  * For en_UK and candidate en_US the score will be -1 as en_UK and en_US do not fit together
  */
+@Suppress("ReturnCount")
 private fun calculateMatchingScore(desiredLocale: ParsedLocale, candidate: SupportedLocale): Int {
     var score = 0
 
-    //Checks if all elements of the candidate list are also in the desired list. Then adds 1 score for every element that matches.
+    // Checks if all elements of the candidate list are also in the desired list.
+    // Then adds 1 score for every element that matches.
     val listComparison: (desiredList: List<String>, candidateList: List<String>) -> Boolean =
         { desiredList, candidateList ->
             if (desiredList.containsAll(candidateList)) {

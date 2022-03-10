@@ -5,8 +5,8 @@
 package dev.icerock.moko.resources
 
 import dev.icerock.moko.resources.internal.currentLocale
-import dev.icerock.moko.resources.internal.message_format.CompiledVariableString
-import dev.icerock.moko.resources.internal.message_format.MessageFormat
+import dev.icerock.moko.resources.internal.messageFormat.CompiledVariableString
+import dev.icerock.moko.resources.internal.messageFormat.MessageFormat
 import dev.icerock.moko.resources.provider.JsStringProvider
 import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 
