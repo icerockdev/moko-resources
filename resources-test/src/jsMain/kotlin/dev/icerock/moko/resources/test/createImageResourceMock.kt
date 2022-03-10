@@ -8,7 +8,6 @@ import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.FontResource
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.StringResource
-import dev.icerock.moko.resources.internal.LocalizedStringLoader
 import dev.icerock.moko.resources.internal.SupportedLocales
 import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 

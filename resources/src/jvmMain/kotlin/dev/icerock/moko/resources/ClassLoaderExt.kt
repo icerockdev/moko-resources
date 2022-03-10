@@ -12,6 +12,7 @@ fun ClassLoader.getResourceBundle(bundleName: String, locale: Locale): ResourceB
         bundleName,
         locale,
         this,
+        // Otherwise, the default locale will be picked from system settings
         ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
     )
 }

@@ -5,30 +5,39 @@
 @file:Suppress("IllegalIdentifier")
 
 import com.icerockdev.library.MR
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import kotlin.test.Test
+import kotlinx.coroutines.test.runTest
+import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 class Test : BaseUnitTest() {
+    @BeforeTest
+    fun setupLocale() {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("en")
+    }
+
     @Test
-    fun `test simple resource string`() {
+    fun `test simple resource string`() = runTest {
         val stringDesc = MR.strings.test_simple.desc()
         val rawString = stringDesc.getString()
         assertEquals(expected = "test", actual = rawString)
     }
 
     @Test
-    fun `test multiline string`() {
+    fun `test multiline string`() = runTest {
         val stringDesc = MR.strings.multilined.desc()
         val rawString = stringDesc.getString()
-        assertEquals(expected = """first line
+        assertEquals(
+            expected = """first line
 second line
 third line.""", actual = rawString
         )
     }
 
     @Test
-    fun `test quotes string`() {
+    fun `test quotes string`() = runTest {
         val stringDesc = MR.strings.quotes.desc()
         val rawString = stringDesc.getString()
         assertEquals(
@@ -38,7 +47,7 @@ third line.""", actual = rawString
     }
 
     @Test
-    fun `test single quotes string`() {
+    fun `test single quotes string`() = runTest {
         val stringDesc = MR.strings.single_quotes.desc()
         val rawString = stringDesc.getString()
         assertEquals(expected = """Alex009 said 'hello'""", actual = rawString)

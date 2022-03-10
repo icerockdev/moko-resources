@@ -72,7 +72,7 @@ fun interface RemoteJsStringLoader {
                     .awaitAll()
             }
             return JsStringProvider { id, locale ->
-                val localeFile: Json = locale?.let { cachedLocalizationFiles[id] }
+                val localeFile: Json = locale?.let { cachedLocalizationFiles[locale] }
                     ?: cachedFallbackFile
                     ?: error("Invalid state after download")
 
