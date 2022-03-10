@@ -17,9 +17,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
 import java.io.File
-import java.lang.IllegalArgumentException
-import java.text.MessageFormat
-import java.util.Locale
 
 class JsPluralsGenerator(
     pluralsFileTree: FileTree,
@@ -46,7 +43,9 @@ class JsPluralsGenerator(
             fallbackFilePropertyName = JsMRGenerator.PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME,
             fallbackFile = "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
             supportedLocalesPropertyName = JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
-            getFileNameForLanguage = { language -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language.json" }
+            getFileNameForLanguage = { language ->
+                "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language.json"
+            }
         )
     }
 
@@ -71,7 +70,7 @@ class JsPluralsGenerator(
                 val messageFormatString = StringBuilder().apply {
                     append("{ PLURAL, plural, ")
                     pluralMap.forEach { (pluralKey, pluralString) ->
-                        //Zero isn't allowed in english (which is default for base), but we support it through =0
+                        // Zero isn't allowed in english (which is default for base), but we support it through =0
                         val actPluralKey = when (pluralKey) {
                             "zero" -> "=0"
                             "two" -> "=2"
@@ -95,7 +94,7 @@ class JsPluralsGenerator(
         pluralsFile.writeText(content)
     }
 
-    //For JS we can use =0 and zero
+    // For JS we can use =0 and zero
     override fun processLanguagePlurals(languagePlurals: Map<KeyType, PluralMap>): Map<KeyType, PluralMap> =
         languagePlurals
 }

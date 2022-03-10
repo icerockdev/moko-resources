@@ -4,7 +4,11 @@
 
 package dev.icerock.gradle.generator.js
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.utils.calculateResourcesHash
 import org.gradle.api.Action
@@ -57,15 +61,16 @@ class JsMRGenerator(
                 ?.propertySpecs
                 ?.find { it.name == "stringsLoader" }
 
-            if (stringsObjectLoader != null)
+            if (stringsObjectLoader != null) {
                 add("strings.stringsLoader")
-
-            if (pluralsObjectLoader != null)
+            }
+            if (pluralsObjectLoader != null) {
                 add("plurals.stringsLoader")
+            }
         }.takeIf(List<*>::isNotEmpty)
             ?.joinToString(separator = " + ")
 
-        if (stringsLoaderInitializer != null)
+        if (stringsLoaderInitializer != null) {
             mrClass.addProperty(
                 PropertySpec.builder(
                     "stringsLoader",
@@ -73,6 +78,7 @@ class JsMRGenerator(
                 ).initializer(stringsLoaderInitializer)
                     .build()
             )
+        }
     }
 
     override fun apply(generationTask: Task, project: Project) {

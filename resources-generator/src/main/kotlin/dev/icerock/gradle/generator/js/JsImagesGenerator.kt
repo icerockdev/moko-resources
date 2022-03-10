@@ -8,8 +8,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ImagesGenerator
-import dev.icerock.gradle.generator.js_jvm_common.generateHighestQualityImageResources
-import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
+import dev.icerock.gradle.generator.jsJvmCommon.generateHighestQualityImageResources
 import org.gradle.api.file.FileTree
 import java.io.File
 

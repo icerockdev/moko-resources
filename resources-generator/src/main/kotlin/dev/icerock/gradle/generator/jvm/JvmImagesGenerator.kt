@@ -9,7 +9,7 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.generator.js_jvm_common.generateHighestQualityImageResources
+import dev.icerock.gradle.generator.jsJvmCommon.generateHighestQualityImageResources
 import org.gradle.api.file.FileTree
 import java.io.File
 

@@ -15,21 +15,20 @@ fun String.replaceAndroidParams(): String {
     var counter = 0
     var result = this
 
-    //First go through the positioned args
+    // First go through the positioned args
     allMatches
         .filter { matchResult -> matchResult.groupValues[2].isNotEmpty() }
         .map { matchResult -> matchResult.groupValues[0] to matchResult.groupValues[1] }
         .distinctBy { it.second }
         .forEach { (wholeMatch, index) ->
-            val intIndex = index.toIntOrNull()
-                ?: throw RuntimeException("Localized string $this uses positioned argument $wholeMatch but $index is not an integer.")
+            val intIndex = index.toIntOrNull() ?: error("Localized string $this uses positioned " +
+                    "argument $wholeMatch but $index is not an integer.")
 
             result = result.replace(wholeMatch, "{${intIndex - 1}}")
             counter = intIndex
-
         }
 
-    //Now remove the not positioned args
+    // Now remove the not positioned args
     while (androidParamRegex.containsMatchIn(result)) {
         result = androidParamRegex.replaceFirst(result, "{$counter}")
         counter++

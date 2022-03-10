@@ -4,7 +4,12 @@
 
 package dev.icerock.gradle.generator.js
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FontsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -21,13 +26,15 @@ class JsFontsGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
+    @Suppress("StringTemplate")
     override fun getPropertyInitializer(fontFile: File): CodeBlock {
-        return CodeBlock.of("FontResource(fileUrl = js(\"require(\\\"${FONTS_DIR}/${fontFile.name}\\\")\") as String, fontFamily = %S)", fontFile.nameWithoutExtension)
+        return CodeBlock.of("FontResource(" +
+                "fileUrl = js(\"require(\\\"$FONTS_DIR/${fontFile.name}\\\")\") as String, " +
+                "fontFamily = %S)", fontFile.nameWithoutExtension)
     }
 
     override fun beforeGenerateResources(objectBuilder: TypeSpec.Builder, files: List<FontFile>) {
-        if (files.isEmpty())
-            return
+        if (files.isEmpty()) return
 
         objectBuilder.addSuperinterface(ClassName("dev.icerock.moko.resources", "CssDeclarationsUriHolder"))
 
@@ -59,8 +66,7 @@ class JsFontsGenerator(
                 """.trimIndent()
             }
 
-        if (declarations != null)
-            cssDeclarationsFile.writeText(declarations)
+        if (declarations != null) cssDeclarationsFile.writeText(declarations)
     }
 
     override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit

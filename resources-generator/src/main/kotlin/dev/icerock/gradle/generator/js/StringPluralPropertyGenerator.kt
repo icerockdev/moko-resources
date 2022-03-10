@@ -17,6 +17,7 @@ import dev.icerock.gradle.generator.LanguageType
  * @param fallbackFilePropertyName the property name in the MR object
  * @param fallbackFile the name of the file webpack will use, e.g. my_plurals.json
  */
+@Suppress("LongParameterList")
 fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
     languages: List<LanguageType>,
     folder: String,

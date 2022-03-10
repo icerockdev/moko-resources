@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle.generator.js
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
@@ -45,7 +44,9 @@ class JsStringsGenerator(
             fallbackFilePropertyName = STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME,
             fallbackFile = "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}.json",
             supportedLocalesPropertyName = SUPPORTED_LOCALES_PROPERTY_NAME,
-            getFileNameForLanguage = { language -> "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language.json" }
+            getFileNameForLanguage = { language ->
+                "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language.json"
+            }
         )
     }
 

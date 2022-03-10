@@ -85,8 +85,8 @@ abstract class PluralsGenerator(
      * Called after the language plurals have been loaded.
      */
     protected open fun processLanguagePlurals(languagePlurals: Map<KeyType, PluralMap>): Map<KeyType, PluralMap> {
-        //Replace =0 with zero. =1 with one and =2 and two
-        //if both =0 and zero are present, =0 will be discarded. Same with =1 and one and =2 with two
+        // Replace =0 with zero. =1 with one and =2 and two
+        // if both =0 and zero are present, =0 will be discarded. Same with =1 and one and =2 with two
 
         val manipulateMap: MutableMap<String, String>.(equals: String, literal: String) -> Unit = { equals, literal ->
             val hasEquals = equals in this

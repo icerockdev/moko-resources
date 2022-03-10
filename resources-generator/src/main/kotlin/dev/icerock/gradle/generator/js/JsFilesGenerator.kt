@@ -8,7 +8,6 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FilesGenerator
-import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -21,7 +20,8 @@ class JsFilesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock {
-        return CodeBlock.of("FileResource(fileUrl = js(\"require(\\\"$FILES_DIR/${fileSpec.file.name}\\\")\") as String)")
+        return CodeBlock.of("FileResource(" +
+                "fileUrl = js(\"require(\\\"$FILES_DIR/${fileSpec.file.name}\\\")\") as String)")
     }
 
     override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
