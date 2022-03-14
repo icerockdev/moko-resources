@@ -34,7 +34,6 @@ class JsAssetsGenerator(
         """.trimIndent())
     }
 
-
     override fun beforeGenerate(objectBuilder: TypeSpec.Builder, files: List<AssetSpec>) {
         val languageKeysList = flattenAssets(files).joinToString()
 

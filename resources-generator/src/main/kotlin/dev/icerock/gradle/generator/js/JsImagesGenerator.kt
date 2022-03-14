@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.BaseGenerator
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
@@ -26,7 +25,9 @@ class JsImagesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileName: String): CodeBlock {
-        return CodeBlock.of("ImageResource(fileUrl = js(\"require(\\\"$IMAGES_DIR/$fileName\\\")\") as String, fileName = \"$fileName\")")
+        return CodeBlock.of("ImageResource(" +
+                "fileUrl = js(\"require(\\\"$IMAGES_DIR/$fileName\\\")\") as String, " +
+                "fileName = \"$fileName\")")
     }
 
     override fun beforeGenerateResources(objectBuilder: TypeSpec.Builder, keys: List<String>) {
