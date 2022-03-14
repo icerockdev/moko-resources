@@ -25,6 +25,14 @@ kotlin {
             }
         }
 
+    js(IR) {
+        browser {
+            webpackTask {
+                cssSupport.enabled = true
+            }
+        }
+    }
+
     sourceSets {
         getByName("jsMain") {
             dependencies {

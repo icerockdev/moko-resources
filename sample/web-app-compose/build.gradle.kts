@@ -9,11 +9,7 @@ plugins {
 
 kotlin {
     js(IR) {
-        browser {
-            webpackTask {
-                cssSupport.enabled = true
-            }
-        }
+        browser()
         binaries.executable()
     }
     sourceSets {
