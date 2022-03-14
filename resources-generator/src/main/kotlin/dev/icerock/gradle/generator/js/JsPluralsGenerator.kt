@@ -80,7 +80,7 @@ class JsPluralsGenerator(
                         append(actPluralKey)
                         append(" ")
                         append("{")
-                        append(pluralString.replaceAndroidParams())
+                        append(pluralString.convertToMessageFormat())
                         append("} ")
                     }
 
@@ -93,8 +93,4 @@ class JsPluralsGenerator(
 
         pluralsFile.writeText(content)
     }
-
-    // For JS we can use =0 and zero
-    override fun processLanguagePlurals(languagePlurals: Map<KeyType, PluralMap>): Map<KeyType, PluralMap> =
-        languagePlurals
 }

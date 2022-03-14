@@ -38,10 +38,10 @@ kotlin {
             dependencies {
                 api(npm("bcp-47", "1.0.8"))
                 api(npm("@messageformat/core", "3.0.0"))
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.6.0")
                 implementation(npm("url-loader", "4.1.1"))
                 implementation(npm("file-loader", "6.2.0"))
+
+                implementation(libs.kotlinxCoroutines)
             }
         }
     }

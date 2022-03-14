@@ -4,10 +4,10 @@
 
 package dev.icerock.gradle.generator.js
 
-private val androidParamRegex = "%(.)(?:\\\$(.))?".toRegex()
+private val messageFormatRegex = "%(.)(?:\\\$(.))?".toRegex()
 
-fun String.replaceAndroidParams(): String {
-    val allMatches = androidParamRegex
+fun String.convertToMessageFormat(): String {
+    val allMatches = messageFormatRegex
         .findAll(this)
 
     if (allMatches.count() == 0) return this
@@ -29,8 +29,8 @@ fun String.replaceAndroidParams(): String {
         }
 
     // Now remove the not positioned args
-    while (androidParamRegex.containsMatchIn(result)) {
-        result = androidParamRegex.replaceFirst(result, "{$counter}")
+    while (messageFormatRegex.containsMatchIn(result)) {
+        result = messageFormatRegex.replaceFirst(result, "{$counter}")
         counter++
     }
 

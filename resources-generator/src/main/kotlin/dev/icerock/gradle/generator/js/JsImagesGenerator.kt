@@ -8,13 +8,15 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ImagesGenerator
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.jsJvmCommon.generateHighestQualityImageResources
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JsImagesGenerator(
     inputFileTree: FileTree
-) : ImagesGenerator(inputFileTree) {
+) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -26,10 +28,6 @@ class JsImagesGenerator(
     override fun generateResources(resourcesGenerationDir: File, keyFileMap: Map<String, List<File>>) {
         generateHighestQualityImageResources(resourcesGenerationDir, keyFileMap, IMAGES_DIR)
     }
-
-    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
-
-    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) = Unit
 
     companion object {
         const val IMAGES_DIR = "images"

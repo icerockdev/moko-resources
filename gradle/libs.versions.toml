@@ -4,6 +4,7 @@ androidGradleVersion = "7.1.0"
 
 # kotlinx
 kotlinxSerializationVersion = "1.2.1"
+kotlinxCoroutinesVersion = "1.6.0"
 
 # android
 constraintLayoutVersion = "2.0.4"
@@ -40,7 +41,8 @@ mokoResourcesVersion = "0.18.0"
 [libraries]
 # kotlinx
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationVersion" }
-coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.6.0" }
+kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesVersion" }
+coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesVersion" }
 
 # moko
 mokoParcelize = { module = "dev.icerock.moko:parcelize", version.ref = "mokoParcelizeVersion" }

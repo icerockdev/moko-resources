@@ -8,11 +8,13 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ColorsGenerator
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 
 class JsColorsGenerator(
     colorsFileTree: FileTree
-) : ColorsGenerator(colorsFileTree) {
+) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -21,8 +23,4 @@ class JsColorsGenerator(
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")
     )
-
-    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
-
-    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) = Unit
 }

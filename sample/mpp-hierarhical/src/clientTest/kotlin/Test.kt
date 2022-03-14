@@ -2,8 +2,6 @@
  * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:Suppress("IllegalIdentifier")
-
 import com.icerockdev.library.MR
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc

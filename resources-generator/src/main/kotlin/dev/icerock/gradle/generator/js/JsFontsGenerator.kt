@@ -11,13 +11,15 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FontsGenerator
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JsFontsGenerator(
     inputFileTree: FileTree,
     mrClassPackage: String,
-) : FontsGenerator(inputFileTree) {
+) : FontsGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     private val flattenPackage: String = mrClassPackage.replace(".", "")
     private val cssDeclarationsFileName: String = "$flattenPackage-generated-declarations.css"
@@ -68,10 +70,6 @@ class JsFontsGenerator(
 
         if (declarations != null) cssDeclarationsFile.writeText(declarations)
     }
-
-    override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) = Unit
-
-    override fun extendObjectBodyAtEnd(classBuilder: TypeSpec.Builder) = Unit
 
     companion object {
         const val FONTS_DIR = "fonts"
