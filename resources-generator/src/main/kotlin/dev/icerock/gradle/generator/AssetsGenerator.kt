@@ -95,6 +95,8 @@ abstract class AssetsGenerator(
 
         val rootContent = parseRootContent(sourceDirectorySet.sourceDirectories.files)
 
+        beforeGenerate(objectBuilder, rootContent)
+
         val typeSpec = createTypeSpec(rootContent, objectBuilder)
 
         generateResources(assetsGenerationDir, resourcesGenerationDir, rootContent)
@@ -142,6 +144,11 @@ abstract class AssetsGenerator(
     }
 
     override fun getImports(): List<ClassName> = emptyList()
+
+    protected open fun beforeGenerate(
+        objectBuilder: TypeSpec.Builder,
+        files: List<AssetSpec>
+    ) {}
 
     protected open fun generateResources(
         assetsGenerationDir: File,

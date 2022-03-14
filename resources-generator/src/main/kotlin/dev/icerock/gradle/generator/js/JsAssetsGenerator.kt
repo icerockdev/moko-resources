@@ -4,8 +4,12 @@
 
 package dev.icerock.gradle.generator.js
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
@@ -22,7 +26,51 @@ class JsAssetsGenerator(
 
     override fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock {
         val filePath = File(FILES_DIR, fileSpec.pathRelativeToBase).path
-        return CodeBlock.of("""AssetResource(originalPath = js("require(\"$filePath\")") as String)""")
+        return CodeBlock.of("""
+            AssetResource(
+                originalPath = js("require(\"$filePath\")") as String, 
+                rawPath = "${fileSpec.pathRelativeToBase}"
+            )
+        """.trimIndent())
+    }
+
+
+    override fun beforeGenerate(objectBuilder: TypeSpec.Builder, files: List<AssetSpec>) {
+        val languageKeysList = flattenAssets(files).joinToString()
+
+        objectBuilder.addFunction(
+            FunSpec.builder("values")
+                .addModifiers(KModifier.OVERRIDE)
+                .addStatement("return listOf($languageKeysList)")
+                .returns(
+                    ClassName("kotlin.collections", "List")
+                        .parameterizedBy(resourceClassName)
+                )
+                .build()
+        )
+    }
+
+    private fun flattenAssets(assets: List<AssetSpec>, prefix: String? = null): List<String> {
+        return assets.flatMap { spec ->
+            when (spec) {
+                is AssetSpecDirectory -> {
+                    val key = spec.name.replace('-', '_')
+                    val nextPrefix = when (prefix) {
+                        null -> key
+                        else -> "$prefix.$key"
+                    }
+                    return@flatMap flattenAssets(spec.assets, nextPrefix)
+                }
+                is AssetSpecFile -> {
+                    val key = spec.file.nameWithoutExtension.replace('-', '_')
+                    val name = when (prefix) {
+                        null -> key
+                        else -> "$prefix.$key"
+                    }
+                    return@flatMap listOf(name)
+                }
+            }
+        }
     }
 
     override fun generateResources(

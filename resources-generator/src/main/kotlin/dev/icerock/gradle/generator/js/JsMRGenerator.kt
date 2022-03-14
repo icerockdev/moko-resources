@@ -191,6 +191,7 @@ class JsMRGenerator(
             val webpackTestConfig: File = File(webpackDir, "moko-resources-generated.js")
             val pattern = "`\${output.path}/**/*`"
             webpackTestConfig.writeText(
+                // language=js
                 """
                 // workaround from https://github.com/ryanclark/karma-webpack/issues/498#issuecomment-790040818
 

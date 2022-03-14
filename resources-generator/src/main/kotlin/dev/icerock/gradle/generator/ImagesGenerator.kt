@@ -34,6 +34,8 @@ abstract class ImagesGenerator(
             "${file.name.substringBefore("@")}.${file.extension}"
         }
 
+        beforeGenerateResources(objectBuilder, fileMap.keys.sorted())
+
         val typeSpec = createTypeSpec(fileMap.keys.sorted(), objectBuilder)
 
         generateResources(
@@ -68,6 +70,11 @@ abstract class ImagesGenerator(
     }
 
     override fun getImports(): List<ClassName> = emptyList()
+
+    protected open fun beforeGenerateResources(
+        objectBuilder: TypeSpec.Builder,
+        keys: List<String>
+    ) {}
 
     protected open fun generateResources(
         resourcesGenerationDir: File,

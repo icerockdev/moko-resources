@@ -34,6 +34,8 @@ abstract class ColorsGenerator(
     private val themedColorClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
 
+    open fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) {}
+
     @Suppress("SpreadOperator")
     override fun generate(
         assetsGenerationDir: File,
@@ -44,6 +46,9 @@ abstract class ColorsGenerator(
         extendObjectBodyAtStart(objectBuilder)
 
         val colors = parseColors()
+
+        beforeGenerate(objectBuilder, colors.map { it.name })
+
         colors.forEach { colorNode ->
             val className = if (colorNode.isThemed()) {
                 themedColorClassName

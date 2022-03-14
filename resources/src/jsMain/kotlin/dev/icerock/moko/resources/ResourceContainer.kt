@@ -4,16 +4,16 @@
 
 package dev.icerock.moko.resources
 
-actual interface ResourceContainer<T>
+actual interface ResourceContainer<T> {
+    fun values(): List<T>
+}
 
 actual fun ResourceContainer<ImageResource>.getImageByFileName(
     fileName: String
-): ImageResource? {
-    TODO("Not yet implemented")
-}
+): ImageResource? = values()
+    .find { it.fileName == fileName }
 
 actual fun ResourceContainer<AssetResource>.getAssetByFilePath(
     filePath: String
-): AssetResource {
-    TODO("Not yet implemented")
-}
+): AssetResource? = values()
+    .find { it.rawPath == filePath }

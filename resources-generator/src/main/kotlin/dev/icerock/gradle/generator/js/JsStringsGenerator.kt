@@ -4,8 +4,13 @@
 
 package dev.icerock.gradle.generator.js
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.KeyType
 import dev.icerock.gradle.generator.LanguageType
@@ -47,6 +52,19 @@ class JsStringsGenerator(
             getFileNameForLanguage = { language ->
                 "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language.json"
             }
+        )
+        val languageKeys = languageMap[BASE_LANGUAGE].orEmpty().keys
+        val languageKeysList = languageKeys.joinToString { it.replace(".", "_") }
+
+        objectBuilder.addFunction(
+            FunSpec.builder("values")
+                .addModifiers(KModifier.OVERRIDE)
+                .addStatement("return listOf($languageKeysList)")
+                .returns(
+                    ClassName("kotlin.collections", "List")
+                        .parameterizedBy(resourceClassName)
+                )
+                .build()
         )
     }
 

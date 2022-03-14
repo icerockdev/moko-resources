@@ -36,6 +36,7 @@ abstract class FilesGenerator(
                 file = file
             )
         }.sortedBy { it.key }
+        beforeGenerate(objectBuilder, fileSpecs)
         val typeSpec = createTypeSpec(fileSpecs, objectBuilder)
         generateResources(resourcesGenerationDir, fileSpecs)
         return typeSpec
@@ -65,6 +66,11 @@ abstract class FilesGenerator(
             }
             .build()
     }
+
+    protected open fun beforeGenerate(
+        objectBuilder: TypeSpec.Builder,
+        files: List<FileSpec>
+    ) {}
 
     protected open fun generateResources(
         resourcesGenerationDir: File,

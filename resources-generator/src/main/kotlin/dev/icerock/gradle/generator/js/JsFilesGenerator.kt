@@ -4,8 +4,11 @@
 
 package dev.icerock.gradle.generator.js
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
@@ -24,6 +27,21 @@ class JsFilesGenerator(
     override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock {
         return CodeBlock.of("FileResource(" +
                 "fileUrl = js(\"require(\\\"$FILES_DIR/${fileSpec.file.name}\\\")\") as String)")
+    }
+
+    override fun beforeGenerate(objectBuilder: TypeSpec.Builder, files: List<FileSpec>) {
+        val languageKeysList = files.joinToString { it.key }
+
+        objectBuilder.addFunction(
+            FunSpec.builder("values")
+                .addModifiers(KModifier.OVERRIDE)
+                .addStatement("return listOf($languageKeysList)")
+                .returns(
+                    ClassName("kotlin.collections", "List")
+                        .parameterizedBy(resourceClassName)
+                )
+                .build()
+        )
     }
 
     override fun generateResources(resourcesGenerationDir: File, files: List<FileSpec>) {

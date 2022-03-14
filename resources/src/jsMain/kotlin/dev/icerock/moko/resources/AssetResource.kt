@@ -4,4 +4,19 @@
 
 package dev.icerock.moko.resources
 
-actual class AssetResource(actual val originalPath: String)
+import dev.icerock.moko.resources.internal.retryIO
+import kotlinx.browser.window
+import kotlinx.coroutines.await
+
+actual class AssetResource(
+    // path after webpack serving
+    actual val originalPath: String,
+    // path identifier
+    val rawPath: String
+) {
+    suspend fun getText(): String {
+        return retryIO {
+            window.fetch(originalPath).await().text().await()
+        }
+    }
+}

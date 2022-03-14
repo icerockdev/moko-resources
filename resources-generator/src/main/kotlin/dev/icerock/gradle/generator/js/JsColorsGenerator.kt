@@ -5,7 +5,9 @@
 package dev.icerock.gradle.generator.js
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
@@ -23,4 +25,19 @@ class JsColorsGenerator(
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")
     )
+
+    override fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) {
+        val languageKeysList = keys.joinToString()
+
+        objectBuilder.addFunction(
+            FunSpec.builder("values")
+                .addModifiers(KModifier.OVERRIDE)
+                .addStatement("return listOf($languageKeysList)")
+                .returns(
+                    ClassName("kotlin.collections", "List")
+                        .parameterizedBy(resourceClassName)
+                )
+                .build()
+        )
+    }
 }
