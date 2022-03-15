@@ -17,7 +17,6 @@ import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
-import java.util.Locale
 
 class JsFontsGenerator(
     inputFileTree: FileTree,

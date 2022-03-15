@@ -12,7 +12,7 @@ import dev.icerock.moko.resources.internal.SupportedLocales
 import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 
 actual fun createImageResourceMock(): ImageResource {
-    return ImageResource(fileUrl = "")
+    return ImageResource(fileUrl = "", fileName = "")
 }
 
 actual fun createStringResourceMock(): StringResource {
