@@ -42,7 +42,6 @@ import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipFile
-import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 
 @Suppress("TooManyFunctions")
@@ -319,7 +318,7 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                             ?: find { it.name == "destinationDir" }
                     }?.invoke(fatTask) as File
 
-                val frameworkFile = when(val any: Any = fatTask.frameworks.first()) {
+                val frameworkFile = when (val any: Any = fatTask.frameworks.first()) {
                     is Framework -> any.outputFile
                     is FrameworkDescriptor -> any.file
                     else -> error("Unsupported type of $any")
