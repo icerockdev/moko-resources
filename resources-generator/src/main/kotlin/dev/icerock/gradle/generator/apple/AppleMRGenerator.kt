@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
+import org.jetbrains.kotlin.gradle.tasks.FrameworkDescriptor
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.file.zipDirAs
@@ -41,6 +42,8 @@ import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipFile
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.memberProperties
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
@@ -305,16 +308,39 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         val fatAction: Action<Task> = object : Action<Task> {
             override fun execute(task: Task) {
                 val fatTask: FatFrameworkTask = task as FatFrameworkTask
-                fatTask.frameworks.first().outputFile.listFiles()
-                    ?.asSequence()
-                    ?.filter { it.name.contains(".bundle") }
-                    ?.forEach { bundleFile ->
-                        project.copy {
-                            it.from(bundleFile)
-                            it.into(File(fatTask.fatFrameworkDir, bundleFile.name))
-                        }
-                    }
+
+                // compatibility of this api was changed
+                // from 1.6.10 to 1.6.20-RC, so reflection was
+                // used here.
+                val fatFrameworkDir: File = FatFrameworkTask::class
+                    .memberProperties
+                    .run {
+                        find { it.name == "fatFrameworkDir" }
+                            ?: find { it.name == "destinationDir" }
+                    }?.invoke(fatTask) as File
+
+                val frameworkFile = when(val any: Any = fatTask.frameworks.first()) {
+                    is Framework -> any.outputFile
+                    is FrameworkDescriptor -> any.file
+                    else -> error("Unsupported type of $any")
+                }
+
+                executeWithFramework(fatFrameworkDir, frameworkFile)
             }
+
+            private fun executeWithFramework(
+                fatFrameworkDir: File,
+                frameworkFile: File,
+            ) = frameworkFile
+                .listFiles()
+                ?.asSequence()
+                ?.filter { it.name.contains(".bundle") }
+                ?.forEach { bundleFile ->
+                    project.copy {
+                        it.from(bundleFile)
+                        it.into(File(fatFrameworkDir, bundleFile.name))
+                    }
+                }
         }
 
         project.tasks.withType(FatFrameworkTask::class)
