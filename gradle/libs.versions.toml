@@ -1,7 +1,6 @@
 [versions]
-kotlinVersion = "1.6.10"
-# A separate version for compatibility with future updates
-kotlinGradlePluginVersion = "1.6.20-RC"
+kotlinVersion = "1.6.20-RC"
+kotlinTestVersion = "1.6.10"
 androidGradleVersion = "7.0.4"
 
 # kotlinx
@@ -72,16 +71,16 @@ icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4jVersion" }
 
 # tests
 espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
-kotlinTestJUnit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinVersion" }
+kotlinTestJUnit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinTestVersion" }
 testCore = { module = "androidx.test:core", version.ref = "testCoreVersion" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectricVersion" }
 testRunner = { module = "androidx.test:runner", version.ref = "testRunnerVersion" }
 testRules = { module = "androidx.test:rules", version.ref = "testRulesVersion" }
 testExtJunit = { module = "androidx.test.ext:junit", version.ref = "testExtJunitVersion" }
-kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinVersion" }
+kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinTestVersion" }
 kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlinVersion" }
 
 # gradle
-kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePluginVersion" }
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlinVersion" }
