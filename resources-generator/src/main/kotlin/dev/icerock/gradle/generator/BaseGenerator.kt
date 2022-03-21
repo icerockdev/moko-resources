@@ -12,7 +12,11 @@ import java.io.File
 
 abstract class BaseGenerator<T> : MRGenerator.Generator {
 
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder
+    ): TypeSpec {
         // language - key - value
         val languageMap: Map<LanguageType, Map<KeyType, T>> = loadLanguageMap()
         val languageKeyValues = languageMap[BASE_LANGUAGE].orEmpty()

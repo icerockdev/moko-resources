@@ -8,24 +8,35 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
+import dev.icerock.gradle.utils.toEnumeration
+import org.apache.commons.codec.digest.DigestUtils
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
+import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.InputStream
+import java.io.SequenceInputStream
 import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
@@ -35,19 +46,19 @@ import java.util.zip.ZipFile
 class AppleMRGenerator(
     generatedDir: File,
     sourceSet: SourceSet,
-    mrClassPackage: String,
+    mrSettings: MRSettings,
     generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
     private val baseLocalizationRegion: String
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrClassPackage = mrClassPackage,
+    mrSettings = mrSettings,
     generators = generators
 ) {
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
-    private val bundleIdentifier = "$mrClassPackage.MR"
+    private val bundleIdentifier = "${mrSettings.packageName}.MR"
 
     private var assetsDirectory: File? = null
 
@@ -65,6 +76,21 @@ class AppleMRGenerator(
                 .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"$bundleIdentifier\") }"))
                 .build()
         )
+
+        mrClass.addProperty(
+            PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
+                .initializer("%S", calculateResourcesHash())
+                .build()
+        )
+    }
+
+    private fun calculateResourcesHash(): String {
+        val inputStreams: List<InputStream> = resourcesGenerationDir.walkTopDown()
+            .filterNot { it.isDirectory }
+            .map { it.inputStream() }.toList()
+        val singleInputStream: InputStream = SequenceInputStream(inputStreams.toEnumeration())
+
+        return singleInputStream.use { DigestUtils.md5Hex(it) }
     }
 
     override fun getImports(): List<ClassName> = listOf(
@@ -76,6 +102,7 @@ class AppleMRGenerator(
         setupKLibResources(generationTask)
         setupFrameworkResources()
         setupTestsResources()
+        setupFatFrameworkTasks()
     }
 
     override fun beforeMRGeneration() {
@@ -172,7 +199,7 @@ class AppleMRGenerator(
 
                 if (framework.isStatic) {
                     val resourcesExtension =
-                        project.extensions.getByType(MultiplatformResourcesPluginExtension::class.java)
+                        project.extensions.getByType<MultiplatformResourcesPluginExtension>()
                     if (resourcesExtension.disableStaticFrameworkWarning.not()) {
                         project.logger.warn(
                             """
@@ -231,9 +258,14 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             "copyFrameworkResourcesToApp",
             CopyFrameworkResourcesToAppEntryPointTask::class.java
         )
+        val multiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
+        xcodeTask.configurationMapper = (multiplatformExtension as? ExtensionAware)?.extensions
+            ?.findByType<CocoapodsExtension>()
+            ?.xcodeConfigurationToNativeBuildType
+            ?: emptyMap()
 
         if (framework.target.konanTarget == xcodeTask.konanTarget &&
-            framework.buildType.getName() == xcodeTask.configuration
+            framework.buildType.getName() == xcodeTask.configuration?.toLowerCase()
         ) {
             xcodeTask.dependsOn(copyTask)
         }
@@ -263,6 +295,30 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                     }
                 })
             }
+    }
+
+    private fun setupFatFrameworkTasks() {
+        val kotlinNativeTarget = compilation.target as KotlinNativeTarget
+        val project = kotlinNativeTarget.project
+
+        @Suppress("ObjectLiteralToLambda")
+        val fatAction: Action<Task> = object : Action<Task> {
+            override fun execute(task: Task) {
+                val fatTask: FatFrameworkTask = task as FatFrameworkTask
+                fatTask.frameworks.first().outputFile.listFiles()
+                    ?.asSequence()
+                    ?.filter { it.name.contains(".bundle") }
+                    ?.forEach { bundleFile ->
+                        project.copy {
+                            it.from(bundleFile)
+                            it.into(File(fatTask.fatFrameworkDir, bundleFile.name))
+                        }
+                    }
+            }
+        }
+
+        project.tasks.withType(FatFrameworkTask::class)
+            .configureEach { it.doLast(fatAction) }
     }
 
     private fun unzipTo(outputDirectory: File, zipFile: File) {

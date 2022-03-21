@@ -5,7 +5,6 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.PluralsResource
-import java.util.Locale
 
 actual class PluralFormattedStringDesc actual constructor(
     val pluralsRes: PluralsResource,
@@ -14,7 +13,7 @@ actual class PluralFormattedStringDesc actual constructor(
 ) : StringDesc {
 
     override fun localized() = pluralsRes.localized(
-        locale = Locale.getDefault(),
+        locale = StringDesc.localeType.currentLocale,
         quantity = number,
         *(args.toTypedArray())
     )

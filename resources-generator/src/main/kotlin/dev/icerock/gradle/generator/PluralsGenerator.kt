@@ -11,11 +11,20 @@ import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
 import dev.icerock.gradle.utils.removeLineWraps
 import org.gradle.api.file.FileTree
+import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 typealias PluralMap = Map<String, String>
+
+/**
+ * How the plural element can be declared in our xml files.
+ *
+ * 'plurals' match the element name used on the Android platform. This allows us to upload the source xml as-is to
+ * translation websites as they'll interpret it as an Android resource file.
+ */
+private val SOURCE_PLURAL_NODE_NAMES = listOf("plural", "plurals")
 
 abstract class PluralsGenerator(
     private val pluralsFileTree: FileTree,
@@ -50,12 +59,9 @@ abstract class PluralsGenerator(
         val dBuilder = dbFactory.newDocumentBuilder()
         val doc = dBuilder.parse(pluralsFile)
 
-        val pluralNodes = doc.getElementsByTagName("plural")
         val mutableMap = mutableMapOf<KeyType, PluralMap>()
 
-        for (i in 0 until pluralNodes.length) {
-            val pluralNode: Element = pluralNodes.item(i) as Element
-
+        doc.findPluralNodes().forEach { pluralNode ->
             val pluralMap = mutableMapOf<String, String>()
 
             val name = pluralNode.attributes.getNamedItem("name").textContent
@@ -76,11 +82,21 @@ abstract class PluralsGenerator(
         return mutableMap
     }
 
+    private fun Document.findPluralNodes() = sequence {
+        SOURCE_PLURAL_NODE_NAMES.forEach { elementName ->
+            val pluralNodes = getElementsByTagName(elementName)
+            for (i in 0 until pluralNodes.length) {
+                yield(pluralNodes.item(i) as Element)
+            }
+        }
+    }
+
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String,
         private val mrClassPackage: String,
-        private val strictLineBreaks: Boolean
+        private val strictLineBreaks: Boolean,
+        private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
         private val stringsFileTree = info.commonResources.matching { it.include("MR/**/plurals*.xml") }
         override fun createCommonGenerator(): PluralsGenerator =
@@ -93,6 +109,6 @@ abstract class PluralsGenerator(
             AndroidPluralsGenerator(stringsFileTree, strictLineBreaks, info.androidRClassPackage)
 
         override fun createJvmGenerator() =
-            JvmPluralsGenerator(stringsFileTree, strictLineBreaks, mrClassPackage)
+            JvmPluralsGenerator(stringsFileTree, strictLineBreaks, mrClassPackage, mrSettings)
     }
 }

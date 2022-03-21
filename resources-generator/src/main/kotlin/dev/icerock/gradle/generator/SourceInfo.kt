@@ -4,12 +4,12 @@
 
 package dev.icerock.gradle.generator
 
-import org.gradle.api.file.FileTree
+import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
 data class SourceInfo(
     val generatedDir: File,
-    val commonResources: FileTree,
+    val commonResources: SourceDirectorySet,
     val mrClassPackage: String
 ) {
     private var _androidRClassPackage: String? = null

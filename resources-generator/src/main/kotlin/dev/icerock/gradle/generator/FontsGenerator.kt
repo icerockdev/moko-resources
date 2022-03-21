@@ -10,8 +10,8 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFontsGenerator
-import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.apple.AppleFontsGenerator
+import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -24,7 +24,11 @@ abstract class FontsGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
     override val mrObjectName: String = "fonts"
 
-    override fun generate(resourcesGenerationDir: File, objectBuilder: TypeSpec.Builder): TypeSpec {
+    override fun generate(
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder
+    ): TypeSpec {
         val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
         generateResources(resourcesGenerationDir, inputFileTree.map {
             FontFile(
@@ -111,7 +115,10 @@ abstract class FontsGenerator(
         val file: File
     )
 
-    class Feature(private val info: SourceInfo) : ResourceGeneratorFeature<FontsGenerator> {
+    class Feature(
+        private val info: SourceInfo,
+        private val mrSettings: MRGenerator.MRSettings
+    ) : ResourceGeneratorFeature<FontsGenerator> {
         private val stringsFileTree = info.commonResources.matching {
             it.include("MR/fonts/**.ttf", "MR/fonts/**.otf")
         }
@@ -125,6 +132,9 @@ abstract class FontsGenerator(
             info.androidRClassPackage
         )
 
-        override fun createJvmGenerator() = JvmFontsGenerator(stringsFileTree)
+        override fun createJvmGenerator() = JvmFontsGenerator(
+            stringsFileTree,
+            mrSettings
+        )
     }
 }

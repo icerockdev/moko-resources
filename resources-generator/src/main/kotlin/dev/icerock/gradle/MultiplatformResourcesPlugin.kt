@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.BaseExtension
+import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.FontsGenerator
@@ -17,18 +18,23 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
+import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.getDependedFrom
 import dev.icerock.gradle.utils.isDependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
@@ -39,12 +45,12 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val mrExtension = target.extensions.create(
             "multiplatformResources",
-            MultiplatformResourcesPluginExtension::class.java
+            MultiplatformResourcesPluginExtension::class
         )
 
-        target.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
+        target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val multiplatformExtension =
-                target.extensions.getByType(KotlinMultiplatformExtension::class.java)
+                target.extensions.getByType(KotlinMultiplatformExtension::class)
 
             target.afterEvaluate {
                 configureGenerators(
@@ -62,6 +68,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension
     ) {
+
         val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
         val commonResources = commonSourceSet.resources
 
@@ -70,6 +77,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             "multiplatformResources.multiplatformResourcesPackage is required!" +
                     " please configure moko-resources plugin correctly."
         }
+        val mrSettings = MRGenerator.MRSettings(
+            packageName = mrClassPackage,
+            className = mrExtension.multiplatformResourcesClassName,
+            visibility = mrExtension.multiplatformResourcesVisibility
+        )
         val sourceInfo = SourceInfo(
             generatedDir,
             commonResources,
@@ -88,39 +100,42 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 info = sourceInfo,
                 iosBaseLocalizationRegion = iosLocalizationRegion,
                 mrClassPackage = mrClassPackage,
-                strictLineBreaks = strictLineBreaks
+                strictLineBreaks = strictLineBreaks,
+                mrSettings = mrSettings
             ),
             PluralsGenerator.Feature(
                 info = sourceInfo,
                 iosBaseLocalizationRegion = iosLocalizationRegion,
                 mrClassPackage = mrClassPackage,
-                strictLineBreaks = strictLineBreaks
+                strictLineBreaks = strictLineBreaks,
+                mrSettings = mrSettings
             ),
-            ImagesGenerator.Feature(sourceInfo),
-            FontsGenerator.Feature(sourceInfo),
-            FilesGenerator.Feature(sourceInfo),
-            ColorsGenerator.Feature(sourceInfo)
+            ImagesGenerator.Feature(sourceInfo, mrSettings),
+            FontsGenerator.Feature(sourceInfo, mrSettings),
+            FilesGenerator.Feature(sourceInfo, mrSettings),
+            ColorsGenerator.Feature(sourceInfo, mrSettings),
+            AssetsGenerator.Feature(sourceInfo, mrSettings)
         )
         val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
 
         val commonGenerationTask = setupCommonGenerator(
-            commonSourceSet,
-            generatedDir,
-            mrClassPackage,
-            features,
-            target
+            commonSourceSet = commonSourceSet,
+            generatedDir = generatedDir,
+            mrSettings = mrSettings,
+            features = features,
+            target = target
         )
 
         val setupAndroid = {
-            val androidExtension = target.extensions.getByType(BaseExtension::class.java)
+            val androidExtension = target.extensions.getByType(BaseExtension::class)
 
             val androidLogic = AndroidPluginLogic(
-                commonSourceSet,
-                targets,
-                generatedDir,
-                mrClassPackage,
-                features,
-                target
+                commonSourceSet = commonSourceSet,
+                targets = targets,
+                generatedDir = generatedDir,
+                mrSettings = mrSettings,
+                features = features,
+                target = target
             )
 
             target.afterEvaluate {
@@ -143,19 +158,19 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         setupJvmGenerator(
-            commonSourceSet,
-            targets,
-            generatedDir,
-            mrClassPackage,
-            features,
-            target
+            commonSourceSet = commonSourceSet,
+            targets = targets,
+            generatedDir = generatedDir,
+            mrSettings = mrSettings,
+            features = features,
+            target = target
         )
         if (HostManager.hostIsMac) {
             setupAppleGenerator(
                 commonSourceSet,
                 targets,
                 generatedDir,
-                mrClassPackage,
+                mrSettings,
                 features,
                 target,
                 iosLocalizationRegion
@@ -164,15 +179,15 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target.logger.warn("MR file generation for iOS is not supported on your system!")
         }
 
-        val generationTasks = target.tasks.filterIsInstance<GenerateMultiplatformResourcesTask>()
-        generationTasks.filter { it != commonGenerationTask }
-            .forEach { it.dependsOn(commonGenerationTask) }
+        target.tasks.withType<GenerateMultiplatformResourcesTask>()
+            .matching { it != commonGenerationTask }
+            .configureEach { it.dependsOn(commonGenerationTask) }
     }
 
     private fun setupCommonGenerator(
         commonSourceSet: KotlinSourceSet,
         generatedDir: File,
-        mrClassPackage: String,
+        mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ): GenerateMultiplatformResourcesTask {
@@ -180,7 +195,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         return CommonMRGenerator(
             generatedDir,
             commonGeneratorSourceSet,
-            mrClassPackage,
+            mrSettings,
             generators = features.map { it.createCommonGenerator() }
         ).apply(target)
     }
@@ -190,7 +205,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         commonSourceSet: KotlinSourceSet,
         targets: List<KotlinTarget>,
         generatedDir: File,
-        mrClassPackage: String,
+        mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
@@ -202,9 +217,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
         kotlinSourceSets.forEach { kotlinSourceSet ->
             JvmMRGenerator(
-                generatedDir,
-                createSourceSet(kotlinSourceSet),
-                mrClassPackage,
+                generatedDir = generatedDir,
+                sourceSet = createSourceSet(kotlinSourceSet),
+                mrSettings = mrSettings,
                 generators = features.map { it.createJvmGenerator() }
             ).apply(target)
         }
@@ -215,7 +230,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         commonSourceSet: KotlinSourceSet,
         targets: List<KotlinTarget>,
         generatedDir: File,
-        mrClassPackage: String,
+        mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project,
         iosLocalizationRegion: String
@@ -236,13 +251,34 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
             val sourceSet = createSourceSet(depend ?: kss)
             AppleMRGenerator(
-                generatedDir,
-                sourceSet,
-                mrClassPackage,
+                generatedDir = generatedDir,
+                sourceSet = sourceSet,
+                mrSettings = mrSettings,
                 generators = features.map { it.createIosGenerator() },
                 compilation = compilation,
                 baseLocalizationRegion = iosLocalizationRegion
             ).apply(target)
+        }
+
+        setupCopyXCFrameworkResourcesTask(target)
+    }
+
+    private fun setupCopyXCFrameworkResourcesTask(project: Project) {
+        // can't use here configureEach because we will add new task when found xcframeworktask
+        project.afterEvaluate {
+            project.tasks.filterIsInstance<XCFrameworkTask>()
+                .forEach { task ->
+                    val copyTaskName: String =
+                        task.name.replace("assemble", "copyResources").plus("ToApp")
+
+                    val copyTask = project.tasks.create(
+                        copyTaskName,
+                        CopyXCFrameworkResourcesToApp::class.java
+                    ) {
+                        it.xcFrameworkDir = task.outputDir
+                    }
+                    copyTask.dependsOn(task)
+                }
         }
     }
 
@@ -257,6 +293,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
             override fun addResourcesDir(directory: File) {
                 kotlinSourceSet.resources.srcDir(directory)
+            }
+
+            override fun addAssetsDir(directory: File) {
+                // nothing
             }
         }
     }

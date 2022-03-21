@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
@@ -15,11 +16,12 @@ import java.io.File
 class JvmStringsGenerator(
     stringsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val mrClassPackage: String
+    private val mrClassPackage: String,
+    mrSettings: MRGenerator.MRSettings
 ) : StringsGenerator(stringsFileTree, strictLineBreaks),
-    ObjectBodyExtendable by ClassLoaderExtender() {
+    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
-    private val flattenClassPackage = mrClassPackage.replace(".", "")
+    private val flattenClassPackage = mrSettings.packageName.replace(".", "")
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -48,24 +50,9 @@ class JvmStringsGenerator(
         val stringsFile = File(localizationDir, "$fileDirName.properties")
 
         val content = strings.map { (key, value) ->
-            "$key = ${value.replaceAndroidFormatParameters()}"
+            "$key = ${convertXmlStringToJvmLocalization(value)}"
         }.joinToString("\n")
 
         stringsFile.writeText(content)
-    }
-
-    companion object {
-        private val androidFormatRegex = "%.(\\$.)?".toRegex()
-
-        fun String.replaceAndroidFormatParameters(): String {
-
-            var formattedValue = this
-            var paramNr = 0
-
-            while (androidFormatRegex.containsMatchIn(formattedValue)) {
-                formattedValue = formattedValue.replaceFirst(androidFormatRegex, "{${paramNr++}}")
-            }
-            return formattedValue.replace("\n", "\\n")
-        }
     }
 }

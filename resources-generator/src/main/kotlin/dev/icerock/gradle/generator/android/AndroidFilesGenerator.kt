@@ -29,13 +29,16 @@ class AndroidFilesGenerator(
         ClassName(androidRClassPackage, "R")
     )
 
-    override fun generateResources(resourcesGenerationDir: File, files: List<FileSpec>) {
+    override fun generateResources(
+        resourcesGenerationDir: File,
+        files: List<FileSpec>
+    ) {
         val targetDir = File(resourcesGenerationDir, "raw")
         targetDir.mkdirs()
 
-        files.forEach { (key, file) ->
-            val fileName = keyToResourceId(key) + "." + file.extension
-            file.copyTo(File(targetDir, fileName))
+        files.forEach { fileSpec ->
+            val fileName = keyToResourceId(fileSpec.key) + "." + fileSpec.file.extension
+            fileSpec.file.copyTo(File(targetDir, fileName))
         }
     }
 

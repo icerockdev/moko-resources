@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.icerockdev.library.MR
-
+import dev.icerock.moko.resources.compose.stringResource
 
 internal class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ internal class MainActivity : ComponentActivity() {
         )
         setContent {
             Text(
-                text = "hello compose!",
+                text = "Hello Compose, this is a ${stringResource(MR.strings.common_name)}",
                 style = textStyle
             )
         }
