@@ -82,8 +82,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             ?.toBoolean()
             ?: false
 
-        println(strictLineBreaks)
-
         val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
         val features = listOf(
             StringsGenerator.Feature(
