@@ -18,7 +18,8 @@ typealias LanguageType = String
 typealias KeyType = String
 
 abstract class StringsGenerator(
-    private val stringsFileTree: FileTree
+    private val stringsFileTree: FileTree,
+    private val strictLineBreaks: Boolean
 ) : BaseGenerator<String>() {
 
     override val inputFiles: Iterable<File> get() = stringsFileTree.files
@@ -55,7 +56,7 @@ abstract class StringsGenerator(
             val name = stringNode.attributes.getNamedItem("name").textContent
             val value = stringNode.textContent
 
-            mutableMap[name] = value.removeLineWraps()
+            mutableMap[name] = if (strictLineBreaks) value else value.removeLineWraps()
         }
 
         val incorrectKeys = mutableMap
@@ -74,23 +75,22 @@ abstract class StringsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String,
-        private val mrClassPackage: String
+        private val mrClassPackage: String,
+        private val strictLineBreaks: Boolean
     ) : ResourceGeneratorFeature<StringsGenerator> {
         private val stringsFileTree =
             info.commonResources.matching { it.include("MR/**/strings*.xml") }
 
-        override fun createCommonGenerator() = CommonStringsGenerator(stringsFileTree)
+        override fun createCommonGenerator() =
+            CommonStringsGenerator(stringsFileTree, strictLineBreaks)
 
-        override fun createIosGenerator() = AppleStringsGenerator(
-            stringsFileTree,
-            iosBaseLocalizationRegion
-        )
+        override fun createIosGenerator() =
+            AppleStringsGenerator(stringsFileTree, strictLineBreaks, iosBaseLocalizationRegion)
 
-        override fun createAndroidGenerator() = AndroidStringsGenerator(
-            stringsFileTree,
-            info.androidRClassPackage
-        )
+        override fun createAndroidGenerator() =
+            AndroidStringsGenerator(stringsFileTree, strictLineBreaks, info.androidRClassPackage)
 
-        override fun createJvmGenerator() = JvmStringsGenerator(stringsFileTree, mrClassPackage)
+        override fun createJvmGenerator() =
+            JvmStringsGenerator(stringsFileTree, strictLineBreaks, mrClassPackage)
     }
 }

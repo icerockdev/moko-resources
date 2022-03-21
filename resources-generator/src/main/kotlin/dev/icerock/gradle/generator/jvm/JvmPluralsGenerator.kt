@@ -16,8 +16,10 @@ import java.io.File
 
 class JvmPluralsGenerator(
     pluralsFileTree: FileTree,
+    strictLineBreaks: Boolean,
     private val mrClassPackage: String
-) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by ClassLoaderExtender() {
+) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by ClassLoaderExtender() {
 
     private val flattenClassPackage = mrClassPackage.replace(".", "")
 

@@ -75,10 +75,29 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             commonResources,
             mrExtension.multiplatformResourcesPackage!!
         )
+
+        val strictLineBreaks: Boolean = target
+            .findProperty("moko.resources.strictLineBreaks")
+            .let { it as? String }
+            ?.toBoolean()
+            ?: false
+
+        println(strictLineBreaks)
+
         val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
         val features = listOf(
-            StringsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrClassPackage),
-            PluralsGenerator.Feature(sourceInfo, iosLocalizationRegion, mrClassPackage),
+            StringsGenerator.Feature(
+                info = sourceInfo,
+                iosBaseLocalizationRegion = iosLocalizationRegion,
+                mrClassPackage = mrClassPackage,
+                strictLineBreaks = strictLineBreaks
+            ),
+            PluralsGenerator.Feature(
+                info = sourceInfo,
+                iosBaseLocalizationRegion = iosLocalizationRegion,
+                mrClassPackage = mrClassPackage,
+                strictLineBreaks = strictLineBreaks
+            ),
             ImagesGenerator.Feature(sourceInfo),
             FontsGenerator.Feature(sourceInfo),
             FilesGenerator.Feature(sourceInfo),
