@@ -315,7 +315,7 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                     .memberProperties
                     .run {
                         find { it.name == "fatFrameworkDir" }
-                            ?: find { it.name == "fatFramework" }
+                            ?: find { it.name == "destinationDir" }
                     }?.invoke(fatTask) as File
 
                 val frameworkFile = when (val any: Any = fatTask.frameworks.first()) {
