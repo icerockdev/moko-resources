@@ -4,7 +4,6 @@
 
 package dev.icerock.moko.resources
 
-import java.text.MessageFormat
 import java.util.Locale
 
 actual class StringResource(
@@ -22,4 +21,13 @@ actual class StringResource(
         val string = resourceBundle.getString(key)
         return String.format(locale = locale, string, *args)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is StringResource) return false
+        if (key != other.key) return false
+        return true
+    }
+
+    override fun hashCode() = key.hashCode()
 }
