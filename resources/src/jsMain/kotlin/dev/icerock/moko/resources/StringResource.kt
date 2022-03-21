@@ -25,4 +25,12 @@ actual class StringResource(
         )
         return compiled.evaluate(*args)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is StringResource) return false
+        if (key != other.key) return false
+        return true
+    }
+
+    override fun hashCode() = key.hashCode()
 }

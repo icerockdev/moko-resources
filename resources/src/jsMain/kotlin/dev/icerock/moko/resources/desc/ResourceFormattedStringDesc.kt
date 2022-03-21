@@ -7,7 +7,7 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.provider.JsStringProvider
 
-actual class ResourceFormattedStringDesc actual constructor(
+actual data class ResourceFormattedStringDesc actual constructor(
     val stringRes: StringResource,
     val args: List<Any>
 ) : StringDesc {
