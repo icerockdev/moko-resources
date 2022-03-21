@@ -40,35 +40,59 @@ class AppleImagesGenerator(
             val contentsFile = File(assetDir, "Contents.json")
 
             val validFiles = files.filter { file ->
-                VALID_SIZES.map { "@${it}x" }.any { file.nameWithoutExtension.endsWith(it) }
+                VALID_SIZES.any { size -> file.scale == "${size}x" }
+            }
+
+            val uniqueNames = files.map { it.nameWithoutScale }.distinct()
+            uniqueNames.forEach { name ->
+                require(validFiles.any { it.nameWithoutScale == name }) {
+                    "Apple Generator cannot find a valid scale for file with name \"$name\".\n" +
+                            "Note: Apple resources can have only 1x, 2x and 3x scale factors " +
+                            "(https://developer.apple.com/design/human-interface-guidelines/ios/" +
+                            "icons-and-images/image-size-and-resolution/).\n" +
+                            "It is still possible to use 4x images for android, but you need to " +
+                            "add a valid iOS variant."
+                }
             }
 
             validFiles.forEach { it.copyTo(File(assetDir, it.name)) }
 
             val imagesContent = validFiles.joinToString(separator = ",\n") { file ->
-                val scale = file.nameWithoutExtension.substringAfter("@")
-                """    {
-      "idiom" : "universal",
-      "filename" : "${file.name}",
-      "scale" : "$scale"
-    }"""
+                val scale = file.scale
+
+                // language=js
+                return@joinToString """
+                    {
+                        "idiom" : "universal",
+                        "filename" : "${file.name}",
+                        "scale" : "$scale"
+                    }
+                """.trimIndent()
             }
 
-            val content = """{
-  "images" : [
-$imagesContent
-  ],
-  "info" : {
-    "version" : 1,
-    "author" : "xcode"
-  }
-}"""
+            // language=js
+            val content = """
+                {
+                    "images" : [
+                        $imagesContent
+                    ],
+                    "info" : {
+                        "version" : 1,
+                        "author" : "xcode"
+                    }
+                }
+            """.trimIndent()
 
             contentsFile.writeText(content)
         }
     }
 
     private companion object {
-        val VALID_SIZES: IntRange = 0..3
+        val VALID_SIZES: IntRange = 1..3
+
+        private val File.scale: String get() =
+            nameWithoutExtension.substringAfter("@")
+        private val File.nameWithoutScale: String get() =
+            nameWithoutExtension.substringBefore("@")
     }
 }
