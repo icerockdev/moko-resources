@@ -6,7 +6,7 @@ package dev.icerock.moko.resources
 
 import java.util.Locale
 
-actual class StringResource(
+actual data class StringResource(
     val resourcesClassLoader: ClassLoader,
     val bundleName: String,
     val key: String
@@ -21,13 +21,4 @@ actual class StringResource(
         val string = resourceBundle.getString(key)
         return String.format(locale = locale, string, *args)
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is StringResource) return false
-        if (key != other.key) return false
-        return true
-    }
-
-    override fun hashCode() = key.hashCode()
 }
