@@ -15,7 +15,7 @@ version = libs.versions.mokoResourcesVersion.get()
 
 dependencies {
     implementation(gradleKotlinDsl())
-    compileOnly(libs.kotlinGradlePlugin)
+    compileOnly(libs.kotlinGradlePluginRC)
     compileOnly(libs.androidGradlePlugin)
     implementation(libs.kotlinPoet)
     implementation(libs.kotlinxSerialization)

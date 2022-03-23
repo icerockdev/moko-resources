@@ -19,7 +19,7 @@ composeJetbrainsVersion = "1.0.1"
 # jvm
 apacheCommonsTextVersion = "1.3"
 kotlinPoetVersion = "1.10.2"
-detektVersion = "1.19.0"
+detektVersion = "1.15.0"
 icu4jVersion = "69.1"
 commonsCodecVersion = "1.15"
 
@@ -36,6 +36,7 @@ mokoGraphicsVersion = "0.9.0"
 mokoParcelizeVersion = "0.8.0"
 mokoTestVersion = "0.5.0"
 mokoResourcesVersion = "0.18.0"
+mokoMultiplatformPluginVersion = "0.13.0"
 
 [libraries]
 # kotlinx
@@ -81,5 +82,10 @@ kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations
 
 # gradle
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
+# This version is used to fix compatibility issues between
+# Kotlin Gradle Plugin 1.6.10 -> 1.6.20-RC
+kotlinGradlePluginRC = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1.6.20-RC" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlinVersion" }
+detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektVersion" }
+mokoMultiplatformPlugin = { module = "dev.icerock:mobile-multiplatform", version.ref = "mokoMultiplatformPluginVersion" }
