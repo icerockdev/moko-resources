@@ -53,6 +53,7 @@ class PluralResourceEnTests : BaseStringResourceTests("en") {
     @Test
     fun checkVariantsPlurals() = pluralTest(
         expected = """
+            no items
             1 item
             2 items
             3 items
@@ -78,7 +79,6 @@ class PluralResourceEnTests : BaseStringResourceTests("en") {
             23 items
             24 items
             25 items
-            26 items
             """.trimIndent(),
         actual = Testing.getPlurals()
     )

@@ -55,6 +55,7 @@ class PluralResourceRuTests : BaseStringResourceTests("ru") {
     @Test
     fun checkVariantsPlurals() = pluralTest(
         expected = """
+            нет элементов
             1 элемент
             2 элемента
             3 элемента
@@ -80,7 +81,6 @@ class PluralResourceRuTests : BaseStringResourceTests("ru") {
             23 элемента
             24 элемента
             25 элементов
-            26 элементов
             """.trimIndent(),
         actual = Testing.getPlurals()
     )
