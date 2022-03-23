@@ -16,10 +16,10 @@ import java.io.File
 
 class AppleStringsGenerator(
     stringsFileTree: FileTree,
+    strictLineBreaks: Boolean,
     private val baseLocalizationRegion: String
-) : StringsGenerator(
-    stringsFileTree = stringsFileTree
-), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : StringsGenerator(stringsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

@@ -15,8 +15,11 @@ import java.io.File
 
 class JvmStringsGenerator(
     stringsFileTree: FileTree,
+    strictLineBreaks: Boolean,
+    private val mrClassPackage: String,
     mrSettings: MRGenerator.MRSettings
-) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+) : StringsGenerator(stringsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     private val flattenClassPackage = mrSettings.packageName.replace(".", "")
 
