@@ -6,17 +6,7 @@ package dev.icerock.moko.resources
 
 import platform.Foundation.NSBundle
 
-actual class StringResource(
+actual data class StringResource(
     val resourceId: String,
     val bundle: NSBundle = NSBundle.mainBundle
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is StringResource) return false
-        if (resourceId != other.resourceId) return false
-        return true
-    }
-
-    override fun hashCode(): Int =
-        resourceId.hashCode()
-}
+)
