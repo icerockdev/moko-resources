@@ -6,7 +6,7 @@ package dev.icerock.moko.resources
 
 import platform.Foundation.NSBundle
 
-actual class StringResource(
+actual data class StringResource(
     val resourceId: String,
     val bundle: NSBundle = NSBundle.mainBundle
 )
