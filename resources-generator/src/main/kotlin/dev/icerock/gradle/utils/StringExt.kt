@@ -4,6 +4,10 @@
 
 package dev.icerock.gradle.utils
 
+/**
+ * Replace all new lines including space characters before and after.
+ * This is required to remove the IDE indentation.
+ */
 internal fun String.removeLineWraps(): String {
-    return replace("\n", "")
+    return replace(Regex("\\s*\n\\s*"), " ")
 }
