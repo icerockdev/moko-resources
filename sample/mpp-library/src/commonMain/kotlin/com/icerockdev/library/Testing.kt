@@ -154,7 +154,8 @@ public object Testing {
 
     public fun getPlurals(): StringDesc {
         return List(26) { number ->
-            MR.plurals.myPlural.format(number, number)
+            val value = number + 1
+            MR.plurals.myPlural.format(value, value)
         }.joinToStringDesc("\n")
     }
 }
