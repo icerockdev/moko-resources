@@ -23,8 +23,10 @@ import java.io.File
 
 class JsPluralsGenerator(
     pluralsFileTree: FileTree,
-    mrClassPackage: String
-) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    mrClassPackage: String,
+    strictLineBreaks: Boolean
+) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     private val flattenClassPackage = mrClassPackage.replace(".", "")
 

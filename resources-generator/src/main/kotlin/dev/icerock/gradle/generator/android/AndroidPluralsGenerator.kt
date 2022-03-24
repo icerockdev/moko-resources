@@ -18,8 +18,10 @@ import java.io.File
 
 class AndroidPluralsGenerator(
     pluralsFileTree: FileTree,
+    strictLineBreaks: Boolean,
     private val androidRClassPackage: String
-) : PluralsGenerator(pluralsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

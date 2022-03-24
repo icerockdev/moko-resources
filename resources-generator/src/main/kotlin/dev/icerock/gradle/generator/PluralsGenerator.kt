@@ -10,6 +10,7 @@ import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
 import dev.icerock.gradle.generator.js.JsPluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
+import dev.icerock.gradle.utils.removeLineWraps
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -27,7 +28,8 @@ typealias PluralMap = Map<String, String>
 private val SOURCE_PLURAL_NODE_NAMES = listOf("plural", "plurals")
 
 abstract class PluralsGenerator(
-    private val pluralsFileTree: FileTree
+    private val pluralsFileTree: FileTree,
+    private val strictLineBreaks: Boolean
 ) : BaseGenerator<PluralMap>() {
 
     override val inputFiles: Iterable<File> get() = pluralsFileTree.files
@@ -72,7 +74,7 @@ abstract class PluralsGenerator(
                 val quantity = item.attributes.getNamedItem("quantity").textContent.trim()
                 val value = item.textContent
 
-                pluralMap[quantity] = value
+                pluralMap[quantity] = if (strictLineBreaks) value else value.removeLineWraps()
             }
 
             mutableMap[name] = pluralMap
@@ -93,37 +95,26 @@ abstract class PluralsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String,
+        private val mrClassPackage: String,
+        private val strictLineBreaks: Boolean,
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
         private val stringsFileTree =
             info.commonResources.matching { it.include("MR/**/plurals*.xml") }
 
-        override fun createCommonGenerator(): PluralsGenerator {
-            return CommonPluralsGenerator(stringsFileTree)
-        }
+        override fun createCommonGenerator(): PluralsGenerator =
+            CommonPluralsGenerator(stringsFileTree, strictLineBreaks)
 
-        override fun createIosGenerator(): PluralsGenerator {
-            return ApplePluralsGenerator(
-                stringsFileTree,
-                iosBaseLocalizationRegion
-            )
-        }
+        override fun createIosGenerator(): PluralsGenerator =
+            ApplePluralsGenerator(stringsFileTree, strictLineBreaks, iosBaseLocalizationRegion)
 
-        override fun createAndroidGenerator(): PluralsGenerator {
-            return AndroidPluralsGenerator(
-                stringsFileTree,
-                info.androidRClassPackage
-            )
-        }
+        override fun createAndroidGenerator(): PluralsGenerator =
+            AndroidPluralsGenerator(stringsFileTree, strictLineBreaks, info.androidRClassPackage)
 
-        override fun createJsGenerator(): PluralsGenerator = JsPluralsGenerator(
-            stringsFileTree,
-            mrSettings.packageName
-        )
+        override fun createJvmGenerator() =
+            JvmPluralsGenerator(stringsFileTree, strictLineBreaks, mrSettings)
 
-        override fun createJvmGenerator() = JvmPluralsGenerator(
-            stringsFileTree,
-            mrSettings
-        )
+        override fun createJsGenerator(): PluralsGenerator =
+            JsPluralsGenerator(stringsFileTree, mrSettings.packageName, strictLineBreaks)
     }
 }

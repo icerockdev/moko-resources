@@ -7,7 +7,7 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.StringResource
 
-actual class ResourceStringDesc actual constructor(
+actual data class ResourceStringDesc actual constructor(
     val stringRes: StringResource
 ) : StringDesc, Parcelable {
 

@@ -11,7 +11,8 @@ import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 
 class CommonStringsGenerator(
-    stringsFileTree: FileTree
-) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    stringsFileTree: FileTree,
+    strictLineBreaks: Boolean
+) : StringsGenerator(stringsFileTree, strictLineBreaks), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getPropertyInitializer(key: String): CodeBlock? = null
 }

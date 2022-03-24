@@ -17,8 +17,10 @@ import org.apache.commons.text.StringEscapeUtils
 
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
+    strictLineBreaks: Boolean,
     private val androidRClassPackage: String
-) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : StringsGenerator(stringsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

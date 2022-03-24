@@ -24,8 +24,10 @@ import java.io.File
 
 class JsStringsGenerator(
     stringsFileTree: FileTree,
-    mrClassPackage: String
-) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    mrClassPackage: String,
+    strictLineBreaks: Boolean
+) : StringsGenerator(stringsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     private val flattenClassPackage = mrClassPackage.replace(".", "")
 
