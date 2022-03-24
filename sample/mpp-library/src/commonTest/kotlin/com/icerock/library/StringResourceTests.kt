@@ -18,7 +18,7 @@ import kotlin.test.assertEquals
 class StringResourceTests : BaseUnitTest() {
 
     @Test
-    fun `compare strings`() {
+    fun compareStrings() {
         assertEquals(Testing.getStringDesc(), Testing.getStringDesc())
         assertEquals(MR.strings.format.format(2), MR.strings.format.format(2))
     }

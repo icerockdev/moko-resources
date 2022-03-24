@@ -35,7 +35,7 @@ class PluralFormattedStringDescIntTests {
     }
 
     @Test
-    fun `testManyCase`() {
+    fun testManyCase() {
         assertEquals(
             expected = "6 items",
             actual = createPluralFormatted(6).localized()
@@ -43,7 +43,7 @@ class PluralFormattedStringDescIntTests {
     }
 
     @Test
-    fun `testOtherCase`() {
+    fun testOtherCase() {
         assertEquals(
             expected = "130 items",
             actual = createPluralFormatted(130).localized()

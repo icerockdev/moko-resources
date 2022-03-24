@@ -17,14 +17,14 @@ class Test : BaseUnitTest() {
     }
 
     @Test
-    fun `test simple resource string`() = runTest {
+    fun testSimpleResourceString() = runTest {
         val stringDesc = MR.strings.test_simple.desc()
         val rawString = stringDesc.getString()
         assertEquals(expected = "test", actual = rawString)
     }
 
     @Test
-    fun `test multiline string`() = runTest {
+    fun testMultilineString() = runTest {
         val stringDesc = MR.strings.multilined.desc()
         val rawString = stringDesc.getString()
         assertEquals(
@@ -35,7 +35,7 @@ third line.""", actual = rawString
     }
 
     @Test
-    fun `test quotes string`() = runTest {
+    fun testQuotesString() = runTest {
         val stringDesc = MR.strings.quotes.desc()
         val rawString = stringDesc.getString()
         assertEquals(
@@ -45,7 +45,7 @@ third line.""", actual = rawString
     }
 
     @Test
-    fun `test single quotes string`() = runTest {
+    fun testSingleQuotesString() = runTest {
         val stringDesc = MR.strings.single_quotes.desc()
         val rawString = stringDesc.getString()
         assertEquals(expected = """Alex009 said 'hello'""", actual = rawString)
