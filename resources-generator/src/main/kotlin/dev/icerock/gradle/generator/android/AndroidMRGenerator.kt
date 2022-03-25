@@ -4,8 +4,10 @@
 
 package dev.icerock.gradle.generator.android
 
+import com.android.build.gradle.tasks.ExtractDeepLinksTask
 import com.android.build.gradle.tasks.GenerateResValues
 import com.android.build.gradle.tasks.ManifestProcessorTask
+import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
@@ -33,6 +35,12 @@ class AndroidMRGenerator(
         }
         project.tasks.withType<GenerateResValues>().configureEach {
             it.dependsOn(generationTask)
+        }
+        project.tasks.withType<MergeSourceSetFolders>().configureEach {
+            it.dependsOn(generationTask)
+        }
+        project.tasks.withType<ExtractDeepLinksTask>().configureEach {
+            generationTask.dependsOn(it)
         }
     }
 }
