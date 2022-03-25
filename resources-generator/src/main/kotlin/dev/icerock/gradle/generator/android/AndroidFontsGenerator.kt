@@ -16,7 +16,7 @@ import java.util.Locale
 
 class AndroidFontsGenerator(
     inputFileTree: FileTree,
-    private val androidRClassPackage: String
+    private val getAndroidRClassPackage: () -> String
 ) : FontsGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -27,7 +27,7 @@ class AndroidFontsGenerator(
     }
 
     override fun getImports(): List<ClassName> = listOf(
-        ClassName(androidRClassPackage, "R")
+        ClassName(getAndroidRClassPackage(), "R")
     )
 
     override fun generateResources(
@@ -44,6 +44,6 @@ class AndroidFontsGenerator(
     }
 
     private fun keyToResourceId(key: String): String {
-        return key.replace("-", "_").toLowerCase(Locale.ROOT)
+        return key.replace("-", "_").lowercase(Locale.ROOT)
     }
 }

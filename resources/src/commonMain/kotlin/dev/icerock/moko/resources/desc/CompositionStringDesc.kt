@@ -4,10 +4,13 @@
 
 package dev.icerock.moko.resources.desc
 
-expect class CompositionStringDesc(args: Iterable<StringDesc>, separator: String? = null) : StringDesc
-
 @Suppress("FunctionName")
 fun StringDesc.Companion.Composition(
     args: Iterable<StringDesc>,
     separator: String? = null
 ) = CompositionStringDesc(args, separator)
+
+expect class CompositionStringDesc(
+    args: Iterable<StringDesc>,
+    separator: String? = null
+) : StringDesc

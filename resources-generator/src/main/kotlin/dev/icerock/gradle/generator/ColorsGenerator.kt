@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidColorsGenerator
 import dev.icerock.gradle.generator.apple.AppleColorsGenerator
 import dev.icerock.gradle.generator.common.CommonColorsGenerator
+import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Node
@@ -33,6 +34,8 @@ abstract class ColorsGenerator(
     private val themedColorClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
 
+    open fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) {}
+
     @Suppress("SpreadOperator")
     override fun generate(
         assetsGenerationDir: File,
@@ -43,6 +46,9 @@ abstract class ColorsGenerator(
         extendObjectBodyAtStart(objectBuilder)
 
         val colors = parseColors()
+
+        beforeGenerate(objectBuilder, colors.map { it.name })
+
         colors.forEach { colorNode ->
             val className = if (colorNode.isThemed()) {
                 themedColorClassName
@@ -152,6 +158,8 @@ abstract class ColorsGenerator(
         override fun createIosGenerator() = AppleColorsGenerator(colorsFileTree)
 
         override fun createAndroidGenerator() = AndroidColorsGenerator(colorsFileTree)
+
+        override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(colorsFileTree)
 
         override fun createJvmGenerator() = JvmColorsGenerator(colorsFileTree, mrSettings)
     }

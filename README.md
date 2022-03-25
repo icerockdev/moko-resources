@@ -7,9 +7,11 @@
 ![badge][badge-macosArm64]
 ![badge][badge-macosX64]
 ![badge][badge-jvm]
+![badge][badge-js]
 
 # Mobile Kotlin resources
-This is a Kotlin MultiPlatform library that provides access to the resources on iOS & Android with the support of the default system localization.
+This is a Kotlin MultiPlatform library that provides access to the resources on macOs, iOS, Android the JVM and JS/Browser 
+with the support of the default system localization.
 
 ## Table of Contents
 - [Features](#features)
@@ -43,7 +45,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.18.0"
+        classpath "dev.icerock.moko:resources-generator:0.19.0"
     }
 }
 
@@ -56,14 +58,15 @@ allprojects {
 ```
 
 project build.gradle
+
 ```groovy
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.18.0")
-    androidMainApi("dev.icerock.moko:resources-compose:0.18.0")
-    jvmMainApi("dev.icerock.moko:resources-compose:0.18.0")
-    commonTestImplementation("dev.icerock.moko:resources-test:0.18.0")
+    commonMainApi("dev.icerock.moko:resources:0.19.0")
+    androidMainApi("dev.icerock.moko:resources-compose:0.19.0")
+    jvmMainApi("dev.icerock.moko:resources-compose:0.19.0")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.19.0")
 }
 
 multiplatformResources {
@@ -94,6 +97,9 @@ ios-app Info.plist:
 </array>
 ```
 in array should be added all used languages.
+
+JS/Browser generates json files which is included in webpack by default.
+For more details about JS see [this](sample/web-app-compose) example
 
 ### Static kotlin frameworks support
 If project configured with static framework output (for example by `org.jetbrains.kotlin.native.cocoapods` plugin)
@@ -160,6 +166,13 @@ iOS:
 ```swift
 let string = getMyString().localized()
 ```
+
+JS:
+```kotlin
+val strings = MR.stringsLoader.getOrLoad() // loading localization from a remote file
+val string = getMyString().localized(strings)
+```
+
 Note: `StringDesc` is a multiple-source container for Strings: in StringDesc we can use a resource, plurals, formatted variants, or raw string. To convert `StringDesc` to `String` on Android call `toString(context)` (a context is required for the resources usage), on iOS - call `localized()`.
 
 #### MR directly from native side
@@ -219,6 +232,9 @@ iOS:
 ```swift
 let string = getMyFormatDesc(input: "hello").localized()
 ```
+
+Warning: Do no mix positioned placeholders with unpositioned ones within a string, as this may lead to
+different behaviour on different platforms. Stick to one style for each string.
 
 ### Example 3 - plural string
 The first step is to create a file `plurals.xml` in `commonMain/resources/MR/base` with the following content:
@@ -452,45 +468,58 @@ After gradle sync we can get file by id `MR.files.test`
 Moko-resources has out of box implementation function for read text files from common code - `readText()`
 
 Usage on Android:
+
 ```
 val text = MR.files.test.getText(context = this)
 ```
+
 Usage on Apple:
+
 ```
 val text = MR.files.test.readText()
 ```
+
 If you want to read files not as text, add your own implementation to expect/actual FileResource
 
 ### Example 11 - assets access
 
-Assets allow you save directories hierarchy (in files structure is plain).
-Locate files to `commonMain/resources/MR/assets` and access to it by `MR.assets.*` 
+Assets allow you save directories hierarchy (in files structure is plain). Locate files
+to `commonMain/resources/MR/assets` and access to it by `MR.assets.*`
 
 ### Creating Fat Framework with resources
 
-Just use `FatFrameworkTask` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-universal-frameworks).
+Just
+use `FatFrameworkTask` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-universal-frameworks)
+.
 
 ### Creating XCFramework with resources
 
-Just use `XCFramework` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-xcframeworks).
+Just
+use `XCFramework` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-native-binaries.html#build-xcframeworks)
+.
 
 But if you use **static frameworks** required additional setup - add to Xcode build phase (at end):
+
 ```bash
 "$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMPLReleaseXCFrameworkToApp \
     -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
     -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
 ```
 
-Details you can check in sample TestStaticXCFramework in ios-app. In this sample used mpp-hierarhical kotlin module with XCFramework.
+Details you can check in sample TestStaticXCFramework in ios-app. In this sample used
+mpp-hierarhical kotlin module with XCFramework.
 
 ## Samples
+
 Please see more examples in the [sample directory](sample).
 
 Sample `mpp-hierarhical` contains usage of `org.jetbrains.kotlin.native.cocoapods` plugin and unit
 tests with resources usage.
 `Jvm-sample` to run it you should use IntelliJ IDEA.  
-`macOS-sample` it contains two schemes. TestProj is the sample app and TestHierarchical is a splash-screen.  
-`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at once, the second one allows to choose language before starting the sample.
+`macOS-sample` it contains two schemes. TestProj is the sample app and TestHierarchical is a
+splash-screen.  
+`android-sample` TestHierarchical creates two launchers, the first one starts the sample-app at
+once, the second one allows to choose language before starting the sample.
 
 ## Set Up Locally
 - The [resources directory](resources) contains the `resources` library;

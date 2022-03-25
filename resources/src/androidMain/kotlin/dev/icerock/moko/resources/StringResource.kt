@@ -9,6 +9,6 @@ import androidx.annotation.StringRes
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-actual class StringResource(
+actual data class StringResource(
     @StringRes val resourceId: Int
 ) : Parcelable

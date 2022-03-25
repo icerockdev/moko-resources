@@ -6,9 +6,11 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
-import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.apple.AppleStringsGenerator
+import dev.icerock.gradle.generator.common.CommonStringsGenerator
+import dev.icerock.gradle.generator.js.JsStringsGenerator
 import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
+import dev.icerock.gradle.utils.removeLineWraps
 import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
@@ -17,7 +19,8 @@ typealias LanguageType = String
 typealias KeyType = String
 
 abstract class StringsGenerator(
-    private val stringsFileTree: FileTree
+    private val stringsFileTree: FileTree,
+    private val strictLineBreaks: Boolean
 ) : BaseGenerator<String>() {
 
     override val inputFiles: Iterable<File> get() = stringsFileTree.files
@@ -54,7 +57,7 @@ abstract class StringsGenerator(
             val name = stringNode.attributes.getNamedItem("name").textContent
             val value = stringNode.textContent
 
-            mutableMap[name] = value
+            mutableMap[name] = if (strictLineBreaks) value else value.removeLineWraps()
         }
 
         val incorrectKeys = mutableMap
@@ -73,26 +76,29 @@ abstract class StringsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String,
+        private val strictLineBreaks: Boolean,
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<StringsGenerator> {
         private val stringsFileTree =
             info.commonResources.matching { it.include("MR/**/strings*.xml") }
 
-        override fun createCommonGenerator() = CommonStringsGenerator(stringsFileTree)
+        override fun createCommonGenerator() =
+            CommonStringsGenerator(stringsFileTree, strictLineBreaks)
 
-        override fun createIosGenerator() = AppleStringsGenerator(
-            stringsFileTree,
-            iosBaseLocalizationRegion
-        )
+        override fun createIosGenerator() =
+            AppleStringsGenerator(stringsFileTree, strictLineBreaks, iosBaseLocalizationRegion)
 
-        override fun createAndroidGenerator() = AndroidStringsGenerator(
-            stringsFileTree,
-            info.androidRClassPackage
-        )
+        override fun createAndroidGenerator() =
+            AndroidStringsGenerator(
+                stringsFileTree = stringsFileTree,
+                strictLineBreaks = strictLineBreaks,
+                getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+            )
 
-        override fun createJvmGenerator() = JvmStringsGenerator(
-            stringsFileTree,
-            mrSettings
-        )
+        override fun createJsGenerator(): StringsGenerator =
+            JsStringsGenerator(stringsFileTree, mrSettings.packageName, strictLineBreaks)
+
+        override fun createJvmGenerator() =
+            JvmStringsGenerator(stringsFileTree, strictLineBreaks, mrSettings)
     }
 }

@@ -15,7 +15,7 @@ import java.io.File
 
 class AndroidImagesGenerator(
     inputFileTree: FileTree,
-    private val androidRClassPackage: String
+    private val getAndroidRClassPackage: () -> String
 ) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -27,7 +27,7 @@ class AndroidImagesGenerator(
     }
 
     override fun getImports(): List<ClassName> = listOf(
-        ClassName(androidRClassPackage, "R")
+        ClassName(getAndroidRClassPackage(), "R")
     )
 
     override fun generateResources(
@@ -58,6 +58,6 @@ class AndroidImagesGenerator(
     }
 
     private fun processKey(key: String): String {
-        return key.toLowerCase()
+        return key.lowercase()
     }
 }

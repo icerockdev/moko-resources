@@ -12,13 +12,5 @@ data class SourceInfo(
     val commonResources: SourceDirectorySet,
     val mrClassPackage: String
 ) {
-    private var _androidRClassPackage: String? = null
-
-    val androidRClassPackage: String get() = _androidRClassPackage!!
-
-    fun setAndroidRClassPackage(value: String) {
-        if (_androidRClassPackage != null) throw IllegalStateException("Android R class already set")
-
-        _androidRClassPackage = value
-    }
+    var getAndroidRClassPackage: (() -> String)? = null
 }

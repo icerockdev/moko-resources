@@ -16,7 +16,9 @@ kotlin {
             dependencies {
                 api(libs.kotlinTest)
                 api(libs.kotlinTestAnnotations)
+                api(libs.coroutinesTest)
                 api(projects.resources)
+                api(projects.resourcesTest)
             }
         }
 

@@ -17,8 +17,10 @@ import org.apache.commons.text.StringEscapeUtils
 
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
-    private val androidRClassPackage: String
-) : StringsGenerator(stringsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    strictLineBreaks: Boolean,
+    private val getAndroidRClassPackage: () -> String
+) : StringsGenerator(stringsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -28,7 +30,7 @@ class AndroidStringsGenerator(
         CodeBlock.of("StringResource(R.string.%L)", processKey(key))
 
     override fun getImports(): List<ClassName> = listOf(
-        ClassName(androidRClassPackage, "R")
+        ClassName(getAndroidRClassPackage(), "R")
     )
 
     override fun generateResources(

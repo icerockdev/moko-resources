@@ -4,10 +4,9 @@
 
 package dev.icerock.moko.resources
 
-import java.text.MessageFormat
 import java.util.Locale
 
-actual class StringResource(
+actual data class StringResource(
     val resourcesClassLoader: ClassLoader,
     val bundleName: String,
     val key: String

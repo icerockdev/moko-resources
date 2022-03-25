@@ -15,10 +15,10 @@ import java.io.File
 
 class ApplePluralsGenerator(
     pluralsFileTree: FileTree,
+    strictLineBreaks: Boolean,
     private val baseLocalizationRegion: String
-) : PluralsGenerator(
-    pluralsFileTree = pluralsFileTree
-), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+    ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

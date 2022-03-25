@@ -119,7 +119,7 @@ public object Testing {
     public fun getTextsFromAssets(): List<AssetResource> {
         return listOf(
             MR.assets.test_1,
-            MR.assets.getAssetByFilePath("texts/test2.txt"),
+            MR.assets.getAssetByFilePath("texts/test2.txt") ?: error("Can't load asset"),
             MR.assets.texts.inner_1.test3
         )
     }

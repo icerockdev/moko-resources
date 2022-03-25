@@ -16,8 +16,8 @@ plugins {
 
 android {
     lint {
-        disable("ImpliedQuantity")
-        isIgnoreTestSources = true
+        disable += "ImpliedQuantity"
+        ignoreTestSources = true
     }
 
     testOptions {
@@ -56,6 +56,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinTest)
                 implementation(libs.kotlinTestAnnotations)
+                implementation(libs.coroutinesTest)
             }
         }
 
@@ -93,8 +94,9 @@ kotlin {
             }
         }
 
-        val jvmMain by getting { 
-            dependsOn(clientMain) }
+        val jvmMain by getting {
+            dependsOn(clientMain)
+        }
         val jvmTest by getting {
             dependsOn(clientTest)
         }

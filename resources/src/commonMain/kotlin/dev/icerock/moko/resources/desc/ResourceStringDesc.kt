@@ -7,7 +7,7 @@ package dev.icerock.moko.resources.desc
 import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.StringResource
 
-expect class ResourceStringDesc(stringRes: StringResource) : StringDesc, Parcelable
-
 @Suppress("FunctionName")
 fun StringDesc.Companion.Resource(stringRes: StringResource) = ResourceStringDesc(stringRes)
+
+expect class ResourceStringDesc(stringRes: StringResource) : StringDesc, Parcelable

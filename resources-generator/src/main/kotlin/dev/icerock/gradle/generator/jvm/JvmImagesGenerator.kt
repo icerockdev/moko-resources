@@ -9,13 +9,15 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import dev.icerock.gradle.generator.jsJvmCommon.generateHighestQualityImageResources
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmImagesGenerator(
     inputFileTree: FileTree,
     mrSettings: MRGenerator.MRSettings
-) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+) : ImagesGenerator(inputFileTree),
+    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -31,15 +33,7 @@ class JvmImagesGenerator(
         resourcesGenerationDir: File,
         keyFileMap: Map<String, List<File>>
     ) {
-        val imagesDir = File(resourcesGenerationDir, IMAGES_DIR).apply { mkdirs() }
-
-        keyFileMap.forEach { (key, files) ->
-            // We copy the only highest quality image to jvm
-            val hqFile = files.maxByOrNull {
-                it.nameWithoutExtension.substringAfter("@").substringBefore("x").toDouble()
-            } ?: return
-            hqFile.copyTo(File(imagesDir, "$key.${hqFile.extension}"))
-        }
+        generateHighestQualityImageResources(resourcesGenerationDir, keyFileMap, IMAGES_DIR)
     }
 
     companion object {

@@ -14,8 +14,7 @@ import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
-import dev.icerock.gradle.utils.toEnumeration
-import org.apache.commons.codec.digest.DigestUtils
+import dev.icerock.gradle.utils.calculateResourcesHash
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -30,17 +29,18 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
+import org.jetbrains.kotlin.gradle.tasks.FrameworkDescriptor
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.InputStream
-import java.io.SequenceInputStream
 import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipFile
+import kotlin.reflect.full.memberProperties
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
@@ -79,18 +79,9 @@ class AppleMRGenerator(
 
         mrClass.addProperty(
             PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
-                .initializer("%S", calculateResourcesHash())
+                .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
                 .build()
         )
-    }
-
-    private fun calculateResourcesHash(): String {
-        val inputStreams: List<InputStream> = resourcesGenerationDir.walkTopDown()
-            .filterNot { it.isDirectory }
-            .map { it.inputStream() }.toList()
-        val singleInputStream: InputStream = SequenceInputStream(inputStreams.toEnumeration())
-
-        return singleInputStream.use { DigestUtils.md5Hex(it) }
     }
 
     override fun getImports(): List<ClassName> = listOf(
@@ -231,16 +222,23 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         linkTask.libraries
             .plus(linkTask.intermediateLibrary.get())
             .filter { it.extension == "klib" }
-            .forEach {
-                project.logger.info("copy resources from $it into $outputDir")
-                val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
+            .filter { it.exists() }
+            .forEach { inputFile ->
+                project.logger.info("copy resources from $inputFile into $outputDir")
+                val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
                 val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
                 val layout = klib.extractingToTemp
 
-                File(layout.resourcesDir.path).copyRecursively(
-                    target = outputDir,
-                    overwrite = true
-                )
+                try {
+                    File(layout.resourcesDir.path).copyRecursively(
+                        target = outputDir,
+                        overwrite = true
+                    )
+                } catch (exc: kotlin.io.NoSuchFileException) {
+                    project.logger.info("resources in $inputFile not found")
+                } catch (exc: java.nio.file.NoSuchFileException) {
+                    project.logger.info("resources in $inputFile not found (empty lib)")
+                }
             }
     }
 
@@ -265,7 +263,7 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             ?: emptyMap()
 
         if (framework.target.konanTarget == xcodeTask.konanTarget &&
-            framework.buildType.getName() == xcodeTask.configuration?.toLowerCase()
+            framework.buildType.getName() == xcodeTask.configuration?.lowercase()
         ) {
             xcodeTask.dependsOn(copyTask)
         }
@@ -305,16 +303,39 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         val fatAction: Action<Task> = object : Action<Task> {
             override fun execute(task: Task) {
                 val fatTask: FatFrameworkTask = task as FatFrameworkTask
-                fatTask.frameworks.first().outputFile.listFiles()
-                    ?.asSequence()
-                    ?.filter { it.name.contains(".bundle") }
-                    ?.forEach { bundleFile ->
-                        project.copy {
-                            it.from(bundleFile)
-                            it.into(File(fatTask.fatFrameworkDir, bundleFile.name))
-                        }
-                    }
+
+                // compatibility of this api was changed
+                // from 1.6.10 to 1.6.20-RC, so reflection was
+                // used here.
+                val fatFrameworkDir: File = FatFrameworkTask::class
+                    .memberProperties
+                    .run {
+                        find { it.name == "fatFrameworkDir" }
+                            ?: find { it.name == "destinationDir" }
+                    }?.invoke(fatTask) as File
+
+                val frameworkFile = when (val any: Any = fatTask.frameworks.first()) {
+                    is Framework -> any.outputFile
+                    is FrameworkDescriptor -> any.file
+                    else -> error("Unsupported type of $any")
+                }
+
+                executeWithFramework(fatFrameworkDir, frameworkFile)
             }
+
+            private fun executeWithFramework(
+                fatFrameworkDir: File,
+                frameworkFile: File,
+            ) = frameworkFile
+                .listFiles()
+                ?.asSequence()
+                ?.filter { it.name.contains(".bundle") }
+                ?.forEach { bundleFile ->
+                    project.copy {
+                        it.from(bundleFile)
+                        it.into(File(fatFrameworkDir, bundleFile.name))
+                    }
+                }
         }
 
         project.tasks.withType(FatFrameworkTask::class)

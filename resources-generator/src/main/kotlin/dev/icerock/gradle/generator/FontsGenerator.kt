@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFontsGenerator
 import dev.icerock.gradle.generator.apple.AppleFontsGenerator
+import dev.icerock.gradle.generator.js.JsFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
 import org.gradle.api.file.FileTree
@@ -29,13 +30,16 @@ abstract class FontsGenerator(
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder
     ): TypeSpec {
-        val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
-        generateResources(resourcesGenerationDir, inputFileTree.map {
+        val fontFiles = inputFileTree.map {
             FontFile(
                 key = it.nameWithoutExtension,
                 file = it
             )
-        })
+        }
+
+        beforeGenerateResources(objectBuilder, fontFiles)
+        val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
+        generateResources(resourcesGenerationDir, fontFiles)
         return typeSpec
     }
 
@@ -110,6 +114,8 @@ abstract class FontsGenerator(
 
     abstract fun getPropertyInitializer(fontFile: File): CodeBlock?
 
+    open fun beforeGenerateResources(objectBuilder: TypeSpec.Builder, files: List<FontFile>) {}
+
     data class FontFile(
         val key: String,
         val file: File
@@ -128,8 +134,13 @@ abstract class FontsGenerator(
         override fun createIosGenerator() = AppleFontsGenerator(stringsFileTree)
 
         override fun createAndroidGenerator() = AndroidFontsGenerator(
+            inputFileTree = stringsFileTree,
+            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+        )
+
+        override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(
             stringsFileTree,
-            info.androidRClassPackage
+            mrSettings.packageName
         )
 
         override fun createJvmGenerator() = JvmFontsGenerator(
