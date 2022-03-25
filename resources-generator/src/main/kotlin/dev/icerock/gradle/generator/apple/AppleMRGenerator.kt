@@ -223,16 +223,22 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             .plus(linkTask.intermediateLibrary.get())
             .filter { it.extension == "klib" }
             .filter { it.exists() }
-            .forEach {
-                project.logger.info("copy resources from $it into $outputDir")
-                val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
+            .forEach { inputFile ->
+                project.logger.info("copy resources from $inputFile into $outputDir")
+                val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
                 val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
                 val layout = klib.extractingToTemp
 
-                File(layout.resourcesDir.path).copyRecursively(
-                    target = outputDir,
-                    overwrite = true
-                )
+                try {
+                    File(layout.resourcesDir.path).copyRecursively(
+                        target = outputDir,
+                        overwrite = true
+                    )
+                } catch (exc: kotlin.io.NoSuchFileException) {
+                    project.logger.info("resources in $inputFile not found")
+                } catch (exc: java.nio.file.NoSuchFileException) {
+                    project.logger.info("resources in $inputFile not found (empty lib)")
+                }
             }
     }
 
