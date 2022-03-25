@@ -38,6 +38,7 @@ dependencies {
     commonMainApi(projects.resources)
     commonMainApi(libs.mokoGraphics)
     commonMainImplementation(projects.sample.mppLibrary.nestedModule)
+    commonMainImplementation(projects.sample.mppLibrary.emptyModule)
 
     commonTestImplementation(projects.resourcesTest)
     commonTestImplementation(projects.sample.testUtils)
