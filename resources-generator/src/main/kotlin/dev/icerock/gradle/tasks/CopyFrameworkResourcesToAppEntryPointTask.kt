@@ -14,15 +14,19 @@ open class CopyFrameworkResourcesToAppEntryPointTask : DefaultTask() {
 
     @get:Internal
     internal val konanTarget: KonanTarget?
-    @get:Internal
-    internal val configuration: String? get() {
-        val configurationName =
-            (project.findProperty("moko.resources.CONFIGURATION") as? String)
 
-        return configurationMapper[configurationName]?.name ?: configurationName
-    }
+    @get:Internal
+    internal val configuration: String?
+        get() {
+            val configurationName =
+                (project.findProperty("moko.resources.CONFIGURATION") as? String)
+
+            return configurationMapper[configurationName]?.name ?: configurationName
+        }
+
     @get:Internal
     internal val platformName: String?
+
     @get:Internal
     internal var configurationMapper: Map<String, NativeBuildType> = emptyMap()
 

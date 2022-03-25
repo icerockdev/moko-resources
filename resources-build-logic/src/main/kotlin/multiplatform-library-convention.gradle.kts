@@ -2,6 +2,9 @@
  * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
@@ -16,7 +19,11 @@ kotlin {
     iosSimulatorArm64()
     macosX64()
     macosArm64()
-    
+    js(IR) {
+        browser()
+        useCommonJs()
+    }
+
     sourceSets {
         val iosMain by getting
         val iosSimulatorArm64Main by getting
@@ -26,7 +33,7 @@ kotlin {
         val iosSimulatorArm64Test by getting
         iosSimulatorArm64Test.dependsOn(iosTest)
 
-        val commonMain by getting        
+        val commonMain by getting
         val macosMain by creating
         val macosArm64Main by getting
         val macosX64Main by getting
@@ -38,8 +45,23 @@ kotlin {
         val macosTest by creating
         val macosArm64Test by getting
         val macosX64Test by getting
+        val jsTest by getting
         macosArm64Test.dependsOn(macosTest)
         macosX64Test.dependsOn(macosTest)
         macosTest.dependsOn(commonTest)
+        jsTest.dependsOn(commonTest)
     }
+}
+
+tasks.withType<AbstractTestTask> {
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        events = setOf(
+            TestLogEvent.SKIPPED,
+            TestLogEvent.PASSED,
+            TestLogEvent.FAILED
+        )
+        showStandardStreams = true
+    }
+    outputs.upToDateWhen { false }
 }

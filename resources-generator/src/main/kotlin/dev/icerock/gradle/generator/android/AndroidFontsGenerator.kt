@@ -44,6 +44,6 @@ class AndroidFontsGenerator(
     }
 
     private fun keyToResourceId(key: String): String {
-        return key.replace("-", "_").toLowerCase(Locale.ROOT)
+        return key.replace("-", "_").lowercase(Locale.ROOT)
     }
 }

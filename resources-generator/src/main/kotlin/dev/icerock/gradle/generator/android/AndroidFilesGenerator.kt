@@ -42,5 +42,5 @@ class AndroidFilesGenerator(
         }
     }
 
-    private fun keyToResourceId(key: String) = key.toLowerCase(Locale.ROOT)
+    private fun keyToResourceId(key: String) = key.lowercase(Locale.ROOT)
 }

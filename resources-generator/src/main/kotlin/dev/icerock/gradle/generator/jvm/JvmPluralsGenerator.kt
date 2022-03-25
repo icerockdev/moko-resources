@@ -17,7 +17,6 @@ import java.io.File
 class JvmPluralsGenerator(
     pluralsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val mrClassPackage: String,
     mrSettings: MRGenerator.MRSettings
 ) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {

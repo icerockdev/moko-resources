@@ -15,7 +15,8 @@ import java.io.File
 class JvmAssetsGenerator(
     sourceDirectorySet: SourceDirectorySet,
     mrSettings: MRGenerator.MRSettings
-) : AssetsGenerator(sourceDirectorySet), ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+) : AssetsGenerator(sourceDirectorySet),
+    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

@@ -16,7 +16,6 @@ import java.io.File
 class JvmStringsGenerator(
     stringsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val mrClassPackage: String,
     mrSettings: MRGenerator.MRSettings
 ) : StringsGenerator(stringsFileTree, strictLineBreaks),
     ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {

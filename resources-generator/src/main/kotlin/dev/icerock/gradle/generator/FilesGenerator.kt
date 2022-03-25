@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidFilesGenerator
 import dev.icerock.gradle.generator.apple.AppleFilesGenerator
+import dev.icerock.gradle.generator.js.JsFilesGenerator
 import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import org.gradle.api.file.FileTree
@@ -35,6 +36,7 @@ abstract class FilesGenerator(
                 file = file
             )
         }.sortedBy { it.key }
+        beforeGenerate(objectBuilder, fileSpecs)
         val typeSpec = createTypeSpec(fileSpecs, objectBuilder)
         generateResources(resourcesGenerationDir, fileSpecs)
         return typeSpec
@@ -64,6 +66,11 @@ abstract class FilesGenerator(
             }
             .build()
     }
+
+    protected open fun beforeGenerate(
+        objectBuilder: TypeSpec.Builder,
+        files: List<FileSpec>
+    ) {}
 
     protected open fun generateResources(
         resourcesGenerationDir: File,
@@ -103,6 +110,8 @@ abstract class FilesGenerator(
             fileTree,
             info.androidRClassPackage
         )
+
+        override fun createJsGenerator(): FilesGenerator = JsFilesGenerator(fileTree)
 
         override fun createJvmGenerator() = JvmFilesGenerator(
             fileTree,

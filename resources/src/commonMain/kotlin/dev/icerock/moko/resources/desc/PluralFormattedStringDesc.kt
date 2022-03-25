@@ -6,8 +6,6 @@ package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.PluralsResource
 
-expect class PluralFormattedStringDesc(pluralsRes: PluralsResource, number: Int, args: List<Any>) : StringDesc
-
 @Suppress("FunctionName")
 fun StringDesc.Companion.PluralFormatted(
     pluralsRes: PluralsResource,
@@ -21,3 +19,9 @@ fun StringDesc.Companion.PluralFormatted(
     number: Int,
     vararg args: Any
 ) = PluralFormattedStringDesc(pluralsRes, number, args.asList())
+
+expect class PluralFormattedStringDesc(
+    pluralsRes: PluralsResource,
+    number: Int,
+    args: List<Any>
+) : StringDesc

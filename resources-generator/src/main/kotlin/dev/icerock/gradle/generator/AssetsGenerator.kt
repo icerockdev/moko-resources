@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidAssetsGenerator
 import dev.icerock.gradle.generator.apple.AppleAssetsGenerator
 import dev.icerock.gradle.generator.common.CommonAssetsGenerator
+import dev.icerock.gradle.generator.js.JsAssetsGenerator
 import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
 import org.gradle.api.file.SourceDirectorySet
 import java.io.File
@@ -94,6 +95,8 @@ abstract class AssetsGenerator(
 
         val rootContent = parseRootContent(sourceDirectorySet.sourceDirectories.files)
 
+        beforeGenerate(objectBuilder, rootContent)
+
         val typeSpec = createTypeSpec(rootContent, objectBuilder)
 
         generateResources(assetsGenerationDir, resourcesGenerationDir, rootContent)
@@ -142,6 +145,11 @@ abstract class AssetsGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
+    protected open fun beforeGenerate(
+        objectBuilder: TypeSpec.Builder,
+        files: List<AssetSpec>
+    ) {}
+
     protected open fun generateResources(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
@@ -185,6 +193,10 @@ abstract class AssetsGenerator(
         override fun createJvmGenerator() = JvmAssetsGenerator(
             info.commonResources,
             mrSettings
+        )
+
+        override fun createJsGenerator(): AssetsGenerator = JsAssetsGenerator(
+            info.commonResources
         )
     }
 

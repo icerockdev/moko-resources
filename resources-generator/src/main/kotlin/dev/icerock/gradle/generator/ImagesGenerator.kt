@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
 import dev.icerock.gradle.generator.apple.AppleImagesGenerator
+import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import org.gradle.api.file.FileTree
@@ -32,6 +33,8 @@ abstract class ImagesGenerator(
         val fileMap = inputFileTree.groupBy { file ->
             "${file.name.substringBefore("@")}.${file.extension}"
         }
+
+        beforeGenerateResources(objectBuilder, fileMap.keys.sorted())
 
         val typeSpec = createTypeSpec(fileMap.keys.sorted(), objectBuilder)
 
@@ -68,6 +71,11 @@ abstract class ImagesGenerator(
 
     override fun getImports(): List<ClassName> = emptyList()
 
+    protected open fun beforeGenerateResources(
+        objectBuilder: TypeSpec.Builder,
+        keys: List<String>
+    ) {}
+
     protected open fun generateResources(
         resourcesGenerationDir: File,
         keyFileMap: Map<String, List<File>>
@@ -97,6 +105,8 @@ abstract class ImagesGenerator(
             stringsFileTree,
             info.androidRClassPackage
         )
+
+        override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(stringsFileTree)
 
         override fun createJvmGenerator() = JvmImagesGenerator(
             stringsFileTree,

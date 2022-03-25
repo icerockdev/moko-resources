@@ -20,6 +20,6 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String)
         ?.let { it.invoke(this) as ImageResource }
 }
 
-actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource {
+actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource? {
     return AssetResource(filePath.removeFirstSlash())
 }

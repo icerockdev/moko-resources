@@ -4,7 +4,7 @@
 
 package dev.icerock.gradle
 
-import com.android.build.gradle.api.AndroidSourceSet
+import com.android.build.api.dsl.AndroidSourceSet
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.android.AndroidMRGenerator

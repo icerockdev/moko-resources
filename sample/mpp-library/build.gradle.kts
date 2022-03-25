@@ -56,13 +56,20 @@ tasks.register("debugFatFramework", org.jetbrains.kotlin.gradle.tasks.FatFramewo
     baseName = "multiplatform"
 
     val targets = mapOf(
-        "iosX64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosX64"),
-        "iosArm64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>("iosArm64")
+        "iosX64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>(
+            "iosX64"
+        ),
+        "iosArm64" to kotlin.targets.getByName<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>(
+            "iosArm64"
+        )
     )
 
     from(
         targets.toList().map {
-            it.second.binaries.getFramework("MultiPlatformLibrary", org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG)
+            it.second.binaries.getFramework(
+                "MultiPlatformLibrary",
+                org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG
+            )
         }
     )
 }

@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
+import dev.icerock.gradle.generator.js.JsPluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
 import dev.icerock.gradle.utils.removeLineWraps
 import org.gradle.api.file.FileTree
@@ -70,7 +71,7 @@ abstract class PluralsGenerator(
             for (j in 0 until itemNodes.length) {
                 val item = itemNodes.item(j)
 
-                val quantity = item.attributes.getNamedItem("quantity").textContent
+                val quantity = item.attributes.getNamedItem("quantity").textContent.trim()
                 val value = item.textContent
 
                 pluralMap[quantity] = if (strictLineBreaks) value else value.removeLineWraps()
@@ -98,7 +99,9 @@ abstract class PluralsGenerator(
         private val strictLineBreaks: Boolean,
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
-        private val stringsFileTree = info.commonResources.matching { it.include("MR/**/plurals*.xml") }
+        private val stringsFileTree =
+            info.commonResources.matching { it.include("MR/**/plurals*.xml") }
+
         override fun createCommonGenerator(): PluralsGenerator =
             CommonPluralsGenerator(stringsFileTree, strictLineBreaks)
 
@@ -109,6 +112,9 @@ abstract class PluralsGenerator(
             AndroidPluralsGenerator(stringsFileTree, strictLineBreaks, info.androidRClassPackage)
 
         override fun createJvmGenerator() =
-            JvmPluralsGenerator(stringsFileTree, strictLineBreaks, mrClassPackage, mrSettings)
+            JvmPluralsGenerator(stringsFileTree, strictLineBreaks, mrSettings)
+
+        override fun createJsGenerator(): PluralsGenerator =
+            JsPluralsGenerator(stringsFileTree, mrSettings.packageName, strictLineBreaks)
     }
 }

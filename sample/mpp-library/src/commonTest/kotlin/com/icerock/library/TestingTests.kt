@@ -2,8 +2,6 @@
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:Suppress("IllegalIdentifier")
-
 package com.icerock.library
 
 import dev.icerock.moko.resources.ColorResource
@@ -14,7 +12,7 @@ import kotlin.test.assertEquals
 @Suppress("MagicNumber")
 class TestingTests {
     @Test
-    fun `test color resource mock`() {
+    fun testColorResourceMock() {
         val colorResource = createColorResourceMock()
 
         assertEquals(0, (colorResource as? ColorResource.Single)?.color?.rgba)
