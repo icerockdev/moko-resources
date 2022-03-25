@@ -113,6 +113,7 @@ class JsMRGenerator(
             val unpackedKLibDir: File = task.outputFileProperty.get()
             val defaultDir = File(unpackedKLibDir, "default")
             val resRepackDir = File(defaultDir, "resources")
+            if (resRepackDir.exists().not()) return
 
             val resDir = File(resRepackDir, "moko-resources-js")
             resourcesDir.copyRecursively(
@@ -220,18 +221,23 @@ class JsMRGenerator(
             outputDir: File
         ) {
             if (inputFile.extension != "klib") return
+            if (inputFile.exists().not()) return
 
             project.logger.info("copy resources from $inputFile into $outputDir")
             val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
             val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
             val layout = klib.extractingToTemp
 
-            File(layout.resourcesDir.path, "moko-resources-js")
-                .takeIf(File::exists)
-                ?.copyRecursively(
+            try {
+                File(layout.resourcesDir.path, "moko-resources-js").copyRecursively(
                     target = outputDir,
                     overwrite = true
                 )
+            } catch (exc: kotlin.io.NoSuchFileException) {
+                project.logger.info("resources in $inputFile not found")
+            } catch (exc: java.nio.file.NoSuchFileException) {
+                project.logger.info("resources in $inputFile not found (empty lib)")
+            }
         }
     }
 
