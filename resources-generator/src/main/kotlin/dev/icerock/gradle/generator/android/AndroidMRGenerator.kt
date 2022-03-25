@@ -4,10 +4,17 @@
 
 package dev.icerock.gradle.generator.android
 
+import com.android.build.gradle.internal.tasks.CompressAssetsTask
+import com.android.build.gradle.tasks.GenerateResValues
+import com.android.build.gradle.tasks.ManifestProcessorTask
+import com.android.build.gradle.tasks.ProcessAndroidResources
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
 class AndroidMRGenerator(
@@ -25,6 +32,11 @@ class AndroidMRGenerator(
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun apply(generationTask: Task, project: Project) {
-        project.tasks.getByName("preBuild").dependsOn(generationTask)
+        project.tasks.withType<ManifestProcessorTask>().configureEach {
+            generationTask.dependsOn(it)
+        }
+        project.tasks.withType<GenerateResValues>().configureEach {
+            it.dependsOn(generationTask)
+        }
     }
 }

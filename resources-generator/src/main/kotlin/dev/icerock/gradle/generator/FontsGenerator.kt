@@ -134,8 +134,8 @@ abstract class FontsGenerator(
         override fun createIosGenerator() = AppleFontsGenerator(stringsFileTree)
 
         override fun createAndroidGenerator() = AndroidFontsGenerator(
-            stringsFileTree,
-            info.androidRClassPackage
+            inputFileTree = stringsFileTree,
+            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
         )
 
         override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(

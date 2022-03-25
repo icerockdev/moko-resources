@@ -102,8 +102,8 @@ abstract class ImagesGenerator(
         override fun createIosGenerator() = AppleImagesGenerator(stringsFileTree)
 
         override fun createAndroidGenerator() = AndroidImagesGenerator(
-            stringsFileTree,
-            info.androidRClassPackage
+            inputFileTree = stringsFileTree,
+            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
         )
 
         override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(stringsFileTree)

@@ -6,8 +6,8 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
-import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.apple.AppleStringsGenerator
+import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.js.JsStringsGenerator
 import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
 import dev.icerock.gradle.utils.removeLineWraps
@@ -76,7 +76,6 @@ abstract class StringsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String,
-        private val mrClassPackage: String,
         private val strictLineBreaks: Boolean,
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<StringsGenerator> {
@@ -90,7 +89,11 @@ abstract class StringsGenerator(
             AppleStringsGenerator(stringsFileTree, strictLineBreaks, iosBaseLocalizationRegion)
 
         override fun createAndroidGenerator() =
-            AndroidStringsGenerator(stringsFileTree, strictLineBreaks, info.androidRClassPackage)
+            AndroidStringsGenerator(
+                stringsFileTree = stringsFileTree,
+                strictLineBreaks = strictLineBreaks,
+                getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+            )
 
         override fun createJsGenerator(): StringsGenerator =
             JsStringsGenerator(stringsFileTree, mrSettings.packageName, strictLineBreaks)

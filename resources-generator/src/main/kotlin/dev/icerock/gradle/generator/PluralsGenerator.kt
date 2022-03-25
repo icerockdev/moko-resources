@@ -6,8 +6,8 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import dev.icerock.gradle.generator.android.AndroidPluralsGenerator
-import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
+import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.js.JsPluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
 import dev.icerock.gradle.utils.removeLineWraps
@@ -95,7 +95,6 @@ abstract class PluralsGenerator(
     class Feature(
         private val info: SourceInfo,
         private val iosBaseLocalizationRegion: String,
-        private val mrClassPackage: String,
         private val strictLineBreaks: Boolean,
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
@@ -109,7 +108,11 @@ abstract class PluralsGenerator(
             ApplePluralsGenerator(stringsFileTree, strictLineBreaks, iosBaseLocalizationRegion)
 
         override fun createAndroidGenerator(): PluralsGenerator =
-            AndroidPluralsGenerator(stringsFileTree, strictLineBreaks, info.androidRClassPackage)
+            AndroidPluralsGenerator(
+                pluralsFileTree = stringsFileTree,
+                strictLineBreaks = strictLineBreaks,
+                getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+            )
 
         override fun createJvmGenerator() =
             JvmPluralsGenerator(stringsFileTree, strictLineBreaks, mrSettings)
