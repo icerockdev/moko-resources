@@ -222,6 +222,7 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         linkTask.libraries
             .plus(linkTask.intermediateLibrary.get())
             .filter { it.extension == "klib" }
+            .filter { it.exists() }
             .forEach {
                 project.logger.info("copy resources from $it into $outputDir")
                 val klibKonan = org.jetbrains.kotlin.konan.file.File(it.path)
