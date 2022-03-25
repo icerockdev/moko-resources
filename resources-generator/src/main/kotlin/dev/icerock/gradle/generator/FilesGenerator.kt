@@ -107,8 +107,8 @@ abstract class FilesGenerator(
         override fun createIosGenerator() = AppleFilesGenerator(fileTree)
 
         override fun createAndroidGenerator() = AndroidFilesGenerator(
-            fileTree,
-            info.androidRClassPackage
+            inputFileTree = fileTree,
+            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
         )
 
         override fun createJsGenerator(): FilesGenerator = JsFilesGenerator(fileTree)

@@ -8,6 +8,7 @@ plugins {
     id("multiplatform-library-convention")
     id("dev.icerock.mobile.multiplatform-resources")
     id("detekt-convention")
+    id("com.gradleup.auto.manifest")
 }
 
 dependencies {
@@ -18,4 +19,9 @@ multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library.nested"
     multiplatformResourcesClassName = "NestedMR"
     multiplatformResourcesVisibility = MRVisibility.Internal
+}
+
+autoManifest {
+    // Mandatory packageName
+    packageName.set("com.icerockdev.library.nested")
 }

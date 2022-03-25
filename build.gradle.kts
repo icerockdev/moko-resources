@@ -14,6 +14,7 @@ buildscript {
     dependencies {
         classpath("dev.icerock.moko:resources-generator")
         classpath("org.jetbrains.compose:compose-gradle-plugin:1.0.1")
+        classpath("com.gradleup:auto-manifest-plugin:1.1.1")
         classpath(":resources-build-logic")
     }
 }

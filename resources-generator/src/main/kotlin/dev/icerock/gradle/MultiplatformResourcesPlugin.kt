@@ -102,14 +102,12 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             StringsGenerator.Feature(
                 info = sourceInfo,
                 iosBaseLocalizationRegion = iosLocalizationRegion,
-                mrClassPackage = mrClassPackage,
                 strictLineBreaks = strictLineBreaks,
                 mrSettings = mrSettings
             ),
             PluralsGenerator.Feature(
                 info = sourceInfo,
                 iosBaseLocalizationRegion = iosLocalizationRegion,
-                mrClassPackage = mrClassPackage,
                 strictLineBreaks = strictLineBreaks,
                 mrSettings = mrSettings
             ),
@@ -144,10 +142,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target.afterEvaluate {
                 val androidMainSourceSet = androidExtension.sourceSets
                     .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-                val manifestFile = androidMainSourceSet.manifest.srcFile
-                val androidPackage = getAndroidPackage(manifestFile)
 
-                sourceInfo.setAndroidRClassPackage(androidPackage)
+                sourceInfo.getAndroidRClassPackage = {
+                    val manifestFile = androidMainSourceSet.manifest.srcFile
+                    getAndroidPackage(manifestFile)
+                }
 
                 androidLogic.setup(androidMainSourceSet)
             }
