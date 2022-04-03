@@ -42,5 +42,5 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    multiplatformResourcesPackage = "com.icerockdev.app"
 }
