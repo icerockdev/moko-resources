@@ -73,12 +73,9 @@ suspend fun main() {
         }
     }
 
-    coroutineScope {
-        launch {
-            fileText.value = Testing.getTextFile().getText() + "\n" +
-                    Testing.getTextsFromAssets()[1].getText()
-        }
-    }
+    fileText.value = Testing.getTextFile().getText() + "\n" +
+            Testing.getTextsFromAssets()[1].getText() + "\n" +
+            MR.files.some.getText()
 
     println(Testing.getTextFile().fileUrl)
 }
