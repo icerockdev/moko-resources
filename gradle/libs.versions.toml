@@ -1,5 +1,5 @@
 [versions]
-kotlinVersion = "1.6.10"
+kotlinVersion = "1.6.21"
 androidGradleVersion = "7.1.0"
 
 # kotlinx
@@ -36,7 +36,7 @@ robolectricVersion = "4.7.3"
 mokoGraphicsVersion = "0.9.0"
 mokoParcelizeVersion = "0.8.0"
 mokoTestVersion = "0.5.0"
-mokoResourcesVersion = "0.19.0"
+mokoResourcesVersion = "0.19.1"
 mokoMultiplatformPluginVersion = "0.13.0"
 
 [libraries]
@@ -85,9 +85,6 @@ kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations
 
 # gradle
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
-# This version is used to fix compatibility issues between
-# Kotlin Gradle Plugin 1.6.10 -> 1.6.20-RC
-kotlinGradlePluginRC = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "1.6.20-RC" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlinVersion" }
 detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektVersion" }
