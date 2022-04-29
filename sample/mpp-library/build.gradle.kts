@@ -25,7 +25,7 @@ android {
 kotlin {
     explicitApi()
 
-    val xcFramework = XCFramework("MPL")
+    val xcFramework = XCFramework("MultiPlatformLibrary")
     targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class)
         .matching { it.konanTarget.family == org.jetbrains.kotlin.konan.target.Family.IOS }
         .configureEach {

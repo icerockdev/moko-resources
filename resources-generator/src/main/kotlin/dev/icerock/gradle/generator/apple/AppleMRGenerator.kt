@@ -305,18 +305,18 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                 val fatTask: FatFrameworkTask = task as FatFrameworkTask
 
                 // compatibility of this api was changed
-                // from 1.6.10 to 1.6.20-RC, so reflection was
+                // from 1.6.10 to 1.6.20, so reflection was
                 // used here.
                 val fatFrameworkDir: File = FatFrameworkTask::class
                     .memberProperties
                     .run {
                         find { it.name == "fatFrameworkDir" }
-                            ?: find { it.name == "destinationDir" }
+                            ?: find { it.name == "fatFramework" }
                     }?.invoke(fatTask) as File
 
                 val frameworkFile = when (val any: Any = fatTask.frameworks.first()) {
                     is Framework -> any.outputFile
-                    is FrameworkDescriptor -> any.file
+                    is FrameworkDescriptor -> any.files.rootDir
                     else -> error("Unsupported type of $any")
                 }
 
