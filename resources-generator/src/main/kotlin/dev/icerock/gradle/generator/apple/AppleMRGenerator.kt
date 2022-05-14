@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.utils.calculateResourcesHash
@@ -19,11 +20,13 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -90,6 +93,7 @@ class AppleMRGenerator(
     )
 
     override fun apply(generationTask: Task, project: Project) {
+        createCopyResourcesToAppTask(project)
         setupKLibResources(generationTask)
         setupFrameworkResources()
         setupTestsResources()
@@ -183,7 +187,6 @@ class AppleMRGenerator(
                 linkTask.doLast(object : Action<Task> {
                     override fun execute(task: Task) {
                         task as KotlinNativeLink
-
                         copyKlibsResourcesIntoFramework(task)
                     }
                 })
@@ -234,11 +237,34 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                         target = outputDir,
                         overwrite = true
                     )
-                } catch (exc: kotlin.io.NoSuchFileException) {
+                } catch (exc: NoSuchFileException) {
                     project.logger.info("resources in $inputFile not found")
                 } catch (exc: java.nio.file.NoSuchFileException) {
                     project.logger.info("resources in $inputFile not found (empty lib)")
                 }
+            }
+    }
+
+    private fun createCopyResourcesToAppTask(project: Project) {
+        project.tasks.withType<KotlinNativeLink>()
+            .matching { linkTask -> linkTask.binary is AbstractExecutable }
+            .all { linkTask ->
+                val copyTaskName = linkTask.name.replace("link", "copyResources")
+
+                if (linkTask.project.tasks.any { it.name == copyTaskName }) return@all
+
+                project.files(linkTask.intermediateLibrary)
+
+                val copyResources = linkTask.project.tasks
+                    .create(copyTaskName, CopyExecutableResourcesToApp::class) {
+                        val libraries = linkTask.libraries
+                            .plus(project.files(linkTask.intermediateLibrary))
+                            .filter { library -> library.extension == "klib" }
+                            .filter(File::exists)
+
+                        it.libraries = libraries
+                    }
+                copyResources.dependsOn(linkTask)
             }
     }
 
