@@ -9,8 +9,6 @@ import androidx.compose.runtime.remember
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
 import dev.icerock.moko.resources.ColorResource
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.color
@@ -73,12 +71,9 @@ suspend fun main() {
         }
     }
 
-    coroutineScope {
-        launch {
-            fileText.value = Testing.getTextFile().getText() + "\n" +
-                    Testing.getTextsFromAssets()[1].getText()
-        }
-    }
+    fileText.value = Testing.getTextFile().getText() + "\n" +
+            Testing.getTextsFromAssets()[1].getText() + "\n" +
+            MR.files.some.getText()
 
     println(Testing.getTextFile().fileUrl)
 }
