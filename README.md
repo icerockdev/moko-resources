@@ -135,6 +135,18 @@ you also need to pass extra properties:
     -Pkotlin.native.cocoapods.configuration=$CONFIGURATION 
 ```
 
+### iOS executable
+When you use `executable` kotlin target you should add custom build phase to xcode, after kotlin 
+compilation:
+```shell
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesDebugExecutableIosSimulatorArm64 \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
+```
+`copyResourcesDebugExecutableIosSimulatorArm64` should be configured depends on target.
+
+Configured sample you can see in `sample/ios-app` - `TestKotlinApp` target
+
 ## Usage
 ### Example 1 - simple localization string
 The first step is a create a file `strings.xml` in `commonMain/resources/MR/base` with the following content:
