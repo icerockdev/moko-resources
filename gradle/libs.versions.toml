@@ -36,8 +36,8 @@ robolectricVersion = "4.7.3"
 mokoGraphicsVersion = "0.9.0"
 mokoParcelizeVersion = "0.8.0"
 mokoTestVersion = "0.5.0"
-mokoResourcesVersion = "0.19.1"
-mokoMultiplatformPluginVersion = "0.13.0"
+mokoResourcesVersion = "0.20.0"
+mokoMultiplatformPluginVersion = "0.14.1"
 
 [libraries]
 # kotlinx
