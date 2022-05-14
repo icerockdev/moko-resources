@@ -8,8 +8,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.FileFilter
@@ -27,8 +25,6 @@ open class CopyExecutableResourcesToApp : DefaultTask() {
 
         val outputDir = File(buildProductsDir, contentsFolderPath)
 
-        println(outputDir.absolutePath)
-
         libraries
             .filter { it.extension == "klib" }
             .filter { it.exists() }
@@ -45,7 +41,7 @@ open class CopyExecutableResourcesToApp : DefaultTask() {
                     .listFiles(FileFilter { it.extension == "bundle" })
                     // copying bundles to app
                     ?.forEach {
-                        println("${it.absolutePath} copying to $outputDir")
+                        logger.info("${it.absolutePath} copying to $outputDir")
                         it.copyRecursively(target = File(outputDir, it.name), overwrite = true)
                     }
             }
