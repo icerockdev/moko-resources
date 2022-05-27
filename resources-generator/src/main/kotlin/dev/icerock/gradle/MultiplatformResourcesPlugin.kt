@@ -143,7 +143,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 val androidMainSourceSet = androidExtension.sourceSets
                     .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
-                sourceInfo.getAndroidRClassPackage = {
+                sourceInfo.getAndroidRClassPackage = lambda@{
+                    val namespace: String? = androidExtension.namespace
+                    if (namespace != null) return@lambda namespace
+
                     val manifestFile = androidMainSourceSet.manifest.srcFile
                     getAndroidPackage(manifestFile)
                 }
