@@ -17,11 +17,11 @@ dependencies {
     implementation(gradleKotlinDsl())
     compileOnly(libs.kotlinGradlePluginNext)
     compileOnly(libs.androidGradlePlugin)
+    compileOnly(libs.kotlinCompilerEmbeddable)
     implementation(libs.kotlinPoet)
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
     implementation(libs.commonsCodec)
-    implementation(libs.kotlinCompilerEmbeddable)
 }
 
 java {

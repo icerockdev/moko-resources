@@ -16,6 +16,7 @@ import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.utils.calculateResourcesHash
+import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -222,8 +223,7 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         project: Project,
         outputDir: File
     ) {
-        linkTask.libraries
-            .plus(linkTask.intermediateLibrary.get())
+        linkTask.klibs
             .filter { it.extension == "klib" }
             .filter { it.exists() }
             .forEach { inputFile ->
@@ -253,18 +253,11 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
 
                 if (linkTask.project.tasks.any { it.name == copyTaskName }) return@all
 
-                project.files(linkTask.intermediateLibrary)
-
-                val copyResources = linkTask.project.tasks
+                project.tasks
                     .create(copyTaskName, CopyExecutableResourcesToApp::class) {
-                        val libraries = linkTask.libraries
-                            .plus(project.files(linkTask.intermediateLibrary))
-                            .filter { library -> library.extension == "klib" }
-                            .filter(File::exists)
-
-                        it.libraries = libraries
+                        it.linkTask = linkTask
+                        it.dependsOn(linkTask)
                     }
-                copyResources.dependsOn(linkTask)
             }
     }
 
