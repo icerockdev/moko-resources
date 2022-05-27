@@ -45,7 +45,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.20.0"
+        classpath "dev.icerock.moko:resources-generator:0.20.1"
     }
 }
 
@@ -63,10 +63,10 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.20.0")
-    androidMainApi("dev.icerock.moko:resources-compose:0.20.0")
-    jvmMainApi("dev.icerock.moko:resources-compose:0.20.0")
-    commonTestImplementation("dev.icerock.moko:resources-test:0.20.0")
+    commonMainApi("dev.icerock.moko:resources:0.20.1")
+    androidMainApi("dev.icerock.moko:resources-compose:0.20.1")
+    jvmMainApi("dev.icerock.moko:resources-compose:0.20.1")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.20.1")
 }
 
 multiplatformResources {

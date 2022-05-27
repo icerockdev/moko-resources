@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.utils.calculateResourcesHash
+import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -129,7 +130,7 @@ class JsMRGenerator(
         override fun execute(task: Kotlin2JsCompile) {
             val project: Project = task.project
 
-            task.classpath.forEach { dependency ->
+            task.klibs.forEach { dependency ->
                 copyResourcesFromLibraries(
                     inputFile = dependency,
                     project = project,

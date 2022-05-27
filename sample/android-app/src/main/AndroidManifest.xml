@@ -8,16 +8,21 @@
     <application
         android:label="moko-resources test app"
         android:theme="@style/Theme.AppCompat.DayNight"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning,MissingApplicationIcon">
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".SelectLanguageActivity" android:label="Select language">
+        <activity
+            android:name=".SelectLanguageActivity"
+            android:exported="true"
+            android:label="Select language">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

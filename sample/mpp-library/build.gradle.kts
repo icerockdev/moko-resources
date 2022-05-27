@@ -12,9 +12,8 @@ plugins {
 }
 
 android {
-    lintOptions {
-        disable("ImpliedQuantity")
-    }
+    namespace = "com.icerockdev.library"
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
