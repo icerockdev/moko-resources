@@ -40,8 +40,7 @@ class JvmStringsGenerator(
             is LanguageType.Locale -> {
                 // JVM ResourceBundle uses locale format, eg `en_US`, instead of BCP format
                 // like `en-US`.
-                val localeTag = language.locale.toString()
-                "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}_$localeTag"
+                "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}_${language.toLocaleString()}"
             }
         }
 

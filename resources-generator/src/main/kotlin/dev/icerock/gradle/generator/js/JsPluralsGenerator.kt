@@ -49,7 +49,7 @@ class JsPluralsGenerator(
             fallbackFile = "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
             supportedLocalesPropertyName = JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
             getFileNameForLanguage = { language ->
-                "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language.json"
+                "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_${language.toBcpString()}.json"
             }
         )
         val languageKeys = languageMap[LanguageType.Base].orEmpty().keys
@@ -74,7 +74,7 @@ class JsPluralsGenerator(
     ) {
         val fileDirName = when (language) {
             LanguageType.Base -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}"
-            is LanguageType.Locale -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language"
+            is LanguageType.Locale -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_${language.toBcpString()}"
         }
 
         val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {

@@ -62,7 +62,7 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
                             add(
                                 "%T(%S, js(%S) as %T),\n",
                                 supportedLocaleName,
-                                language,
+                                language.toBcpString(),
                                 "require(\"$folder/$fileName\")",
                                 String::class
                             )

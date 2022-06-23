@@ -75,7 +75,7 @@ class ApplePluralsGenerator(
     ) {
         val resDirName = when (language) {
             LanguageType.Base -> "Base.lproj"
-            else -> "$language.lproj"
+            is LanguageType.Locale -> "${language.toBcpString()}.lproj"
         }
 
         val resDir = File(resourcesGenerationDir, resDirName)
@@ -83,7 +83,7 @@ class ApplePluralsGenerator(
         resDir.mkdirs()
         writeStringsFile(localizableFile, strings)
 
-        if (language == null) {
+        if (language == LanguageType.Base) {
             val regionDir = File(resourcesGenerationDir, "$baseLocalizationRegion.lproj")
             regionDir.mkdirs()
             val regionFile = File(regionDir, "Localizable.stringsdict")

@@ -36,21 +36,7 @@ class AndroidStringsGenerator(
         language: LanguageType,
         strings: Map<KeyType, String>
     ) {
-        val valuesDirName = buildString {
-            append("values")
-
-            if (language is LanguageType.Locale) {
-                append("-")
-                append(language.locale.language)
-
-                if (language.locale.country.isNotBlank()) {
-                    append("-r")
-                    append(language.locale.country)
-                }
-            }
-        }
-
-        val valuesDir = File(resourcesGenerationDir, valuesDirName)
+        val valuesDir = File(resourcesGenerationDir, language.toAndroidResourcesString())
         val stringsFile = File(valuesDir, "multiplatform_strings.xml")
         valuesDir.mkdirs()
 
