@@ -70,7 +70,6 @@ fun interface RemoteJsStringLoader {
         }
 
         override suspend fun getOrLoad(): JsStringProvider {
-            println("poopybutt: $supportedLocales")
             coroutineScope {
                 supportedLocales
                     .map { async { downloadLocaleFile(it) } }

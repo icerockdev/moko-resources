@@ -56,7 +56,6 @@ abstract class StringsGenerator(
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
         return stringsFileTree.map { file ->
-            println("poopybutt: ${file.parentFile}")
             val language: LanguageType = LanguageType.fromFileName(file.parentFile.name)
             val strings: Map<KeyType, String> = loadLanguageStrings(file)
             language to strings
