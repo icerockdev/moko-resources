@@ -39,7 +39,10 @@ actual interface StringDesc {
             )
 
             override fun getLocaleBundle(rootBundle: NSBundle): NSBundle {
-                return rootBundle.pathForResource(locale.localeIdentifier, "lproj")
+                // I don't like this, but I don't see a good way to get a proper BCP language tag from NSLocale
+                // on Apple's dev documentation. This is a hack.
+                val bcpLanguageTag = locale.localeIdentifier().replace("_", "-")
+                return rootBundle.pathForResource(bcpLanguageTag, "lproj")
                     ?.let { NSBundle.bundleWithPath(it) }
                     ?: rootBundle
             }

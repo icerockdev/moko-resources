@@ -22,10 +22,10 @@ sealed interface LanguageType {
 
     class Locale(languageTag: String) : LanguageType {
 
-        val locale = JvmLocale.forLanguageTag(languageTag)
+        val locale: JvmLocale = JvmLocale.forLanguageTag(languageTag)
 
         override fun hashCode(): Int = locale.hashCode()
-        override fun toString(): String = locale.toString()
+        override fun toString(): String = locale.toLanguageTag()
         override fun equals(other: Any?): Boolean {
             return other is Locale && other.locale == locale
         }
