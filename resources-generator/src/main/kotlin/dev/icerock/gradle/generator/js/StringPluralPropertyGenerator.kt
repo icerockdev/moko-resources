@@ -24,7 +24,7 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
     fallbackFilePropertyName: String,
     fallbackFile: String,
     supportedLocalesPropertyName: String,
-    getFileNameForLanguage: (language: String) -> String
+    getFileNameForLanguage: (language: LanguageType.Locale) -> String
 ) {
     if (languages.isEmpty()) return
 
@@ -57,7 +57,7 @@ fun TypeSpec.Builder.generateFallbackAndSupportedLanguageProperties(
                     .builder()
                     .apply {
                         add("%T(listOf(\n", supportedLocalesName)
-                        languages.filter { it != "base" }.forEach { language ->
+                        languages.filterIsInstance<LanguageType.Locale>().forEach { language ->
                             val fileName = getFileNameForLanguage(language)
                             add(
                                 "%T(%S, js(%S) as %T),\n",

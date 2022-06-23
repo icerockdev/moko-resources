@@ -19,18 +19,14 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     ): TypeSpec {
         // language - key - value
         val languageMap: Map<LanguageType, Map<KeyType, T>> = loadLanguageMap()
-        val languageKeyValues = languageMap[BASE_LANGUAGE].orEmpty()
+        val languageKeyValues = languageMap[LanguageType.Base].orEmpty()
 
         beforeGenerateResources(objectBuilder, languageMap)
 
         val stringsClass = createTypeSpec(languageKeyValues.keys.toList(), objectBuilder)
 
         languageMap.forEach { (language, strings) ->
-            if (language == BASE_LANGUAGE) {
-                generateResources(resourcesGenerationDir, null, strings)
-            } else {
-                generateResources(resourcesGenerationDir, language, strings)
-            }
+            generateResources(resourcesGenerationDir, language, strings)
         }
 
         return stringsClass
@@ -70,7 +66,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     protected open fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, T>
     ) {
     }

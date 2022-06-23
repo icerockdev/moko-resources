@@ -38,7 +38,7 @@ abstract class PluralsGenerator(
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, PluralMap>> {
         return pluralsFileTree.map { file ->
-            val language: LanguageType = file.parentFile.name
+            val language: LanguageType = LanguageType.fromFileName(file.parentFile.name)
             val strings: Map<KeyType, PluralMap> = loadLanguagePlurals(file)
             language to strings
         }.groupBy(

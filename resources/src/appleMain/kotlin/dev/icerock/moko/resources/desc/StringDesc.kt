@@ -4,10 +4,7 @@
 
 package dev.icerock.moko.resources.desc
 
-import platform.Foundation.NSBundle
-import platform.Foundation.NSLocale
-import platform.Foundation.currentLocale
-import platform.Foundation.localeWithLocaleIdentifier
+import platform.Foundation.*
 import kotlin.native.concurrent.ThreadLocal
 
 actual interface StringDesc {
@@ -23,14 +20,26 @@ actual interface StringDesc {
             }
         }
 
-        actual class Custom actual constructor(locale: String) : LocaleType() {
-            private val localePath: String = locale
+        actual class Custom actual constructor(languageTag: String) : LocaleType() {
 
-            override val locale: NSLocale
-                get() = NSLocale.localeWithLocaleIdentifier(localePath)
+
+            override val locale: NSLocale = NSLocale(
+                NSLocale.localeIdentifierFromComponents(
+                    buildMap {
+                        val languageTagParts = languageTag.split("-")
+                        put(NSLocaleLanguageCode, languageTagParts[0])
+                        languageTagParts.getOrNull(1)?.let { country ->
+                            put(NSLocaleCountryCode, country)
+                        }
+                        languageTagParts.getOrNull(2)?.let { variant ->
+                            put(NSLocaleVariantCode, variant)
+                        }
+                    }
+                )
+            )
 
             override fun getLocaleBundle(rootBundle: NSBundle): NSBundle {
-                return rootBundle.pathForResource(localePath, "lproj")
+                return rootBundle.pathForResource(locale.localeIdentifier, "lproj")
                     ?.let { NSBundle.bundleWithPath(it) }
                     ?: rootBundle
             }

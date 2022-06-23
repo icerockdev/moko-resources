@@ -7,11 +7,7 @@ package dev.icerock.gradle.generator.android
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.PluralMap
-import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.KeyType
-import dev.icerock.gradle.generator.NOPObjectBodyExtendable
-import dev.icerock.gradle.generator.ObjectBodyExtendable
+import dev.icerock.gradle.generator.*
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -35,12 +31,21 @@ class AndroidPluralsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, PluralMap>
     ) {
-        val valuesDirName = when (language) {
-            null -> "values"
-            else -> "values-$language"
+        val valuesDirName = buildString {
+            append("values")
+
+            if (language is LanguageType.Locale) {
+                append("-")
+                append(language.locale.language)
+
+                if (language.locale.country.isNotBlank()) {
+                    append("-r")
+                    append(language.locale.country)
+                }
+            }
         }
 
         val valuesDir = File(resourcesGenerationDir, valuesDirName)

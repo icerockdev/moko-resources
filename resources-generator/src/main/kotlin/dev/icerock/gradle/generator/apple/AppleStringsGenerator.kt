@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.apple
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.LanguageType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
@@ -30,12 +31,12 @@ class AppleStringsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, String>
     ) {
         val resDirName = when (language) {
-            null -> "Base.lproj"
-            else -> "$language.lproj"
+            LanguageType.Base -> "Base.lproj"
+            is LanguageType.Locale -> "$language.lproj"
         }
 
         val resDir = File(resourcesGenerationDir, resDirName)

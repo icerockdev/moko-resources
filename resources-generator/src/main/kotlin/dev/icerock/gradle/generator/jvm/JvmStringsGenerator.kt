@@ -6,10 +6,7 @@ package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.KeyType
-import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.generator.StringsGenerator
+import dev.icerock.gradle.generator.*
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -35,12 +32,12 @@ class JvmStringsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, String>
     ) {
         val fileDirName = when (language) {
-            null -> "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}"
-            else -> "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}_$language"
+            LanguageType.Base -> "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}"
+            is LanguageType.Locale -> "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}_$language"
         }
 
         val localizationDir = File(resourcesGenerationDir, JvmMRGenerator.LOCALIZATION_DIR).apply {

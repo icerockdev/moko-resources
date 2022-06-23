@@ -8,6 +8,7 @@ import BaseUnitTest
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
 import dev.icerock.moko.resources.desc.StringDesc
+import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import getString
 import kotlinx.coroutines.test.runTest
@@ -45,6 +46,36 @@ class StringResourceTests : BaseUnitTest() {
             expected = "test\ntest\nTest data 9\nother\nother\n10 items\n10 items\nraw string\n" +
                     "raw string\ntestraw string\nCHOOSE PORTFOLIO & AMOUNT\n" +
                     "second string str first decimal 9",
+            actual = rawString
+        )
+    }
+
+    @Test
+    fun checkEnString() = runTest {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("en")
+        val rawString: String = MR.strings.test_simple.desc().getString()
+        assertEquals(
+            expected = "test",
+            actual = rawString
+        )
+    }
+
+    @Test
+    fun checkEnUsString() = runTest {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("en-US")
+        val rawString: String = MR.strings.test_simple.desc().getString()
+        assertEquals(
+            expected = "test US",
+            actual = rawString
+        )
+    }
+
+    @Test
+    fun checkEnGbString() = runTest {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("en-GB")
+        val rawString: String = MR.strings.test_simple.desc().getString()
+        assertEquals(
+            expected = "test UK",
             actual = rawString
         )
     }

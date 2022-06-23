@@ -52,7 +52,7 @@ class JsPluralsGenerator(
                 "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language.json"
             }
         )
-        val languageKeys = languageMap[BASE_LANGUAGE].orEmpty().keys
+        val languageKeys = languageMap[LanguageType.Base].orEmpty().keys
         val languageKeysList = languageKeys.joinToString { it.replace(".", "_") }
 
         objectBuilder.addFunction(
@@ -69,12 +69,12 @@ class JsPluralsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, PluralMap>
     ) {
         val fileDirName = when (language) {
-            null -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}"
-            else -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language"
+            LanguageType.Base -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}"
+            is LanguageType.Locale -> "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}_$language"
         }
 
         val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {

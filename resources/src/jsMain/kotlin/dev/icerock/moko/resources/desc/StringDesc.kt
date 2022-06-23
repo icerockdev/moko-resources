@@ -12,13 +12,15 @@ actual interface StringDesc {
     fun localized(provider: JsStringProvider): String
 
     actual sealed class LocaleType {
-        abstract val locale: String?
+        abstract val locale: String
 
         actual object System : LocaleType() {
             override val locale: String get() = currentLocale()
         }
 
-        actual class Custom actual constructor(override val locale: String) : LocaleType()
+        actual class Custom actual constructor(languageTag: String) : LocaleType() {
+            override val locale: String = languageTag
+        }
     }
 
     actual companion object {

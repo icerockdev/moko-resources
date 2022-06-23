@@ -13,9 +13,36 @@ import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
 import dev.icerock.gradle.utils.removeLineWraps
 import org.gradle.api.file.FileTree
 import java.io.File
+import java.util.Locale as JvmLocale
 import javax.xml.parsers.DocumentBuilderFactory
 
-typealias LanguageType = String
+sealed interface LanguageType {
+
+    object Base : LanguageType
+
+    class Locale(languageTag: String) : LanguageType {
+
+        val locale = JvmLocale.forLanguageTag(languageTag)
+
+        override fun hashCode(): Int = locale.hashCode()
+        override fun toString(): String = locale.toString()
+        override fun equals(other: Any?): Boolean {
+            return other is Locale && other.locale == locale
+        }
+    }
+
+    companion object {
+
+        private const val BASE = "base"
+
+        fun fromFileName(fileName: String): LanguageType = when (fileName) {
+            BASE -> Base
+            else -> Locale(fileName.replace("-r", "-"))
+        }
+    }
+}
+
+
 typealias KeyType = String
 
 abstract class StringsGenerator(
@@ -29,7 +56,8 @@ abstract class StringsGenerator(
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
         return stringsFileTree.map { file ->
-            val language: LanguageType = file.parentFile.name
+            println("poopybutt: ${file.parentFile}")
+            val language: LanguageType = LanguageType.fromFileName(file.parentFile.name)
             val strings: Map<KeyType, String> = loadLanguageStrings(file)
             language to strings
         }.groupBy(

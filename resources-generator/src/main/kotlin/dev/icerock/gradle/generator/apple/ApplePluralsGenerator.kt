@@ -6,10 +6,7 @@ package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.PluralMap
-import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.KeyType
-import dev.icerock.gradle.generator.ObjectBodyExtendable
+import dev.icerock.gradle.generator.*
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -73,11 +70,11 @@ class ApplePluralsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, PluralMap>
     ) {
         val resDirName = when (language) {
-            null -> "Base.lproj"
+            LanguageType.Base -> "Base.lproj"
             else -> "$language.lproj"
         }
 
