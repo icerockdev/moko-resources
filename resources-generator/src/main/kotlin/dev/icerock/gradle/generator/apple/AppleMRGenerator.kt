@@ -21,9 +21,10 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.maybeCreate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
@@ -247,16 +248,15 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
 
     private fun createCopyResourcesToAppTask(project: Project) {
         project.tasks.withType<KotlinNativeLink>()
-            .matching { linkTask -> linkTask.binary is AbstractExecutable }
+            .matching { it.binary is AbstractExecutable }
             .all { linkTask ->
                 val copyTaskName = linkTask.name.replace("link", "copyResources")
 
-                if (linkTask.project.tasks.any { it.name == copyTaskName }) return@all
-
                 project.tasks
-                    .create(copyTaskName, CopyExecutableResourcesToApp::class) {
-                        it.linkTask = linkTask
-                        it.dependsOn(linkTask)
+                    .maybeCreate(copyTaskName, CopyExecutableResourcesToApp::class)
+                    .apply {
+                        this.linkTask = linkTask
+                        this.dependsOn(linkTask)
                     }
             }
     }
