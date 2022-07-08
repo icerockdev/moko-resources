@@ -21,7 +21,6 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.maybeCreate
