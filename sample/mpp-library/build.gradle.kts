@@ -19,6 +19,10 @@ android {
             isIncludeAndroidResources = true
         }
     }
+
+    lint {
+        disable.add("ImpliedQuantity")
+    }
 }
 
 kotlin {
