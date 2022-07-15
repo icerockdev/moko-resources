@@ -78,6 +78,14 @@ multiplatformResources {
 }
 ```
 
+To use `toUIColor()`, `toUIImage()`, `desc()` and other iOS extensions from Swift - you should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#export-dependencies-to-binaries):
+```
+framework {
+    export("dev.icerock.moko:resources:0.20.1")
+    export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
+}
+```
+
 If your project includes a build type, for example `staging` which isn't in moko-resources. That isn't an issue. Use matchingFallbacks to specify alternative matches for a given build type, as shown below
 ```
 buildTypes {
