@@ -4,22 +4,20 @@
 
 package dev.icerock.moko.resources.desc
 
+import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.PluralsResource
-import dev.icerock.moko.resources.objc.pluralizedString
 
-actual data class PluralFormattedStringDesc actual constructor(
+actual data class PluralStringDesc actual constructor(
     val pluralsRes: PluralsResource,
-    val number: Int,
-    val args: List<Any>
-) : StringDesc {
+    val number: Int
+) : StringDesc, Parcelable {
     override fun localized(): String {
-        val pluralized = pluralizedString(
+        return pluralizedString(
             bundle = StringDesc.localeType.getLocaleBundle(pluralsRes.bundle),
             baseBundle = pluralsRes.bundle,
             locale = StringDesc.localeType.locale,
             resourceId = pluralsRes.resourceId,
             number = number
-        )!!
-        return Utils.stringWithFormat(pluralized, Utils.processArgs(args))
+        )
     }
 }
