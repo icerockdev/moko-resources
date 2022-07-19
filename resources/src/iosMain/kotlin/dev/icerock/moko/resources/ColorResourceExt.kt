@@ -5,7 +5,9 @@
 package dev.icerock.moko.resources
 
 import dev.icerock.moko.graphics.Color
+import platform.UIKit.UIColor
 import platform.UIKit.UIUserInterfaceStyle
+import platform.UIKit.colorNamed
 
 fun ColorResource.getColor(userInterfaceStyle: UIUserInterfaceStyle): Color {
     return when (this) {
@@ -21,4 +23,15 @@ fun ColorResource.getColor(userInterfaceStyle: UIUserInterfaceStyle): Color {
             }
         }
     }
+}
+
+/**
+ * Returns null if no color asset is found in the ios app. update and configure copyColorAssetsToIOSApp in your ios run script to automate the copy process.
+ *       val copyColorAssetsToIOSApp = tasks.register<Copy>("copyColorAssetsToIOSApp") {
+ *              from("$rootDir/resources/build/generated/moko/iosMain/res/Assets.xcassets")
+ *              into("$rootDir/iosApp/iosApp/Assets.xcassets/colors")
+ *       }
+ */
+fun ColorResource.getThemeColor(): UIColor {
+    return UIColor.colorNamed(this.name)!!
 }
