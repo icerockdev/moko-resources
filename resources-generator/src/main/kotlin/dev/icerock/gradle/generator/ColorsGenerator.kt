@@ -72,9 +72,9 @@ abstract class ColorsGenerator(
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyInitializer(color: ColorNode): CodeBlock? {
         val className = if (color.isThemed()) {
-            "Themed(light = Color(0x${color.lightColor}), dark = Color(0x${color.darkColor}))"
+            "Themed(light = Color(0x${color.lightColor}), dark = Color(0x${color.darkColor}), name = \"${color.name}\")"
         } else {
-            "Single(color = Color(0x${color.singleColor}))"
+            "Single(color = Color(0x${color.singleColor}), name = \"${color.name}\")"
         }
         return CodeBlock.of(className)
     }

@@ -6,8 +6,8 @@ package dev.icerock.moko.resources
 
 import dev.icerock.moko.graphics.Color
 
-sealed class ColorResource {
-    class Single(val color: Color) : ColorResource()
+sealed class ColorResource(val name:String) {
+    class Single(val color: Color, name: String) : ColorResource(name)
 
-    class Themed(val light: Color, val dark: Color) : ColorResource()
+    class Themed(val light: Color, val dark: Color, name: String) : ColorResource(name)
 }
