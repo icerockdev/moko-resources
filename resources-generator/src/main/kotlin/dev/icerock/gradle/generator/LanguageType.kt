@@ -22,18 +22,18 @@ sealed interface LanguageType {
 
     class Locale(languageTag: String) : LanguageType {
 
-        private val locale: JvmLocale = JvmLocale.forLanguageTag(languageTag)
+        private val jvmLocale: JvmLocale = JvmLocale.forLanguageTag(languageTag)
 
-        fun toBcpString(): String = locale.toLanguageTag()
-        private fun toLocaleString(): String = locale.toString()
+        fun toBcpString(): String = jvmLocale.toLanguageTag()
+        private fun toLocaleString(): String = jvmLocale.toString()
 
         override val androidResourcesDir: String = buildString {
             append("values")
             append("-")
-            append(locale.language)
-            if (locale.country.isNotBlank()) {
+            append(jvmLocale.language)
+            if (jvmLocale.country.isNotBlank()) {
                 append("-r")
-                append(locale.country)
+                append(jvmLocale.country)
             }
         }
 
@@ -50,9 +50,9 @@ sealed interface LanguageType {
          */
         override fun toString(): String = TODO("Use toLocaleString or toBcpString instead!")
 
-        override fun hashCode(): Int = locale.hashCode()
+        override fun hashCode(): Int = jvmLocale.hashCode()
         override fun equals(other: Any?): Boolean {
-            return other is Locale && other.locale == locale
+            return other is Locale && other.jvmLocale == jvmLocale
         }
     }
 
