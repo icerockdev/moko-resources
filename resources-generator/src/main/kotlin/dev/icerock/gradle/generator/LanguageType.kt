@@ -8,10 +8,16 @@ import java.util.Locale as JvmLocale
 
 sealed interface LanguageType {
 
-    fun toAndroidResourcesString(): String
+    val androidResourcesDir: String
+    val appleResourcesDir: String
+    val jsResourcesSuffix: String
+    val jvmResourcesSuffix: String
 
     object Base : LanguageType {
-        override fun toAndroidResourcesString(): String = "values"
+        override val androidResourcesDir: String = "values"
+        override val appleResourcesDir: String = "Base.lproj"
+        override val jsResourcesSuffix: String = ""
+        override val jvmResourcesSuffix: String = ""
     }
 
     class Locale(languageTag: String) : LanguageType {
@@ -19,8 +25,9 @@ sealed interface LanguageType {
         private val locale: JvmLocale = JvmLocale.forLanguageTag(languageTag)
 
         fun toBcpString(): String = locale.toLanguageTag()
-        fun toLocaleString(): String = locale.toString()
-        override fun toAndroidResourcesString(): String = buildString {
+        private fun toLocaleString(): String = locale.toString()
+
+        override val androidResourcesDir: String = buildString {
             append("values")
             append("-")
             append(locale.language)
@@ -29,6 +36,13 @@ sealed interface LanguageType {
                 append(locale.country)
             }
         }
+
+        override val appleResourcesDir: String = "${toBcpString()}.lproj"
+        override val jsResourcesSuffix: String = "_${toBcpString()}"
+
+        // JVM ResourceBundle uses locale format, eg `en_US`, instead of BCP format
+        // like `en-US`.
+        override val jvmResourcesSuffix: String = "_${toLocaleString()}"
 
         /**
          * Throw an error here so that we safeguard ourselves from implcitly calling `Local.toString`.

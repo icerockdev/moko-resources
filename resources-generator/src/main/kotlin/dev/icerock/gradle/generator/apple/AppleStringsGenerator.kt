@@ -34,12 +34,7 @@ class AppleStringsGenerator(
         language: LanguageType,
         strings: Map<KeyType, String>
     ) {
-        val resDirName = when (language) {
-            LanguageType.Base -> "Base.lproj"
-            is LanguageType.Locale -> "${language.toBcpString()}.lproj"
-        }
-
-        val resDir = File(resourcesGenerationDir, resDirName)
+        val resDir = File(resourcesGenerationDir, language.appleResourcesDir)
         val localizableFile = File(resDir, "Localizable.strings")
         resDir.mkdirs()
 

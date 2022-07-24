@@ -34,7 +34,7 @@ class AndroidPluralsGenerator(
         language: LanguageType,
         strings: Map<KeyType, PluralMap>
     ) {
-        val valuesDir = File(resourcesGenerationDir, language.toAndroidResourcesString())
+        val valuesDir = File(resourcesGenerationDir, language.androidResourcesDir())
         val stringsFile = File(valuesDir, "multiplatform_plurals.xml")
         valuesDir.mkdirs()
 

@@ -35,14 +35,8 @@ class JvmPluralsGenerator(
         language: LanguageType,
         strings: Map<KeyType, PluralMap>
     ) {
-        val fileDirName = when (language) {
-            LanguageType.Base -> "${flattenClassPackage}_${JvmMRGenerator.PLURALS_BUNDLE_NAME}"
-            is LanguageType.Locale -> {
-                // JVM ResourceBundle uses locale format, eg `en_US`, instead of BCP format
-                // like `en-US`.
-                "${flattenClassPackage}_${JvmMRGenerator.PLURALS_BUNDLE_NAME}_${language.toLocaleString()}"
-            }
-        }
+        val fileDirName =
+            "${flattenClassPackage}_${JvmMRGenerator.PLURALS_BUNDLE_NAME}${language.jvmResourcesSuffix}"
 
         val localizationDir =
             File(resourcesGenerationDir, JvmMRGenerator.LOCALIZATION_DIR).apply { mkdirs() }
