@@ -7,10 +7,14 @@ package dev.icerock.gradle.generator.android
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.*
+import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.LanguageType
+import dev.icerock.gradle.generator.NOPObjectBodyExtendable
+import dev.icerock.gradle.generator.ObjectBodyExtendable
+import dev.icerock.gradle.generator.StringsGenerator
+import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
 import java.io.File
-import org.apache.commons.text.StringEscapeUtils
 
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
@@ -35,7 +39,7 @@ class AndroidStringsGenerator(
         language: LanguageType,
         strings: Map<KeyType, String>
     ) {
-        val valuesDir = File(resourcesGenerationDir, language.androidResourcesDir())
+        val valuesDir = File(resourcesGenerationDir, language.androidResourcesDir)
         val stringsFile = File(valuesDir, "multiplatform_strings.xml")
         valuesDir.mkdirs()
 
