@@ -63,9 +63,9 @@ class StringResourceTests : BaseUnitTest() {
     @Test
     fun checkEnUsString() = runTest {
         StringDesc.localeType = StringDesc.LocaleType.Custom("en-US")
-        val rawString: String = MR.strings.test_simple.desc().getString()
+        val rawString: String = MR.strings.test_dialect.desc().getString()
         assertEquals(
-            expected = "test US",
+            expected = "US",
             actual = rawString
         )
     }
@@ -73,9 +73,18 @@ class StringResourceTests : BaseUnitTest() {
     @Test
     fun checkEnGbString() = runTest {
         StringDesc.localeType = StringDesc.LocaleType.Custom("en-GB")
-        val rawString: String = MR.strings.test_simple.desc().getString()
+        val rawString: String = MR.strings.test_dialect.desc().getString()
         assertEquals(
-            expected = "test UK",
+            expected = "UK",
+            actual = rawString
+        )
+    }
+
+    @Test fun stringFallsBackToBaseUnspecifiedDialect() = runTest {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("es-US")
+        val rawString: String = MR.strings.test_dialect.desc().getString()
+        assertEquals(
+            expected = "Base",
             actual = rawString
         )
     }
