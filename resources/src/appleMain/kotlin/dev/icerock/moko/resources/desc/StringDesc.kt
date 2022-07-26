@@ -20,13 +20,13 @@ actual interface StringDesc {
             }
         }
 
-        actual class Custom actual constructor(languageTag: String) : LocaleType() {
+        actual class Custom actual constructor(locale: String) : LocaleType() {
 
 
             override val locale: NSLocale = NSLocale(
                 NSLocale.localeIdentifierFromComponents(
                     buildMap {
-                        val languageTagParts = languageTag.split("-")
+                        val languageTagParts = locale.split("-")
                         put(NSLocaleLanguageCode, languageTagParts[0])
                         languageTagParts.getOrNull(1)?.let { country ->
                             put(NSLocaleCountryCode, country)

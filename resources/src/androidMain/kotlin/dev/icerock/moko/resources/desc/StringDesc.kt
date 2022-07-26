@@ -18,9 +18,17 @@ actual interface StringDesc {
         }
 
         actual class Custom actual constructor(
-            languageTag: String
+            private val locale: String
         ) : LocaleType() {
-            override val systemLocale: Locale = Locale.forLanguageTag(languageTag)
+            override val systemLocale: Locale get() {
+                val languageTagParts = locale.split("-")
+                return when (languageTagParts.size) {
+                    1 -> Locale(languageTagParts[0])
+                    2 -> Locale(languageTagParts[0], languageTagParts[1])
+                    3 -> Locale(languageTagParts[0], languageTagParts[1], languageTagParts[2])
+                    else -> throw IllegalArgumentException("Invalid language tag $locale which has more than three parts.")
+                }
+            }
         }
     }
 
