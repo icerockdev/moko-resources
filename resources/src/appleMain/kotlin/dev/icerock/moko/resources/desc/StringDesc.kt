@@ -4,8 +4,15 @@
 
 package dev.icerock.moko.resources.desc
 
-import platform.Foundation.*
 import kotlin.native.concurrent.ThreadLocal
+import platform.Foundation.NSBundle
+import platform.Foundation.NSLocale
+import platform.Foundation.NSLocaleCountryCode
+import platform.Foundation.NSLocaleLanguageCode
+import platform.Foundation.NSLocaleVariantCode
+import platform.Foundation.currentLocale
+import platform.Foundation.localeIdentifier
+import platform.Foundation.localeIdentifierFromComponents
 
 actual interface StringDesc {
     fun localized(): String
