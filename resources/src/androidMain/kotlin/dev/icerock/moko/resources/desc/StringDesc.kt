@@ -23,10 +23,16 @@ actual interface StringDesc {
             override val systemLocale: Locale get() {
                 val languageTagParts = locale.split("-")
                 return when (languageTagParts.size) {
-                    1 -> Locale(languageTagParts[0])
-                    2 -> Locale(languageTagParts[0], languageTagParts[1])
-                    3 -> Locale(languageTagParts[0], languageTagParts[1], languageTagParts[2])
-                    else -> throw IllegalArgumentException("Invalid language tag $locale which has more than three parts.")
+                    LANGUAGE -> Locale(languageTagParts[0])
+                    LANGUAGE_AND_COUNTRY -> Locale(languageTagParts[0], languageTagParts[1])
+                    LANGUAGE_AND_COUNTRY_AND_VARIANT -> Locale(
+                        languageTagParts[0],
+                        languageTagParts[1],
+                        languageTagParts[2]
+                    )
+                    else -> throw IllegalArgumentException(
+                        "Invalid language tag $locale which has more than three parts."
+                    )
                 }
             }
         }
@@ -36,3 +42,8 @@ actual interface StringDesc {
         actual var localeType: LocaleType = LocaleType.System
     }
 }
+
+private const val LANGUAGE = 1
+private const val LANGUAGE_AND_COUNTRY = 2
+private const val LANGUAGE_AND_COUNTRY_AND_VARIANT = 3
+
