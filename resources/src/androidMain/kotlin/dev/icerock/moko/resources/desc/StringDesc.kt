@@ -46,4 +46,3 @@ actual interface StringDesc {
 private const val LANGUAGE = 1
 private const val LANGUAGE_AND_COUNTRY = 2
 private const val LANGUAGE_AND_COUNTRY_AND_VARIANT = 3
-
