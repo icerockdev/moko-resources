@@ -81,7 +81,7 @@ class StringResourceTests : BaseUnitTest() {
     }
 
     @Test fun stringFallsBackToBaseUnspecifiedDialect() = runTest {
-        StringDesc.localeType = StringDesc.LocaleType.Custom("es-US")
+        StringDesc.localeType = StringDesc.LocaleType.Custom("it")
         val rawString: String = MR.strings.test_dialect.desc().getString()
         assertEquals(
             expected = "Base",
