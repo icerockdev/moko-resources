@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.generator
 
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
@@ -54,10 +55,19 @@ abstract class MRGenerator(
 
         beforeMRGeneration()
 
+
         @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(mrSettings.className)
             .addModifiers(*getMRClassModifiers())
-            .addModifiers(mrSettings.visibility.toModifier())
+            .addModifiers(mrSettings.visibility.toModifier()).also {
+                if (mrSettings.addSuppressAnnotation && getMRClassModifiers().contains(KModifier.EXPECT)) {
+                    it.addAnnotation(
+                        AnnotationSpec.builder(Suppress::class)
+                            .addMember("%S", "NO_ACTUAL_FOR_EXPECT")
+                            .build()
+                    )
+                }
+            }
 
         generators.forEach { generator ->
             val builder = TypeSpec.objectBuilder(generator.mrObjectName)
@@ -145,6 +155,7 @@ abstract class MRGenerator(
     data class MRSettings(
         val packageName: String,
         val className: String,
-        val visibility: MRVisibility
+        val visibility: MRVisibility,
+        val addSuppressAnnotation: Boolean
     )
 }

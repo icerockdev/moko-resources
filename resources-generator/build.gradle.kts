@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "dev.icerock.moko"
-version = libs.versions.mokoResourcesVersion.get()
+version = "0.20.2"
 
 dependencies {
     implementation(gradleKotlinDsl())

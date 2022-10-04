@@ -83,7 +83,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val mrSettings = MRGenerator.MRSettings(
             packageName = mrClassPackage,
             className = mrExtension.multiplatformResourcesClassName,
-            visibility = mrExtension.multiplatformResourcesVisibility
+            visibility = mrExtension.multiplatformResourcesVisibility,
+            addSuppressAnnotation = mrExtension.addSuppressAnnotation
         )
         val sourceInfo = SourceInfo(
             generatedDir,
