@@ -227,7 +227,7 @@ In `commonMain/resources/MR/base/strings.xml` add:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="my_string_formatted">My format '%s'</string>
+    <string name="my_string_formatted">My format \'%s\'</string>
 </resources>
 ```
 Then add the localized values for other languages like in example #1.
