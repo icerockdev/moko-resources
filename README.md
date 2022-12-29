@@ -10,7 +10,7 @@
 ![badge][badge-js]
 
 # Mobile Kotlin resources
-This is a Kotlin MultiPlatform library that provides access to the resources on macOs, iOS, Android the JVM and JS/Browser 
+This is a Kotlin MultiPlatform library that provides access to the resources on macOS, iOS, Android the JVM and JS/Browser 
 with the support of the default system localization.
 
 ## Table of Contents
