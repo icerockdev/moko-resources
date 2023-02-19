@@ -54,6 +54,8 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val multiplatformExtension =
                 target.extensions.getByType(KotlinMultiplatformExtension::class)
+            multiplatformExtension.multiplatformResourcesPackage =
+                multiplatformExtension.multiplatformResourcesPackage ?: "${target.group.toString()}.${target.name}"
 
             target.afterEvaluate {
                 configureGenerators(
