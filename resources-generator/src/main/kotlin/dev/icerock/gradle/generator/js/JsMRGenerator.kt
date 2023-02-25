@@ -152,7 +152,7 @@ class JsMRGenerator(
                 """
                 const path = require('path');
 
-                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath}");
+                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath.replace("\\","\\\\")}");
 
                 config.module.rules.push(
                     {
