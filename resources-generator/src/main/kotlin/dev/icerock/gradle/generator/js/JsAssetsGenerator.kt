@@ -28,7 +28,7 @@ class JsAssetsGenerator(
         val filePath = File(FILES_DIR, fileSpec.pathRelativeToBase).path
         return CodeBlock.of("""
             AssetResource(
-                originalPath = js("require(\"$filePath\")") as String, 
+                originalPath = js("require(\"${filePath.replace("\\","\\\\")}\")") as String, 
                 rawPath = "${fileSpec.pathRelativeToBase}"
             )
         """.trimIndent())
