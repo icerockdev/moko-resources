@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.moko.resources.compose
@@ -28,4 +28,6 @@ actual fun stringResource(resource: PluralsResource, quantity: Int): String =
 
 @Composable
 actual fun stringResource(resource: PluralsResource, quantity: Int, vararg args: Any): String =
-    produceState("") { value = StringDesc.PluralFormatted(resource, quantity, *args).localized() }.value
+    produceState("") {
+        value = StringDesc.PluralFormatted(resource, quantity, *args).localized()
+    }.value
