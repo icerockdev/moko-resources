@@ -10,7 +10,7 @@
 ![badge][badge-js]
 
 # Mobile Kotlin resources
-This is a Kotlin MultiPlatform library that provides access to the resources on macOs, iOS, Android the JVM and JS/Browser 
+This is a Kotlin MultiPlatform library that provides access to the resources on macOS, iOS, Android the JVM and JS/Browser 
 with the support of the default system localization.
 
 ## Table of Contents
@@ -227,7 +227,7 @@ In `commonMain/resources/MR/base/strings.xml` add:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="my_string_formatted">My format '%s'</string>
+    <string name="my_string_formatted">My format \'%s\'</string>
 </resources>
 ```
 Then add the localized values for other languages like in example #1.
