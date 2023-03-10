@@ -46,16 +46,15 @@ import javax.xml.parsers.DocumentBuilderFactory
 @Suppress("TooManyFunctions")
 class MultiplatformResourcesPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val mrExtension = target.extensions.create(
+        val mrExtension: MultiplatformResourcesPluginExtension = target.extensions.create(
             "multiplatformResources",
             MultiplatformResourcesPluginExtension::class
         )
+        mrExtension.multiplatformResourcesPackage = "${target.group}.${target.name}"
 
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val multiplatformExtension =
                 target.extensions.getByType(KotlinMultiplatformExtension::class)
-            multiplatformExtension.multiplatformResourcesPackage =
-                multiplatformExtension.multiplatformResourcesPackage ?: "${target.group.toString()}.${target.name}"
 
             target.afterEvaluate {
                 configureGenerators(
