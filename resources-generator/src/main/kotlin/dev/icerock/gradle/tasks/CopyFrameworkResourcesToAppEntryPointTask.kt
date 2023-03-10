@@ -28,6 +28,9 @@ open class CopyFrameworkResourcesToAppEntryPointTask : DefaultTask() {
     internal val platformName: String?
 
     @get:Internal
+    internal val archs: String?
+
+    @get:Internal
     internal var configurationMapper: Map<String, NativeBuildType> = emptyMap()
 
     init {
@@ -36,10 +39,20 @@ open class CopyFrameworkResourcesToAppEntryPointTask : DefaultTask() {
         platformName =
             project.findProperty("moko.resources.PLATFORM_NAME") as? String
 
+        archs = project.findProperty("kotlin.native.cocoapods.archs") as? String
+
         konanTarget = when (platformName) {
-            "iphonesimulator" -> KonanTarget.IOS_X64
+            "iphonesimulator" -> when {
+                archs?.contains("arm64") == true -> KonanTarget.IOS_SIMULATOR_ARM64
+                archs?.contains("x86_64") == true -> KonanTarget.IOS_X64
+                else -> null
+            }
             "iphoneos" -> KonanTarget.IOS_ARM64
-            "macosx" -> KonanTarget.MACOS_X64
+            "macosx" -> when {
+                archs?.contains("arm64") == true -> KonanTarget.MACOS_ARM64
+                archs?.contains("x86_64") == true -> KonanTarget.MACOS_X64
+                else -> null
+            }
             else -> null
         }
     }
