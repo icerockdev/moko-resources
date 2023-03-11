@@ -13,18 +13,6 @@ plugins {
 }
 
 kotlin {
-    targets
-        .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
-        .configureEach {
-            this as org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
-            compilations.getByName("main") {
-                val pluralizedString by cinterops.creating {
-                    defFile(project.file("src/appleMain/def/pluralizedString.def"))
-                }
-            }
-        }
-
     js(IR) {
         browser {
             webpackTask {

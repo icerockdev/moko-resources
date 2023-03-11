@@ -27,12 +27,21 @@ android {
 }
 
 kotlin {
+    android()
     jvm()
+    js(IR) {
+        browser()
+    }
     sourceSets {
         commonMain {
             dependencies {
                 api(projects.resources)
                 implementation(compose.runtime)
+            }
+        }
+
+        named("androidMain") {
+            dependencies {
                 implementation(compose.foundation)
             }
         }
@@ -40,6 +49,7 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 api(compose.desktop.common)
+                implementation(compose.foundation)
                 implementation(compose.desktop.currentOs)
             }
         }
