@@ -4,35 +4,16 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.graphics.Color
 import platform.UIKit.UIColor
-import platform.UIKit.UIUserInterfaceStyle
 import platform.UIKit.colorNamed
 
-fun ColorResource.getColor(userInterfaceStyle: UIUserInterfaceStyle): Color {
-    return when (this) {
-        is ColorResource.Single -> {
-            color
-        }
-        is ColorResource.Themed -> {
-            when (userInterfaceStyle) {
-                UIUserInterfaceStyle.UIUserInterfaceStyleDark -> dark
-                UIUserInterfaceStyle.UIUserInterfaceStyleLight -> light
-                UIUserInterfaceStyle.UIUserInterfaceStyleUnspecified -> light
-                else -> light
-            }
-        }
-    }
-}
-
-/**
- * Returns null if no color asset is found in the ios app.
- * update and configure copyColorAssetsToIOSApp in your ios run script to automate the copy process.
- *       val copyColorAssetsToIOSApp = tasks.register<Copy>("copyColorAssetsToIOSApp") {
- *              from("$rootDir/resources/build/generated/moko/iosMain/res/Assets.xcassets")
- *              into("$rootDir/iosApp/iosApp/Assets.xcassets/colors")
- *       }
- */
-fun ColorResource.getThemeColor(): UIColor {
-    return UIColor.colorNamed(this.name)!!
+fun ColorResource.getUIColor(): UIColor {
+    return UIColor.colorNamed(
+        name = this.name,
+        inBundle = this.bundle,
+        compatibleWithTraitCollection = null
+    ) ?: throw IllegalStateException(
+        "Can't read color $name from bundle $bundle, " +
+                "please check moko-resources gradle configuration"
+    )
 }

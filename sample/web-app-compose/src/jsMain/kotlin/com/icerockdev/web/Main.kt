@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
-import dev.icerock.moko.resources.ColorResource
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.color
@@ -56,7 +55,7 @@ suspend fun main() {
                     attrs = {
                         style {
                             val (r, g, b, a) =
-                                (Testing.getGradientColors().first() as ColorResource.Single).color
+                                Testing.getGradientColors().first().lightColor
                             color(rgba(r, g, b, a))
                         }
                     }

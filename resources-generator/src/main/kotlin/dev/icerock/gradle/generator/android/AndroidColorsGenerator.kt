@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator.android
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
@@ -66,6 +67,10 @@ class AndroidColorsGenerator(
 
     private fun buildColorString(name: String, colorCode: String?): String {
         return "\t<color name=\"$name\">#$colorCode</color>"
+    }
+
+    override fun getPropertyInitializer(color: ColorNode): CodeBlock {
+        return CodeBlock.of("ColorResource(resourceId = R.color.${color.name})")
     }
 
     companion object {

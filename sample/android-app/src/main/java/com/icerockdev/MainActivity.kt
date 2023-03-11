@@ -13,8 +13,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.icerockdev.library.Testing
-import dev.icerock.moko.graphics.colorInt
-import dev.icerock.moko.resources.getColor
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         imageView.background = GradientDrawable(
             GradientDrawable.Orientation.LEFT_RIGHT,
             Testing.getGradientColors().map {
-                it.getColor(context = this).colorInt()
+                it.getColor(context = this)
             }.toIntArray()
         )
 
@@ -50,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)
         stringDescTextView.typeface = Testing.getFontTtf2().getTypeface(context = this)
 
-        val textColorFromLib = Testing.getTextColor().getColor(context = this).colorInt()
+        val textColorFromLib = Testing.getTextColor().getColor(context = this)
         stringDescTextView.setTextColor(textColorFromLib)
 
         listOf(

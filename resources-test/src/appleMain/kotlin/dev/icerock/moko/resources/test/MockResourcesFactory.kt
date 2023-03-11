@@ -4,9 +4,10 @@
 
 package dev.icerock.moko.resources.test
 
-import dev.icerock.moko.resources.ImageResource
-import dev.icerock.moko.resources.StringResource
+import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
+import dev.icerock.moko.resources.StringResource
 
 actual fun createStringResourceMock(): StringResource = StringResource("")
 actual fun createFileResourceMock(): FileResource = FileResource("", "")
+actual fun createColorResourceMock(): ColorResource = ColorResource("")

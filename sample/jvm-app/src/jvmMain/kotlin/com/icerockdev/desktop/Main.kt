@@ -12,17 +12,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
+import dev.icerock.moko.resources.compose.toColor
 import dev.icerock.moko.resources.compose.toComposeFont
-import dev.icerock.moko.resources.compose.toImageBitmap
 
 fun main() {
     val testing = Testing
@@ -45,7 +44,7 @@ fun main() {
                 testing.getStrings().forEach { stringDesc ->
                     Text(
                         text = stringDesc.localized(),
-                        color = Color(MR.colors.textColor.color.argb),
+                        color = MR.colors.textColor.toColor(),
                         modifier = Modifier.padding(8.dp)
                     )
                 }

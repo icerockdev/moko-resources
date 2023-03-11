@@ -4,6 +4,8 @@
 
 package dev.icerock.moko.resources.test
 
+import dev.icerock.moko.graphics.Color
+import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.FontResource
 import dev.icerock.moko.resources.ImageResource
@@ -32,3 +34,5 @@ actual fun createFileResourceMock(): FileResource {
 actual fun createFontResourceMock(): FontResource {
     return FontResource(fileUrl = "", fontFamily = "")
 }
+
+actual fun createColorResourceMock(): ColorResource = ColorResource(Color(0x0), Color(0x0))

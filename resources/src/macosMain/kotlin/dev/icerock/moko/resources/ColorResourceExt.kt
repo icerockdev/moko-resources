@@ -4,20 +4,14 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.graphics.Color
-import platform.AppKit.NSAppearance
+import platform.AppKit.NSColor
 
-fun ColorResource.getColor(appearance: NSAppearance): Color {
-    return when (this) {
-        is ColorResource.Single -> {
-            color
-        }
-        is ColorResource.Themed -> {
-            if (appearance.name?.contains("Dark") == true) {
-                dark
-            } else {
-                light
-            }
-        }
-    }
+fun ColorResource.getNSColor(): NSColor {
+    return NSColor.colorNamed(
+        name = this.name,
+        bundle = this.bundle
+    ) ?: throw IllegalStateException(
+        "Can't read color $name from bundle $bundle, " +
+                "please check moko-resources gradle configuration"
+    )
 }
