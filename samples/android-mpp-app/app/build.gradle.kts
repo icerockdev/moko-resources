@@ -3,13 +3,19 @@
  */
 
 plugins {
-    id("android-app-convention")
+    id("com.android.application")
     id("org.jetbrains.kotlin.multiplatform")
     id("dev.icerock.mobile.multiplatform-resources")
-    id("detekt-convention")
 }
 
 android {
+    compileSdk = 33
+
+    defaultConfig {
+        minSdk = 16
+        targetSdk = 33
+    }
+
     buildFeatures.dataBinding = true
 
     defaultConfig {
@@ -28,12 +34,11 @@ kotlin {
 }
 
 dependencies {
-    "androidMainImplementation"(libs.appCompat)
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
-    commonMainImplementation(projects.resources)
+    commonMainImplementation(moko.resources)
 }
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
-    disableStaticFrameworkWarning = true
 }

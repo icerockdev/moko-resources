@@ -18,6 +18,11 @@ dependencyResolutionManagement {
             }
         }
     }
+    versionCatalogs {
+        create("moko") {
+            from(files("gradle/moko.versions.toml"))
+        }
+    }
 }
 
 includeBuild("resources-build-logic")

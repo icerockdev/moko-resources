@@ -36,7 +36,6 @@ robolectricVersion = "4.8.1"
 mokoGraphicsVersion = "0.9.0"
 mokoParcelizeVersion = "0.8.0"
 mokoTestVersion = "0.6.1"
-mokoResourcesVersion = "0.21.0"
 mokoMultiplatformPluginVersion = "0.14.2"
 
 [libraries]
