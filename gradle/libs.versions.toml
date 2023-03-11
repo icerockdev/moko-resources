@@ -1,6 +1,6 @@
 [versions]
 kotlinVersion = "1.8.10"
-androidGradleVersion = "7.2.2"
+androidGradleVersion = "7.4.2"
 
 # kotlinx
 kotlinxSerializationVersion = "1.5.0"

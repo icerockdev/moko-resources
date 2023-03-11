@@ -8,8 +8,6 @@ plugins {
 }
 
 android {
-    buildFeatures.dataBinding = true
-
     defaultConfig {
         applicationId = "dev.icerock.moko.samples.resources"
 
