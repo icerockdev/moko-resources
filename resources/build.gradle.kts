@@ -13,10 +13,6 @@ plugins {
 }
 
 kotlin {
-    js(IR) {
-        browser()
-    }
-
     sourceSets {
         getByName("jsMain") {
             dependencies {
