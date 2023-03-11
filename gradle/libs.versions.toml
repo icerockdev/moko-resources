@@ -89,4 +89,3 @@ kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embe
 detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektVersion" }
 mokoMultiplatformPlugin = { module = "dev.icerock:mobile-multiplatform", version.ref = "mokoMultiplatformPluginVersion" }
 composeJetBrainsPlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeJetbrainsVersion" }
-autoManifestPlugin = { module = "com.gradleup:auto-manifest-plugin", version = "1.1.1" }
