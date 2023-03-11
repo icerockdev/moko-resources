@@ -10,7 +10,7 @@
 ![badge][badge-js]
 
 # Mobile Kotlin resources
-This is a Kotlin MultiPlatform library that provides access to the resources on macOs, iOS, Android the JVM and JS/Browser 
+This is a Kotlin MultiPlatform library that provides access to the resources on macOS, iOS, Android the JVM and JS/Browser 
 with the support of the default system localization.
 
 ## Table of Contents
@@ -110,37 +110,40 @@ JS/Browser generates json files which is included in webpack by default.
 For more details about JS see [this](sample/web-app-compose) example
 
 ### Static kotlin frameworks support
-If project configured with static framework output (for example by `org.jetbrains.kotlin.native.cocoapods` plugin)
-in Xcode project should be added `Build Phase` (at end of list) with script:
+
+Static framework can't have own resources, so we should setup additional `Build Phase` in Xcode 
+that will copy resources to application.
+
+Please replace `:yourframeworkproject` to kotlin project gradle path, and set correct relative path (`$SRCROOT/../` in example).  
+
+#### With org.jetbrains.kotlin.native.cocoapods
+In Xcode add `Build Phase` (at end of list) with script:
 ```shell script
 "$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
-    -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
-    -Pmoko.resources.CONFIGURATION=$CONFIGURATION \
-    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
-    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
-```
-Please replace `:yourframeworkproject` to kotlin project gradle path, and set correct relative path (`$SRCROOT/../` in example).  
-This phase will copy resources into application, because static frameworks can't have resources.
-
-To disable warnings about static framework in gradle set flag:
-```kotlin
-multiplatformResources {
-    disableStaticFrameworkWarning = true
-}
-```
-
-#### With Pods dependencies in Kotlin
-When you use `org.jetbrains.kotlin.native.cocoapods` plugin and also kotlin module depends to Pods -
-you also need to pass extra properties:
-```shell script
-"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyFrameworkResourcesToApp \
-    -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
-    -Pmoko.resources.CONFIGURATION=$CONFIGURATION \
     -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
     -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH\
     -Pkotlin.native.cocoapods.platform=$PLATFORM_NAME \
     -Pkotlin.native.cocoapods.archs="$ARCHS" \
     -Pkotlin.native.cocoapods.configuration=$CONFIGURATION 
+```
+
+#### Without org.jetbrains.kotlin.native.cocoapods
+In Xcode add `Build Phase` (at end of list) with script:
+```shell script
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
+    -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
+    -Pmoko.resources.CONFIGURATION=$CONFIGURATION \
+    -Pmoko.resources.ARCHS="$ARCHS" \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH 
+```
+
+#### Disable warning about static framework usage
+To disable warnings about static framework in gradle set flag:
+```kotlin
+multiplatformResources {
+    disableStaticFrameworkWarning = true
+}
 ```
 
 ### iOS executable
@@ -227,7 +230,7 @@ In `commonMain/resources/MR/base/strings.xml` add:
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="my_string_formatted">My format '%s'</string>
+    <string name="my_string_formatted">My format \'%s\'</string>
 </resources>
 ```
 Then add the localized values for other languages like in example #1.
