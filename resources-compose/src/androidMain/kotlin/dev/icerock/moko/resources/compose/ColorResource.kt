@@ -4,13 +4,14 @@
 
 package dev.icerock.moko.resources.compose
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import dev.icerock.moko.resources.ColorResource
 
 @Composable
 actual fun colorResource(resource: ColorResource): Color {
-    val mokoColor = if (isSystemInDarkTheme()) resource.darkColor else resource.lightColor
-    return Color(mokoColor.argb)
+    val context: Context = LocalContext.current
+    return Color(resource.getColor(context))
 }

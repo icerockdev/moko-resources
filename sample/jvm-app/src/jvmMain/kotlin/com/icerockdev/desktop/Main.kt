@@ -20,7 +20,7 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
-import dev.icerock.moko.resources.compose.toColor
+import dev.icerock.moko.resources.compose.colorResource
 import dev.icerock.moko.resources.compose.toComposeFont
 
 fun main() {
@@ -44,7 +44,7 @@ fun main() {
                 testing.getStrings().forEach { stringDesc ->
                     Text(
                         text = stringDesc.localized(),
-                        color = MR.colors.textColor.toColor(),
+                        color = colorResource(MR.colors.textColor),
                         modifier = Modifier.padding(8.dp)
                     )
                 }
