@@ -4,10 +4,13 @@
 
 package com.icerockdev.web
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
+import kotlinx.browser.window
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.color
@@ -22,6 +25,7 @@ import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
+import dev.icerock.moko.graphics.Color as MokoColor
 
 suspend fun main() {
     MR.fonts.addFontsToPage()
@@ -51,11 +55,13 @@ suspend fun main() {
                     Text(Testing.getStringDesc().localized(strings))
                 }
                 Br()
+                val color by remember(window) {
+                    Testing.getGradientColors().first().getColorFlow(window)
+                }.collectAsState(initial = MokoColor(0xFFAAFFFF))
                 P(
                     attrs = {
                         style {
-                            val (r, g, b, a) =
-                                Testing.getGradientColors().first().lightColor
+                            val (r, g, b, a) = color
                             color(rgba(r, g, b, a))
                         }
                     }

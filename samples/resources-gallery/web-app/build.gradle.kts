@@ -1,9 +1,6 @@
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackCssSupport
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("detekt-convention")
     id("dev.icerock.mobile.multiplatform-resources")
 }
 
@@ -15,8 +12,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(projects.resources)
-                implementation(projects.sample.mppLibrary)
+                implementation(moko.resources)
+                implementation(project(":mpp-library"))
 
                 implementation(compose.web.core)
                 implementation(compose.runtime)
