@@ -13,7 +13,7 @@ struct ContentView: View {
     let testing: Testing
     let image: NSImage
     let strings: [StringDesc]
-    let textColor = MR.colors().textColor.color.toNSColor()
+    let textColor: NSColor = MR.colors().textColor.getNSColor()
     
     init() {
 //        StringDescCompanion.shared.localeType = StringDescLocaleType.Custom(locale: "ru")
