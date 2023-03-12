@@ -5,11 +5,13 @@
 package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.gradle.BaseExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.utils.isDependsOn
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
@@ -21,7 +23,7 @@ internal class AndroidPluginLogic(
     private val generatedDir: File,
     private val mrSettings: MRGenerator.MRSettings,
     private val features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-    private val target: Project
+    private val project: Project
 ) {
     fun setup(androidMainSourceSet: AndroidSourceSet) {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
@@ -34,12 +36,28 @@ internal class AndroidPluginLogic(
 
         val androidSourceSet: MRGenerator.SourceSet =
             createSourceSet(androidMainSourceSet, kotlinSourceSets)
+
+        setAssetsDirsRefresh()
+
         AndroidMRGenerator(
             generatedDir = generatedDir,
             sourceSet = androidSourceSet,
             mrSettings = mrSettings,
             generators = features.map { it.createAndroidGenerator() }
-        ).apply(target)
+        ).apply(project)
+    }
+
+    private fun setAssetsDirsRefresh() {
+        // without this code Android Gradle Plugin not copy assets to aar
+        project.tasks
+            .matching { it.name.startsWith("package") && it.name.endsWith("Assets") }
+            .configureEach { task ->
+                task.doFirst {
+                    val android = project.extensions.getByType<BaseExtension>()
+                    val assets = android.sourceSets.getByName("main").assets
+                    assets.setSrcDirs(assets.srcDirs)
+                }
+            }
     }
 
     private fun createSourceSet(

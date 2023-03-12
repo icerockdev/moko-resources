@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.BasePlugin
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -128,7 +129,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target = target
         )
 
-        val setupAndroid = {
+        target.plugins.withType<BasePlugin> {
             val androidExtension = target.extensions.getByType(BaseExtension::class)
 
             val androidLogic = AndroidPluginLogic(
@@ -137,30 +138,21 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 generatedDir = generatedDir,
                 mrSettings = mrSettings,
                 features = features,
-                target = target
+                project = target
             )
 
-            target.afterEvaluate {
-                val androidMainSourceSet = androidExtension.sourceSets
-                    .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+            val androidMainSourceSet = androidExtension.sourceSets
+                .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
-                sourceInfo.getAndroidRClassPackage = lambda@{
-                    val namespace: String? = androidExtension.namespace
-                    if (namespace != null) return@lambda namespace
+            sourceInfo.getAndroidRClassPackage = lambda@{
+                val namespace: String? = androidExtension.namespace
+                if (namespace != null) return@lambda namespace
 
-                    val manifestFile = androidMainSourceSet.manifest.srcFile
-                    getAndroidPackage(manifestFile)
-                }
-
-                androidLogic.setup(androidMainSourceSet)
+                val manifestFile = androidMainSourceSet.manifest.srcFile
+                getAndroidPackage(manifestFile)
             }
-        }
 
-        target.plugins.withId("com.android.application") {
-            setupAndroid()
-        }
-        target.plugins.withId("com.android.library") {
-            setupAndroid()
+            androidLogic.setup(androidMainSourceSet)
         }
 
         setupJvmGenerator(
