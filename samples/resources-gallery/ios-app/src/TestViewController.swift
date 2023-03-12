@@ -21,20 +21,20 @@ class TestViewController: UIViewController {
 
         imageView.image = drawable.toUIImage()
 
-        let textColor = MR.colors().textColor.color
+        let textColor: UIColor = MR.colors().textColor.getUIColor()
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
         textView.font = testing.getFontTtf1().uiFont(withSize: 14.0)
-        textView.textColor = textColor.toUIColor()
+        textView.textColor = textColor
 
         stringDescTextView.text = testing.getStringDesc().localized()
         stringDescTextView.font = testing.getFontTtf2().uiFont(withSize: 14.0)
 
         [
-        testing.getTextFile(),
-        testing.getJsonFile(),
-        testing.getNestedJsonFile()
+            testing.getTextFile(),
+            testing.getJsonFile(),
+            testing.getNestedJsonFile()
         ].map { $0.readText() }
-        .forEach { print($0) }
+            .forEach { print($0) }
 
         testing.getTextsFromAssets().map { $0.readText() }
                 .forEach { print($0) }

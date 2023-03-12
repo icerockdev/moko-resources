@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
+    id("org.jetbrains.kotlin.native.cocoapods")
     id("dev.icerock.mobile.multiplatform-resources")
 }
 
@@ -52,17 +53,17 @@ android {
 }
 
 kotlin {
-    val xcFramework = XCFramework("MultiPlatformLibrary")
+    cocoapods {
+        version = "1.0"
+        summary = "Some description for a Kotlin/Native module"
+        homepage = "Link to a Kotlin/Native module homepage"
 
-    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class)
-        .matching { it.konanTarget.family == org.jetbrains.kotlin.konan.target.Family.IOS }
-        .configureEach {
-            binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class)
-                .configureEach {
-                    this.export(moko.resources)
-                    xcFramework.add(this)
-                }
+        framework {
+            baseName = "MultiPlatformLibrary"
+
+            export(moko.resources)
         }
+    }
 }
 
 dependencies {
