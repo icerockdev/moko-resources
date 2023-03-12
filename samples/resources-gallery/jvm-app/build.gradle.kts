@@ -1,10 +1,8 @@
-import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform") // kotlin("jvm") doesn't work well in IDEA/AndroidStudio (https://github.com/JetBrains/compose-jb/issues/22)
     id("org.jetbrains.compose")
-    id("detekt-convention")
     id("dev.icerock.mobile.multiplatform-resources")
 }
 
@@ -17,16 +15,11 @@ java {
 kotlin {
     jvm()
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation(projects.resources)
-            }
-        }
         named("jvmMain") {
             dependencies {
-                implementation(projects.resourcesCompose)
+                implementation(moko.resources)
                 implementation(compose.desktop.currentOs)
-                implementation(projects.sample.mppLibrary)
+                implementation(project(":mpp-library"))
             }
         }
     }

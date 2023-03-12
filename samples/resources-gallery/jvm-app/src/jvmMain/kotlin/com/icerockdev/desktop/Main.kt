@@ -5,6 +5,7 @@
 package com.icerockdev.desktop
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,16 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
-import dev.icerock.moko.resources.compose.colorResource
-import dev.icerock.moko.resources.compose.toComposeFont
 
 fun main() {
     val testing = Testing
@@ -44,18 +43,18 @@ fun main() {
                 testing.getStrings().forEach { stringDesc ->
                     Text(
                         text = stringDesc.localized(),
-                        color = colorResource(MR.colors.textColor),
+                        color = MR.colors.textColor.let { color ->
+                            if (isSystemInDarkTheme()) color.darkColor else color.lightColor
+                        }.let { Color(it.argb) },
                         modifier = Modifier.padding(8.dp)
                     )
                 }
 
                 Text(
-                    text = testing.getStringDesc().localized(),
-                    fontFamily = FontFamily(testing.getFontTtf1().toComposeFont())
+                    text = testing.getStringDesc().localized()
                 )
                 Text(
-                    text = testing.getTextFile().readText(),
-                    fontFamily = FontFamily(testing.getFontOtf1().toComposeFont())
+                    text = testing.getTextFile().readText()
                 )
                 Text(text = testing.getJsonFile().readText())
                 Text(text = testing.getNestedJsonFile().readText())
