@@ -9,10 +9,11 @@ plugins {
     id("org.jetbrains.compose") apply false
 }
 
-allprojects {
+buildscript {
     repositories {
-        google()
-        mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        mavenLocal()
+    }
+    dependencies {
+        classpath(moko.resourcesGradlePlugin)
     }
 }

@@ -6,11 +6,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.icerockdev.library.MR
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 internal fun App() {
     MaterialTheme {
-        var text by remember { mutableStateOf("Hello, World!") }
+        val initialString: String = stringResource(MR.strings.hello_world)
+        var text by remember(initialString) { mutableStateOf(initialString) }
 
         Button(onClick = {
             text = "Hello, ${getPlatformName()}"

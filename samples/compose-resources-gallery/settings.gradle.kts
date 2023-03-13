@@ -20,6 +20,20 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        mavenLocal()
+    }
+    versionCatalogs {
+        create("moko") {
+            from(files("../../gradle/moko.versions.toml"))
+        }
+    }
+}
+
 rootProject.name = "compose-resources-gallery"
 
 include(":androidApp")

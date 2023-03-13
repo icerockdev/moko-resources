@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {
@@ -26,10 +27,7 @@ kotlin {
 compose.experimental {
     web.application {}
 }
-//
-//afterEvaluate {
-//    rootProject.extensions.configure<NodeJsRootExtension> {
-//        versions.webpackDevServer.version = "4.0.0"
-//        versions.webpackCli.version = "4.10.0"
-//    }
-//}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "com.icerockdev.app"
+}
