@@ -4,7 +4,7 @@
 
 package com.icerockdev.library
 
-import com.icerockdev.library.nested.MR
+import com.icerockdev.library.MR
 import dev.icerock.moko.resources.desc.desc
 
 object Testing {

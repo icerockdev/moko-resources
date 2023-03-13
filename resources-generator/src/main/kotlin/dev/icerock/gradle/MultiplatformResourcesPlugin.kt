@@ -179,6 +179,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             .configureEach { it.dependsOn(commonGenerationTask) }
     }
 
+    @Suppress("LongParameterList")
     private fun setupAndroidGenerator(
         target: Project,
         commonSourceSet: KotlinSourceSet,

@@ -5,7 +5,6 @@
 package dev.icerock.gradle.generator.js
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
@@ -148,7 +147,7 @@ class JsMRGenerator(
 
             val webpackConfig: File = File(webpackDir, "moko-resources-generated.js")
             val webpackResourcesDir: String = resourcesOutput.absolutePath
-                .replace("\\","\\\\")
+                .replace("\\", "\\\\")
 
             webpackConfig.writeText(
                 // language=js
