@@ -5,7 +5,6 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.BasePlugin
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -129,30 +128,18 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             target = target
         )
 
-        target.plugins.withType<BasePlugin> {
-            val androidExtension = target.extensions.getByType(BaseExtension::class)
-
-            val androidLogic = AndroidPluginLogic(
-                commonSourceSet = commonSourceSet,
-                targets = targets,
-                generatedDir = generatedDir,
-                mrSettings = mrSettings,
-                features = features,
-                project = target
-            )
-
-            val androidMainSourceSet = androidExtension.sourceSets
-                .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-
-            sourceInfo.getAndroidRClassPackage = lambda@{
-                val namespace: String? = androidExtension.namespace
-                if (namespace != null) return@lambda namespace
-
-                val manifestFile = androidMainSourceSet.manifest.srcFile
-                getAndroidPackage(manifestFile)
+        listOf("com.android.library", "com.android.application").forEach { id ->
+            target.plugins.withId(id) {
+                setupAndroidGenerator(
+                    target = target,
+                    commonSourceSet = commonSourceSet,
+                    targets = targets,
+                    generatedDir = generatedDir,
+                    mrSettings = mrSettings,
+                    features = features,
+                    sourceInfo = sourceInfo
+                )
             }
-
-            androidLogic.setup(androidMainSourceSet)
         }
 
         setupJvmGenerator(
@@ -190,6 +177,40 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         target.tasks.withType<GenerateMultiplatformResourcesTask>()
             .matching { it != commonGenerationTask }
             .configureEach { it.dependsOn(commonGenerationTask) }
+    }
+
+    private fun setupAndroidGenerator(
+        target: Project,
+        commonSourceSet: KotlinSourceSet,
+        targets: List<KotlinTarget>,
+        generatedDir: File,
+        mrSettings: MRGenerator.MRSettings,
+        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
+        sourceInfo: SourceInfo
+    ) {
+        val androidExtension = target.extensions.getByType(BaseExtension::class)
+
+        val androidLogic = AndroidPluginLogic(
+            commonSourceSet = commonSourceSet,
+            targets = targets,
+            generatedDir = generatedDir,
+            mrSettings = mrSettings,
+            features = features,
+            project = target
+        )
+
+        val androidMainSourceSet = androidExtension.sourceSets
+            .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+
+        sourceInfo.getAndroidRClassPackage = lambda@{
+            val namespace: String? = androidExtension.namespace
+            if (namespace != null) return@lambda namespace
+
+            val manifestFile = androidMainSourceSet.manifest.srcFile
+            getAndroidPackage(manifestFile)
+        }
+
+        androidLogic.setup(androidMainSourceSet)
     }
 
     private fun setupCommonGenerator(

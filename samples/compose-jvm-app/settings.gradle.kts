@@ -2,10 +2,10 @@ enableFeaturePreview("VERSION_CATALOGS")
 
 pluginManagement {
     repositories {
-        mavenLocal()
         mavenCentral()
         google()
         gradlePluginPortal()
+        mavenLocal()
     }
 }
 
@@ -17,12 +17,12 @@ dependencyResolutionManagement {
     }
 
     versionCatalogs {
-        create("libs") {
-            from(files("../../gradle/libs.versions.toml"))
+        create("moko") {
+            from(files("../../gradle/moko.versions.toml"))
         }
     }
 }
 
-rootProject.name = "test-mpp-compose"
+rootProject.name = "compose-jvm-app"
 
 include(":common")

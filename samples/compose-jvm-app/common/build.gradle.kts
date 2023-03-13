@@ -1,5 +1,3 @@
-import org.jetbrains.compose.compose
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -14,7 +12,6 @@ kotlin {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
         }
-        withJava()
     }
     sourceSets {
         val commonMain by getting {
@@ -23,8 +20,7 @@ kotlin {
                 api(compose.foundation)
                 api(compose.material)
 
-                val resourcesVersion: String = libs.versions.mokoResourcesVersion.get()
-                api("dev.icerock.moko:resources:$resourcesVersion")
+                api(moko.resources)
             }
         }
         val commonTest by getting {
@@ -35,6 +31,7 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 api(compose.preview)
+                implementation(compose.desktop.currentOs)
             }
         }
         val desktopTest by getting
@@ -43,4 +40,21 @@ kotlin {
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.app"
+}
+
+compose {
+    desktop {
+        application {
+            mainClass = "me.amikhailov.common.MainKt"
+            nativeDistributions {
+                targetFormats(
+                    org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
+                    org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi,
+                    org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
+                )
+                packageName = "MokoDesktopApp"
+                version = "1.0.0"
+            }
+        }
+    }
 }
