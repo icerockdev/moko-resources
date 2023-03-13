@@ -22,6 +22,6 @@ class LabelViewController : UIViewController {
 
     override fun viewDidLoad() {
         super.viewDidLoad()
-        resourcesLabel.text = Testing.getStringDesc().localized()
+        resourcesLabel.text = Testing.getHelloWorld().localized()
     }
 }

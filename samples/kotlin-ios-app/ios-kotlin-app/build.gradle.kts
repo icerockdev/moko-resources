@@ -5,7 +5,6 @@
 plugins {
     kotlin("multiplatform")
     id("dev.icerock.mobile.multiplatform-resources")
-    id("detekt-convention")
 }
 
 kotlin {
@@ -24,6 +23,9 @@ kotlin {
         val commonMain by getting
         val iosMain by creating {
             dependsOn(commonMain)
+            dependencies {
+                implementation(project(":mpp-library"))
+            }
         }
         val iosArm64Main by getting {
             dependsOn(iosMain)
@@ -37,10 +39,7 @@ kotlin {
     }
 }
 
-dependencies {
-    commonMainImplementation(projects.sample.mppLibrary)
-}
-
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.app"
+    multiplatformResourcesSourceSet = "iosMain"
 }
