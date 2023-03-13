@@ -26,8 +26,7 @@ internal fun App() {
 //        val file: FileResource = fileResource(MR.files.some)
 //        val fileContent: String = remember(file) { file.readText() }
 
-//        val asset: AssetResource = assetResource(MR.assets.asset_file)
-//        val assetContent: String by asset.readTextAsState()
+        val assetContent: String by MR.assets.asset_file.readTextAsState()
 
         val textColor: Color = colorResource(MR.colors.textColor)
 
@@ -39,9 +38,9 @@ internal fun App() {
 //            Text(
 //                text = fileContent
 //            )
-//            Text(
-//                text = assetContent
-//            )
+            Text(
+                text = assetContent
+            )
             Text(
                 text = stringResource(MR.plurals.items_count, counter),
                 color = textColor,
