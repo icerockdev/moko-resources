@@ -30,6 +30,7 @@ internal fun App() {
         val textColor: Color = colorResource(MR.colors.textColor)
 
         Column {
+            // TODO will be added in https://github.com/icerockdev/moko-resources/issues/400
 //            Image(
 //                painter = imageResource(MR.images.home_black_18),
 //                contentDescription = null
@@ -48,6 +49,7 @@ internal fun App() {
                 counter++
                 text = "Hello, ${getPlatformName()}"
             }) {
+                // TODO will be added in https://github.com/icerockdev/moko-resources/issues/440
 //                val font: FontFamily = fontResource(MR.fonts.cormorant.italic)
                 Text(
                     text = text,
