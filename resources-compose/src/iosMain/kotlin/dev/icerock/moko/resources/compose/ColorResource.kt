@@ -15,6 +15,7 @@ import platform.CoreImage.CIColor
 actual fun colorResource(resource: ColorResource): Color {
     // read darkmode to call recomposition when system settings will be changed
     val darkMode: Boolean = isSystemInDarkTheme()
+    // FIXME: -CIColor not defined for the UIColor <UIDynamicCatalogColor: 0x60000371b610; name = textColor>; need to first convert colorspace.'
     val ciColor: CIColor = resource.getUIColor().CIColor
     return Color(
         red = ciColor.red.toFloat(),

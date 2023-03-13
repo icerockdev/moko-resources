@@ -1,3 +1,5 @@
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -6,7 +8,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import com.icerockdev.library.MR
+import dev.icerock.moko.resources.AssetResource
+import dev.icerock.moko.resources.FileResource
+import dev.icerock.moko.resources.compose.colorResource
+import dev.icerock.moko.resources.compose.readTextAsState
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -14,11 +22,40 @@ internal fun App() {
     MaterialTheme {
         val initialString: String = stringResource(MR.strings.hello_world)
         var text by remember(initialString) { mutableStateOf(initialString) }
+        var counter by remember { mutableStateOf(0) }
+//        val file: FileResource = fileResource(MR.files.some)
+//        val fileContent: String = remember(file) { file.readText() }
 
-        Button(onClick = {
-            text = "Hello, ${getPlatformName()}"
-        }) {
-            Text(text)
+//        val asset: AssetResource = assetResource(MR.assets.asset_file)
+//        val assetContent: String by asset.readTextAsState()
+
+        val textColor: Color = colorResource(MR.colors.textColor)
+
+        Column {
+//            Image(
+//                painter = imageResource(MR.images.home_black_18),
+//                contentDescription = null
+//            )
+//            Text(
+//                text = fileContent
+//            )
+//            Text(
+//                text = assetContent
+//            )
+            Text(
+                text = stringResource(MR.plurals.items_count, counter),
+                color = textColor,
+            )
+            Button(onClick = {
+                counter++
+                text = "Hello, ${getPlatformName()}"
+            }) {
+//                val font: FontFamily = fontResource(MR.fonts.cormorant.italic)
+                Text(
+                    text = text,
+//                    fontFamily = font
+                )
+            }
         }
     }
 }
