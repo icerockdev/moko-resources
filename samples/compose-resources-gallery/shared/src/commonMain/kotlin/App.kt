@@ -23,9 +23,8 @@ internal fun App() {
         val initialString: String = stringResource(MR.strings.hello_world)
         var text by remember(initialString) { mutableStateOf(initialString) }
         var counter by remember { mutableStateOf(0) }
-//        val file: FileResource = fileResource(MR.files.some)
-//        val fileContent: String = remember(file) { file.readText() }
 
+        val fileContent: String by MR.files.some.readTextAsState()
         val assetContent: String by MR.assets.asset_file.readTextAsState()
 
         val textColor: Color = colorResource(MR.colors.textColor)
@@ -35,9 +34,9 @@ internal fun App() {
 //                painter = imageResource(MR.images.home_black_18),
 //                contentDescription = null
 //            )
-//            Text(
-//                text = fileContent
-//            )
+            Text(
+                text = fileContent
+            )
             Text(
                 text = assetContent
             )
