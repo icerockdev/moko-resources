@@ -9,10 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import dev.icerock.moko.resources.FontResource
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
-import platform.Foundation.NSData
-import platform.posix.memcpy
+import dev.icerock.moko.resources.compose.internal.toByteArray
 
 @Composable
 actual fun fontFamilyResource(fontResource: FontResource): FontFamily {
@@ -23,13 +20,5 @@ actual fun fontFamilyResource(fontResource: FontResource): FontFamily {
         )
 
         FontFamily(font)
-    }
-}
-
-private fun NSData.toByteArray(): ByteArray {
-    return ByteArray(this@toByteArray.length.toInt()).apply {
-        usePinned { pinned ->
-            memcpy(pinned.addressOf(0), this@toByteArray.bytes, this@toByteArray.length)
-        }
     }
 }
