@@ -68,7 +68,7 @@ jobs:
 
       # compose-resources-gallery
       - name: Sample - compose-resources-gallery - mpp
-        run: cd samples/compose-resources-gallery && ./gradlew build
+        run: cd samples/compose-resources-gallery && ./gradlew podspec && ./gradlew build
       - name: Sample - compose-resources-gallery - pods
         run: cd samples/compose-resources-gallery/iosApp && pod install
       - name: Sample - compose-resources-gallery - ios compile
