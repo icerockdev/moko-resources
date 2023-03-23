@@ -20,6 +20,7 @@ import dev.icerock.moko.resources.compose.colorResource
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.readTextAsState
 import dev.icerock.moko.resources.compose.stringResource
+import dev.icerock.moko.resources.compose.fontFamilyResource
 
 @Composable
 internal fun App() {
@@ -53,11 +54,9 @@ internal fun App() {
                 counter++
                 text = "Hello, ${getPlatformName()}"
             }) {
-                // TODO will be added in https://github.com/icerockdev/moko-resources/issues/440
-//                val font: FontFamily = fontResource(MR.fonts.cormorant.italic)
                 Text(
                     text = text,
-//                    fontFamily = font
+                    fontFamily = fontFamilyResource(MR.fonts.cormorant.italic)
                 )
             }
         }
