@@ -20,12 +20,6 @@ jobs:
         run: ./gradlew -p resources-generator build publishToMavenLocal
       - name: detekt run
         run: ./gradlew detekt
-      - name: check android only build
-        run: ./gradlew clean && ./gradlew assembleDebug
-      - name: check jvm only build
-        run: ./gradlew clean && ./gradlew jvmJar
-      - name: check ios only build
-        run: ./gradlew clean && ./gradlew compileKotlinIosX64
       - name: Library check
         run: ./gradlew build publishToMavenLocal
 
@@ -42,15 +36,13 @@ jobs:
       - name: Sample - compose-jvm-app
         run: cd samples/compose-jvm-app && ./gradlew build
 
-      # compose-resources-gallery
-      - name: Sample - compose-resources-gallery - mpp
-        run: cd samples/compose-resources-gallery && ./gradlew build
-      - name: Sample - compose-resources-gallery - pods
-        run: cd samples/compose-resources-gallery/iosApp && pod install
-      - name: Sample - compose-resources-gallery - ios compile
-        run: cd samples/compose-resources-gallery/iosApp && set -o pipefail && xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
-
       # resources-gallery
+      - name: Sample - resources-gallery - check android only build
+        run: cd samples/resources-gallery && ./gradlew clean && ./gradlew assembleDebug
+      - name: Sample - resources-gallery - check jvm only build
+        run: cd samples/resources-gallery && ./gradlew clean && ./gradlew jvmJar
+      - name: Sample - resources-gallery - check ios only build
+        run: cd samples/resources-gallery && ./gradlew clean && ./gradlew compileKotlinIosX64
       - name: Sample - resources-gallery - mpp
         run: cd samples/resources-gallery && ./gradlew build
       - name: Sample - resources-gallery - ios pods
@@ -60,19 +52,27 @@ jobs:
       - name: Sample - resources-gallery - macos pods
         run: cd samples/resources-gallery/macos-app && pod install
       - name: Sample - resources-gallery - macos compile
-        run: cd samples/resources-gallery/macos-app && set -o pipefail && xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk macos -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+        run: cd samples/resources-gallery/macos-app && set -o pipefail && xcodebuild -scheme TestProj -workspace macos-app.xcworkspace -configuration Debug -sdk macosx -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
       # ios-static-xcframework
       - name: Sample - ios-static-xcframework - mpp
         run: cd samples/ios-static-xcframework && ./gradlew build
       - name: Sample - ios-static-xcframework - ios compile
-        run: cd samples/ios-static-xcframework/ios-app && set -o pipefail && xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+        run: cd samples/ios-static-xcframework/ios-app && set -o pipefail && xcodebuild -scheme TestStaticXCFramework -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
       # kotlin-ios-app
       - name: Sample - kotlin-ios-app - mpp
         run: cd samples/kotlin-ios-app && ./gradlew build
       - name: Sample - kotlin-ios-app - ios compile
-        run: cd samples/kotlin-ios-app/xcode-project && set -o pipefail && xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+        run: cd samples/kotlin-ios-app/xcode-project && set -o pipefail && xcodebuild -scheme TestKotlinApp -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+
+      # compose-resources-gallery
+      - name: Sample - compose-resources-gallery - mpp
+        run: cd samples/compose-resources-gallery && ./gradlew build
+      - name: Sample - compose-resources-gallery - pods
+        run: cd samples/compose-resources-gallery/iosApp && pod install
+      - name: Sample - compose-resources-gallery - ios compile
+        run: cd samples/compose-resources-gallery/iosApp && set -o pipefail && xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
       # reports
       - name: Publish Test Report
