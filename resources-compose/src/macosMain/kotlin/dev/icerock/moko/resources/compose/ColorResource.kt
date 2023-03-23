@@ -13,7 +13,8 @@ import platform.AppKit.NSColor
 
 @Composable
 actual fun colorResource(resource: ColorResource): Color {
-    // read darkmode to call recomposition when system settings will be changed
+    // TODO https://github.com/icerockdev/moko-resources/issues/443
+    //  recompose when appearance changed (now not works in runtime!)
     val darkMode: Boolean = isSystemInDarkTheme()
     val ciColor: NSColor = resource.getNSColor()
     return Color(
