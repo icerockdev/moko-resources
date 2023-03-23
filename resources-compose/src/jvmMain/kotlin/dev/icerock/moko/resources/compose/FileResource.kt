@@ -10,8 +10,8 @@ import androidx.compose.runtime.produceState
 import dev.icerock.moko.resources.FileResource
 
 @Composable
-actual fun FileResource.readTextAsState(): State<String> {
-    return produceState("") {
+actual fun FileResource.readTextAsState(): State<String?> {
+    return produceState<String?>(null) {
         value = readText()
     }
 }

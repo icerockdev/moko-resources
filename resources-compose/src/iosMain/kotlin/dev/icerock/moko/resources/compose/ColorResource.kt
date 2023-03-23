@@ -10,11 +10,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.getUIColor
+import kotlinx.cinterop.DoubleVarOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
-import platform.CoreGraphics.CGFloatVar
+import platform.CoreGraphics.CGFloat
 import platform.UIKit.UIColor
 
 @Composable
@@ -25,10 +26,10 @@ actual fun colorResource(resource: ColorResource): Color {
         val uiColor: UIColor = resource.getUIColor()
 
         memScoped {
-            val red = alloc<CGFloatVar>()
-            val green = alloc<CGFloatVar>()
-            val blue = alloc<CGFloatVar>()
-            val alpha = alloc<CGFloatVar>()
+            val red: DoubleVarOf<CGFloat> = alloc()
+            val green: DoubleVarOf<CGFloat> = alloc()
+            val blue: DoubleVarOf<CGFloat> = alloc()
+            val alpha: DoubleVarOf<CGFloat> = alloc()
 
             uiColor.getRed(
                 red = red.ptr,

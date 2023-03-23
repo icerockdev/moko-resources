@@ -6,12 +6,9 @@ package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.produceState
+import androidx.compose.ui.graphics.painter.Painter
 import dev.icerock.moko.resources.FileResource
+import dev.icerock.moko.resources.ImageResource
 
 @Composable
-actual fun FileResource.readTextAsState(): State<String?> {
-    return produceState<String?>(null) {
-        value = readText()
-    }
-}
+expect fun painterResource(imageResource: ImageResource): Painter
