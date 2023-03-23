@@ -6,7 +6,6 @@ package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -15,30 +14,12 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import dev.icerock.moko.resources.ImageResource
-import kotlinx.browser.window
-import kotlinx.coroutines.await
+import dev.icerock.moko.resources.compose.internal.produceByteArray
 import org.jetbrains.skia.Image
-import org.khronos.webgl.ArrayBuffer
-import org.khronos.webgl.Int8Array
-import org.w3c.fetch.Response
 
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-    val bytes: ByteArray? by produceState<ByteArray?>(null) {
-        val url: String = imageResource.fileUrl
-
-        val response: Response = window.fetch(url).await()
-
-        if (response.ok.not()) {
-            console.error("can't load image from $url for painterResource")
-            return@produceState
-        }
-
-        val buffer: ArrayBuffer = response.arrayBuffer().await()
-
-        value = Int8Array(buffer)
-            .unsafeCast<ByteArray>()
-    }
+    val bytes: ByteArray? by produceByteArray(url = imageResource.fileUrl)
 
     val localBytes: ByteArray? = bytes
 
