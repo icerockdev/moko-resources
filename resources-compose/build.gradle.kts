@@ -9,7 +9,6 @@ plugins {
     id("dev.icerock.mobile.multiplatform.android-manifest")
     id("multiplatform-android-publish-convention")
     id("apple-main-convention")
-    id("kotlin-parcelize")
     id("detekt-convention")
     id("org.jetbrains.compose")
     id("javadoc-stub-convention")
