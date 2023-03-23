@@ -5,9 +5,7 @@
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.painter.Painter
-import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.ImageResource
 
 @Composable
