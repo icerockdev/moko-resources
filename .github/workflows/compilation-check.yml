@@ -30,7 +30,7 @@ jobs:
 
       # auto-manifest
       - name: Sample - auto-manifest
-        run: cd samples/auto-manifest && ./gradlew build
+        run: cd samples/auto-manifest && ./gradlew build --stacktrace
 
       # compose-jvm-app
       - name: Sample - compose-jvm-app
