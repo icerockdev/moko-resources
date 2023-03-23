@@ -56,7 +56,7 @@ jobs:
 
       # ios-static-xcframework
       - name: Sample - ios-static-xcframework - mpp
-        run: cd samples/ios-static-xcframework && ./gradlew build
+        run: cd samples/ios-static-xcframework && ./gradlew build && ./gradlew assembleMultiPlatformLibraryXCFramework
       - name: Sample - ios-static-xcframework - ios compile
         run: cd samples/ios-static-xcframework/ios-app && set -o pipefail && xcodebuild -scheme TestStaticXCFramework -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
