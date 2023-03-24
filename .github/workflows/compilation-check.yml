@@ -11,7 +11,7 @@ on:
       - develop
 
 jobs:
-  check-library:
+  build-library:
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v1
@@ -45,10 +45,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-android-mpp-app:
     runs-on: macOS-latest
+    needs: build-library
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -77,10 +78,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-auto-manifest:
     runs-on: macOS-latest
+    needs: build-library
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -109,10 +111,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-compose-jvm-app:
     runs-on: macOS-latest
+    needs: build-library
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -141,10 +144,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-resources-gallery:
     runs-on: macOS-latest
+    needs: build-library
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -194,10 +198,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
+    needs: build-library
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -232,10 +237,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-kotlin-ios-app:
     runs-on: macOS-latest
+    needs: build-library
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -269,10 +275,11 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-compose-resources-gallery:
     runs-on: macOS-latest
+    needs: build-library
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 11
@@ -309,5 +316,5 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ GITHUB_JOB }}
           path: "**/build/reports/**/*"
