@@ -10,8 +10,8 @@ import androidx.compose.runtime.produceState
 import dev.icerock.moko.resources.AssetResource
 
 @Composable
-actual fun AssetResource.readTextAsState(): State<String> {
-    return produceState("") {
+actual fun AssetResource.readTextAsState(): State<String?> {
+    return produceState<String?>(null) {
         value = getText()
     }
 }

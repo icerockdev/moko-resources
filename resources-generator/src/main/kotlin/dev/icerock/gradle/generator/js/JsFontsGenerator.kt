@@ -9,8 +9,6 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FontsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
@@ -32,9 +30,11 @@ class JsFontsGenerator(
 
     @Suppress("StringTemplate")
     override fun getPropertyInitializer(fontFile: File): CodeBlock {
-        return CodeBlock.of("FontResource(" +
-                "fileUrl = js(\"require(\\\"$FONTS_DIR/${fontFile.name}\\\")\") as String, " +
-                "fontFamily = %S)", fontFile.nameWithoutExtension)
+        return CodeBlock.of(
+            "FontResource(" +
+                    "fileUrl = js(\"require(\\\"$FONTS_DIR/${fontFile.name}\\\")\") as String, " +
+                    "fontFamily = %S)", fontFile.nameWithoutExtension
+        )
     }
 
     override fun beforeGenerateResources(objectBuilder: TypeSpec.Builder, files: List<FontFile>) {
@@ -57,12 +57,12 @@ class JsFontsGenerator(
 
         if (files.isEmpty()) return
 
-        objectBuilder.addSuperinterface(ClassName("dev.icerock.moko.resources", "CssDeclarationsUriHolder"))
-
-        objectBuilder.addProperty(
-            PropertySpec.builder("cssDeclarationsUri", STRING, KModifier.OVERRIDE)
-                .initializer("js(%S) as String", """require("$FONTS_DIR/$cssDeclarationsFileName")""")
-                .build()
+        objectBuilder.addFunction(
+            FunSpec.builder("addFontsToPage")
+                .addCode(
+                    "js(%S)",
+                    """require("$FONTS_DIR/$cssDeclarationsFileName")"""
+                ).build()
         )
     }
 
@@ -82,7 +82,7 @@ class JsFontsGenerator(
                 """
                     @font-face {
                         font-family: "$family";
-                        src: url("$FONTS_DIR/${file.name}");
+                        src: url("${file.name}");
                     }
                 """.trimIndent()
             }

@@ -9,4 +9,4 @@ import androidx.compose.runtime.State
 import dev.icerock.moko.resources.AssetResource
 
 @Composable
-expect fun AssetResource.readTextAsState(): State<String>
+expect fun AssetResource.readTextAsState(): State<String?>

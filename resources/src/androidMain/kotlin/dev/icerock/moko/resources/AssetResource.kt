@@ -15,8 +15,12 @@ import java.io.InputStreamReader
 @Parcelize
 actual class AssetResource(val path: String) : Parcelable {
 
+    fun getInputStream(context: Context): InputStream {
+        return context.assets.open(path)
+    }
+
     fun readText(context: Context): String {
-        val inputStream: InputStream = context.assets.open(path)
+        val inputStream: InputStream = getInputStream(context)
         val bufferedReader = BufferedReader(InputStreamReader(inputStream))
         return bufferedReader.use { it.readText() }
     }

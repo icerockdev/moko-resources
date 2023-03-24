@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources.compose
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
@@ -11,9 +12,9 @@ import androidx.compose.ui.platform.LocalContext
 import dev.icerock.moko.resources.AssetResource
 
 @Composable
-actual fun AssetResource.readTextAsState(): State<String> {
-    val context = LocalContext.current
-    return produceState("") {
+actual fun AssetResource.readTextAsState(): State<String?> {
+    val context: Context = LocalContext.current
+    return produceState<String?>(null) {
         value = readText(context)
     }
 }

@@ -14,7 +14,6 @@ buildscript {
     dependencies {
         classpath("dev.icerock.moko:resources-generator")
         classpath(libs.composeJetBrainsPlugin)
-        classpath(libs.autoManifestPlugin)
         classpath(":resources-build-logic")
     }
 }
@@ -22,11 +21,6 @@ buildscript {
 allprojects {
     plugins.withId("org.gradle.maven-publish") {
         group = "dev.icerock.moko"
-        version = libs.versions.mokoResourcesVersion.get()
+        version = moko.versions.resourcesVersion.get()
     }
-}
-
-rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion =
-        "16.0.0"
 }
