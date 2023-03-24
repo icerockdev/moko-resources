@@ -48,7 +48,7 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
+      - *setup_env
 
       - name: Plugin check
         run: ./gradlew -p resources-generator build publishToMavenLocal
@@ -63,50 +63,50 @@ jobs:
           name: maven
           path: ~/.m2/repository/dev/icerock
 
-      - <: *complete_job
+      - *complete_job
 
   check-sample-android-mpp-app:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
-      - <: *download_maven
+      - *setup_env
+      - *download_maven
 
       - name: Sample - android-mpp-app
         run: cd samples/android-mpp-app && ./gradlew build
 
-      - <: *complete_job
+      - *complete_job
 
   check-sample-auto-manifest:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
-      - <: *download_maven
+      - *setup_env
+      - *download_maven
 
       - name: Sample - auto-manifest
         run: cd samples/auto-manifest && ./gradlew build
 
-      - <: *complete_job
+      - *complete_job
 
   check-sample-compose-jvm-app:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
-      - <: *download_maven
+      - *setup_env
+      - *download_maven
 
       - name: Sample - compose-jvm-app
         run: cd samples/compose-jvm-app && ./gradlew build
 
-      - <: *complete_job
+      - *complete_job
 
   check-sample-resources-gallery:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
-      - <: *download_maven
+      - *setup_env
+      - *download_maven
 
       - name: Sample - resources-gallery - check android only build
         run: cd samples/resources-gallery && ./gradlew clean && ./gradlew assembleDebug
@@ -125,42 +125,42 @@ jobs:
       - name: Sample - resources-gallery - macos compile
         run: cd samples/resources-gallery/macos-app && set -o pipefail && xcodebuild -scheme TestProj -workspace macos-app.xcworkspace -configuration Debug -sdk macosx -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - <: *complete_job
+      - *complete_job
 
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
-      - <: *download_maven
+      - *setup_env
+      - *download_maven
 
       - name: Sample - ios-static-xcframework - mpp
         run: cd samples/ios-static-xcframework && ./gradlew build && ./gradlew assembleMultiPlatformLibraryXCFramework
       - name: Sample - ios-static-xcframework - ios compile
         run: cd samples/ios-static-xcframework/ios-app && set -o pipefail && xcodebuild -scheme TestStaticXCFramework -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - <: *complete_job
+      - *complete_job
 
   check-sample-kotlin-ios-app:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
-      - <: *download_maven
+      - *setup_env
+      - *download_maven
 
       - name: Sample - kotlin-ios-app - mpp
         run: cd samples/kotlin-ios-app && ./gradlew build
       - name: Sample - kotlin-ios-app - ios compile
         run: cd samples/kotlin-ios-app/xcode-project && set -o pipefail && xcodebuild -scheme TestKotlinApp -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - <: *complete_job
+      - *complete_job
 
   check-sample-compose-resources-gallery:
     runs-on: macOS-latest
 
     steps:
-      - <: *setup_env
-      - <: *download_maven
+      - *setup_env
+      - *download_maven
 
       - name: Sample - compose-resources-gallery - mpp
         run: cd samples/compose-resources-gallery && ./gradlew podspec && ./gradlew build
@@ -169,4 +169,4 @@ jobs:
       - name: Sample - compose-resources-gallery - ios compile
         run: cd samples/compose-resources-gallery/iosApp && set -o pipefail && xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - <: *complete_job
+      - *complete_job
