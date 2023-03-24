@@ -48,7 +48,6 @@ class JsMRGenerator(
                 .build()
         )
 
-        @OptIn(ExperimentalStdlibApi::class)
         val stringsLoaderInitializer = buildList {
             val stringsObjectLoader = mrClass
                 .typeSpecs
@@ -147,41 +146,54 @@ class JsMRGenerator(
             webpackDir.mkdirs()
 
             val webpackConfig: File = File(webpackDir, "moko-resources-generated.js")
+            val webpackResourcesDir: String = resourcesOutput.absolutePath
+                .replace("\\", "\\\\")
+
             webpackConfig.writeText(
                 // language=js
                 """
-                const path = require('path');
+// noinspection JSUnnecessarySemicolon
+;(function(config) {
+    const path = require('path');
+    const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-                const mokoResourcePath = path.resolve("${resourcesOutput.absolutePath.replace("\\","\\\\")}");
+    const mokoResourcePath = path.resolve("$webpackResourcesDir");
 
-                config.module.rules.push(
-                    {
-                        test: /\.(.*)/,
-                        include: [
-                            path.resolve(mokoResourcePath)
-                        ],
-                        type: 'asset/resource'
-                    }
-                );
-                
-                config.module.rules.push(
-                    {
-                        test: /\.(otf|ttf)?${'$'}/,
-                        use: [
-                            {
-                                loader: 'file-loader',
-                                options: {
-                                    name: '[name].[ext]',
-                                    outputPath: 'fonts/'
-                                }
-                            }
-                        ]
-                    }
-                )
-                
-                config.resolve.modules.push(
-                    path.resolve(mokoResourcePath)
-                );
+    config.module.rules.push(
+        {
+            test: /\.(.*)/,
+            resource: [
+                path.resolve(mokoResourcePath, "files"),
+                path.resolve(mokoResourcePath, "images"),
+                path.resolve(mokoResourcePath, "localization"),
+            ],
+            type: 'asset/resource'
+        }
+    );
+    
+    config.plugins.push(new MiniCssExtractPlugin())
+    config.module.rules.push(
+        {
+            test: /\.css${'$'}/,
+            resource: [
+                path.resolve(mokoResourcePath, "fonts"),
+            ],
+            use: ['style-loader', 'css-loader']
+        }
+    )
+
+    config.module.rules.push(
+        {
+            test: /\.(otf|ttf)?${'$'}/,
+            resource: [
+                path.resolve(mokoResourcePath, "fonts"),
+            ],
+            type: 'asset/resource',
+        }
+    )
+    
+    config.resolve.modules.push(mokoResourcePath);
+})(config);
                 """.trimIndent()
             )
         }

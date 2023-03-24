@@ -5,6 +5,7 @@
 package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
@@ -105,5 +106,12 @@ class AppleColorsGenerator(
             put("color", buildColorJsonObj(argbColor))
             put("idiom", "universal")
         }
+    }
+
+    override fun getPropertyInitializer(color: ColorNode): CodeBlock {
+        return CodeBlock.of(
+            "ColorResource(name = %S, bundle = ${AppleMRGenerator.BUNDLE_PROPERTY_NAME})",
+            color.name
+        )
     }
 }

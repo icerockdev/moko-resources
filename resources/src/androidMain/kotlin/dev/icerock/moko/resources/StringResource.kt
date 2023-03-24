@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources
 
+import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import kotlinx.parcelize.Parcelize
@@ -11,4 +12,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 actual data class StringResource(
     @StringRes val resourceId: Int
-) : Parcelable
+) : Parcelable {
+
+    fun getString(context: Context): String = context.getString(resourceId)
+}

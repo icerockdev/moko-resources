@@ -1,0 +1,225 @@
+# use https://www.yamllint.com to generate yaml without aliases
+name: KMP library compilation check
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+  push:
+    branches:
+      - master
+      - develop
+
+.checkout: &checkout
+  uses: actions/checkout@v1
+
+.setup_jdk: &setup_jdk
+  name: Set up JDK 11
+  uses: actions/setup-java@v1
+  with:
+    java-version: 11
+
+.setup_gradle: &setup_gradle
+  name: Setup Gradle
+  uses: gradle/gradle-build-action@v2
+  with:
+    cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
+
+.publish_test_report: &publish_test_report
+  name: Publish Test Report
+  uses: mikepenz/action-junit-report@v2
+  if: ${{ always() }}
+  with:
+    report_paths: '**/build/test-results/**/TEST-*.xml'
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+
+.upload_reports: &upload_reports
+  name: Archive reports
+  uses: actions/upload-artifact@v2
+  if: ${{ always() }}
+  with:
+    name: code-coverage-report-${{ github.job }}
+    path: '**/build/reports/**/*'
+
+.download_maven: &download_maven
+  name: Download maven artifacts
+  uses: actions/download-artifact@v3
+  with:
+    name: maven
+    path: ~/.m2/repository/dev/icerock
+
+.cache_konan: &cache_konan
+  uses: actions/cache@v2
+  with:
+    path: ~/.konan
+    key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+    restore-keys: |
+      ${{ runner.os }}-konan-
+
+jobs:
+  build-library:
+    runs-on: macOS-latest
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+
+      - name: Plugin check
+        run: ./gradlew -p resources-generator build publishToMavenLocal
+      - name: detekt run
+        run: ./gradlew detekt
+      - name: Library check
+        run: ./gradlew build publishToMavenLocal
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: maven
+          path: ~/.m2/repository/dev/icerock
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-android-mpp-app:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - android-mpp-app
+        run: cd samples/android-mpp-app && ./gradlew build
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-auto-manifest:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - auto-manifest
+        run: cd samples/auto-manifest && ./gradlew build
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-compose-jvm-app:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - compose-jvm-app
+        run: cd samples/compose-jvm-app && ./gradlew build
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-resources-gallery:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - resources-gallery - check android only build
+        run: cd samples/resources-gallery && ./gradlew clean && ./gradlew assembleDebug
+      - name: Sample - resources-gallery - check jvm only build
+        run: cd samples/resources-gallery && ./gradlew clean && ./gradlew jvmJar
+      - name: Sample - resources-gallery - check ios only build
+        run: cd samples/resources-gallery && ./gradlew clean && ./gradlew compileKotlinIosX64
+      - name: Sample - resources-gallery - mpp
+        run: cd samples/resources-gallery && ./gradlew build
+      - name: Sample - resources-gallery - ios pods
+        run: cd samples/resources-gallery/ios-app && pod install
+      - name: Sample - resources-gallery - ios compile
+        run: cd samples/resources-gallery/ios-app && set -o pipefail && xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+      - name: Sample - resources-gallery - macos pods
+        run: cd samples/resources-gallery/macos-app && pod install
+      - name: Sample - resources-gallery - macos compile
+        run: cd samples/resources-gallery/macos-app && set -o pipefail && xcodebuild -scheme TestProj -workspace macos-app.xcworkspace -configuration Debug -sdk macosx -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-ios-static-xcframework:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - ios-static-xcframework - mpp
+        run: cd samples/ios-static-xcframework && ./gradlew build && ./gradlew assembleMultiPlatformLibraryXCFramework
+      - name: Sample - ios-static-xcframework - ios compile
+        run: cd samples/ios-static-xcframework/ios-app && set -o pipefail && xcodebuild -scheme TestStaticXCFramework -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-kotlin-ios-app:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - kotlin-ios-app - mpp
+        run: cd samples/kotlin-ios-app && ./gradlew build
+      - name: Sample - kotlin-ios-app - ios compile
+        run: cd samples/kotlin-ios-app/xcode-project && set -o pipefail && xcodebuild -scheme TestKotlinApp -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-compose-resources-gallery:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - compose-resources-gallery - mpp
+        run: cd samples/compose-resources-gallery && ./gradlew podspec && ./gradlew build
+      - name: Sample - compose-resources-gallery - pods
+        run: cd samples/compose-resources-gallery/iosApp && pod install
+      - name: Sample - compose-resources-gallery - ios compile
+        run: cd samples/compose-resources-gallery/iosApp && set -o pipefail && xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+
+      - *publish_test_report
+      - *upload_reports

@@ -1,0 +1,9 @@
+[versions]
+resourcesVersion = "0.21.0"
+
+[libraries]
+resources = { module = "dev.icerock.moko:resources", version.ref = "resourcesVersion" }
+resourcesCompose = { module = "dev.icerock.moko:resources-compose", version.ref = "resourcesVersion" }
+resourcesTest = { module = "dev.icerock.moko:resources-test", version.ref = "resourcesVersion" }
+
+resourcesGradlePlugin = { module = "dev.icerock.moko:resources-generator", version.ref = "resourcesVersion" }

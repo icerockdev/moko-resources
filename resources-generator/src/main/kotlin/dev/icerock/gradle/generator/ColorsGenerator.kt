@@ -29,10 +29,8 @@ abstract class ColorsGenerator(
         ClassName("dev.icerock.moko.resources", "ColorResource")
     override val mrObjectName: String = "colors"
 
-    private val singleColorClassName =
-        ClassName("dev.icerock.moko.resources", "ColorResource.Single")
-    private val themedColorClassName =
-        ClassName("dev.icerock.moko.resources", "ColorResource.Themed")
+    private val colorClassName =
+        ClassName("dev.icerock.moko.resources", "ColorResource")
 
     open fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) {}
 
@@ -50,12 +48,7 @@ abstract class ColorsGenerator(
         beforeGenerate(objectBuilder, colors.map { it.name })
 
         colors.forEach { colorNode ->
-            val className = if (colorNode.isThemed()) {
-                themedColorClassName
-            } else {
-                singleColorClassName
-            }
-            val property = PropertySpec.builder(colorNode.name, className)
+            val property = PropertySpec.builder(colorNode.name, colorClassName)
             property.addModifiers(*getPropertyModifiers())
             getPropertyInitializer(colorNode)?.let { property.initializer(it) }
             objectBuilder.addProperty(property.build())
@@ -70,14 +63,8 @@ abstract class ColorsGenerator(
 
     protected open fun getClassModifiers(): Array<KModifier> = emptyArray()
     protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
-    protected open fun getPropertyInitializer(color: ColorNode): CodeBlock? {
-        val className = if (color.isThemed()) {
-            "Themed(light = Color(0x${color.lightColor}), dark = Color(0x${color.darkColor}))"
-        } else {
-            "Single(color = Color(0x${color.singleColor}))"
-        }
-        return CodeBlock.of(className)
-    }
+
+    abstract fun getPropertyInitializer(color: ColorNode): CodeBlock?
 
     protected open fun generateResources(
         resourcesGenerationDir: File,
@@ -120,9 +107,11 @@ abstract class ColorsGenerator(
                         "light" -> {
                             lightColor = xmlNode.textContent
                         }
+
                         "dark" -> {
                             darkColor = xmlNode.textContent
                         }
+
                         else -> {
                             singleColor = xmlNode.textContent
                             singleColor?.let {
