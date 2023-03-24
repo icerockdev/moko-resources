@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-android-mpp-app:
     runs-on: macOS-latest
@@ -78,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-auto-manifest:
     runs-on: macOS-latest
@@ -111,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-compose-jvm-app:
     runs-on: macOS-latest
@@ -144,7 +144,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-resources-gallery:
     runs-on: macOS-latest
@@ -198,7 +198,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
@@ -237,7 +237,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-kotlin-ios-app:
     runs-on: macOS-latest
@@ -275,7 +275,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
   check-sample-compose-resources-gallery:
     runs-on: macOS-latest
@@ -316,5 +316,5 @@ jobs:
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ GITHUB_JOB }}
+          name: code-coverage-report-${{ env.GITHUB_JOB }}
           path: "**/build/reports/**/*"
