@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <plural name="items_count">
-        <item quantity="zero">no items</item>
-        <item quantity="one">%d item</item>
-        <item quantity="two">%d items</item>
-        <item quantity="other">%d items</item>
+    <plural name="chars_count">
+        <item quantity="zero">zero chars</item>
+        <item quantity="one">%d char</item>
+        <item quantity="two">%d chars</item>
+        <item quantity="other">%d chars</item>
     </plural>
 </resources>
