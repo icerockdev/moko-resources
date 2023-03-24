@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
-  ~ Copyright 2022 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
-  -->
 <resources>
     <string name="common.name">Test Project</string>
     <string name="format">Test data %d</string>
