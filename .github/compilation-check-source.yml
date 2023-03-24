@@ -39,7 +39,7 @@ on:
   uses: actions/upload-artifact@v2
   if: ${{ always() }}
   with:
-    name: code-coverage-report-${{ env.GITHUB_JOB }}
+    name: code-coverage-report-${{ env["GITHUB_JOB"] }}
     path: '**/build/reports/**/*'
 
 .download_maven: &download_maven
@@ -49,6 +49,14 @@ on:
     name: maven
     path: ~/.m2/repository/dev/icerock
 
+.cache_konan: &cache_konan
+  uses: actions/cache@v2
+  with:
+    path: ~/.konan
+    key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+    restore-keys: |
+      ${{ runner.os }}-konan-
+
 jobs:
   build-library:
     runs-on: macOS-latest
@@ -57,6 +65,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
 
       - name: Plugin check
         run: ./gradlew -p resources-generator build publishToMavenLocal
@@ -82,6 +91,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
       - *download_maven
 
       - name: Sample - android-mpp-app
@@ -98,6 +108,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
       - *download_maven
 
       - name: Sample - auto-manifest
@@ -114,6 +125,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
       - *download_maven
 
       - name: Sample - compose-jvm-app
@@ -130,6 +142,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
       - *download_maven
 
       - name: Sample - resources-gallery - check android only build
@@ -160,6 +173,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
       - *download_maven
 
       - name: Sample - ios-static-xcframework - mpp
@@ -178,6 +192,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
       - *download_maven
 
       - name: Sample - kotlin-ios-app - mpp
@@ -196,6 +211,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - *cache_konan
       - *download_maven
 
       - name: Sample - compose-resources-gallery - mpp
