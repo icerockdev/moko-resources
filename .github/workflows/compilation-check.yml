@@ -9,39 +9,7 @@ on:
     branches:
       - master
       - develop
-.checkout:
-  uses: actions/checkout@v1
-.setup_jdk:
-  name: Set up JDK 11
-  uses: actions/setup-java@v1
-  with:
-    java-version: 11
-.setup_gradle:
-  name: Setup Gradle
-  uses: gradle/gradle-build-action@v2
-  with:
-    cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
-      'refs/heads/develop' }}
-.publish_test_report:
-  name: Publish Test Report
-  uses: mikepenz/action-junit-report@v2
-  if: ${{ always() }}
-  with:
-    report_paths: "**/build/test-results/**/TEST-*.xml"
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-.upload_reports:
-  name: Archive reports
-  uses: actions/upload-artifact@v2
-  if: ${{ always() }}
-  with:
-    name: code-coverage-report
-    path: "**/build/reports/**/*"
-.download_maven:
-  name: Download maven artifacts
-  uses: actions/download-artifact@v3
-  with:
-    name: maven
-    path: ~/.m2/repository/dev/icerock
+
 jobs:
   check-library:
     runs-on: macOS-latest
