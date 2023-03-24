@@ -1,3 +1,4 @@
+# use https://www.yamllint.com to generate yaml without aliases
 name: KMP library compilation check
 
 on:
@@ -10,45 +11,52 @@ on:
       - master
       - develop
 
-.setup-env: &setup_env
-  - uses: actions/checkout@v1
-  - name: Set up JDK 11
-    uses: actions/setup-java@v1
-    with:
-      java-version: 11
-  - name: Setup Gradle
-    uses: gradle/gradle-build-action@v2
-    with:
-      cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
+.checkout: &checkout
+  uses: actions/checkout@v1
 
-.complete-job: &complete_job
-  # reports
-  - name: Publish Test Report
-    uses: mikepenz/action-junit-report@v2
-    if: ${{ always() }}
-    with:
-      report_paths: '**/build/test-results/**/TEST-*.xml'
-      github_token: ${{ secrets.GITHUB_TOKEN }}
-  - name: Archive reports
-    uses: actions/upload-artifact@v2
-    if: ${{ always() }}
-    with:
-      name: code-coverage-report
-      path: '**/build/reports/**/*'
+.setup_jdk: &setup_jdk
+  name: Set up JDK 11
+  uses: actions/setup-java@v1
+  with:
+    java-version: 11
 
-.download-maven: &download_maven
-  - name: Download maven artifacts
-    uses: actions/download-artifact@v3
-    with:
-      name: maven
-      path: ~/.m2/repository/dev/icerock
+.setup_gradle: &setup_gradle
+  name: Setup Gradle
+  uses: gradle/gradle-build-action@v2
+  with:
+    cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
+
+.publish_test_report: &publish_test_report
+  name: Publish Test Report
+  uses: mikepenz/action-junit-report@v2
+  if: ${{ always() }}
+  with:
+    report_paths: '**/build/test-results/**/TEST-*.xml'
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+
+.upload_reports: &upload_reports
+  name: Archive reports
+  uses: actions/upload-artifact@v2
+  if: ${{ always() }}
+  with:
+    name: code-coverage-report
+    path: '**/build/reports/**/*'
+
+.download_maven: &download_maven
+  name: Download maven artifacts
+  uses: actions/download-artifact@v3
+  with:
+    name: maven
+    path: ~/.m2/repository/dev/icerock
 
 jobs:
   check-library:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
 
       - name: Plugin check
         run: ./gradlew -p resources-generator build publishToMavenLocal
@@ -63,49 +71,61 @@ jobs:
           name: maven
           path: ~/.m2/repository/dev/icerock
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
 
   check-sample-android-mpp-app:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
       - *download_maven
 
       - name: Sample - android-mpp-app
         run: cd samples/android-mpp-app && ./gradlew build
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
 
   check-sample-auto-manifest:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
       - *download_maven
 
       - name: Sample - auto-manifest
         run: cd samples/auto-manifest && ./gradlew build
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
 
   check-sample-compose-jvm-app:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
       - *download_maven
 
       - name: Sample - compose-jvm-app
         run: cd samples/compose-jvm-app && ./gradlew build
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
 
   check-sample-resources-gallery:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
       - *download_maven
 
       - name: Sample - resources-gallery - check android only build
@@ -125,13 +145,16 @@ jobs:
       - name: Sample - resources-gallery - macos compile
         run: cd samples/resources-gallery/macos-app && set -o pipefail && xcodebuild -scheme TestProj -workspace macos-app.xcworkspace -configuration Debug -sdk macosx -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
 
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
       - *download_maven
 
       - name: Sample - ios-static-xcframework - mpp
@@ -139,13 +162,16 @@ jobs:
       - name: Sample - ios-static-xcframework - ios compile
         run: cd samples/ios-static-xcframework/ios-app && set -o pipefail && xcodebuild -scheme TestStaticXCFramework -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
 
   check-sample-kotlin-ios-app:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
       - *download_maven
 
       - name: Sample - kotlin-ios-app - mpp
@@ -153,13 +179,16 @@ jobs:
       - name: Sample - kotlin-ios-app - ios compile
         run: cd samples/kotlin-ios-app/xcode-project && set -o pipefail && xcodebuild -scheme TestKotlinApp -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
 
   check-sample-compose-resources-gallery:
     runs-on: macOS-latest
 
     steps:
-      - *setup_env
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
       - *download_maven
 
       - name: Sample - compose-resources-gallery - mpp
@@ -169,4 +198,5 @@ jobs:
       - name: Sample - compose-resources-gallery - ios compile
         run: cd samples/compose-resources-gallery/iosApp && set -o pipefail && xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 
-      - *complete_job
+      - *publish_test_report
+      - *upload_reports
