@@ -22,7 +22,6 @@ internal fun App() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                modifier = Modifier.width(320.dp).height(192.dp),
                 painter = painterResource(MR.images.moko_logo),
                 contentDescription = null
             )
