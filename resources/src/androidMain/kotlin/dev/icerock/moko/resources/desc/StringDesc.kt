@@ -18,9 +18,31 @@ actual interface StringDesc {
         }
 
         actual class Custom actual constructor(
-            locale: String
+            private val locale: String
         ) : LocaleType() {
-            override val systemLocale: Locale = Locale(locale)
+            override val systemLocale: Locale
+                get() {
+                    val languageTagParts: List<String> = locale.split("-")
+                    return when (languageTagParts.size) {
+                        LANGUAGE -> Locale(languageTagParts[0])
+                        LANGUAGE_AND_COUNTRY -> Locale(languageTagParts[0], languageTagParts[1])
+                        LANGUAGE_AND_COUNTRY_AND_VARIANT -> Locale(
+                            languageTagParts[0],
+                            languageTagParts[1],
+                            languageTagParts[2]
+                        )
+
+                        else -> throw IllegalArgumentException(
+                            "Invalid language tag $locale which has more than three parts."
+                        )
+                    }
+                }
+
+            private companion object {
+                private const val LANGUAGE = 1
+                private const val LANGUAGE_AND_COUNTRY = 2
+                private const val LANGUAGE_AND_COUNTRY_AND_VARIANT = 3
+            }
         }
     }
 

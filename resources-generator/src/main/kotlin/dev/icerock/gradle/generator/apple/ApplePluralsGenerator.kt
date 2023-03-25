@@ -6,10 +6,11 @@ package dev.icerock.gradle.generator.apple
 
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
+import dev.icerock.gradle.generator.KeyType
+import dev.icerock.gradle.generator.LanguageType
+import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.KeyType
-import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -73,20 +74,15 @@ class ApplePluralsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, PluralMap>
     ) {
-        val resDirName = when (language) {
-            null -> "Base.lproj"
-            else -> "$language.lproj"
-        }
-
-        val resDir = File(resourcesGenerationDir, resDirName)
+        val resDir = File(resourcesGenerationDir, language.appleResourcesDir)
         val localizableFile = File(resDir, "Localizable.stringsdict")
         resDir.mkdirs()
         writeStringsFile(localizableFile, strings)
 
-        if (language == null) {
+        if (language == LanguageType.Base) {
             val regionDir = File(resourcesGenerationDir, "$baseLocalizationRegion.lproj")
             regionDir.mkdirs()
             val regionFile = File(regionDir, "Localizable.stringsdict")

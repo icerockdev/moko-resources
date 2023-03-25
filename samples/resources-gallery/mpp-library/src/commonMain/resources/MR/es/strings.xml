@@ -11,4 +11,5 @@
     <string name="multilined">primera línea\nsegunda línea\ntercera línea.</string>
     <string name="quotes">Alex009 dijo "hola mundo" &amp; "escribir pruebas".</string>
     <string name="single_quotes">Alex009 dijo \'hola\'</string>
+    <string name="test.dialect">Spanish</string>
 </resources>

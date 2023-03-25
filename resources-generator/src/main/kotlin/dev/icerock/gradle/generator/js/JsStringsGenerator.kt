@@ -50,10 +50,10 @@ class JsStringsGenerator(
             fallbackFile = "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}.json",
             supportedLocalesPropertyName = SUPPORTED_LOCALES_PROPERTY_NAME,
             getFileNameForLanguage = { language ->
-                "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language.json"
+                "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}${language.jsResourcesSuffix}.json"
             }
         )
-        val languageKeys = languageMap[BASE_LANGUAGE].orEmpty().keys
+        val languageKeys = languageMap[LanguageType.Base].orEmpty().keys
         val languageKeysList = languageKeys.joinToString { it.replace(".", "_") }
 
         objectBuilder.addFunction(
@@ -70,13 +70,11 @@ class JsStringsGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        language: String?,
+        language: LanguageType,
         strings: Map<KeyType, String>
     ) {
-        val fileDirName = when (language) {
-            null -> "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}"
-            else -> "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}_$language"
-        }
+        val fileDirName =
+            "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}${language.jsResourcesSuffix}"
 
         val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {
             mkdirs()

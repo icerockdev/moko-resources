@@ -50,6 +50,7 @@ on:
     path: ~/.m2/repository/dev/icerock
 
 .cache_konan: &cache_konan
+  name: Cache .konan
   uses: actions/cache@v2
   with:
     path: ~/.konan
