@@ -278,6 +278,14 @@ plurals, formatted variants, or raw string. To convert `StringDesc` to `String` 
 call `toString(context)` (a context is required for the resources usage), on iOS -
 call `localized()`.
 
+#### Compose Multiplatform
+
+with compose you can just call in `commonMain`
+
+```kotlin
+val string: String = stringResource(MR.strings.my_string)
+```
+
 #### MR directly from native side
 
 Android:
@@ -532,6 +540,14 @@ fun getImageByFileName(name: String): ImageResource {
 - Android: `imageView.setImageResource(getDrawableByFileName("image_name"))`
 - iOS: `imageView.image = ResourcesKt.getDrawableByFileName(name: "image_name").toUIImage()!`
 
+#### Compose Multiplatform
+
+with compose you can just call in `commonMain`
+
+```kotlin
+val painter: Painter = painterResource(MR.images.home_black_18)
+```
+
 ### Example 8 - pass font
 
 Fonts resources directory is `commonMain/resources/MR/fonts`.  
@@ -554,6 +570,14 @@ in code, that we can use:
 
 - Android: `textView.typeface = font.getTypeface(context = this)`
 - iOS: `textView.font = font.uiFont(withSize: 14.0)`
+
+#### Compose Multiplatform
+
+with compose you can just call in `commonMain`
+
+```kotlin
+val fontFamily: FontFamily = fontFamilyResource(MR.fonts.Raleway.italic)
+```
 
 ### Example 9 - pass colors
 
@@ -612,39 +636,46 @@ Also themed colors can be referenced too:
 ```
 
 Colors available in common code insode `MR.colors.**` as `ColorResource`.  
-`ColorResource` can be `ColorResource.Single` - simple color without theme selection.  
-And can be `ColorResource.Themed` with colors for each mode.
+`ColorResource` can be read from platform side:
 
-You can read colors value from common code:
-
-```kotlin
-val color: Color = MR.colors.valueColor.color
-```
-
-but if you use `ColorResource.Themed` you can get current theme color only from platfrom side.
-Android:
+android:
 
 ```kotlin
-val color: Color = MR.colors.valueColor.getColor(context = this)
+val color: Int = MR.colors.valueColor.getColor(context = this)
 ```
 
 iOS:
 
 ```swift
-val color: UIColor = MR.colors.valueColor.getColor(UIScreen.main.traitCollection.userInterfaceStyle)
-
-// If your SwiftUI View can not handle the run time dark/light mode changes for colors
-// add this line on top of the View it will make it aware of dark/light mode changes 
-@Environment(\.colorScheme) var colorScheme
+val color: UIColor = MR.colors.valueColor.getUIColor()
 ```
 
-You can get Color from resource on IOS with toUIColor
-For use it you should export moko-resources library to IOS
+macOS:
 
+```swift
+val color: NSColor = MR.colors.valueColor.getNSColor()
 ```
-framework {
-    export(libs.mokoResources)
-}
+
+jvm:
+
+```kotlin
+val light: Color = MR.colors.valueColor.lightColor
+val dark: Color = MR.colors.valueColor.darkColor
+```
+
+web:
+
+```kotlin
+val light: Color = MR.colors.valueColor.lightColor
+val dark: Color = MR.colors.valueColor.darkColor
+```
+
+#### Compose Multiplatform
+
+with compose you can just call in `commonMain`
+
+```kotlin
+val color: Color = colorResource(MR.colors.valueColor)
 ```
 
 ### Example 10 - plain file resource access
@@ -669,10 +700,26 @@ val text = MR.files.test.readText()
 
 If you want to read files not as text, add your own implementation to expect/actual FileResource
 
+#### Compose Multiplatform
+
+with compose you can just call in `commonMain`
+
+```kotlin
+val fileContent: String? by MR.files.test.readTextAsState()
+```
+
 ### Example 11 - assets access
 
 Assets allow you save directories hierarchy (in files structure is plain). Locate files
 to `commonMain/resources/MR/assets` and access to it by `MR.assets.*`
+
+#### Compose Multiplatform
+
+with compose you can just call in `commonMain`
+
+```kotlin
+val assetContent: String? by MR.assets.test.readTextAsState()
+```
 
 ## Samples
 
