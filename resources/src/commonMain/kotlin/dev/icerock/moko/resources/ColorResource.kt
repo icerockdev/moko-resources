@@ -4,10 +4,4 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.graphics.Color
-
-sealed class ColorResource {
-    class Single(val color: Color) : ColorResource()
-
-    class Themed(val light: Color, val dark: Color) : ColorResource()
-}
+expect class ColorResource

@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.6.10")
+    id("org.jetbrains.kotlin.jvm") version ("1.8.10")
     id("detekt-convention")
     id("publication-convention")
     id("com.gradle.plugin-publish") version ("0.19.0")
@@ -11,11 +11,11 @@ plugins {
 }
 
 group = "dev.icerock.moko"
-version = libs.versions.mokoResourcesVersion.get()
+version = moko.versions.resourcesVersion.get()
 
 dependencies {
     implementation(gradleKotlinDsl())
-    compileOnly(libs.kotlinGradlePluginNext)
+    compileOnly(libs.kotlinGradlePlugin)
     compileOnly(libs.androidGradlePlugin)
     compileOnly(libs.kotlinCompilerEmbeddable)
     implementation(libs.kotlinPoet)
@@ -25,8 +25,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withJavadocJar()
     withSourcesJar()
 }
@@ -36,7 +36,7 @@ publishing.publications.register("mavenJava", MavenPublication::class) {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
 
 gradlePlugin {

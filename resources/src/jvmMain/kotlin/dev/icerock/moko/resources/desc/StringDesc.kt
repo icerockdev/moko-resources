@@ -17,9 +17,9 @@ actual interface StringDesc {
         }
 
         actual class Custom actual constructor(
-            private val locale: String
+            locale: String
         ) : LocaleType() {
-            override val currentLocale: Locale get() = Locale(locale)
+            override val currentLocale: Locale = Locale.forLanguageTag(locale)
         }
     }
 

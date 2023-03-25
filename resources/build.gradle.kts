@@ -13,33 +13,14 @@ plugins {
 }
 
 kotlin {
-    targets
-        .matching { it is org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget }
-        .configureEach {
-            this as org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
-            compilations.getByName("main") {
-                val pluralizedString by cinterops.creating {
-                    defFile(project.file("src/appleMain/def/pluralizedString.def"))
-                }
-            }
-        }
-
-    js(IR) {
-        browser {
-            webpackTask {
-                cssSupport.enabled = true
-            }
-        }
-    }
-
     sourceSets {
         getByName("jsMain") {
             dependencies {
                 api(npm("bcp-47", "1.0.8"))
                 api(npm("@messageformat/core", "3.0.0"))
-                implementation(npm("url-loader", "4.1.1"))
-                implementation(npm("file-loader", "6.2.0"))
+                api(npm("mini-css-extract-plugin", "2.6.1"))
+                api(npm("css-loader", "6.7.3"))
+                api(npm("style-loader", "3.3.1"))
 
                 implementation(libs.kotlinxCoroutines)
             }

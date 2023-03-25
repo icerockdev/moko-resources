@@ -15,7 +15,6 @@ import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
-typealias LanguageType = String
 typealias KeyType = String
 
 abstract class StringsGenerator(
@@ -29,7 +28,7 @@ abstract class StringsGenerator(
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
         return stringsFileTree.map { file ->
-            val language: LanguageType = file.parentFile.name
+            val language: LanguageType = LanguageType.fromFileName(file.parentFile.name)
             val strings: Map<KeyType, String> = loadLanguageStrings(file)
             language to strings
         }.groupBy(

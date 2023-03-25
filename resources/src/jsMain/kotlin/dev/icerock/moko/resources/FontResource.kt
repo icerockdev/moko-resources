@@ -4,4 +4,7 @@
 
 package dev.icerock.moko.resources
 
-actual class FontResource(val fileUrl: String, val fontFamily: String)
+actual class FontResource(
+    val fileUrl: String,
+    val fontFamily: String
+)

@@ -4,20 +4,15 @@
 
 plugins {
     id("com.android.library")
-    id("android-base-convention")
     id("org.jetbrains.kotlin.multiplatform")
+    id("android-base-convention")
+    id("dev.icerock.mobile.multiplatform.android-manifest")
+    id("multiplatform-android-publish-convention")
+    id("apple-main-convention")
     id("detekt-convention")
     id("org.jetbrains.compose")
     id("javadoc-stub-convention")
-    id("multiplatform-android-publish-convention")
     id("publication-convention")
-    id("dev.icerock.mobile.multiplatform.android-manifest")
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
 }
 
 android {
@@ -26,14 +21,35 @@ android {
     }
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
 kotlin {
     jvm()
+    android()
+    ios()
+    iosSimulatorArm64()
+    macosX64()
+    macosArm64()
+    js(IR) {
+        browser()
+    }
+
     sourceSets {
         commonMain {
             dependencies {
                 api(projects.resources)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
+                api(compose.runtime)
+                api(compose.foundation)
+            }
+        }
+
+        named("androidMain") {
+            dependencies {
+                api(libs.composeUi)
             }
         }
 

@@ -3,6 +3,7 @@
  */
 package dev.icerock.moko.resources.test
 
+import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.FontResource
 import dev.icerock.moko.resources.ImageResource
@@ -12,3 +13,4 @@ expect fun createImageResourceMock(): ImageResource
 expect fun createStringResourceMock(): StringResource
 expect fun createFileResourceMock(): FileResource
 expect fun createFontResourceMock(): FontResource
+expect fun createColorResourceMock(): ColorResource

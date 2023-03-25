@@ -10,5 +10,5 @@ Pods
 xcuserdata
 local.properties
 local.gradle
-kotlin-js-store/
 moko-resources-generated.js
+.fleet
