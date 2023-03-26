@@ -15,7 +15,7 @@ import org.w3c.fetch.Response
 
 @Composable
 internal fun produceByteArray(url: String): State<ByteArray?> {
-    return produceState<ByteArray?>(null) {
+    return produceState<ByteArray?>(null, url) {
         val response: Response = window.fetch(url).await()
 
         if (response.ok.not()) {
