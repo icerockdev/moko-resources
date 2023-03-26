@@ -11,7 +11,7 @@ import dev.icerock.moko.resources.AssetResource
 
 @Composable
 actual fun AssetResource.readTextAsState(): State<String?> {
-    return produceState<String?>(null) {
+    return produceState<String?>(null, this) {
         value = getText()
     }
 }
