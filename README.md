@@ -314,10 +314,14 @@ for example in Compose:
 text = stringResource(id = MR.strings.email.resourceId)
 ```
 
-iOS:
+iOS SwiftUI:
 
 ```swift
-LocalizedStringKey(MR.strings().email.resourceId)
+let resource = MR.strings().email
+Text(
+    LocalizedStringKey(resource.resourceId),
+    bundle: resource.bundle
+)
 ```
 
 Note: more info in issue [#126](https://github.com/icerockdev/moko-resources/issues/126).
