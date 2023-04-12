@@ -10,6 +10,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.utils.dependsOnProcessResources
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.jvm.tasks.Jar
@@ -46,9 +47,13 @@ class JvmMRGenerator(
                 STRINGS_BUNDLE_PROPERTY_NAME,
                 STRING,
                 KModifier.PRIVATE
-            )
-                .initializer(CodeBlock.of("\"%L/%L\"", LOCALIZATION_DIR, "${flattenClassName}_$STRINGS_BUNDLE_NAME"))
-                .build()
+            ).initializer(
+                CodeBlock.of(
+                    "\"%L/%L\"",
+                    LOCALIZATION_DIR,
+                    "${flattenClassName}_$STRINGS_BUNDLE_NAME"
+                )
+            ).build()
         )
 
         mrClass.addProperty(
@@ -56,21 +61,25 @@ class JvmMRGenerator(
                 PLURALS_BUNDLE_PROPERTY_NAME,
                 STRING,
                 KModifier.PRIVATE
-            )
-                .initializer(CodeBlock.of("\"%L/%L\"", LOCALIZATION_DIR, "${flattenClassName}_$PLURALS_BUNDLE_NAME"))
-                .build()
+            ).initializer(
+                CodeBlock.of(
+                    "\"%L/%L\"",
+                    LOCALIZATION_DIR,
+                    "${flattenClassName}_$PLURALS_BUNDLE_NAME"
+                )
+            ).build()
         )
     }
 
     override fun apply(generationTask: Task, project: Project) {
-        project.tasks.apply {
-            withType<KotlinCompile>().all {
-                it.dependsOn(generationTask)
-            }
+        project.tasks.withType<KotlinCompile>().configureEach {
+            it.dependsOn(generationTask)
         }
         project.tasks.withType<Jar>().configureEach {
             it.exclude("MR/**")
+            it.dependsOn(generationTask)
         }
+        dependsOnProcessResources(project, sourceSet, generationTask)
     }
 
     companion object {

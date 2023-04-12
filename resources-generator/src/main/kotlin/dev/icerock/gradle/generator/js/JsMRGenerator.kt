@@ -11,10 +11,12 @@ import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.utils.calculateResourcesHash
+import dev.icerock.gradle.utils.dependsOnProcessResources
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
@@ -87,6 +89,13 @@ class JsMRGenerator(
         }
         setupKLibResources(generationTask)
         setupResources()
+
+        // Declare task ':web-app:generateMRcommonMain' as an input of ':web-app:jsSourcesJar'.
+        project.tasks.withType<Jar>().configureEach {
+            it.dependsOn(generationTask)
+        }
+
+        dependsOnProcessResources(project, sourceSet, generationTask)
     }
 
     private fun setupKLibResources(generationTask: Task) {

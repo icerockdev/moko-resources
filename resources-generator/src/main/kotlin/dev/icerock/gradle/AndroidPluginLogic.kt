@@ -10,7 +10,9 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.utils.isDependsOn
+import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
@@ -52,11 +54,15 @@ internal class AndroidPluginLogic(
         project.tasks
             .matching { it.name.startsWith("package") && it.name.endsWith("Assets") }
             .configureEach { task ->
-                task.doFirst {
-                    val android = project.extensions.getByType<BaseExtension>()
-                    val assets = android.sourceSets.getByName("main").assets
-                    assets.setSrcDirs(assets.srcDirs)
-                }
+                // for gradle optimizations we should use anonymous object
+                @Suppress("ObjectLiteralToLambda")
+                task.doFirst(object : Action<Task> {
+                    override fun execute(t: Task) {
+                        val android = project.extensions.getByType<BaseExtension>()
+                        val assets = android.sourceSets.getByName("main").assets
+                        assets.setSrcDirs(assets.srcDirs)
+                    }
+                })
             }
     }
 

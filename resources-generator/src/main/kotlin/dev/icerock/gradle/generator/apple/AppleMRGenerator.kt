@@ -16,6 +16,7 @@ import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.utils.calculateResourcesHash
+import dev.icerock.gradle.utils.dependsOnProcessResources
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -99,6 +100,8 @@ class AppleMRGenerator(
         setupFrameworkResources()
         setupTestsResources()
         setupFatFrameworkTasks()
+
+        dependsOnProcessResources(project, sourceSet, generationTask)
     }
 
     override fun beforeMRGeneration() {

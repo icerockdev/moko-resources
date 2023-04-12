@@ -13,7 +13,6 @@ import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.compose.internal.toSkiaImage
 import org.jetbrains.skia.Image
 import platform.CoreGraphics.CGImageRef
-import platform.CoreGraphics.CGImageRelease
 import platform.UIKit.UIImage
 
 @Composable
@@ -26,8 +25,6 @@ actual fun painterResource(imageResource: ImageResource): Painter {
             ?: throw IllegalArgumentException("can't read CGImage of $imageResource")
 
         val skiaImage: Image = cgImage.toSkiaImage()
-
-        CGImageRelease(cgImage)
 
         BitmapPainter(image = skiaImage.toComposeImageBitmap())
     }
