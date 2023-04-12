@@ -28,6 +28,11 @@ subprojects {
                 minSdkVersion(16)
                 targetSdkVersion(33)
             }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_11
+                targetCompatibility = JavaVersion.VERSION_11
+            }
         }
     }
 }
