@@ -16,6 +16,7 @@ import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.utils.calculateResourcesHash
+import dev.icerock.gradle.utils.dependsOnProcessResources
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -25,6 +26,7 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.maybeCreate
 import org.gradle.kotlin.dsl.withType
+import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
@@ -99,6 +101,8 @@ class AppleMRGenerator(
         setupFrameworkResources()
         setupTestsResources()
         setupFatFrameworkTasks()
+
+        dependsOnProcessResources(project, sourceSet, generationTask)
     }
 
     override fun beforeMRGeneration() {

@@ -35,5 +35,11 @@ class CommonMRGenerator(
         }.configureEach {
             it.dependsOn(generationTask)
         }
+
+        project.tasks
+            .matching { it.name.startsWith("metadata") && it.name.endsWith("ProcessResources") }
+            .configureEach {
+                it.dependsOn(generationTask)
+            }
     }
 }
