@@ -10,8 +10,12 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import dev.icerock.gradle.utils.svg
 import org.gradle.api.file.FileTree
 import java.io.File
+import com.android.ide.common.vectordrawable.Svg2Vector
+import java.io.FileOutputStream
+import java.io.IOException
 
 class AndroidImagesGenerator(
     inputFileTree: FileTree,
@@ -38,22 +42,50 @@ class AndroidImagesGenerator(
             files.map { key to it }
         }.forEach { (key, file) ->
             val scale = file.nameWithoutExtension.substringAfter("@").substringBefore("x")
-            val drawableDirName = "drawable-" + when (scale) {
-                "0.75" -> "ldpi"
-                "1" -> "mdpi"
-                "1.5" -> "hdpi"
-                "2" -> "xhdpi"
-                "3" -> "xxhdpi"
-                "4" -> "xxxhdpi"
+            val drawableDirName = "drawable" + when (scale) {
+                "0.75" -> "-ldpi"
+                "1" -> "-mdpi"
+                "1.5" -> "-hdpi"
+                "2" -> "-xhdpi"
+                "3" -> "-xxhdpi"
+                "4" -> "-xxxhdpi"
                 else -> {
-                    println("ignore $file - unknown scale ($scale)")
-                    return@forEach
+                    if (file.svg) {
+                        ""
+                    } else {
+                        println("ignore $file - unknown scale ($scale)")
+                        return@forEach
+                    }
                 }
             }
 
             val drawableDir = File(resourcesGenerationDir, drawableDirName)
             val processedKey = processKey(key)
-            file.copyTo(File(drawableDir, "$processedKey.${file.extension}"))
+
+            val resourceExtension = if (file.svg) "xml" else file.extension
+            val resourceFile = File(drawableDir, "$processedKey.$resourceExtension")
+            if (file.svg) {
+                parseSvgToVectorDrawable(file, resourceFile)
+            } else {
+                file.copyTo(resourceFile)
+            }
+        }
+    }
+
+    private fun parseSvgToVectorDrawable(svgFile: File, vectorDrawableFile: File) {
+        try {
+            vectorDrawableFile.parentFile.mkdirs()
+            vectorDrawableFile.createNewFile()
+            val os = FileOutputStream(vectorDrawableFile, false)
+            try {
+                Svg2Vector.parseSvgToXml(svgFile, os)
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { error -> println("parse from $svgFile to xml error: $error") }
+            } finally {
+                os.flush()
+            }
+        } catch (e: IOException) {
+            println("parse from $svgFile to xml error: $e")
         }
     }
 

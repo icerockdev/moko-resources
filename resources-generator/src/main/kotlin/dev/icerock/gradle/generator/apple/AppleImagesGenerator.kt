@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.ASSETS_DIR_NAME
+import dev.icerock.gradle.utils.svg
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -40,7 +41,7 @@ class AppleImagesGenerator(
             val contentsFile = File(assetDir, "Contents.json")
 
             val validFiles = files.filter { file ->
-                VALID_SIZES.any { size -> file.scale == "${size}x" }
+                file.svg || VALID_SIZES.any { size -> file.scale == "${size}x" }
             }
 
             val uniqueNames = files.map { it.nameWithoutScale }.distinct()
@@ -61,14 +62,21 @@ class AppleImagesGenerator(
                 val scale = file.scale
 
                 // language=js
+                val scaleString = if (file.svg) "" else ",\n\t\"scale\" : \"$scale\""
+
+                // language=js
                 return@joinToString """
                     {
                         "idiom" : "universal",
-                        "filename" : "${file.name}",
-                        "scale" : "$scale"
+                        "filename" : "${file.name}"$scaleString
                     }
                 """.trimIndent()
             }
+
+            val svgProperties = if (validFiles.any { file -> file.svg }) {
+                // language=js
+                ",\n\t\"properties\" : {\t\t\"preserves-vector-representation\" : true\n\t}"
+            } else ""
 
             // language=js
             val content = """
@@ -79,7 +87,7 @@ class AppleImagesGenerator(
                     "info" : {
                         "version" : 1,
                         "author" : "xcode"
-                    }
+                    }$svgProperties
                 }
             """.trimIndent()
 
@@ -90,9 +98,11 @@ class AppleImagesGenerator(
     private companion object {
         val VALID_SIZES: IntRange = 1..3
 
-        private val File.scale: String get() =
-            nameWithoutExtension.substringAfter("@")
-        private val File.nameWithoutScale: String get() =
-            nameWithoutExtension.substringBefore("@")
+        private val File.scale: String
+            get() =
+                nameWithoutExtension.substringAfter("@")
+        private val File.nameWithoutScale: String
+            get() =
+                nameWithoutExtension.substringBefore("@")
     }
 }

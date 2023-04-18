@@ -31,7 +31,8 @@ abstract class ImagesGenerator(
         objectBuilder: TypeSpec.Builder
     ): TypeSpec {
         val fileMap = inputFileTree.groupBy { file ->
-            "${file.name.substringBefore("@")}.${file.extension}"
+            // SVGs do not have scale suffixes, so we need to remove the extension first
+            "${file.name.substringBefore(".").substringBefore("@")}.${file.extension}"
         }
 
         beforeGenerateResources(objectBuilder, fileMap.keys.sorted())
@@ -93,7 +94,7 @@ abstract class ImagesGenerator(
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
-            it.include("MR/images/**/*.png", "MR/images/**/*.jpg")
+            it.include("MR/images/**/*.png", "MR/images/**/*.jpg", "MR/images/**/*.svg")
         }
 
         override fun createCommonGenerator() =
