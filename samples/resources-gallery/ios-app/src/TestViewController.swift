@@ -9,6 +9,7 @@ import MultiPlatformLibrary
 class TestViewController: UIViewController {
 
     @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var svgImageView: UIImageView!
     @IBOutlet private var textView: UITextView!
     @IBOutlet private var stringDescTextView: UITextView!
 
@@ -17,9 +18,12 @@ class TestViewController: UIViewController {
 
         let testing = Testing()
         let drawable = testing.getDrawable()
+        let vectorDrawable = testing.getVectorDrawable()
         let strings = testing.getStrings()
 
         imageView.image = drawable.toUIImage()
+
+        svgImageView.image = vectorDrawable.toUIImage()
 
         let textColor: UIColor = MR.colors().textColor.getUIColor()
         textView.text = strings.map { $0.localized() }.joined(separator: "\n")
