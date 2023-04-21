@@ -9,7 +9,12 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.ImagesGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.ASSETS_DIR_NAME
+import dev.icerock.gradle.utils.nameWithoutScale
+import dev.icerock.gradle.utils.scale
 import dev.icerock.gradle.utils.svg
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -58,38 +63,31 @@ class AppleImagesGenerator(
 
             validFiles.forEach { it.copyTo(File(assetDir, it.name)) }
 
-            val imagesContent = validFiles.joinToString(separator = ",\n") { file ->
-                val scale = file.scale
-
-                // language=js
-                val scaleString = if (file.svg) "" else ",\n\t\"scale\" : \"$scale\""
-
-                // language=js
-                return@joinToString """
-                    {
-                        "idiom" : "universal",
-                        "filename" : "${file.name}"$scaleString
-                    }
-                """.trimIndent()
+            val imagesContent = buildJsonArray {
+                validFiles.forEach { file ->
+                    add(buildJsonObject {
+                        put("idiom", JsonPrimitive("universal"))
+                        put("filename", JsonPrimitive(file.name))
+                        if (!file.svg) {
+                            put("scale", JsonPrimitive(file.scale))
+                        }
+                    })
+                }
             }
 
-            val svgProperties = if (validFiles.any { file -> file.svg }) {
-                // language=js
-                ",\n\t\"properties\" : {\t\t\"preserves-vector-representation\" : true\n\t}"
-            } else ""
+            val content = buildJsonObject {
+                put("images", imagesContent)
+                put("info", buildJsonObject {
+                    put("version", JsonPrimitive(1))
+                    put("author", JsonPrimitive("xcode"))
+                })
 
-            // language=js
-            val content = """
-                {
-                    "images" : [
-                        $imagesContent
-                    ],
-                    "info" : {
-                        "version" : 1,
-                        "author" : "xcode"
-                    }$svgProperties
+                if (validFiles.any { file -> file.svg }) {
+                    put("properties", buildJsonObject {
+                        put("preserves-vector-representation", JsonPrimitive(true))
+                    })
                 }
-            """.trimIndent()
+            }.toString()
 
             contentsFile.writeText(content)
         }
@@ -97,12 +95,5 @@ class AppleImagesGenerator(
 
     private companion object {
         val VALID_SIZES: IntRange = 1..3
-
-        private val File.scale: String
-            get() =
-                nameWithoutExtension.substringAfter("@")
-        private val File.nameWithoutScale: String
-            get() =
-                nameWithoutExtension.substringBefore("@")
     }
 }

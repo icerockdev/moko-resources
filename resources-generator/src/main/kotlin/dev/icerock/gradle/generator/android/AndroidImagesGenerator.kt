@@ -14,12 +14,14 @@ import dev.icerock.gradle.utils.svg
 import org.gradle.api.file.FileTree
 import java.io.File
 import com.android.ide.common.vectordrawable.Svg2Vector
+import org.gradle.api.logging.Logger
 import java.io.FileOutputStream
 import java.io.IOException
 
 class AndroidImagesGenerator(
     inputFileTree: FileTree,
-    private val getAndroidRClassPackage: () -> String
+    private val getAndroidRClassPackage: () -> String,
+    private val logger: Logger
 ) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -53,7 +55,7 @@ class AndroidImagesGenerator(
                     if (file.svg) {
                         ""
                     } else {
-                        println("ignore $file - unknown scale ($scale)")
+                        logger.info("ignore $file - unknown scale ($scale)")
                         return@forEach
                     }
                 }
@@ -76,16 +78,13 @@ class AndroidImagesGenerator(
         try {
             vectorDrawableFile.parentFile.mkdirs()
             vectorDrawableFile.createNewFile()
-            val os = FileOutputStream(vectorDrawableFile, false)
-            try {
+            FileOutputStream(vectorDrawableFile, false).use { os ->
                 Svg2Vector.parseSvgToXml(svgFile, os)
                     .takeIf { it.isNotEmpty() }
-                    ?.let { error -> println("parse from $svgFile to xml error: $error") }
-            } finally {
-                os.flush()
+                    ?.let { error -> logger.warn("parse from $svgFile to xml:\n$error") }
             }
         } catch (e: IOException) {
-            println("parse from $svgFile to xml error: $e")
+            logger.error("parse from $svgFile to xml error", e)
         }
     }
 

@@ -7,4 +7,10 @@ package dev.icerock.gradle.utils
 import java.io.File
 
 internal val File.svg: Boolean get() =
-    extension == "svg"
+    extension.equals("svg", ignoreCase = true)
+
+val File.scale: String get() =
+    nameWithoutExtension.substringAfter("@")
+
+val File.nameWithoutScale: String get() =
+    nameWithoutExtension.withoutScale

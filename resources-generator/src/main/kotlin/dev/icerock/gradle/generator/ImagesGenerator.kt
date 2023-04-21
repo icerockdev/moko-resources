@@ -14,7 +14,9 @@ import dev.icerock.gradle.generator.apple.AppleImagesGenerator
 import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
+import dev.icerock.gradle.utils.withoutScale
 import org.gradle.api.file.FileTree
+import org.gradle.api.logging.Logger
 import java.io.File
 
 abstract class ImagesGenerator(
@@ -32,7 +34,11 @@ abstract class ImagesGenerator(
     ): TypeSpec {
         val fileMap = inputFileTree.groupBy { file ->
             // SVGs do not have scale suffixes, so we need to remove the extension first
-            "${file.name.substringBefore(".").substringBefore("@")}.${file.extension}"
+            val key = file
+                .nameWithoutExtension
+                .withoutScale
+
+            "$key.${file.extension}"
         }
 
         beforeGenerateResources(objectBuilder, fileMap.keys.sorted())
@@ -91,7 +97,8 @@ abstract class ImagesGenerator(
 
     class Feature(
         private val info: SourceInfo,
-        private val mrSettings: MRGenerator.MRSettings
+        private val mrSettings: MRGenerator.MRSettings,
+        private val logger: Logger
     ) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
             it.include("MR/images/**/*.png", "MR/images/**/*.jpg", "MR/images/**/*.svg")
@@ -104,7 +111,8 @@ abstract class ImagesGenerator(
 
         override fun createAndroidGenerator() = AndroidImagesGenerator(
             inputFileTree = stringsFileTree,
-            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage),
+            logger = logger
         )
 
         override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(stringsFileTree)

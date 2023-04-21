@@ -11,3 +11,6 @@ package dev.icerock.gradle.utils
 internal fun String.removeLineWraps(): String {
     return replace(Regex("\\s*\n\\s*"), " ")
 }
+
+internal val String.withoutScale get() =
+    substringBefore("@")
