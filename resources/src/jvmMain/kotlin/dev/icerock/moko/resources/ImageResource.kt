@@ -12,7 +12,7 @@ actual class ImageResource(
     val resourcesClassLoader: ClassLoader,
     val filePath: String
 ) {
-    val image: BufferedImage = run {
+    val image: BufferedImage by lazy {
         val stream = resourcesClassLoader.getResourceAsStream(filePath)
             ?: throw FileNotFoundException("Couldn't open resource as stream at: $filePath")
         stream.use { ImageIO.read(it) }

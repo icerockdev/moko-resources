@@ -6,6 +6,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.icerockdev.library.MR
 import dev.icerock.moko.resources.compose.*
@@ -24,6 +26,13 @@ internal fun App() {
             Image(
                 painter = painterResource(MR.images.moko_logo),
                 contentDescription = null
+            )
+
+            Image(
+                modifier = Modifier.size(30.dp).padding(top = 16.dp),
+                painter = painterResource(MR.images.car_black),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground)
             )
 
             var text: String by remember { mutableStateOf("") }
