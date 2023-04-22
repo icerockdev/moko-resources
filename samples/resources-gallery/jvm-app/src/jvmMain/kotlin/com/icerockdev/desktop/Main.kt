@@ -39,6 +39,13 @@ fun main() {
                     contentDescription = null,
                     modifier = Modifier.size(56.dp)
                 )
+
+                Image(
+                    bitmap = testing.getVectorDrawable().image.toComposeImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp).padding(8.dp)
+                )
+
                 testing.getStrings().forEach { stringDesc ->
                     Text(
                         text = stringDesc.localized(),
