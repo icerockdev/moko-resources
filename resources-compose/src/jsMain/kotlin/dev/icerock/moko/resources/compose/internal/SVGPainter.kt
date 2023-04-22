@@ -37,8 +37,7 @@ import org.jetbrains.skia.svg.SVGPreserveAspectRatio
 import org.jetbrains.skia.svg.SVGPreserveAspectRatioAlign
 import kotlin.math.ceil
 
-
-class SVGPainter(
+internal class SVGPainter(
     private val dom: SVGDOM,
     private val density: Density
 ) : Painter() {
