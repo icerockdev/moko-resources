@@ -9,10 +9,10 @@ import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import javax.imageio.ImageIO
 
 actual class ImageResource(
@@ -41,7 +41,7 @@ actual class ImageResource(
         val input = TranscoderInput(inputStream)
 
         // Create the transcoder output.
-        val outputStream = ByteArrayOutputStream()
+        val outputStream = PipedOutputStream()
         outputStream.use {
             val output = TranscoderOutput(it)
 
@@ -49,8 +49,6 @@ actual class ImageResource(
             t.transcode(input, output)
         }
 
-        // Convert the byte stream into an image.
-        val imgData: ByteArray = outputStream.toByteArray()
-        return ImageIO.read(ByteArrayInputStream(imgData))
+        return ImageIO.read(PipedInputStream(outputStream))
     }
 }

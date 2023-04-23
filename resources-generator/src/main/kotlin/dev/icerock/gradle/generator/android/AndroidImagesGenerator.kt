@@ -55,7 +55,7 @@ class AndroidImagesGenerator(
                     if (file.svg) {
                         ""
                     } else {
-                        logger.info("ignore $file - unknown scale ($scale)")
+                        logger.warn("ignore $file - unknown scale ($scale)")
                         return@forEach
                     }
                 }

@@ -66,6 +66,7 @@ internal class DrawCache {
         this.layoutDirection = layoutDirection
         var targetImage = mCachedImage
         var targetCanvas = cachedCanvas
+        @Suppress("ComplexCondition")
         if (targetImage == null ||
             targetCanvas == null ||
             size.width > targetImage.width ||

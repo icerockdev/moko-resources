@@ -9,8 +9,8 @@ import java.io.File
 internal val File.svg: Boolean get() =
     extension.equals("svg", ignoreCase = true)
 
-val File.scale: String get() =
+internal val File.scale: String get() =
     nameWithoutExtension.substringAfter("@")
 
-val File.nameWithoutScale: String get() =
+internal val File.nameWithoutScale: String get() =
     nameWithoutExtension.withoutScale
