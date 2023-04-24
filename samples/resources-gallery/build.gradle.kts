@@ -6,10 +6,10 @@ import com.android.build.gradle.BaseExtension
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
         gradlePluginPortal()
-        mavenLocal()
     }
     dependencies {
         classpath(moko.resourcesGradlePlugin)
