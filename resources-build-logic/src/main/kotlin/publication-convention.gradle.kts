@@ -54,6 +54,11 @@ publishing {
                     name.set("Nagy Robert")
                     email.set("nagyrobi144@gmail.com")
                 }
+                developer {
+                    id.set("warnyul")
+                    name.set("Balázs Varga")
+                    email.set("balazs.varga@apter.tech")
+                }
             }
 
             scm {

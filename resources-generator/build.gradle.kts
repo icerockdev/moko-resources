@@ -18,6 +18,7 @@ dependencies {
     compileOnly(libs.kotlinGradlePlugin)
     compileOnly(libs.androidGradlePlugin)
     compileOnly(libs.kotlinCompilerEmbeddable)
+    compileOnly(libs.androidSdkCommon)
     implementation(libs.kotlinPoet)
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)

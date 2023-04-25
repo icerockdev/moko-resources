@@ -54,6 +54,10 @@ public object Testing {
         return MR.images.home_black_18
     }
 
+    public fun getVectorDrawable(): ImageResource {
+        return MR.images.car_black
+    }
+
     public fun getDrawableByFileName(): ImageResource? {
         return MR.images.getImageByFileName("home_black_18")
     }

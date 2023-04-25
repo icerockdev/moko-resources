@@ -13,7 +13,16 @@
         android:layout_gravity="center_horizontal"
         android:contentDescription="@null"
         android:scaleType="fitCenter"
-        tools:srcCompat="@drawable/homeblack" />
+        tools:srcCompat="@drawable/home_black_18" />
+
+    <ImageView
+        android:id="@+id/svgImageView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        tools:srcCompat="@drawable/car_black" />
 
     <TextView
         android:id="@+id/textView"

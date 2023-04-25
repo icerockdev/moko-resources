@@ -12,6 +12,7 @@ struct ContentView: View {
     
     let testing: Testing
     let image: NSImage
+    let svgImage: NSImage
     let strings: [StringDesc]
     let textColor: NSColor = MR.colors().textColor.getNSColor()
     
@@ -19,6 +20,7 @@ struct ContentView: View {
 //        StringDescCompanion.shared.localeType = StringDescLocaleType.Custom(locale: "ru")
         testing = Testing()
         image = testing.getDrawable().toNSImage()!
+        svgImage = testing.getVectorDrawable().toNSImage()!
         strings = testing.getStrings()
         
         [
@@ -33,6 +35,8 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Image(nsImage: image)
+
+            Image(nsImage: svgImage)
             
             Divider()
             

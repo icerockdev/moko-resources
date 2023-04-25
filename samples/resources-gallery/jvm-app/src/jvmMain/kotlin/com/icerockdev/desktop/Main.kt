@@ -1,7 +1,6 @@
 /*
  * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
-
 package com.icerockdev.desktop
 
 import androidx.compose.foundation.Image
@@ -40,6 +39,13 @@ fun main() {
                     contentDescription = null,
                     modifier = Modifier.size(56.dp)
                 )
+
+                Image(
+                    bitmap = testing.getVectorDrawable().image.toComposeImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp).padding(8.dp)
+                )
+
                 testing.getStrings().forEach { stringDesc ->
                     Text(
                         text = stringDesc.localized(),
