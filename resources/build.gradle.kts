@@ -33,6 +33,8 @@ dependencies {
     commonMainApi(libs.mokoGraphics)
 
     jvmMainImplementation(libs.icu4j)
+    jvmMainImplementation(libs.batikRasterizer)
+    jvmMainImplementation(libs.batikTranscoder)
 
     androidMainImplementation(libs.appCompat)
 

@@ -5,12 +5,10 @@
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.toPainter
+import androidx.compose.ui.res.painterResource
 import dev.icerock.moko.resources.ImageResource
 
 @Composable
-actual fun painterResource(imageResource: ImageResource): Painter {
-    return remember(imageResource) { imageResource.image.toPainter() }
-}
+actual fun painterResource(imageResource: ImageResource): Painter =
+    painterResource(resourcePath = imageResource.filePath)

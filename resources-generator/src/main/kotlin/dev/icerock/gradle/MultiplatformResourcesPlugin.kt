@@ -112,7 +112,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
                 strictLineBreaks = strictLineBreaks,
                 mrSettings = mrSettings
             ),
-            ImagesGenerator.Feature(sourceInfo, mrSettings),
+            ImagesGenerator.Feature(sourceInfo, mrSettings, target.logger),
             FontsGenerator.Feature(sourceInfo, mrSettings),
             FilesGenerator.Feature(sourceInfo, mrSettings),
             ColorsGenerator.Feature(sourceInfo, mrSettings),

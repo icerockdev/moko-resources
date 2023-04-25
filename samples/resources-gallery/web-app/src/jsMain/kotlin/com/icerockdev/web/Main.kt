@@ -71,6 +71,8 @@ suspend fun main() {
                 Br()
                 Img(Testing.getDrawable().fileUrl)
                 Br()
+                Img(Testing.getVectorDrawable().fileUrl)
+                Br()
                 Text(rememberFileText.value)
             }
         }

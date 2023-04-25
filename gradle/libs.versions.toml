@@ -1,6 +1,7 @@
 [versions]
 kotlinVersion = "1.8.10"
 androidGradleVersion = "7.4.2"
+androidSdkCommonVersion = "30.4.2"
 
 # kotlinx
 kotlinxSerializationVersion = "1.5.0"
@@ -23,6 +24,7 @@ kotlinPoetVersion = "1.12.0"
 detektVersion = "1.15.0"
 icu4jVersion = "70.1"
 commonsCodecVersion = "1.15"
+batikVersion = "1.16"
 
 # tests
 espressoCoreVersion = "3.5.1"
@@ -68,6 +70,8 @@ composeGradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", 
 # jvm
 kotlinPoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinPoetVersion" }
 apacheCommonsText = { module = "org.apache.commons:commons-text", version.ref = "apacheCommonsTextVersion" }
+batikRasterizer = { module = "org.apache.xmlgraphics:batik-rasterizer", version.ref = "batikVersion" }
+batikTranscoder = { module = "org.apache.xmlgraphics:batik-transcoder", version.ref = "batikVersion" }
 commonsCodec = { module = "commons-codec:commons-codec", version.ref = "commonsCodecVersion" }
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4jVersion" }
 
@@ -85,6 +89,7 @@ kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations
 # gradle
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
+androidSdkCommon = { module = "com.android.tools:sdk-common", version.ref = "androidSdkCommonVersion" }
 kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlinVersion" }
 detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektVersion" }
 mokoMultiplatformPlugin = { module = "dev.icerock:mobile-multiplatform", version.ref = "mokoMultiplatformPluginVersion" }
