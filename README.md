@@ -37,7 +37,8 @@ implement all you UI in Kotlin with Jetpack Compose and MOKO resources.
 - **Compose Multiplatform** support;
 - **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms;
 - **Static** iOS frameworks support;
-- **Fat and XC** frameworks support.
+- **Fat and XC** frameworks support;
+- **SVG** images support.
 
 ## Requirements
 
@@ -58,7 +59,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.21.2"
+        classpath "dev.icerock.moko:resources-generator:0.22.0"
     }
 }
 
@@ -76,10 +77,10 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.21.2")
-    commonMainApi("dev.icerock.moko:resources-compose:0.21.2") // for compose multiplatform
+    commonMainApi("dev.icerock.moko:resources:0.22.0")
+    commonMainApi("dev.icerock.moko:resources-compose:0.22.0") // for compose multiplatform
 
-    commonTestImplementation("dev.icerock.moko:resources-test:0.21.2")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.22.0")
 }
 
 multiplatformResources {
@@ -98,7 +99,7 @@ should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-bui
 
 ```
 framework {
-    export("dev.icerock.moko:resources:0.21.2")
+    export("dev.icerock.moko:resources:0.22.0")
     export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
 }
 ```
