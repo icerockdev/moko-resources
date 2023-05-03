@@ -100,14 +100,11 @@ class AndroidImagesGenerator(
                         "Fallback to parseSvgToXml function with File parameter.",
                 e
             )
-            Svg2Vector::class.functions.forEach {
-                logger.error(it.name)
-            }
             val parseSvgToXmlFunction = Svg2Vector::class.functions.first {
                 it.name == "parseSvgToXml" &&
                         it.parameters.size == 2 &&
                         it.parameters[0].type.classifier == File::class &&
-                        it.parameters[1].type.classifier == File::class
+                        it.parameters[1].type.classifier == OutputStream::class
             }
             return parseSvgToXmlFunction.call(file, os) as String
         }
