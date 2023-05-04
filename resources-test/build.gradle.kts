@@ -11,6 +11,17 @@ plugins {
     id("publication-convention")
 }
 
+android {
+    namespace = "dev.icerock.moko.resources.test"
+}
+
 dependencies {
     commonMainApi(projects.resources)
+}
+
+afterEvaluate {
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
 }

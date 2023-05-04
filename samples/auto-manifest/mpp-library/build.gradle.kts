@@ -9,8 +9,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 16
-        targetSdk = 33
+        minSdk = 21
     }
 }
 
@@ -28,4 +27,11 @@ multiplatformResources {
 
 autoManifest {
     packageName.set("com.icerockdev.library")
+}
+
+afterEvaluate {
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
 }

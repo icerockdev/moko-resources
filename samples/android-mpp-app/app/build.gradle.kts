@@ -12,25 +12,23 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 16
+        minSdk = 21
         targetSdk = 33
     }
 
-    buildFeatures.dataBinding = true
-
     defaultConfig {
-        applicationId = "dev.icerock.moko.samples.resources.mpp"
+        applicationId = "com.icerockdev.mpp"
 
         versionCode = 1
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    namespace = "com.icerockdev"
 }
 
 kotlin {
     android()
-    ios()
 }
 
 dependencies {
@@ -41,4 +39,11 @@ dependencies {
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
+}
+
+afterEvaluate {
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
 }

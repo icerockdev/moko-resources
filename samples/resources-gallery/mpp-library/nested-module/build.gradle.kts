@@ -23,3 +23,10 @@ multiplatformResources {
     multiplatformResourcesClassName = "NestedMR"
     multiplatformResourcesVisibility = MRVisibility.Internal
 }
+
+afterEvaluate {
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
+}

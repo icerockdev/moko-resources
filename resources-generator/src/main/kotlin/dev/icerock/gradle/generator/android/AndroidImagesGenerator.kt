@@ -27,7 +27,7 @@ class AndroidImagesGenerator(
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyInitializer(fileName: String): CodeBlock? {
+    override fun getPropertyInitializer(fileName: String): CodeBlock {
         val processedKey = processKey(fileName.substringBefore("."))
         return CodeBlock.of("ImageResource(R.drawable.%L)", processedKey)
     }
@@ -79,7 +79,7 @@ class AndroidImagesGenerator(
             vectorDrawableFile.parentFile.mkdirs()
             vectorDrawableFile.createNewFile()
             FileOutputStream(vectorDrawableFile, false).use { os ->
-                Svg2Vector.parseSvgToXml(svgFile, os)
+                Svg2Vector.parseSvgToXml(svgFile.toPath(), os)
                     .takeIf { it.isNotEmpty() }
                     ?.let { error -> logger.warn("parse from $svgFile to xml:\n$error") }
             }

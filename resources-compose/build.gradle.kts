@@ -19,12 +19,8 @@ android {
     defaultConfig {
         minSdk = 21
     }
-}
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
+    namespace = "dev.icerock.moko.resources.compose"
 }
 
 kotlin {
@@ -59,5 +55,12 @@ kotlin {
                 implementation(compose.desktop.currentOs)
             }
         }
+    }
+}
+
+afterEvaluate {
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
     }
 }

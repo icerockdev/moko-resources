@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version ("1.8.10")
     id("detekt-convention")
     id("publication-convention")
-    id("com.gradle.plugin-publish") version ("0.19.0")
+    id("com.gradle.plugin-publish") version ("0.21.0")
     id("java-gradle-plugin")
 }
 
@@ -26,18 +26,19 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
     withJavadocJar()
     withSourcesJar()
 }
 
-publishing.publications.register("mavenJava", MavenPublication::class) {
-    from(components["java"])
+afterEvaluate {
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "11"
+publishing.publications.register("mavenJava", MavenPublication::class) {
+    from(components["java"])
 }
 
 gradlePlugin {
