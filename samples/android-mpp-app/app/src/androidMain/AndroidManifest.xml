@@ -7,6 +7,8 @@
     <application
         android:label="moko-resources test mpp app"
         android:theme="@style/Theme.AppCompat.DayNight"
+        android:usesCleartextTraffic="false"
+        android:allowBackup="false"
         tools:ignore="GoogleAppIndexingWarning,MissingApplicationIcon">
 
         <activity
