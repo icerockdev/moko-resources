@@ -32,13 +32,15 @@ implement all you UI in Kotlin with Jetpack Compose and MOKO resources.
 
 ## Features
 
-- **Strings, Plurals, Images, Fonts, Files** to access the corresponding resources from common code;
+- **Strings, Plurals** to access the corresponding resources from common code;
 - **Colors** with light/dark mode support;
 - **Compose Multiplatform** support;
+- **Images** support (`svg`, `png`, `jpg`);
+- **Fonts** support (`ttf`, `otf`);
+- **Files** support (as `raw` or `assets` for android);
 - **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms;
 - **Static** iOS frameworks support;
-- **Fat and XC** frameworks support;
-- **SVG** images support.
+- **Fat and XC** frameworks support.
 
 ## Requirements
 
