@@ -25,7 +25,7 @@ class JsImagesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileName: String): CodeBlock {
-        val requireDeclaration = """"require("$IMAGES_DIR/$fileName")"""
+        val requireDeclaration = """require("$IMAGES_DIR/$fileName")"""
         return CodeBlock.of(
             "ImageResource(fileUrl = js(%S) as String, fileName = %S)",
             requireDeclaration,

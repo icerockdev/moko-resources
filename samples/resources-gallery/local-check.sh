@@ -8,16 +8,16 @@ log() {
   echo "\033[0;32m> $1\033[0m"
 }
 
-./gradlew clean && ./gradlew assembleDebug
+./gradlew clean assembleDebug
 log "resources-gallery android success"
 
-./gradlew clean && ./gradlew jvmJar
+./gradlew clean jvmJar
 log "resources-gallery jvm success"
 
-./gradlew clean && ./gradlew compileKotlinIosX64
+./gradlew clean compileKotlinIosX64
 log "resources-gallery ios success"
 
-./gradlew build
+./gradlew clean build
 log "resources-gallery full build success"
 
 (

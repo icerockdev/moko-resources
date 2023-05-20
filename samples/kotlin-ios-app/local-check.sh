@@ -8,7 +8,7 @@ log() {
   echo "\033[0;32m> $1\033[0m"
 }
 
-./gradlew clean && ./gradlew build
+./gradlew clean build
 log "kotlin-ios-app gradle build success"
 
 (

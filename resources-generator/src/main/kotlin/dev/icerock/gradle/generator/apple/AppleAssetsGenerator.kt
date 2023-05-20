@@ -28,7 +28,7 @@ class AppleAssetsGenerator(
             .substringBeforeLast('.')
 
         return CodeBlock.of(
-            "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = %S)",
+            "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = %N)",
             fileSpec.pathRelativeToBase,
             relativePathWithoutExt,
             ext,

@@ -11,6 +11,10 @@ android {
     defaultConfig {
         minSdk = 21
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 kotlin {
@@ -27,11 +31,4 @@ multiplatformResources {
 
 autoManifest {
     packageName.set("com.icerockdev.library")
-}
-
-afterEvaluate {
-    tasks.withType<JavaCompile>().configureEach {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
-    }
 }

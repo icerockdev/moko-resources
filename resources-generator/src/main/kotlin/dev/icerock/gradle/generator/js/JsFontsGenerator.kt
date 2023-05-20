@@ -30,7 +30,7 @@ class JsFontsGenerator(
 
     @Suppress("StringTemplate")
     override fun getPropertyInitializer(fontFile: File): CodeBlock {
-        val requireDeclaration = """"require("$FONTS_DIR/${fontFile.name}")"""
+        val requireDeclaration = """require("$FONTS_DIR/${fontFile.name}")"""
         return CodeBlock.of(
             "FontResource(fileUrl = js(%S) as String, fontFamily = %S)",
             requireDeclaration,

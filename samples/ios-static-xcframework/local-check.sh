@@ -8,7 +8,7 @@ log() {
   echo "\033[0;32m> $1\033[0m"
 }
 
-./gradlew clean && ./gradlew build assembleMultiPlatformLibraryXCFramework
+./gradlew clean build assembleMultiPlatformLibraryXCFramework
 log "ios-static-xcframework gradle build success"
 
 (

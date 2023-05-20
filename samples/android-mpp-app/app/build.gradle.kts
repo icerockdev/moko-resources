@@ -26,6 +26,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 kotlin {
@@ -40,11 +44,4 @@ dependencies {
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
-}
-
-afterEvaluate {
-    tasks.withType<JavaCompile>().configureEach {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
-    }
 }

@@ -103,10 +103,12 @@ class AndroidImagesGenerator(
                 e
             )
             val parseSvgToXmlFunction = Svg2Vector::class.functions.first {
-                (it.name == "parseSvgToXml")
-                    .and(it.parameters.size == 2)
-                    .and(it.parameters[0].type.classifier == File::class)
-                    .and(it.parameters[1].type.classifier == OutputStream::class)
+                // broken ktlint rule Indentation workaround
+                if (it.name != "parseSvgToXml") return@first false
+                if (it.parameters.size != 2) return@first false
+                if (it.parameters[0].type.classifier != File::class) return@first false
+                if (it.parameters[1].type.classifier != OutputStream::class) return@first false
+                return@first true
             }
             return parseSvgToXmlFunction.call(file, os) as String
         }

@@ -8,16 +8,16 @@ log() {
   echo "\033[0;32m> $1\033[0m"
 }
 
-./gradlew clean && ./gradlew assembleDebug
+./gradlew clean assembleDebug
 log "compose-resources-gallery android success"
 
-./gradlew clean && ./gradlew jvmJar
+./gradlew clean jvmJar
 log "compose-resources-gallery jvm success"
 
-./gradlew clean && ./gradlew compileKotlinIosX64
+./gradlew clean compileKotlinIosX64
 log "compose-resources-gallery ios success"
 
-./gradlew podspec build
+./gradlew clean podspec build
 log "compose-resources-gallery full build success"
 
 (

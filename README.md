@@ -44,7 +44,8 @@ implement all you UI in Kotlin with Jetpack Compose and MOKO resources.
 
 ## Requirements
 
-- Gradle version 6.8.3+
+- Gradle version 7.5+
+- Android Gradle Plugin 7.4.2+
 - Android API 16+
 - iOS version 11.0+
 
@@ -61,7 +62,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.22.0"
+        classpath "dev.icerock.moko:resources-generator:0.22.1"
     }
 }
 
@@ -79,10 +80,10 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.22.0")
-    commonMainApi("dev.icerock.moko:resources-compose:0.22.0") // for compose multiplatform
+    commonMainApi("dev.icerock.moko:resources:0.22.1")
+    commonMainApi("dev.icerock.moko:resources-compose:0.22.1") // for compose multiplatform
 
-    commonTestImplementation("dev.icerock.moko:resources-test:0.22.0")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.22.1")
 }
 
 multiplatformResources {
@@ -101,7 +102,7 @@ should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-bui
 
 ```
 framework {
-    export("dev.icerock.moko:resources:0.22.0")
+    export("dev.icerock.moko:resources:0.22.1")
     export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
 }
 ```

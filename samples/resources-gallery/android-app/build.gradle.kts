@@ -16,16 +16,14 @@ android {
         versionName = "0.1.0"
     }
     namespace = "com.icerockdev"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 }
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation(project(":mpp-library"))
-}
-
-afterEvaluate {
-    tasks.withType<JavaCompile>().configureEach {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
-    }
 }

@@ -54,3 +54,6 @@ dependencies {
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
 }
+
+tasks.matching { it.name == "compileCommonMainKotlinMetadata" }
+    .configureEach { dependsOn("generateMRcommonMain") }
