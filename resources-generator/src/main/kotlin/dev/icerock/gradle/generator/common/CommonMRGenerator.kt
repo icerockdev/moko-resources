@@ -8,6 +8,8 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 import java.io.File
 
@@ -27,7 +29,8 @@ class CommonMRGenerator(
 
     override fun apply(generationTask: Task, project: Project) {
         project.tasks
-            .matching { it is KotlinCompileCommon }
+            .withType<KotlinCompile<*>>()
+            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
             .configureEach { it.dependsOn(generationTask) }
 
         project.rootProject.tasks.matching {
