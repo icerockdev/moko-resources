@@ -6,7 +6,6 @@ import java.util.Base64
 
 plugins {
     id("org.gradle.maven-publish")
-    id("signing")
 }
 
 publishing {
@@ -70,14 +69,16 @@ publishing {
     }
 }
 
+val signingKeyId: String? = System.getenv("SIGNING_KEY_ID")
+if (signingKeyId != null) {
+    apply(plugin = "signing")
 
-signing {
-    val signingKeyId: String? = System.getenv("SIGNING_KEY_ID")
-    val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
-    val signingKey: String? = System.getenv("SIGNING_KEY")?.let { base64Key ->
-        String(Base64.getDecoder().decode(base64Key))
-    }
-    if (signingKeyId != null) {
+    configure<SigningExtension> {
+        val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
+        val signingKey: String? = System.getenv("SIGNING_KEY")?.let { base64Key ->
+            String(Base64.getDecoder().decode(base64Key))
+        }
+
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
         sign(publishing.publications)
     }
