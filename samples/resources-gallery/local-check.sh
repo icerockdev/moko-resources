@@ -17,7 +17,8 @@ log "resources-gallery jvm success"
 ./gradlew clean compileKotlinIosX64
 log "resources-gallery ios success"
 
-./gradlew clean build
+# rerun tasks because kotlinjs compilation broken with build cache :(
+./gradlew clean build --rerun-tasks
 log "resources-gallery full build success"
 
 (

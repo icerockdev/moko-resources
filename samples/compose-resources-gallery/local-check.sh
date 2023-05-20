@@ -17,7 +17,8 @@ log "compose-resources-gallery jvm success"
 ./gradlew clean compileKotlinIosX64
 log "compose-resources-gallery ios success"
 
-./gradlew clean podspec build
+# rerun tasks because kotlinjs compilation broken with build cache :(
+./gradlew clean podspec build --rerun-tasks
 log "compose-resources-gallery full build success"
 
 (
