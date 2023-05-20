@@ -25,8 +25,11 @@ class JsFilesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileSpec: FileSpec): CodeBlock {
-        return CodeBlock.of("FileResource(" +
-                "fileUrl = js(\"require(\\\"$FILES_DIR/${fileSpec.file.name}\\\")\") as String)")
+        val requireDeclaration = """"require("$FILES_DIR/${fileSpec.file.name}")"""
+        return CodeBlock.of(
+            "FileResource(fileUrl = js(%S) as String)",
+            requireDeclaration
+        )
     }
 
     override fun beforeGenerate(objectBuilder: TypeSpec.Builder, files: List<FileSpec>) {

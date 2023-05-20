@@ -240,9 +240,9 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                         target = outputDir,
                         overwrite = true
                     )
-                } catch (exc: NoSuchFileException) {
+                } catch (@Suppress("SwallowedException") exc: NoSuchFileException) {
                     project.logger.info("resources in $inputFile not found")
-                } catch (exc: java.nio.file.NoSuchFileException) {
+                } catch (@Suppress("SwallowedException") exc: java.nio.file.NoSuchFileException) {
                     project.logger.info("resources in $inputFile not found (empty lib)")
                 }
             }

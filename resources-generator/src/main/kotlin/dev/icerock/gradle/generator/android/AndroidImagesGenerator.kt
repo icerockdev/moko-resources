@@ -96,15 +96,17 @@ class AndroidImagesGenerator(
             Svg2Vector.parseSvgToXml(Path.of(file.absolutePath), os)
         } catch (e: NoSuchMethodError) {
             logger.debug(
-                "Not found parseSvgToXml function with Path parameter. " +
-                        "Fallback to parseSvgToXml function with File parameter.",
+                buildString {
+                    append("Not found parseSvgToXml function with Path parameter. ")
+                    append("Fallback to parseSvgToXml function with File parameter.")
+                },
                 e
             )
             val parseSvgToXmlFunction = Svg2Vector::class.functions.first {
-                it.name == "parseSvgToXml" &&
-                        it.parameters.size == 2 &&
-                        it.parameters[0].type.classifier == File::class &&
-                        it.parameters[1].type.classifier == OutputStream::class
+                (it.name == "parseSvgToXml")
+                    .and(it.parameters.size == 2)
+                    .and(it.parameters[0].type.classifier == File::class)
+                    .and(it.parameters[1].type.classifier == OutputStream::class)
             }
             return parseSvgToXmlFunction.call(file, os) as String
         }

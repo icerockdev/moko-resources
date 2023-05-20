@@ -20,9 +20,7 @@ import java.io.File
 
 class AppleImagesGenerator(
     inputFileTree: FileTree
-) : ImagesGenerator(
-    inputFileTree = inputFileTree
-), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : ImagesGenerator(inputFileTree = inputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -52,40 +50,48 @@ class AppleImagesGenerator(
             val uniqueNames = files.map { it.nameWithoutScale }.distinct()
             uniqueNames.forEach { name ->
                 require(validFiles.any { it.nameWithoutScale == name }) {
-                    "Apple Generator cannot find a valid scale for file with name \"$name\".\n" +
-                            "Note: Apple resources can have only 1x, 2x and 3x scale factors " +
-                            "(https://developer.apple.com/design/human-interface-guidelines/ios/" +
-                            "icons-and-images/image-size-and-resolution/).\n" +
-                            "It is still possible to use 4x images for android, but you need to " +
-                            "add a valid iOS variant."
+                    buildString {
+                        appendLine("Apple Generator cannot find a valid scale for file with name \"$name\".")
+                        append("Note: Apple resources can have only 1x, 2x and 3x scale factors ")
+                        append("(https://developer.apple.com/design/human-interface-guidelines/ios/")
+                        appendLine("icons-and-images/image-size-and-resolution/).")
+                        append("It is still possible to use 4x images for android, but you need to ")
+                        append("add a valid iOS variant.")
+                    }
                 }
             }
 
             validFiles.forEach { it.copyTo(File(assetDir, it.name)) }
 
             val imagesContent = buildJsonArray {
-                validFiles.forEach { file ->
-                    add(buildJsonObject {
+                validFiles.map { file ->
+                    buildJsonObject {
                         put("idiom", JsonPrimitive("universal"))
                         put("filename", JsonPrimitive(file.name))
                         if (!file.svg) {
                             put("scale", JsonPrimitive(file.scale))
                         }
-                    })
-                }
+                    }
+                }.forEach { add(it) }
             }
 
             val content = buildJsonObject {
                 put("images", imagesContent)
-                put("info", buildJsonObject {
-                    put("version", JsonPrimitive(1))
-                    put("author", JsonPrimitive("xcode"))
-                })
+                put(
+                    "info",
+                    buildJsonObject {
+                        put("version", JsonPrimitive(1))
+                        put("author", JsonPrimitive("xcode"))
+                    }
+                )
 
                 if (validFiles.any { file -> file.svg }) {
-                    put("properties", buildJsonObject {
-                        put("preserves-vector-representation", JsonPrimitive(true))
-                    })
+                    put(
+                        "properties",
+                        buildJsonObject {
+                            put("preserves-vector-representation", JsonPrimitive(true))
+                        }
+                    )
                 }
             }.toString()
 

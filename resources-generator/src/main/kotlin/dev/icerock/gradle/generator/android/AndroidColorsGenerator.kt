@@ -35,13 +35,15 @@ class AndroidColorsGenerator(
         val darkStringsFile = File(valuesNightDir, COLORS_XML_FILE_NAME)
         valuesNightDir.mkdirs()
 
-        val header = """
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
+        val header =
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <resources>
             """.trimIndent()
 
-        val footer = """
-</resources>
+        val footer =
+            """
+            </resources>
             """.trimIndent()
 
         val defaultContent = colors.joinToString("\n") { colorNode ->
