@@ -5,19 +5,19 @@
 package dev.icerock.gradle.generator.apple.action
 
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
+import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
 internal class CopyResourcesFromKLibsToExecutableAction : CopyResourcesFromKLibsAction() {
     override fun execute(task: Task) {
         task as KotlinNativeLink
 
-        val executable: TestExecutable = task.binary as TestExecutable
+        val executable: AbstractExecutable = task.binary as AbstractExecutable
 
         copyResourcesFromLibraries(
             linkTask = task,
             project = task.project,
-            outputDir = executable.outputFile
+            outputDir = executable.outputDirectory
         )
     }
 }
