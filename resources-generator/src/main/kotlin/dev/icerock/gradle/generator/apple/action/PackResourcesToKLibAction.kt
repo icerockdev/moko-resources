@@ -1,0 +1,77 @@
+/*
+ * Copyright 2023 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package dev.icerock.gradle.generator.apple.action
+
+import dev.icerock.gradle.generator.apple.LoadableBundle
+import dev.icerock.gradle.utils.unzipTo
+import org.gradle.api.Action
+import org.gradle.api.Task
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import org.jetbrains.kotlin.konan.file.zipDirAs
+import java.io.File
+import java.util.Properties
+
+internal class PackResourcesToKLibAction(
+    private val baseLocalizationRegion: String,
+    private val bundleIdentifier: String,
+    private val assetsDirectory: File?,
+    private val resourcesGenerationDir: File
+) : Action<Task> {
+    override fun execute(task: Task) {
+        task as KotlinNativeCompile
+
+        val klibFile = task.outputFile.get()
+        val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
+        val defaultDir = File(repackDir, "default")
+        val resRepackDir = File(defaultDir, "resources")
+
+        unzipTo(zipFile = klibFile, outputDirectory = repackDir)
+
+        val manifestFile = File(defaultDir, "manifest")
+        val manifest = Properties()
+        manifest.load(manifestFile.inputStream())
+
+        val uniqueName = manifest["unique_name"] as String
+
+        val loadableBundle = LoadableBundle(
+            directory = resRepackDir,
+            bundleName = uniqueName,
+            developmentRegion = baseLocalizationRegion,
+            identifier = bundleIdentifier
+        )
+        loadableBundle.write()
+
+        assetsDirectory?.let { assetsDir ->
+            val process = Runtime.getRuntime().exec(
+                "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
+                emptyArray(),
+                assetsDir.parentFile
+            )
+            val errors = process.errorStream.bufferedReader().readText()
+            val input = process.inputStream.bufferedReader().readText()
+            val result = process.waitFor()
+            if (result != 0) {
+                println("can't compile assets - $result")
+                println(input)
+                println(errors)
+            } else {
+                assetsDir.deleteRecursively()
+            }
+        }
+
+        resourcesGenerationDir.copyRecursively(
+            loadableBundle.resourcesDir,
+            overwrite = true
+        )
+
+        val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
+        val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
+
+        klibFile.delete()
+        repackKonan.zipDirAs(klibKonan)
+
+        repackDir.deleteRecursively()
+    }
+}
