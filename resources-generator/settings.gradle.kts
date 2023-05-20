@@ -15,12 +15,6 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         google()
-
-        mavenCentral {
-            content {
-                includeGroup("org.jetbrains.kotlinx")
-            }
-        }
     }
 
     versionCatalogs {

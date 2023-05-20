@@ -65,12 +65,11 @@ kotlin {
 }
 
 android {
-
+    compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
 
     defaultConfig {
-        compileSdk = 33
         minSdk = 26
     }
     compileOptions {

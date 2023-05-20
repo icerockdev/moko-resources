@@ -22,7 +22,7 @@ buildscript {
 subprojects {
     plugins.withType<com.android.build.gradle.BasePlugin> {
         configure<BaseExtension> {
-            defaultConfig.minSdkVersion(21)
+            defaultConfig.minSdkVersion(16)
             compileSdkVersion(33)
         }
     }

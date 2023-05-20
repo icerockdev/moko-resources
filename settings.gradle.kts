@@ -10,12 +10,6 @@ dependencyResolutionManagement {
         google()
 
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-
-        mavenCentral {
-            content {
-                includeGroup("org.jetbrains.kotlinx")
-            }
-        }
     }
     versionCatalogs {
         create("moko") {

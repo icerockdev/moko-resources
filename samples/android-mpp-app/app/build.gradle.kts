@@ -14,7 +14,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 16
         targetSdk = 33
     }
 
@@ -34,6 +34,7 @@ android {
 
 kotlin {
     android()
+    ios()
 }
 
 dependencies {
