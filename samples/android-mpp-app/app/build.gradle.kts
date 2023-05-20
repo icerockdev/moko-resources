@@ -9,6 +9,8 @@ plugins {
 }
 
 android {
+    namespace = "com.icerockdev.mpp"
+
     compileSdk = 33
 
     defaultConfig {
@@ -24,7 +26,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    namespace = "com.icerockdev"
 }
 
 kotlin {

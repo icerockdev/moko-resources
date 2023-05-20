@@ -30,9 +30,8 @@ java {
     withSourcesJar()
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
+kotlin {
+    jvmToolchain(11)
 }
 
 gradlePlugin {
