@@ -9,7 +9,6 @@ plugins {
 
 android {
     defaultConfig {
-        minSdk = 21
         targetSdk = 33
         applicationId = "dev.icerock.moko.samples.resources"
         versionCode = 1
