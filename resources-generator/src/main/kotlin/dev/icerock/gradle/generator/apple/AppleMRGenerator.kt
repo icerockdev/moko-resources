@@ -28,6 +28,8 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.maybeCreate
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
@@ -108,6 +110,12 @@ class AppleMRGenerator(
     private fun setupKLibResources(generationTask: Task) {
         val compileTask: KotlinNativeCompile = compilation.compileKotlinTask
         compileTask.dependsOn(generationTask)
+
+        // tasks like compileIosMainKotlinMetadata when only one target enabled
+        generationTask.project.tasks
+            .withType<KotlinCommonCompile>()
+            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
+            .configureEach { it.dependsOn(generationTask) }
 
         compileTask.doLast(
             PackResourcesToKLibAction(

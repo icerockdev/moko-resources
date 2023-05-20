@@ -27,6 +27,3 @@ multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
     multiplatformResourcesSourceSet = "iosMain"
 }
-
-tasks.matching { it.name == "compileIosMainKotlinMetadata" }
-    .configureEach { dependsOn("generateMRiosMain") }
