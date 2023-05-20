@@ -64,10 +64,3 @@ val copyIosArm64TestResources = tasks.register<Copy>("copyIosArm64TestResources"
 }
 
 tasks.findByName("iosSimulatorArm64Test")!!.dependsOn(copyIosArm64TestResources)
-
-afterEvaluate {
-    tasks.withType<JavaCompile>().configureEach {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
-    }
-}
