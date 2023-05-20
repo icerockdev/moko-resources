@@ -35,7 +35,7 @@ kotlin {
             dependencies {
                 api("org.jetbrains.kotlin:kotlin-test-junit:1.8.10")
                 api("androidx.test:core:1.5.0")
-                api("org.robolectric:robolectric:4.9")
+                api("org.robolectric:robolectric:4.10.3")
                 api("junit:junit:4.13.2")
             }
         }

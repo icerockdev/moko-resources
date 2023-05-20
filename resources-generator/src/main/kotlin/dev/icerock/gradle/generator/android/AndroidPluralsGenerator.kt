@@ -43,9 +43,10 @@ class AndroidPluralsGenerator(
         val stringsFile = File(valuesDir, "multiplatform_plurals.xml")
         valuesDir.mkdirs()
 
-        val header = """
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
+        val header =
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <resources>
             """.trimIndent()
 
         val content = strings.map { (key, pluralMap) ->
@@ -60,8 +61,9 @@ class AndroidPluralsGenerator(
             start + items + end
         }.joinToString("\n")
 
-        val footer = """
-</resources>
+        val footer =
+            """
+            </resources>
             """.trimIndent()
 
         stringsFile.writeText(header + "\n")

@@ -25,13 +25,14 @@ class JsAssetsGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock {
-        val filePath = File(FILES_DIR, fileSpec.pathRelativeToBase).path
-        return CodeBlock.of("""
-            AssetResource(
-                originalPath = js("require(\"${filePath.replace("\\","/")}\")") as String, 
-                rawPath = "${fileSpec.pathRelativeToBase}"
-            )
-        """.trimIndent())
+        val filePath: String = File(FILES_DIR, fileSpec.pathRelativeToBase).path
+            .replace("\\", "/")
+        val requireDeclaration = """require("$filePath")"""
+        return CodeBlock.of(
+            "AssetResource(originalPath = js(%S) as String, rawPath = %S)",
+            requireDeclaration,
+            fileSpec.pathRelativeToBase
+        )
     }
 
     override fun beforeGenerate(objectBuilder: TypeSpec.Builder, files: List<AssetSpec>) {
@@ -60,6 +61,7 @@ class JsAssetsGenerator(
                     }
                     return@flatMap flattenAssets(spec.assets, nextPrefix)
                 }
+
                 is AssetSpecFile -> {
                     val key = spec.file.nameWithoutExtension.replace('-', '_')
                     val name = when (prefix) {
@@ -86,6 +88,7 @@ class JsAssetsGenerator(
             when (assetSpec) {
                 is AssetSpecDirectory ->
                     generateResourcesInner(assetSpec.assets, fileResDir)
+
                 is AssetSpecFile ->
                     assetSpec.file.copyTo(File(fileResDir, assetSpec.pathRelativeToBase))
             }

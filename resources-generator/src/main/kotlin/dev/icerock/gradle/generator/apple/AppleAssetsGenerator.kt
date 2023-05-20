@@ -28,11 +28,11 @@ class AppleAssetsGenerator(
             .substringBeforeLast('.')
 
         return CodeBlock.of(
-            "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = " +
-                    AppleMRGenerator.BUNDLE_PROPERTY_NAME + ")",
+            "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = %N)",
             fileSpec.pathRelativeToBase,
             relativePathWithoutExt,
-            ext
+            ext,
+            AppleMRGenerator.BUNDLE_PROPERTY_NAME
         )
     }
 
@@ -45,6 +45,7 @@ class AppleAssetsGenerator(
             when (assetSpec) {
                 is AssetSpecDirectory ->
                     generateResources(assetsGenerationDir, resourcesGenerationDir, assetSpec.assets)
+
                 is AssetSpecFile -> {
                     val newName = assetSpec.pathRelativeToBase.replace('/', PATH_DELIMITER)
                     assetSpec.file.copyTo(File(resourcesGenerationDir, newName))

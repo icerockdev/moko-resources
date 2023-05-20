@@ -16,16 +16,20 @@ kotlin {
     sourceSets {
         getByName("jsMain") {
             dependencies {
-                api(npm("bcp-47", "1.0.8"))
-                api(npm("@messageformat/core", "3.0.0"))
-                api(npm("mini-css-extract-plugin", "2.6.1"))
+                api(npm("bcp-47", "2.1.0"))
+                api(npm("@messageformat/core", "3.1.0"))
+                api(npm("mini-css-extract-plugin", "2.7.5"))
                 api(npm("css-loader", "6.7.3"))
-                api(npm("style-loader", "3.3.1"))
+                api(npm("style-loader", "3.3.2"))
 
                 implementation(libs.kotlinxCoroutines)
             }
         }
     }
+}
+
+android {
+    namespace = "dev.icerock.moko.resources"
 }
 
 dependencies {

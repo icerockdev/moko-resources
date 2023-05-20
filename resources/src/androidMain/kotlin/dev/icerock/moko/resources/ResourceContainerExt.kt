@@ -9,7 +9,10 @@ actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String)
 
     val lastNamePart = if (fileName.length > 1) {
         fileName.substring(1, fileName.length)
-    } else ""
+    } else {
+        ""
+    }
+
     val methodName = StringBuilder()
         .append("get")
         .append(fileName[0].uppercaseChar())

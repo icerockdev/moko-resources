@@ -9,6 +9,8 @@ plugins {
 }
 
 android {
+    namespace = "com.icerockdev.mpp"
+
     compileSdk = 33
 
     defaultConfig {
@@ -16,15 +18,17 @@ android {
         targetSdk = 33
     }
 
-    buildFeatures.dataBinding = true
-
     defaultConfig {
-        applicationId = "dev.icerock.moko.samples.resources.mpp"
+        applicationId = "com.icerockdev.mpp"
 
         versionCode = 1
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

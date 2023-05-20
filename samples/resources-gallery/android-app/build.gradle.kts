@@ -9,15 +9,20 @@ plugins {
 
 android {
     defaultConfig {
+        targetSdk = 33
         applicationId = "dev.icerock.moko.samples.resources"
-
         versionCode = 1
         versionName = "0.1.0"
+    }
+    namespace = "com.icerockdev"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-
     implementation(project(":mpp-library"))
 }

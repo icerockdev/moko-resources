@@ -72,14 +72,15 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension
     ) {
-
         val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
         val commonResources = commonSourceSet.resources
 
         val generatedDir = File(target.buildDir, "generated/moko")
         val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage) {
-            "multiplatformResources.multiplatformResourcesPackage is required!" +
-                    " please configure moko-resources plugin correctly."
+            buildString {
+                appendLine("multiplatformResources.multiplatformResourcesPackage is required!")
+                append("Please configure moko-resources plugin correctly.")
+            }
         }
         val mrSettings = MRGenerator.MRSettings(
             packageName = mrClassPackage,

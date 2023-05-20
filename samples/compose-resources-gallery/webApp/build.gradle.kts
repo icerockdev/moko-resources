@@ -18,7 +18,7 @@ kotlin {
             dependencies {
                 implementation(project(":shared"))
 
-                implementation(compose.web.core)
+                implementation(compose.html.core)
             }
         }
     }

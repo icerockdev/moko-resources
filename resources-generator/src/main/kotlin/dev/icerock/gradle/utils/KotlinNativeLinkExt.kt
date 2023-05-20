@@ -23,7 +23,7 @@ val KotlinNativeLink.klibs: FileCollection
             val library: FileCollection = getIntermediateLibrary.invoke(this) as FileCollection
 
             libs.plus(library)
-        } catch (exc: NoSuchMethodException) {
+        } catch (@Suppress("SwallowedException") exc: NoSuchMethodException) {
             libraries.plus(sources)
         }
     }
@@ -36,7 +36,7 @@ val Kotlin2JsCompile.klibs: FileCollection
 
             val libs: FileCollection = getClasspath.invoke(this) as FileCollection
             libs
-        } catch (exc: NoSuchMethodException) {
+        } catch (@Suppress("SwallowedException") exc: NoSuchMethodException) {
             libraries.plus(sources)
         }
     }
