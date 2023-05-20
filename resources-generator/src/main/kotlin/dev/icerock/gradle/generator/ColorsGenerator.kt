@@ -154,13 +154,19 @@ abstract class ColorsGenerator(
     }
 
     protected fun replaceColorAlpha(color: String?): String? {
-        if (color == null) return color
+        if (color == null) return null
 
-        val alpha = if (isRgbFormat(color)) DefaultAlpha
-        else color.substring(color.length - 2, color.length)
+        val alpha: String = if (isRgbFormat(color)) {
+            DefaultAlpha
+        } else {
+            color.substring(color.length - 2, color.length)
+        }
 
-        return if (isRgbFormat(color)) "$alpha$color"
-        else "$alpha${color.removeRange(color.length - 2, color.length)}"
+        return if (isRgbFormat(color)) {
+            "$alpha$color"
+        } else {
+            "$alpha${color.removeRange(color.length - 2, color.length)}"
+        }
     }
 
     private fun isRgbFormat(color: String): Boolean = color.length == RgbFormatLength

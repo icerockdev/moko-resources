@@ -11,8 +11,8 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidImagesGenerator
 import dev.icerock.gradle.generator.apple.AppleImagesGenerator
-import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
+import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import dev.icerock.gradle.utils.withoutScale
 import org.gradle.api.file.FileTree
@@ -46,10 +46,11 @@ abstract class ImagesGenerator(
         val typeSpec = createTypeSpec(fileMap.keys.sorted(), objectBuilder)
 
         generateResources(
-            resourcesGenerationDir,
-            fileMap.mapKeys { (key, _) ->
+            resourcesGenerationDir = resourcesGenerationDir,
+            keyFileMap = fileMap.mapKeys { (key, _) ->
                 key.substringBeforeLast(".") // Remove file extension from keys
-            })
+            }
+        )
 
         return typeSpec
     }
@@ -81,7 +82,8 @@ abstract class ImagesGenerator(
     protected open fun beforeGenerateResources(
         objectBuilder: TypeSpec.Builder,
         keys: List<String>
-    ) {}
+    ) {
+    }
 
     protected open fun generateResources(
         resourcesGenerationDir: File,

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.icerockdev">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:label="moko-resources test mpp app"
         android:theme="@style/Theme.AppCompat.DayNight"
+        android:usesCleartextTraffic="false"
+        android:allowBackup="false"
         tools:ignore="GoogleAppIndexingWarning,MissingApplicationIcon">
 
         <activity

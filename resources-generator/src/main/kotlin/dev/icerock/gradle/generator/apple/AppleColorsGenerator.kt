@@ -71,10 +71,13 @@ class AppleColorsGenerator(
 
             val resultObj = buildJsonObject {
                 put("colors", colorContentObj)
-                put("info", buildJsonObject {
-                    put("author", "xcode")
-                    put("version", 1)
-                })
+                put(
+                    "info",
+                    buildJsonObject {
+                        put("author", "xcode")
+                        put("version", 1)
+                    }
+                )
             }
             contentsFile.writeText(resultObj.toString())
         }
@@ -82,12 +85,15 @@ class AppleColorsGenerator(
 
     private fun buildColorJsonObj(argbColor: ArgbColor): JsonObject = buildJsonObject {
         put("color-space", "srgb")
-        put("components", buildJsonObject {
-            put("alpha", argbColor.a)
-            put("red", argbColor.r)
-            put("green", argbColor.g)
-            put("blue", argbColor.b)
-        })
+        put(
+            "components",
+            buildJsonObject {
+                put("alpha", argbColor.a)
+                put("red", argbColor.r)
+                put("green", argbColor.g)
+                put("blue", argbColor.b)
+            }
+        )
     }
 
     private fun buildColorIdiomJsonObj(argbColor: ArgbColor): JsonObject = buildJsonObject {
@@ -97,12 +103,17 @@ class AppleColorsGenerator(
 
     private fun buildAppearancesIdiomJsonBlock(valueTag: String, argbColor: ArgbColor): JsonObject {
         return buildJsonObject {
-            put("appearances", buildJsonArray {
-                add(buildJsonObject {
-                    put("appearance", "luminosity")
-                    put("value", valueTag)
-                })
-            })
+            put(
+                "appearances",
+                buildJsonArray {
+                    add(
+                        buildJsonObject {
+                            put("appearance", "luminosity")
+                            put("value", valueTag)
+                        }
+                    )
+                }
+            )
             put("color", buildColorJsonObj(argbColor))
             put("idiom", "universal")
         }

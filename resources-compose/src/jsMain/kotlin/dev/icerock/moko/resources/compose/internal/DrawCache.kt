@@ -96,8 +96,10 @@ internal class DrawCache {
     ) {
         val targetImage = mCachedImage
         check(targetImage != null) {
-            "drawCachedImage must be invoked first before attempting to draw the result " +
-                    "into another destination"
+            buildString {
+                append("drawCachedImage must be invoked first before attempting to draw the result ")
+                append("into another destination")
+            }
         }
         target.drawImage(targetImage, srcSize = size, alpha = alpha, colorFilter = colorFilter)
     }

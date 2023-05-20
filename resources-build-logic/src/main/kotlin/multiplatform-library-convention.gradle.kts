@@ -51,6 +51,8 @@ kotlin {
         macosTest.dependsOn(commonTest)
         jsTest.dependsOn(commonTest)
     }
+
+    jvmToolchain(11)
 }
 
 tasks.withType<AbstractTestTask> {

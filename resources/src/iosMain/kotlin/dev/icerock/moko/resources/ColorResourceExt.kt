@@ -8,12 +8,12 @@ import platform.UIKit.UIColor
 import platform.UIKit.colorNamed
 
 fun ColorResource.getUIColor(): UIColor {
-    return UIColor.colorNamed(
+    val color: UIColor? = UIColor.colorNamed(
         name = this.name,
         inBundle = this.bundle,
         compatibleWithTraitCollection = null
-    ) ?: throw IllegalStateException(
-        "Can't read color $name from bundle $bundle, " +
-                "please check moko-resources gradle configuration"
     )
+    return requireNotNull(color) {
+        "Can't read color $name from bundle $bundle, please check moko-resources gradle configuration"
+    }
 }

@@ -29,9 +29,11 @@ abstract class AssetsGenerator(
         val relativePathToAssets = file.path.substringAfterLast(RES_ROOT)
         val fixedRelativePath = File(relativePathToAssets).path
 
-        val result = if (fixedRelativePath.startsWith(File.separatorChar)) {
+        val result: String = if (fixedRelativePath.startsWith(File.separatorChar)) {
             fixedRelativePath.substring(1)
-        } else fixedRelativePath
+        } else {
+            fixedRelativePath
+        }
 
         return if (File.separatorChar == '/') result else result.replace(File.separatorChar, '/')
     }
@@ -45,7 +47,6 @@ abstract class AssetsGenerator(
                     res.add(AssetSpecDirectory(it.name, parseRootContentInner(files)))
                 }
             } else {
-
                 // skip empty files, like .DS_Store
                 if (it.nameWithoutExtension.isEmpty()) {
                     continue
@@ -54,10 +55,7 @@ abstract class AssetsGenerator(
                 val pathRelativeToBase = getBaseDir(it)
 
                 if (pathRelativeToBase.contains(PATH_DELIMITER)) {
-                    throw IllegalStateException(
-                        "file path can't have this symbol " +
-                                PATH_DELIMITER + ". We use them as separators."
-                    )
+                    error("file path can't have this symbol $PATH_DELIMITER. We use them as separators.")
                 }
 
                 res.add(
@@ -74,7 +72,6 @@ abstract class AssetsGenerator(
     private fun parseRootContent(
         resFolders: Set<File>
     ): List<AssetSpec> {
-
         val contentOfRootDir = mutableListOf<File>()
         resFolders.forEach {
             val assets = File(it, RES_ROOT)
@@ -92,7 +89,6 @@ abstract class AssetsGenerator(
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder
     ): TypeSpec {
-
         val rootContent = parseRootContent(sourceDirectorySet.sourceDirectories.files)
 
         beforeGenerate(objectBuilder, rootContent)
@@ -119,10 +115,8 @@ abstract class AssetsGenerator(
 
     @Suppress("SpreadOperator")
     private fun createInnerTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder) {
-
         for (specs in keys) {
             if (specs is AssetSpecFile) {
-
                 val styleProperty = PropertySpec
                     .builder(specs.file.nameWithoutExtension.replace('-', '_'), resourceClassName)
                     .addModifiers(*getPropertyModifiers())
@@ -148,7 +142,8 @@ abstract class AssetsGenerator(
     protected open fun beforeGenerate(
         objectBuilder: TypeSpec.Builder,
         files: List<AssetSpec>
-    ) {}
+    ) {
+    }
 
     protected open fun generateResources(
         assetsGenerationDir: File,

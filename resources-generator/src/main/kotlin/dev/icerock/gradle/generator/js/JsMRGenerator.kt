@@ -255,9 +255,9 @@ class JsMRGenerator(
                     target = outputDir,
                     overwrite = true
                 )
-            } catch (exc: kotlin.io.NoSuchFileException) {
+            } catch (@Suppress("SwallowedException") exc: kotlin.io.NoSuchFileException) {
                 project.logger.info("resources in $inputFile not found")
-            } catch (exc: java.nio.file.NoSuchFileException) {
+            } catch (@Suppress("SwallowedException") exc: java.nio.file.NoSuchFileException) {
                 project.logger.info("resources in $inputFile not found (empty lib)")
             }
         }

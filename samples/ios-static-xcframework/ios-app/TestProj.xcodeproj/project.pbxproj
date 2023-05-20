@@ -11,7 +11,7 @@
 		22BE0C66279C026700CDA47A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22BE0C65279C026700CDA47A /* ContentView.swift */; };
 		22BE0C68279C026800CDA47A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22BE0C67279C026800CDA47A /* Assets.xcassets */; };
 		22BE0C6B279C026800CDA47A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22BE0C6A279C026800CDA47A /* Preview Assets.xcassets */; };
-		22BE0C72279C029A00CDA47A /* MultiPlatformLibrary.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22BE0C70279C028F00CDA47A /* MultiPlatformLibrary.xcframework */; };
+		30F9612F2A00A7BA00C7F22F /* MultiPlatformLibrary.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30F9612E2A00A7BA00C7F22F /* MultiPlatformLibrary.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +20,8 @@
 		22BE0C65279C026700CDA47A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		22BE0C67279C026800CDA47A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22BE0C6A279C026800CDA47A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		22BE0C70279C028F00CDA47A /* MultiPlatformLibrary.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MultiPlatformLibrary.xcframework; path = "../../mpp-library/build/XCFrameworks/release/MultiPlatformLibrary.xcframework"; sourceTree = "<group>"; };
+		30F9612C2A00A79C00C7F22F /* XCFrameworks */ = {isa = PBXFileReference; lastKnownFileType = folder; name = XCFrameworks; path = "../mpp-library/build/XCFrameworks"; sourceTree = "<group>"; };
+		30F9612E2A00A7BA00C7F22F /* MultiPlatformLibrary.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MultiPlatformLibrary.xcframework; path = "../mpp-library/build/XCFrameworks/release/MultiPlatformLibrary.xcframework"; sourceTree = "<group>"; };
 		45964D362282A1FD00C16658 /* mpp-library */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mpp-library"; path = "../mpp-library"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -29,7 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22BE0C72279C029A00CDA47A /* MultiPlatformLibrary.xcframework in Frameworks */,
+				30F9612F2A00A7BA00C7F22F /* MultiPlatformLibrary.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,7 +40,6 @@
 		22BE0C62279C026700CDA47A /* TestStaticXCFramework */ = {
 			isa = PBXGroup;
 			children = (
-				22BE0C70279C028F00CDA47A /* MultiPlatformLibrary.xcframework */,
 				22BE0C63279C026700CDA47A /* TestStaticXCFrameworkApp.swift */,
 				22BE0C65279C026700CDA47A /* ContentView.swift */,
 				22BE0C67279C026800CDA47A /* Assets.xcassets */,
@@ -62,6 +62,7 @@
 				45964D362282A1FD00C16658 /* mpp-library */,
 				22BE0C62279C026700CDA47A /* TestStaticXCFramework */,
 				287628001F319065007FA12B /* Products */,
+				30F9612B2A00A79C00C7F22F /* Frameworks */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -74,6 +75,15 @@
 				22BE0C61279C026700CDA47A /* TestStaticXCFramework.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		30F9612B2A00A79C00C7F22F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				30F9612E2A00A7BA00C7F22F /* MultiPlatformLibrary.xcframework */,
+				30F9612C2A00A79C00C7F22F /* XCFrameworks */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,7 +158,6 @@
 /* Begin PBXShellScriptBuildPhase section */
 		22BE0C75279C02A100CDA47A /* Rebuild XCFramework */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -163,11 +172,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd ..\n\n./gradlew :mpp-library:assembleMPLReleaseXCFramework\n";
+			shellScript = "cd ..\n\n./gradlew assembleMultiPlatformLibraryXCFramework\n";
 		};
 		22BE0C76279C12A200CDA47A /* Copy MOKO Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -182,7 +190,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd ..\n\n./gradlew :mpp-library:copyResourcesMPLReleaseXCFrameworkToApp \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH\n";
+			shellScript = "cd ..\n\n./gradlew copyResourcesMultiPlatformLibraryReleaseXCFrameworkToApp \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

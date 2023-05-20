@@ -19,12 +19,8 @@ android {
     defaultConfig {
         minSdk = 21
     }
-}
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
+    namespace = "dev.icerock.moko.resources.compose"
 }
 
 kotlin {

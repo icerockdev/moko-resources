@@ -11,6 +11,10 @@ plugins {
     id("publication-convention")
 }
 
+android {
+    namespace = "dev.icerock.moko.resources.test"
+}
+
 dependencies {
     commonMainApi(projects.resources)
 }

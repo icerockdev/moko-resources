@@ -25,9 +25,12 @@ class JsImagesGenerator(
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(fileName: String): CodeBlock {
-        return CodeBlock.of("ImageResource(" +
-                "fileUrl = js(\"require(\\\"$IMAGES_DIR/$fileName\\\")\") as String, " +
-                "fileName = \"$fileName\")")
+        val requireDeclaration = """require("$IMAGES_DIR/$fileName")"""
+        return CodeBlock.of(
+            "ImageResource(fileUrl = js(%S) as String, fileName = %S)",
+            requireDeclaration,
+            fileName
+        )
     }
 
     override fun beforeGenerateResources(objectBuilder: TypeSpec.Builder, keys: List<String>) {
@@ -47,7 +50,10 @@ class JsImagesGenerator(
         )
     }
 
-    override fun generateResources(resourcesGenerationDir: File, keyFileMap: Map<String, List<File>>) {
+    override fun generateResources(
+        resourcesGenerationDir: File,
+        keyFileMap: Map<String, List<File>>
+    ) {
         generateHighestQualityImageResources(resourcesGenerationDir, keyFileMap, IMAGES_DIR)
     }
 

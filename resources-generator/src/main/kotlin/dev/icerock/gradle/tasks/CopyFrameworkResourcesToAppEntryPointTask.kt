@@ -65,8 +65,10 @@ open class CopyFrameworkResourcesToAppEntryPointTask : DefaultTask() {
     fun action() {
         if (dependsOn.isEmpty()) {
             throw GradleException(
-                "framework link task with konanTarget $konanTarget, platform $platformName, " +
-                        "arch $archs and buildType $configuration not found!"
+                buildString {
+                    append("framework link task with konanTarget $konanTarget, platform $platformName, ")
+                    append("arch $archs and buildType $configuration not found!")
+                }
             )
         }
     }

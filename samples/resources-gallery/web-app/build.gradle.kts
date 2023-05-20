@@ -15,7 +15,7 @@ kotlin {
                 implementation(moko.resources)
                 implementation(project(":mpp-library"))
 
-                implementation(compose.web.core)
+                implementation(compose.html.core)
                 implementation(compose.runtime)
             }
         }
