@@ -17,7 +17,7 @@ actual fun fontFamilyResource(fontResource: FontResource): FontFamily {
     val context: Context = LocalContext.current
     return remember(context, fontResource) {
         val typeface: Typeface = fontResource.getTypeface(context)
-            ?: throw IllegalStateException("can't read typeface for $fontResource")
+            ?: error("can't read typeface for $fontResource")
 
         FontFamily(typeface)
     }

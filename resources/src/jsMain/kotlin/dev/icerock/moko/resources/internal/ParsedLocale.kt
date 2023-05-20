@@ -57,11 +57,16 @@ fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
  * Finds a matching locale in the supported locales.
  * @param locale if null, the user defined locales of the browsers will be used.
  */
-fun findMatchingLocale(supportedLocales: SupportedLocales, locale: String?) =
-    if (locale == null) getLanguageLocale(supportedLocales) else findMatchingLocale(
-        supportedLocales,
-        arrayOf(locale)
-    )
+fun findMatchingLocale(supportedLocales: SupportedLocales, locale: String?): SupportedLocale? {
+    return if (locale == null) {
+        getLanguageLocale(supportedLocales)
+    } else {
+        findMatchingLocale(
+            supportedLocales,
+            arrayOf(locale)
+        )
+    }
+}
 
 /**
  * Iterates through all user languages and for each tries to find the best fitting
@@ -115,10 +120,16 @@ private fun calculateMatchingScore(desiredLocale: ParsedLocale, candidate: Suppo
             if (desiredList.containsAll(candidateList)) {
                 score += desiredList.count { it in candidateList }
                 true
-            } else false
+            } else {
+                false
+            }
         }
 
-    if (!listComparison(desiredLocale.extendedLanguageSubtag, candidate.parsedLocale.extendedLanguageSubtag)) return -1
+    val compareResult: Boolean = listComparison(
+        desiredLocale.extendedLanguageSubtag,
+        candidate.parsedLocale.extendedLanguageSubtag
+    )
+    if (!compareResult) return -1
 
     if (desiredLocale.script == candidate.parsedLocale.script) {
         score++

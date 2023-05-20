@@ -22,7 +22,7 @@ expect interface StringDesc {
 
     sealed class LocaleType {
         object System : LocaleType
-        class Custom(locale: String) : LocaleType
+        class Custom(@Suppress("UnusedPrivateMember") locale: String) : LocaleType
     }
 
     companion object {

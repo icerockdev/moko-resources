@@ -24,7 +24,6 @@ import org.jetbrains.skia.svg.SVGDOM
 
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-
     val bytes: ByteArray? by produceByteArray(url = imageResource.fileUrl)
 
     val localBytes: ByteArray? = bytes
