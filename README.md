@@ -796,6 +796,14 @@ can just open project in IDE and develop. Then for tests in samples you should r
 run `./gradlew publishToMavenLocal` gradle task. After this you can open any sample from `samples`
 in IDE and test your local version of `moko-resources`.
 
+To check your changes before pull request run:
+```bash
+# check lib & plugin
+./local-check.sh
+# check samples
+./local-samples-check.sh
+```
+
 ## Contributing
 
 All development (both new features and bug fixes) is performed in the `develop` branch. This
