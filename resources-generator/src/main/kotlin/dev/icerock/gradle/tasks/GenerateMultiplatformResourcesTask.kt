@@ -31,6 +31,7 @@ open class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     @TaskAction
     fun generate() {
+        notCompatibleWithConfigurationCache("This library needs to be rewritten to remove all references to non-serializable objects... See moko-resources#311")
         generator.generate()
     }
 }
