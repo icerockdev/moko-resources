@@ -61,7 +61,7 @@ class AppleMRGenerator(
         ClassName("platform.Foundation", "NSBundle")
     private val bundleIdentifier = "${mrSettings.packageName}.MR"
 
-    private var assetsDirectory: File? = null
+    private val assetsDirectory: File get() = File(resourcesGenerationDir, ASSETS_DIR_NAME)
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -101,9 +101,7 @@ class AppleMRGenerator(
     }
 
     override fun beforeMRGeneration() {
-        assetsDirectory = File(resourcesGenerationDir, ASSETS_DIR_NAME).apply {
-            mkdirs()
-        }
+        assetsDirectory.mkdirs()
     }
 
     private fun setupKLibResources(generationTask: Task) {

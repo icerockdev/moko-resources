@@ -16,7 +16,7 @@ import java.util.Properties
 internal class PackResourcesToKLibAction(
     private val baseLocalizationRegion: String,
     private val bundleIdentifier: String,
-    private val assetsDirectory: File?,
+    private val assetsDirectory: File,
     private val resourcesGenerationDir: File
 ) : Action<Task> {
     override fun execute(task: Task) {
@@ -43,22 +43,21 @@ internal class PackResourcesToKLibAction(
         )
         loadableBundle.write()
 
-        assetsDirectory?.let { assetsDir ->
-            val process = Runtime.getRuntime().exec(
-                "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
-                emptyArray(),
-                assetsDir.parentFile
-            )
-            val errors = process.errorStream.bufferedReader().readText()
-            val input = process.inputStream.bufferedReader().readText()
-            val result = process.waitFor()
-            if (result != 0) {
-                println("can't compile assets - $result")
-                println(input)
-                println(errors)
-            } else {
-                assetsDir.deleteRecursively()
-            }
+        val process: Process = Runtime.getRuntime().exec(
+            "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
+            emptyArray(),
+            assetsDirectory.parentFile
+        )
+        val errors: String = process.errorStream.bufferedReader().readText()
+        val input: String = process.inputStream.bufferedReader().readText()
+        val result: Int = process.waitFor()
+        if (result != 0) {
+            task.logger.error("can't compile assets - $result")
+            task.logger.info(input)
+            task.logger.error(errors)
+        } else {
+            task.logger.info("assets compiled")
+            assetsDirectory.deleteRecursively()
         }
 
         resourcesGenerationDir.copyRecursively(
