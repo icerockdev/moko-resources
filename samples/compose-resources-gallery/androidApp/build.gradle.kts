@@ -6,6 +6,8 @@ plugins {
 
 kotlin {
     android()
+
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val androidMain by getting {
             dependencies {
