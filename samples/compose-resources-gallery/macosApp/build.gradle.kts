@@ -35,18 +35,10 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val macosMain by creating {
+        val commonMain by getting {
             dependencies {
                 api(project(":shared"))
             }
-        }
-
-        val macosArm64Main by getting {
-            dependsOn(macosMain)
-        }
-
-        val macosX64Main by getting {
-            dependsOn(macosMain)
         }
     }
 }

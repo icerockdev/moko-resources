@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -30,7 +32,10 @@ kotlin {
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
+            isStatic = true
         }
+        // TODO move to gradle plugin
+        extraSpecAttributes["resource"] = "'build/cocoapods/framework/shared.framework/*.bundle'"
     }
 
     @Suppress("UNUSED_VARIABLE")
@@ -95,4 +100,24 @@ android {
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
+}
+
+// TODO move to gradle plugin
+tasks.withType<DummyFrameworkTask>().configureEach {
+    @Suppress("ObjectLiteralToLambda")
+    doLast(object : Action<Task> {
+        override fun execute(task: Task) {
+            task as DummyFrameworkTask
+
+            val frameworkDir = File(task.destinationDir, task.frameworkName.get() + ".framework")
+
+            listOf(
+                "compose-resources-gallery:shared.bundle"
+            ).forEach { bundleName ->
+                val bundleDir = File(frameworkDir, bundleName)
+                bundleDir.mkdir()
+                File(bundleDir, "dummyFile").writeText("dummy")
+            }
+        }
+    })
 }
