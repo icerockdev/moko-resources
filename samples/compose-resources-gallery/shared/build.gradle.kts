@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -20,6 +22,9 @@ kotlin {
         browser()
     }
 
+    macosArm64()
+    macosX64()
+
     cocoapods {
         summary = "Some description for the Shared Module"
         homepage = "Link to the Shared Module homepage"
@@ -27,9 +32,13 @@ kotlin {
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
+            isStatic = true
         }
+        // TODO move to gradle plugin
+        extraSpecAttributes["resource"] = "'build/cocoapods/framework/shared.framework/*.bundle'"
     }
 
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -61,6 +70,15 @@ kotlin {
                 implementation(compose.html.core)
             }
         }
+        val macosMain by creating {
+            dependsOn(commonMain)
+        }
+        val macosX64Main by getting {
+            dependsOn(macosMain)
+        }
+        val macosArm64Main by getting {
+            dependsOn(macosMain)
+        }
     }
 }
 
@@ -82,4 +100,24 @@ android {
 
 multiplatformResources {
     multiplatformResourcesPackage = "com.icerockdev.library"
+}
+
+// TODO move to gradle plugin
+tasks.withType<DummyFrameworkTask>().configureEach {
+    @Suppress("ObjectLiteralToLambda")
+    doLast(object : Action<Task> {
+        override fun execute(task: Task) {
+            task as DummyFrameworkTask
+
+            val frameworkDir = File(task.destinationDir, task.frameworkName.get() + ".framework")
+
+            listOf(
+                "compose-resources-gallery:shared.bundle"
+            ).forEach { bundleName ->
+                val bundleDir = File(frameworkDir, bundleName)
+                bundleDir.mkdir()
+                File(bundleDir, "dummyFile").writeText("dummy")
+            }
+        }
+    })
 }
