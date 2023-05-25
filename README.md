@@ -508,7 +508,7 @@ StringDesc.localeType = StringDesc.LocaleType.Custom("es")
 and return to system behaviour (when localization depends on device settings):
 
 ```kotlin
-StringDesc.localeType = StringDesc.LocaleType.System()
+StringDesc.localeType = StringDesc.LocaleType.System
 ```
 
 ### Example 7 - Shared Images
