@@ -2,8 +2,6 @@
  * Copyright 2023 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:JvmName("FontResourceAndroid") // Need to disambiguate class name
-
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
