@@ -62,7 +62,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.22.3"
+        classpath "dev.icerock.moko:resources-generator:0.23.0"
     }
 }
 
@@ -80,10 +80,10 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.22.3")
-    commonMainApi("dev.icerock.moko:resources-compose:0.22.3") // for compose multiplatform
+    commonMainApi("dev.icerock.moko:resources:0.23.0")
+    commonMainApi("dev.icerock.moko:resources-compose:0.23.0") // for compose multiplatform
 
-    commonTestImplementation("dev.icerock.moko:resources-test:0.22.3")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.23.0")
 }
 
 multiplatformResources {
@@ -102,7 +102,7 @@ should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-bui
 
 ```
 framework {
-    export("dev.icerock.moko:resources:0.22.3")
+    export("dev.icerock.moko:resources:0.23.0")
     export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
 }
 ```
@@ -627,6 +627,15 @@ with compose you can just call in `commonMain`
 
 ```kotlin
 val fontFamily: FontFamily = fontFamilyResource(MR.fonts.Raleway.italic)
+```
+
+or you can get `Font`
+
+```kotlin
+val font: Font = MR.fonts.Raleway.italic.asFont(
+  weight = FontWeight.Normal, // optional
+  style = FontStyle.Normal // optional
+)
 ```
 
 ### Example 9 - pass colors

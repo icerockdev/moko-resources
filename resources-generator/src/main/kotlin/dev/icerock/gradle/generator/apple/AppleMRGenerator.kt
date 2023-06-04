@@ -97,7 +97,12 @@ class AppleMRGenerator(
         setupTestsResources()
         setupFatFrameworkTasks()
 
-        dependsOnProcessResources(project, sourceSet, generationTask)
+        dependsOnProcessResources(
+            project = project,
+            sourceSet = sourceSet,
+            task = generationTask,
+            shouldExcludeGenerated = true
+        )
     }
 
     override fun beforeMRGeneration() {

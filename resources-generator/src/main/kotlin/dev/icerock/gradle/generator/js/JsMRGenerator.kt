@@ -95,31 +95,40 @@ class JsMRGenerator(
             it.dependsOn(generationTask)
         }
 
-        dependsOnProcessResources(project, sourceSet, generationTask)
+        dependsOnProcessResources(
+            project = project,
+            sourceSet = sourceSet,
+            task = generationTask,
+            shouldExcludeGenerated = true
+        )
     }
 
     private fun setupKLibResources(generationTask: Task) {
-        val compileTask: Kotlin2JsCompile = compilation.compileKotlinTask
-        compileTask.dependsOn(generationTask)
-
-        @Suppress("UNCHECKED_CAST")
-        compileTask.doLast(CopyResourcesToKLibAction(resourcesGenerationDir) as Action<in Task>)
+        val taskProvider = compilation.compileTaskProvider
+        taskProvider.configure { compileTask ->
+            compileTask.dependsOn(generationTask)
+            val action = CopyResourcesToKLibAction(resourcesGenerationDir)
+            @Suppress("UNCHECKED_CAST")
+            compileTask.doLast(action as Action<in Task>)
+        }
     }
 
     private fun setupResources() {
-        val kotlinTarget = compilation.target as KotlinJsIrTarget
+        val kotlinTarget: KotlinJsIrTarget = compilation.target as KotlinJsIrTarget
 
         kotlinTarget.compilations
-            .map { it.compileKotlinTask }
-            .forEach { compileTask ->
-                @Suppress("UNCHECKED_CAST")
-                compileTask.doLast(CopyResourcesToExecutableAction(resourcesGenerationDir) as Action<in Task>)
+            .configureEach { compilation ->
+                compilation.compileTaskProvider.configure { compileTask ->
+                    val action = CopyResourcesToExecutableAction(resourcesGenerationDir)
+                    @Suppress("UNCHECKED_CAST")
+                    compileTask.doLast(action as Action<in Task>)
+                }
             }
     }
 
     class CopyResourcesToKLibAction(private val resourcesDir: File) : Action<Kotlin2JsCompile> {
         override fun execute(task: Kotlin2JsCompile) {
-            val unpackedKLibDir: File = task.outputFileProperty.get()
+            val unpackedKLibDir: File = task.destinationDirectory.asFile.get()
             val defaultDir = File(unpackedKLibDir, "default")
             val resRepackDir = File(defaultDir, "resources")
             if (resRepackDir.exists().not()) return
