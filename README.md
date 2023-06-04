@@ -155,11 +155,11 @@ In Xcode add `Build Phase` (at end of list) with script:
 
 ```shell script
 "$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
-    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
-    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH\
-    -Pkotlin.native.cocoapods.platform=$PLATFORM_NAME \
+    -Pmoko.resources.BUILT_PRODUCTS_DIR="$BUILT_PRODUCTS_DIR" \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH="$CONTENTS_FOLDER_PATH" \
+    -Pkotlin.native.cocoapods.platform="$PLATFORM_NAME" \
     -Pkotlin.native.cocoapods.archs="$ARCHS" \
-    -Pkotlin.native.cocoapods.configuration=$CONFIGURATION 
+    -Pkotlin.native.cocoapods.configuration="$CONFIGURATION" 
 ```
 
 #### Without org.jetbrains.kotlin.native.cocoapods
@@ -168,11 +168,11 @@ In Xcode add `Build Phase` (at end of list) with script:
 
 ```shell script
 "$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
-    -Pmoko.resources.PLATFORM_NAME=$PLATFORM_NAME \
-    -Pmoko.resources.CONFIGURATION=$CONFIGURATION \
+    -Pmoko.resources.PLATFORM_NAME="$PLATFORM_NAME" \
+    -Pmoko.resources.CONFIGURATION="$CONFIGURATION" \
     -Pmoko.resources.ARCHS="$ARCHS" \
-    -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
-    -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH 
+    -Pmoko.resources.BUILT_PRODUCTS_DIR="$BUILT_PRODUCTS_DIR" \
+    -Pmoko.resources.CONTENTS_FOLDER_PATH="$CONTENTS_FOLDER_PATH" 
 ```
 
 #### Disable warning about static framework usage
@@ -508,7 +508,7 @@ StringDesc.localeType = StringDesc.LocaleType.Custom("es")
 and return to system behaviour (when localization depends on device settings):
 
 ```kotlin
-StringDesc.localeType = StringDesc.LocaleType.System()
+StringDesc.localeType = StringDesc.LocaleType.System
 ```
 
 ### Example 7 - Shared Images
