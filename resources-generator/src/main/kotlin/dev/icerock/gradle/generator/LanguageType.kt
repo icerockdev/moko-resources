@@ -30,7 +30,7 @@ sealed interface LanguageType {
         override val androidResourcesDir: String = buildString {
             append("values")
             append("-")
-            append(jvmLocale.language)
+            append(jvmLocale.getISO639Language())
             if (jvmLocale.country.isNotBlank()) {
                 append("-r")
                 append(jvmLocale.country)
@@ -53,6 +53,22 @@ sealed interface LanguageType {
         override fun hashCode(): Int = jvmLocale.hashCode()
         override fun equals(other: Any?): Boolean {
             return other is Locale && other.jvmLocale == jvmLocale
+        }
+
+        /**
+         * For android we should use ISO-639-1 language code
+         * https://developer.android.com/guide/topics/resources/providing-resources
+         * https://github.com/icerockdev/moko-resources/issues/468
+         *
+         * @see java.util.Locale#convertOldISOCodes
+         */
+        private fun JvmLocale.getISO639Language(): String {
+            return when (language) {
+                "he" -> "iw"
+                "yi" -> "ji"
+                "id" -> "in"
+                else -> language
+            }
         }
     }
 

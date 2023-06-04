@@ -79,7 +79,12 @@ class JvmMRGenerator(
             it.exclude("MR/**")
             it.dependsOn(generationTask)
         }
-        dependsOnProcessResources(project, sourceSet, generationTask)
+        dependsOnProcessResources(
+            project = project,
+            sourceSet = sourceSet,
+            task = generationTask,
+            shouldExcludeGenerated = false
+        )
     }
 
     companion object {

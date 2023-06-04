@@ -48,6 +48,7 @@ android {
     testOptions.unitTests.isIncludeAndroidResources = true
 
     lint.disable.add("ImpliedQuantity")
+    lint.disable.add("MissingTranslation")
 }
 
 kotlin {
