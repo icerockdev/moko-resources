@@ -95,7 +95,12 @@ class JsMRGenerator(
             it.dependsOn(generationTask)
         }
 
-        dependsOnProcessResources(project, sourceSet, generationTask)
+        dependsOnProcessResources(
+            project = project,
+            sourceSet = sourceSet,
+            task = generationTask,
+            shouldExcludeGenerated = true
+        )
     }
 
     private fun setupKLibResources(generationTask: Task) {

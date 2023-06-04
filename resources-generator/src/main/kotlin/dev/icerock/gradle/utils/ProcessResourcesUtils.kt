@@ -10,14 +10,19 @@ import org.gradle.api.Task
 import org.gradle.kotlin.dsl.withType
 import org.gradle.language.jvm.tasks.ProcessResources
 
-fun dependsOnProcessResources(project: Project, sourceSet: MRGenerator.SourceSet, task: Task) {
+fun dependsOnProcessResources(
+    project: Project,
+    sourceSet: MRGenerator.SourceSet,
+    task: Task,
+    shouldExcludeGenerated: Boolean
+) {
     project.tasks
         .matching { it.name == sourceSet.name.removeSuffix("Main") + "ProcessResources" }
         .withType<ProcessResources>()
         .configureEach { processResourcesTask ->
             processResourcesTask.exclude {
                 val path: String = it.file.absolutePath
-                if (path.contains("generated/moko")) return@exclude true
+                if (shouldExcludeGenerated && path.contains("generated/moko")) return@exclude true
                 if (path.contains("resources/MR")) return@exclude true
                 false
             }
