@@ -33,4 +33,8 @@
         <item quantity="two">%s two</item>
         <item quantity="other">%s other</item>
     </plural>
+    <plural name="test.plural.fallback">
+        <item quantity="one">один</item>
+        <item quantity="other">другое</item>
+    </plural>
 </resources>

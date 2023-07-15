@@ -6,9 +6,7 @@ package com.icerock.library
 
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
 
@@ -50,6 +48,18 @@ class PluralResourceRuTests : BaseStringResourceTests("ru") {
     fun checkSimplePlural22() = pluralTest(
         expected = "несколько",
         actual = MR.plurals.test_plural.desc(22)
+    )
+
+    @Test
+    fun checkPluralFallback1() = pluralTest(
+        expected = "один",
+        actual = MR.plurals.test_plural_fallback.desc(1)
+    )
+
+    @Test
+    fun checkPluralFallback2() = pluralTest(
+        expected = "другое",
+        actual = MR.plurals.test_plural_fallback.desc(2)
     )
 
     @Test
