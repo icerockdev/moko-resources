@@ -15,4 +15,5 @@ open class MultiplatformResourcesPluginExtension {
         get() = multiplatformResourcesSourceSet ?: KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME
     var disableStaticFrameworkWarning = false
     var multiplatformResourcesVisibility: MRVisibility = MRVisibility.Public
+    var addSuppressAnnotation: Boolean = false
 }
