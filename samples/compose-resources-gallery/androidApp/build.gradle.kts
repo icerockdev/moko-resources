@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    android()
+    androidTarget()
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {

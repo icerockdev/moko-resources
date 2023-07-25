@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
@@ -34,6 +35,7 @@ actual open class FileResource(
             subdirectory = "files"
         )!!
 
+    @OptIn(ExperimentalForeignApi::class)
     fun readText(): String {
         val filePath = path
         val (result: String?, error: NSError?) = memScoped {

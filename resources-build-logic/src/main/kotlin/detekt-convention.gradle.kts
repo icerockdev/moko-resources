@@ -7,7 +7,7 @@ plugins {
 }
 
 detekt {
-    input.setFrom(
+    source.setFrom(
         "src/commonMain/kotlin",
         "src/androidMain/kotlin",
         "src/iosMain/kotlin",
