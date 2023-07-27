@@ -12,11 +12,11 @@ constraintLayoutVersion = "2.1.4"
 androidAppCompatVersion = "1.6.1"
 
 # android compose
-composeVersion = "1.4.3"
+composeVersion = "1.5.0-rc01"
 composeActivityVersion = "1.7.1"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.5.0-dev1114"
+composeJetbrainsVersion = "1.5.0-dev1122"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
