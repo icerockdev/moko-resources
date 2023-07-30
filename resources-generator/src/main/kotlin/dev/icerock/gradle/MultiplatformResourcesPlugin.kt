@@ -23,6 +23,7 @@ import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.getDependedFrom
 import dev.icerock.gradle.utils.isDependsOn
+import dev.icerock.gradle.utils.launchWhenEdgeRefinementFinalized
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
@@ -264,7 +265,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
-    ) {
+    ) = target.launchWhenEdgeRefinementFinalized {
         val kotlinSourceSets: List<Pair<KotlinJsIrCompilation, KotlinSourceSet>> = targets
             .filterIsInstance<KotlinJsIrTarget>()
             .flatMap { it.compilations }
@@ -292,7 +293,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project,
         iosLocalizationRegion: String
-    ) {
+    ) = target.launchWhenEdgeRefinementFinalized {
         val compilations = targets
             .filterIsInstance<KotlinNativeTarget>()
             .filter { it.konanTarget.family.isAppleFamily }

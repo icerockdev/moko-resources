@@ -10,6 +10,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.utils.isDependsOn
+import dev.icerock.gradle.utils.launchWhenEdgeRefinementFinalized
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -27,7 +28,7 @@ internal class AndroidPluginLogic(
     private val features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
     private val project: Project
 ) {
-    fun setup(androidMainSourceSet: AndroidSourceSet) {
+    fun setup(androidMainSourceSet: AndroidSourceSet) = project.launchWhenEdgeRefinementFinalized {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
             .filterIsInstance<KotlinAndroidTarget>()
             .flatMap { it.compilations }
