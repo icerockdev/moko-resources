@@ -111,7 +111,7 @@ abstract class PluralsGenerator(
             AndroidPluralsGenerator(
                 pluralsFileTree = stringsFileTree,
                 strictLineBreaks = strictLineBreaks,
-                getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+                androidRClassPackageProvider = requireNotNull(info.androidRClassPackageProvider),
             )
 
         override fun createJvmGenerator() =

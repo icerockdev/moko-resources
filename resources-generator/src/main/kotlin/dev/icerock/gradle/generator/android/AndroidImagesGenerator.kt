@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.utils.svg
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
+import org.gradle.api.provider.Provider
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -23,7 +24,7 @@ import kotlin.reflect.full.functions
 
 class AndroidImagesGenerator(
     inputFileTree: FileTree,
-    private val getAndroidRClassPackage: () -> String,
+    private val androidRClassPackageProvider: Provider<String>,
     private val logger: Logger
 ) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -36,7 +37,7 @@ class AndroidImagesGenerator(
     }
 
     override fun getImports(): List<ClassName> = listOf(
-        ClassName(getAndroidRClassPackage(), "R")
+        ClassName(androidRClassPackageProvider.get(), "R")
     )
 
     override fun generateResources(

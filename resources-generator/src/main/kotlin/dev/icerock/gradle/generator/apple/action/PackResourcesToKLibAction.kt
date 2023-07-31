@@ -8,6 +8,8 @@ import dev.icerock.gradle.generator.apple.LoadableBundle
 import dev.icerock.gradle.utils.unzipTo
 import org.gradle.api.Action
 import org.gradle.api.Task
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import java.io.File
@@ -15,9 +17,9 @@ import java.util.Properties
 
 internal class PackResourcesToKLibAction(
     private val baseLocalizationRegion: String,
-    private val bundleIdentifier: String,
-    private val assetsDirectory: File,
-    private val resourcesGenerationDir: File
+    private val bundleIdentifierProvider: Provider<String>,
+    private val assetsDirectoryProvider: Provider<Directory>,
+    private val resourcesGenerationDirProvider: Provider<Directory>,
 ) : Action<Task> {
     override fun execute(task: Task) {
         task as KotlinNativeCompile
@@ -26,7 +28,10 @@ internal class PackResourcesToKLibAction(
         val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
         val defaultDir = File(repackDir, "default")
         val resRepackDir = File(defaultDir, "resources")
+        val assetsDirectory = assetsDirectoryProvider.get().asFile
+        val resourcesGenerationDir = resourcesGenerationDirProvider.get().asFile
 
+        task.logger.info("Adding resources to klib file `{}`", klibFile)
         unzipTo(zipFile = klibFile, outputDirectory = repackDir)
 
         val manifestFile = File(defaultDir, "manifest")
@@ -39,7 +44,7 @@ internal class PackResourcesToKLibAction(
             directory = resRepackDir,
             bundleName = uniqueName,
             developmentRegion = baseLocalizationRegion,
-            identifier = bundleIdentifier
+            identifier = bundleIdentifierProvider.get()
         )
         loadableBundle.write()
 

@@ -14,15 +14,17 @@ import dev.icerock.gradle.generator.FontsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.provideDelegate
 import java.io.File
 
 class JsFontsGenerator(
     inputFileTree: FileTree,
-    mrClassPackage: String,
+    mrClassPackage: Provider<String>,
 ) : FontsGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
-    private val flattenPackage: String = mrClassPackage.replace(".", "")
-    private val cssDeclarationsFileName: String = "$flattenPackage-generated-declarations.css"
+    private val flattenPackage: Provider<String> = mrClassPackage.map { it.replace(".", "") }
+    private val cssDeclarationsFileName: Provider<String> = flattenPackage.map { "$it-generated-declarations.css" }
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -62,7 +64,7 @@ class JsFontsGenerator(
             FunSpec.builder("addFontsToPage")
                 .addCode(
                     "js(%S)",
-                    """require("$FONTS_DIR/$cssDeclarationsFileName")"""
+                    """require("$FONTS_DIR/${cssDeclarationsFileName.get()}")"""
                 ).build()
         )
     }
@@ -74,7 +76,7 @@ class JsFontsGenerator(
             file.copyTo(File(fontsDir, file.name))
         }
 
-        val cssDeclarationsFile = File(fontsDir, cssDeclarationsFileName)
+        val cssDeclarationsFile = File(fontsDir, cssDeclarationsFileName.get())
 
         val declarations = files
             .takeIf(List<*>::isNotEmpty)

@@ -113,7 +113,7 @@ abstract class ImagesGenerator(
 
         override fun createAndroidGenerator() = AndroidImagesGenerator(
             inputFileTree = stringsFileTree,
-            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage),
+            androidRClassPackageProvider = requireNotNull(info.androidRClassPackageProvider),
             logger = logger
         )
 

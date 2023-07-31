@@ -10,8 +10,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import org.gradle.api.provider.Provider
 
-class ClassLoaderExtender(private val mrClassName: String) : ObjectBodyExtendable {
+class ClassLoaderExtender(private val mrClassName: Provider<String>) : ObjectBodyExtendable {
     override fun extendObjectBodyAtStart(classBuilder: TypeSpec.Builder) {
         classBuilder.addProperty(
             PropertySpec.builder(
@@ -19,7 +20,7 @@ class ClassLoaderExtender(private val mrClassName: String) : ObjectBodyExtendabl
                 ClassName("java.lang", "ClassLoader"),
                 KModifier.OVERRIDE
             )
-                .initializer(CodeBlock.of("$mrClassName::class.java.classLoader"))
+                .initializer(CodeBlock.of("${mrClassName.get()}::class.java.classLoader"))
                 .build()
         )
     }

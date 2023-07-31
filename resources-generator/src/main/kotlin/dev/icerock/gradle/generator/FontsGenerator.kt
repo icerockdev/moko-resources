@@ -135,7 +135,7 @@ abstract class FontsGenerator(
 
         override fun createAndroidGenerator() = AndroidFontsGenerator(
             inputFileTree = stringsFileTree,
-            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+            androidRClassPackageProvider = requireNotNull(info.androidRClassPackageProvider)
         )
 
         override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(

@@ -12,6 +12,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import java.io.File
 
 class JvmStringsGenerator(
@@ -21,7 +22,8 @@ class JvmStringsGenerator(
 ) : StringsGenerator(stringsFileTree, strictLineBreaks),
     ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
 
-    private val flattenClassPackage = mrSettings.packageName.replace(".", "")
+    private val flattenClassPackage: Provider<String> = mrSettings.packageName
+        .map { it.replace(".", "") }
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -40,7 +42,7 @@ class JvmStringsGenerator(
         strings: Map<KeyType, String>
     ) {
         val fileDirName =
-            "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}${language.jvmResourcesSuffix}"
+            "${flattenClassPackage.get()}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}${language.jvmResourcesSuffix}"
 
         val localizationDir = File(resourcesGenerationDir, JvmMRGenerator.LOCALIZATION_DIR).apply {
             mkdirs()

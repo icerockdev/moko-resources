@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle
 
-import com.android.build.gradle.BaseExtension
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -21,11 +20,16 @@ import dev.icerock.gradle.generator.js.JsMRGenerator
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
-import dev.icerock.gradle.utils.getDependedFrom
-import dev.icerock.gradle.utils.isDependsOn
+import dev.icerock.gradle.utils.ifDependsOn
+import org.gradle.api.DomainObjectCollection
+import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSet
+import org.gradle.api.file.Directory
+import org.gradle.api.file.ProjectLayout
+import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
@@ -34,14 +38,13 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
-import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 
 @Suppress("TooManyFunctions")
 class MultiplatformResourcesPlugin : Plugin<Project> {
@@ -50,48 +53,63 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             "multiplatformResources",
             MultiplatformResourcesPluginExtension::class
         )
-        mrExtension.multiplatformResourcesPackage = "${target.group}.${target.name}"
-
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
-            val multiplatformExtension =
-                target.extensions.getByType(KotlinMultiplatformExtension::class)
-
             target.afterEvaluate {
                 configureGenerators(
                     target = target,
+                    resourcesSourceSetName = mrExtension.sourceSetName,
                     mrExtension = mrExtension,
-                    multiplatformExtension = multiplatformExtension
+                    multiplatformExtension = target.extensions.getByType(KotlinMultiplatformExtension::class)
                 )
             }
         }
+    }
+
+    private fun configureGenerators(
+        target: Project,
+        resourcesSourceSetName: String,
+        mrExtension: MultiplatformResourcesPluginExtension,
+        multiplatformExtension: KotlinMultiplatformExtension,
+    ) {
+        multiplatformExtension.sourceSets
+            .matching { it.name == resourcesSourceSetName }
+            .all { commonSourceSet ->
+                configureGenerators(
+                    target = target,
+                    mrExtension = mrExtension,
+                    multiplatformExtension = multiplatformExtension,
+                    commonSourceSet = commonSourceSet,
+                )
+            }
     }
 
     @Suppress("LongMethod")
     private fun configureGenerators(
         target: Project,
         mrExtension: MultiplatformResourcesPluginExtension,
-        multiplatformExtension: KotlinMultiplatformExtension
+        multiplatformExtension: KotlinMultiplatformExtension,
+        commonSourceSet: KotlinSourceSet,
     ) {
-        val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
+        val projectLayout: ProjectLayout = target.layout
+        val providerFactory: ProviderFactory = target.providers
         val commonResources = commonSourceSet.resources
 
-        val generatedDir = File(target.buildDir, "generated/moko")
-        val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage) {
-            buildString {
-                appendLine("multiplatformResources.multiplatformResourcesPackage is required!")
-                append("Please configure moko-resources plugin correctly.")
-            }
+        val generatedDir = projectLayout.buildDirectory.dir("generated/moko")
+        val mrClassPackage = providerFactory.provider<String> { mrExtension.multiplatformResourcesPackage }
+            .orElse(providerFactory.provider { "${target.group}.${target.name}" })
+
+        val mrSettings = object : MRGenerator.MRSettings {
+            override val packageName = mrClassPackage
+            override val className = providerFactory.provider(mrExtension::multiplatformResourcesClassName)
+            override val visibility = providerFactory.provider(mrExtension::multiplatformResourcesVisibility)
         }
-        val mrSettings = MRGenerator.MRSettings(
-            packageName = mrClassPackage,
-            className = mrExtension.multiplatformResourcesClassName,
-            visibility = mrExtension.multiplatformResourcesVisibility
-        )
-        val sourceInfo = SourceInfo(
-            generatedDir,
-            commonResources,
-            mrExtension.multiplatformResourcesPackage!!
-        )
+
+        val sourceInfo = object : SourceInfo {
+            override val commonResources: SourceDirectorySet
+                get() = commonResources
+            override val mrClassPackage = mrClassPackage
+            override var androidRClassPackageProvider: Provider<String>? = null
+        }
 
         val strictLineBreaks: Boolean = target
             .findProperty("moko.resources.strictLineBreaks")
@@ -119,7 +137,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             ColorsGenerator.Feature(sourceInfo, mrSettings),
             AssetsGenerator.Feature(sourceInfo, mrSettings)
         )
-        val targets: List<KotlinTarget> = multiplatformExtension.targets.toList()
+        val targets: NamedDomainObjectCollection<KotlinTarget> = multiplatformExtension.targets
 
         val commonGenerationTask = setupCommonGenerator(
             commonSourceSet = commonSourceSet,
@@ -131,15 +149,15 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
 
         listOf("com.android.library", "com.android.application").forEach { id ->
             target.plugins.withId(id) {
-                setupAndroidGenerator(
-                    target = target,
+                AndroidPluginLogic(
                     commonSourceSet = commonSourceSet,
-                    targets = targets,
+                    targets = targets.withType<KotlinAndroidTarget>(),
                     generatedDir = generatedDir,
                     mrSettings = mrSettings,
                     features = features,
-                    sourceInfo = sourceInfo
-                )
+                    sourceInfo = sourceInfo,
+                    project = target
+                ).setup()
             }
         }
 
@@ -180,44 +198,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             .configureEach { it.dependsOn(commonGenerationTask) }
     }
 
-    @Suppress("LongParameterList")
-    private fun setupAndroidGenerator(
-        target: Project,
-        commonSourceSet: KotlinSourceSet,
-        targets: List<KotlinTarget>,
-        generatedDir: File,
-        mrSettings: MRGenerator.MRSettings,
-        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-        sourceInfo: SourceInfo
-    ) {
-        val androidExtension = target.extensions.getByType(BaseExtension::class)
-
-        val androidLogic = AndroidPluginLogic(
-            commonSourceSet = commonSourceSet,
-            targets = targets,
-            generatedDir = generatedDir,
-            mrSettings = mrSettings,
-            features = features,
-            project = target
-        )
-
-        val androidMainSourceSet = androidExtension.sourceSets
-            .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-
-        sourceInfo.getAndroidRClassPackage = lambda@{
-            val namespace: String? = androidExtension.namespace
-            if (namespace != null) return@lambda namespace
-
-            val manifestFile = androidMainSourceSet.manifest.srcFile
-            getAndroidPackage(manifestFile)
-        }
-
-        androidLogic.setup(androidMainSourceSet)
-    }
-
     private fun setupCommonGenerator(
         commonSourceSet: KotlinSourceSet,
-        generatedDir: File,
+        generatedDir: Provider<Directory>,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
@@ -234,90 +217,86 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     @Suppress("LongParameterList")
     private fun setupJvmGenerator(
         commonSourceSet: KotlinSourceSet,
-        targets: List<KotlinTarget>,
-        generatedDir: File,
+        targets: DomainObjectCollection<KotlinTarget>,
+        generatedDir: Provider<Directory>,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
-        val kotlinSourceSets: List<KotlinSourceSet> = targets
-            .filterIsInstance<KotlinJvmTarget>()
-            .flatMap { it.compilations }
-            .map { it.defaultSourceSet }
-            .filter { it.isDependsOn(commonSourceSet) }
-
-        kotlinSourceSets.forEach { kotlinSourceSet ->
-            JvmMRGenerator(
-                generatedDir = generatedDir,
-                sourceSet = createSourceSet(kotlinSourceSet),
-                mrSettings = mrSettings,
-                generators = features.map { it.createJvmGenerator() }
-            ).apply(target)
-        }
+        targets
+            .withType<KotlinJvmTarget>()
+            .configureEach { kotlinJvmTarget ->
+                kotlinJvmTarget.compilations
+                    .configureEach { compilation ->
+                        compilation.defaultSourceSet.ifDependsOn(commonSourceSet) {
+                            JvmMRGenerator(
+                                generatedDir = generatedDir,
+                                sourceSet = createSourceSet(compilation.defaultSourceSet),
+                                mrSettings = mrSettings,
+                                generators = features.map { it.createJvmGenerator() }
+                            ).apply(project = target)
+                        }
+                    }
+            }
     }
 
     @Suppress("LongParameterList")
     private fun setupJsGenerator(
         commonSourceSet: KotlinSourceSet,
-        targets: List<KotlinTarget>,
-        generatedDir: File,
+        targets: DomainObjectCollection<KotlinTarget>,
+        generatedDir: Provider<Directory>,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
     ) {
-        val kotlinSourceSets: List<Pair<KotlinJsIrCompilation, KotlinSourceSet>> = targets
-            .filterIsInstance<KotlinJsIrTarget>()
-            .flatMap { it.compilations }
-            .filterIsInstance<KotlinJsIrCompilation>()
-            .map { it to it.defaultSourceSet }
-            .filter { it.second.isDependsOn(commonSourceSet) }
-
-        kotlinSourceSets.forEach { (compilation, kotlinSourceSet) ->
-            JsMRGenerator(
-                generatedDir,
-                createSourceSet(kotlinSourceSet),
-                mrSettings = mrSettings,
-                generators = features.map { it.createJsGenerator() },
-                compilation = compilation
-            ).apply(target)
-        }
+        targets
+            .withType<KotlinJsIrTarget>()
+            .configureEach { kotlinJsIrTarget ->
+                kotlinJsIrTarget.compilations
+                    .withType<KotlinJsIrCompilation>()
+                    .all { compilation ->
+                        compilation.defaultSourceSet.ifDependsOn(commonSourceSet) {
+                            JsMRGenerator(
+                                generatedDir,
+                                createSourceSet(compilation.defaultSourceSet),
+                                mrSettings = mrSettings,
+                                generators = features.map { it.createJsGenerator() },
+                                compilation = compilation,
+                            ).apply(project = target)
+                        }
+                    }
+            }
     }
 
     @Suppress("LongParameterList")
     private fun setupAppleGenerator(
         commonSourceSet: KotlinSourceSet,
-        targets: List<KotlinTarget>,
-        generatedDir: File,
+        targets: DomainObjectCollection<KotlinTarget>,
+        generatedDir: Provider<Directory>,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project,
         iosLocalizationRegion: String
     ) {
-        val compilations = targets
-            .filterIsInstance<KotlinNativeTarget>()
-            .filter { it.konanTarget.family.isAppleFamily }
-            .map { kotlinNativeTarget ->
-                kotlinNativeTarget.compilations
-                    .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
+        targets
+            .withType<KotlinNativeTarget>()
+            .matching { it.konanTarget.family.isAppleFamily }
+            .configureEach { appleFamilyTarget ->
+                appleFamilyTarget.compilations
+                    .matching { it.name == KotlinCompilation.MAIN_COMPILATION_NAME }
+                    .all { compilation ->
+                        compilation.defaultSourceSet.ifDependsOn(commonSourceSet) {
+                            AppleMRGenerator(
+                                generatedDir = generatedDir,
+                                sourceSet = createSourceSet(compilation.defaultSourceSet),
+                                mrSettings = mrSettings,
+                                generators = features.map { it.createIosGenerator() },
+                                compilation = compilation,
+                                baseLocalizationRegion = iosLocalizationRegion,
+                            ).apply(project = target)
+                        }
+                    }
             }
-
-        val defSourceSets = compilations.map { it.defaultSourceSet }
-            .filter { it.isDependsOn(commonSourceSet) }
-        compilations.forEach { compilation ->
-            val kss = compilation.defaultSourceSet
-            val depend = kss.getDependedFrom(defSourceSets)
-
-            val sourceSet = createSourceSet(depend ?: kss)
-            AppleMRGenerator(
-                generatedDir = generatedDir,
-                sourceSet = sourceSet,
-                mrSettings = mrSettings,
-                generators = features.map { it.createIosGenerator() },
-                compilation = compilation,
-                baseLocalizationRegion = iosLocalizationRegion
-            ).apply(target)
-        }
-
         setupCopyXCFrameworkResourcesTask(target)
     }
 
@@ -345,28 +324,17 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             override val name: String
                 get() = kotlinSourceSet.name
 
-            override fun addSourceDir(directory: File) {
+            override fun addSourceDir(directory: Provider<Directory>) {
                 kotlinSourceSet.kotlin.srcDir(directory)
             }
 
-            override fun addResourcesDir(directory: File) {
+            override fun addResourcesDir(directory: Provider<Directory>) {
                 kotlinSourceSet.resources.srcDir(directory)
             }
 
-            override fun addAssetsDir(directory: File) {
+            override fun addAssetsDir(directory: Provider<Directory>) {
                 // nothing
             }
         }
-    }
-
-    private fun getAndroidPackage(manifestFile: File): String {
-        val dbFactory = DocumentBuilderFactory.newInstance()
-        val dBuilder = dbFactory.newDocumentBuilder()
-        val doc = dBuilder.parse(manifestFile)
-
-        val manifestNodes = doc.getElementsByTagName("manifest")
-        val manifest = manifestNodes.item(0)
-
-        return manifest.attributes.getNamedItem("package").textContent
     }
 }

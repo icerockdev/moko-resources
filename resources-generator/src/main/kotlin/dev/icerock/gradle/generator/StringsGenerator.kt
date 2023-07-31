@@ -91,7 +91,7 @@ abstract class StringsGenerator(
             AndroidStringsGenerator(
                 stringsFileTree = stringsFileTree,
                 strictLineBreaks = strictLineBreaks,
-                getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+                androidRClassPackageProvider = requireNotNull(info.androidRClassPackageProvider)
             )
 
         override fun createJsGenerator(): StringsGenerator =

@@ -8,12 +8,13 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
-import java.io.File
 
 class CommonMRGenerator(
-    generatedDir: File,
+    generatedDir: Provider<Directory>,
     sourceSet: SourceSet,
     mrSettings: MRSettings,
     generators: List<Generator>
