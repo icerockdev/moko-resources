@@ -9,7 +9,6 @@ import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
 import platform.posix.memcpy
 
-
 internal fun NSData.toByteArray(): ByteArray {
     return ByteArray(this@toByteArray.length.toInt()).apply {
         usePinned { pinned ->

@@ -6,7 +6,10 @@ package dev.icerock.moko.resources.compose.internal
 
 import cnames.structs.CGColorSpace
 import cnames.structs.CGImage
-import kotlinx.cinterop.*
+import kotlinx.cinterop.CPointed
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.CValue
+import kotlinx.cinterop.refTo
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.Image
@@ -23,7 +26,11 @@ import platform.CoreGraphics.CGImageGetWidth
 import platform.CoreGraphics.CGImageRef
 import platform.CoreGraphics.CGRect
 import platform.CoreGraphics.CGRectMake
-import platform.posix.*
+import platform.posix.free
+import platform.posix.malloc
+import platform.posix.memcpy
+import platform.posix.size_t
+import platform.posix.uint32_t
 
 internal fun CGImageRef.toSkiaImage(): Image {
     val cgImage: CPointer<CGImage> = this
