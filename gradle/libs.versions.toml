@@ -1,10 +1,10 @@
 [versions]
-kotlinVersion = "1.8.20"
-androidGradleVersion = "7.4.2"
-androidSdkCommonVersion = "31.0.0"
+kotlinVersion = "1.8.21"
+androidGradleVersion = "8.0.2"
+androidSdkCommonVersion = "31.1.0"
 
 # kotlinx
-kotlinxSerializationVersion = "1.5.0"
+kotlinxSerializationVersion = "1.5.1"
 kotlinxCoroutinesVersion = "1.6.4"
 
 # android
@@ -16,7 +16,7 @@ composeVersion = "1.4.2"
 composeActivityVersion = "1.7.1"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.4.0"
+composeJetbrainsVersion = "1.4.3"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
