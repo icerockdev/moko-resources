@@ -22,7 +22,7 @@ internal fun Project.launchWhenEdgeRefinementFinalized(block: () -> Unit) {
 
     @Suppress("MagicNumber")
     when {
-        version[0] >= 1 && version[1] >= 9 -> {
+        version[0] > 1 || version[0] == 1 && version[1] >= 9 -> {
             LifecycleAwareLauncher19(this, block).launchWhenEdgeRefinementFinalized()
         }
 
