@@ -126,7 +126,7 @@ abstract class FontsGenerator(
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<FontsGenerator> {
         private val stringsFileTree = info.commonResources.matching {
-            it.include("MR/fonts/**.ttf", "MR/fonts/**.otf")
+            it.include("fonts/**.ttf", "fonts/**.otf")
         }
 
         override fun createCommonGenerator() = CommonFontsGenerator(stringsFileTree)

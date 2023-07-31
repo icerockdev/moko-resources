@@ -79,7 +79,7 @@ abstract class StringsGenerator(
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<StringsGenerator> {
         private val stringsFileTree =
-            info.commonResources.matching { it.include("MR/**/strings*.xml") }
+            info.commonResources.matching { it.include("**/strings*.xml") }
 
         override fun createCommonGenerator() =
             CommonStringsGenerator(stringsFileTree, strictLineBreaks)

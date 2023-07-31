@@ -99,7 +99,7 @@ abstract class PluralsGenerator(
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
         private val stringsFileTree =
-            info.commonResources.matching { it.include("MR/**/plurals*.xml") }
+            info.commonResources.matching { it.include("**/plurals*.xml") }
 
         override fun createCommonGenerator(): PluralsGenerator =
             CommonPluralsGenerator(stringsFileTree, strictLineBreaks)

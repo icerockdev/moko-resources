@@ -26,7 +26,7 @@ abstract class AssetsGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "AssetResource")
 
     private fun getBaseDir(file: File): String {
-        val relativePathToAssets = file.path.substringAfterLast(RES_ROOT)
+        val relativePathToAssets = file.path.substringAfterLast(ASSETS_DIR_NAME)
         val fixedRelativePath = File(relativePathToAssets).path
 
         val result: String = if (fixedRelativePath.startsWith(File.separatorChar)) {
@@ -74,7 +74,7 @@ abstract class AssetsGenerator(
     ): List<AssetSpec> {
         val contentOfRootDir = mutableListOf<File>()
         resFolders.forEach {
-            val assets = File(it, RES_ROOT)
+            val assets = File(it, ASSETS_DIR_NAME)
 
             val content = assets.listFiles()
             if (content != null) {
@@ -203,7 +203,5 @@ abstract class AssetsGenerator(
         don't support it like apple.
         */
         const val PATH_DELIMITER = '+'
-
-        private val RES_ROOT = "MR${File.separatorChar}$ASSETS_DIR_NAME"
     }
 }

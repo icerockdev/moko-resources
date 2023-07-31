@@ -25,6 +25,8 @@ import dev.icerock.gradle.utils.getDependedFrom
 import dev.icerock.gradle.utils.isDependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.SourceSet
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
@@ -41,10 +43,14 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
+import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Suppress("TooManyFunctions")
-class MultiplatformResourcesPlugin : Plugin<Project> {
+abstract class MultiplatformResourcesPlugin : Plugin<Project> {
+    @Inject
+    protected abstract fun getObjectFactory(): ObjectFactory
+
     override fun apply(target: Project) {
         val mrExtension: MultiplatformResourcesPluginExtension = target.extensions.create(
             "multiplatformResources",
@@ -72,10 +78,12 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension
     ) {
-        val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
-        val commonResources = commonSourceSet.resources
+        val commonSourceSet: KotlinSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
+        val commonResources: SourceDirectorySet = getObjectFactory()
+            .sourceDirectorySet("moko-resources", "moko-resources")
+        commonResources.srcDir("${target.projectDir}/src/${commonSourceSet.name}/moko-resources")
 
-        val generatedDir = File(target.buildDir, "generated/moko")
+        val generatedDir = File(target.buildDir, "generated/moko-resources")
         val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage) {
             buildString {
                 appendLine("multiplatformResources.multiplatformResourcesPackage is required!")
@@ -88,9 +96,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             visibility = mrExtension.multiplatformResourcesVisibility
         )
         val sourceInfo = SourceInfo(
-            generatedDir,
-            commonResources,
-            mrExtension.multiplatformResourcesPackage!!
+            generatedDir = generatedDir,
+            commonResources = commonResources,
+            mrClassPackage = mrExtension.multiplatformResourcesPackage!!
         )
 
         val strictLineBreaks: Boolean = target
@@ -223,6 +231,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         target: Project
     ): GenerateMultiplatformResourcesTask {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
+
         return CommonMRGenerator(
             generatedDir,
             commonGeneratorSourceSet,
