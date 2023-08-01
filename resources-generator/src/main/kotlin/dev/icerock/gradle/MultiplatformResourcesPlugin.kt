@@ -240,7 +240,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project
-    ) {
+    ) = target.launchWhenEdgeRefinementFinalized {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
             .filterIsInstance<KotlinJvmTarget>()
             .flatMap { it.compilations }
