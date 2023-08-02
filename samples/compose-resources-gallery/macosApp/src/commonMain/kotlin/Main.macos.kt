@@ -1,6 +1,7 @@
 import androidx.compose.ui.window.Window
 import com.icerockdev.library.MR
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.staticCFunction
 import platform.AppKit.NSApplication
 import platform.AppKit.NSApplicationActivationPolicy
@@ -8,6 +9,7 @@ import platform.AppKit.NSApplicationDelegateProtocol
 import platform.darwin.NSObject
 import platform.objc.objc_setUncaughtExceptionHandler
 
+@OptIn(ExperimentalForeignApi::class)
 @Suppress("UNUSED_PARAMETER")
 fun main(args: Array<String>) {
     setUnhandledExceptionHook {
