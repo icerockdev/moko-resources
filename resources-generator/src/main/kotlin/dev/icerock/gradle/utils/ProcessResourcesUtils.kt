@@ -22,8 +22,8 @@ fun dependsOnProcessResources(
         .configureEach { processResourcesTask ->
             processResourcesTask.exclude {
                 val path: String = it.file.absolutePath
-                if (shouldExcludeGenerated && path.contains("generated/moko")) return@exclude true
-                if (path.contains("resources/MR")) return@exclude true
+                if (shouldExcludeGenerated && path.contains("generated/moko-resources")) return@exclude true
+                if (path.contains("moko-resources")) return@exclude true
                 false
             }
             processResourcesTask.dependsOn(task)

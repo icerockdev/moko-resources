@@ -10,6 +10,8 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import dev.icerock.gradle.utils.isDependsOn
+import java.io.File
+import java.util.Locale
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -17,7 +19,6 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import java.io.File
 
 internal class AndroidPluginLogic(
     private val commonSourceSet: KotlinSourceSet,
@@ -72,9 +73,12 @@ internal class AndroidPluginLogic(
     ): MRGenerator.SourceSet {
         return object : MRGenerator.SourceSet {
             override val name: String
-                get() = "android${androidSourceSet.name.capitalize()}"
+                get() = "android${androidSourceSet.name.replaceFirstChar { 
+                    if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+                }"
 
             override fun addSourceDir(directory: File) {
+                androidSourceSet.kotlin.srcDirs(directory)
                 kotlinSourceSets.forEach { it.kotlin.srcDir(directory) }
             }
 

@@ -81,7 +81,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         val commonSourceSet: KotlinSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
         val commonResources: SourceDirectorySet = getObjectFactory()
             .sourceDirectorySet("moko-resources", "moko-resources")
-        commonResources.srcDir("${target.projectDir}/src/${commonSourceSet.name}/moko-resources")
+        commonResources.srcDirs(File(target.projectDir,"/src/${commonSourceSet.name}/moko-resources"))
 
         val generatedDir = File(target.buildDir, "generated/moko-resources")
         val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage) {
