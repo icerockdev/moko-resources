@@ -233,9 +233,9 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
 
         return CommonMRGenerator(
-            generatedDir,
-            commonGeneratorSourceSet,
-            mrSettings,
+            generatedDir = generatedDir,
+            sourceSet = commonGeneratorSourceSet,
+            mrSettings = mrSettings,
             generators = features.map { it.createCommonGenerator() }
         ).apply(target)
     }
@@ -283,8 +283,8 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
 
         kotlinSourceSets.forEach { (compilation, kotlinSourceSet) ->
             JsMRGenerator(
-                generatedDir,
-                createSourceSet(kotlinSourceSet),
+                generatedDir = generatedDir,
+                sourceSet = createSourceSet(kotlinSourceSet),
                 mrSettings = mrSettings,
                 generators = features.map { it.createJsGenerator() },
                 compilation = compilation

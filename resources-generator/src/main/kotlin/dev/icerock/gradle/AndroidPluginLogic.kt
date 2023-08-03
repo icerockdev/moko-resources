@@ -79,6 +79,7 @@ internal class AndroidPluginLogic(
 
             override fun addSourceDir(directory: File) {
                 androidSourceSet.kotlin.srcDirs(directory)
+                androidSourceSet.java.srcDirs(directory)
                 kotlinSourceSets.forEach { it.kotlin.srcDir(directory) }
             }
 
