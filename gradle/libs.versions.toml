@@ -16,7 +16,7 @@ composeVersion = "1.5.0-rc01"
 composeActivityVersion = "1.7.1"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.5.0-dev1122"
+composeJetbrainsVersion = "1.5.0-beta01"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
