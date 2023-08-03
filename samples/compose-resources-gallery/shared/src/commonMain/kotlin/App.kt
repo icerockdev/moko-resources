@@ -23,7 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.icerockdev.library.MR
-import dev.icerock.moko.resources.compose.*
+import dev.icerock.moko.resources.compose.colorResource
+import dev.icerock.moko.resources.compose.fontFamilyResource
+import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.readTextAsState
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 internal fun App() {

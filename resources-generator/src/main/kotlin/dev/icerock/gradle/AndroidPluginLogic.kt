@@ -26,19 +26,10 @@ internal class AndroidPluginLogic(
     private val generatedDir: File,
     private val mrSettings: MRGenerator.MRSettings,
     private val features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-    private val project: Project
+    private val project: Project,
 ) {
     fun setup(androidMainSourceSet: AndroidSourceSet) {
-        val kotlinSourceSets: List<KotlinSourceSet> = targets
-            .filterIsInstance<KotlinAndroidTarget>()
-            .flatMap { it.compilations }
-            .filter { compilation ->
-                compilation.kotlinSourceSets.any { it.isDependsOn(commonSourceSet) }
-            }
-            .map { it.defaultSourceSet }
-
-        val androidSourceSet: MRGenerator.SourceSet =
-            createSourceSet(androidMainSourceSet, kotlinSourceSets)
+        val androidSourceSet: MRGenerator.SourceSet = createSourceSet(androidMainSourceSet)
 
         setAssetsDirsRefresh()
 
@@ -69,18 +60,15 @@ internal class AndroidPluginLogic(
 
     private fun createSourceSet(
         androidSourceSet: AndroidSourceSet,
-        kotlinSourceSets: List<KotlinSourceSet>
     ): MRGenerator.SourceSet {
         return object : MRGenerator.SourceSet {
             override val name: String
-                get() = "android${androidSourceSet.name.replaceFirstChar { 
-                    if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+                get() = "android${
+                    androidSourceSet.name.replaceFirstChar { it.uppercase() }
                 }"
 
             override fun addSourceDir(directory: File) {
-                androidSourceSet.kotlin.srcDirs(directory)
                 androidSourceSet.java.srcDirs(directory)
-                kotlinSourceSets.forEach { it.kotlin.srcDir(directory) }
             }
 
             override fun addResourcesDir(directory: File) {

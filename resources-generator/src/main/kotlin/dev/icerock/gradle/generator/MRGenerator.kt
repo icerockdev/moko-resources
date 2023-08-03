@@ -23,7 +23,7 @@ abstract class MRGenerator(
     internal val generators: List<Generator>
 ) {
 
-    internal val outputDir = File(generatedDir, "${sourceSet.name}/kotlin")
+    internal val outputDir = File(generatedDir, sourceSet.name)
     protected open val sourcesGenerationDir
         get() = File(outputDir, "src")
     protected open val resourcesGenerationDir

@@ -14,18 +14,11 @@ fun dependsOnProcessResources(
     project: Project,
     sourceSet: MRGenerator.SourceSet,
     task: Task,
-    shouldExcludeGenerated: Boolean
 ) {
     project.tasks
         .matching { it.name == sourceSet.name.removeSuffix("Main") + "ProcessResources" }
         .withType<ProcessResources>()
         .configureEach { processResourcesTask ->
-            processResourcesTask.exclude {
-                val path: String = it.file.absolutePath
-                if (shouldExcludeGenerated && path.contains("generated/moko-resources")) return@exclude true
-                if (path.contains("moko-resources")) return@exclude true
-                false
-            }
             processResourcesTask.dependsOn(task)
         }
 }

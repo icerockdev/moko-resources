@@ -140,7 +140,7 @@ abstract class ColorsGenerator(
     ) : ResourceGeneratorFeature<ColorsGenerator> {
 
         private val colorsFileTree =
-            info.commonResources.matching { it.include("colors/colors*.xml") }
+            info.commonResources.matching { it.include("**/colors*.xml") }
 
         override fun createCommonGenerator() = CommonColorsGenerator(colorsFileTree)
 
