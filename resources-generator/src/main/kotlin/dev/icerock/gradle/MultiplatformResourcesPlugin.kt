@@ -32,6 +32,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -45,6 +46,12 @@ import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
+import org.jetbrains.kotlin.gradle.targets.native.tasks.artifact.kotlinArtifactsExtension
+import org.jetbrains.kotlin.gradle.utils.ObservableSet
 
 @Suppress("TooManyFunctions")
 abstract class MultiplatformResourcesPlugin : Plugin<Project> {
@@ -58,17 +65,37 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         )
         mrExtension.multiplatformResourcesPackage = "${target.group}.${target.name}"
 
-        target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
-            val multiplatformExtension =
-                target.extensions.getByType(KotlinMultiplatformExtension::class)
+        target.plugins.withType(KotlinMultiplatformPluginWrapper::class) { _ ->
+            val multiplatformExtension = target.extensions.getByType(
+                type = KotlinMultiplatformExtension::class
+            )
 
-            target.afterEvaluate {
-                configureGenerators(
-                    target = target,
-                    mrExtension = mrExtension,
-                    multiplatformExtension = multiplatformExtension
-                )
+            target.kotlinExtension.targets.forEach {kotlinTarget ->
+                kotlinTarget.compilations.configureEach { compilation ->
+                    compilation.kotlinSourceSetsObservable.whenObjectAdded {
+                        configureGenerators(
+                            target = target,
+                            mrExtension = mrExtension,
+                            multiplatformExtension = multiplatformExtension
+                        )
+                    }
+                }
             }
+//            target.kotlinExtension.sourceSets.configureEach {
+//                configureGenerators(
+//                    target = target,
+//                    mrExtension = mrExtension,
+//                    multiplatformExtension = multiplatformExtension
+//                )
+//            }
+
+//            target.afterEvaluate {
+//                configureGenerators(
+//                    target = target,
+//                    mrExtension = mrExtension,
+//                    multiplatformExtension = multiplatformExtension
+//                )
+//            }
         }
     }
 
@@ -76,12 +103,23 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
     private fun configureGenerators(
         target: Project,
         mrExtension: MultiplatformResourcesPluginExtension,
-        multiplatformExtension: KotlinMultiplatformExtension
+        multiplatformExtension: KotlinMultiplatformExtension,
     ) {
         val commonSourceSet: KotlinSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
-        val commonResources: SourceDirectorySet = getObjectFactory()
-            .sourceDirectorySet("moko-resources", "moko-resources")
-        commonResources.srcDirs(File(target.projectDir,"/src/${commonSourceSet.name}/moko-resources"))
+        val commonResources: SourceDirectorySet = getObjectFactory().sourceDirectorySet(
+            "moko-resources",
+            "moko-resources"
+        )
+        commonResources.srcDirs(
+            File(
+                target.projectDir,
+                buildString {
+                    append("/src/")
+                    append(commonSourceSet.name)
+                    append("/moko-resources")
+                }
+            )
+        )
 
         val generatedDir = File(target.buildDir, "generated/moko-resources")
         val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage) {
@@ -137,7 +175,10 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
             target = target
         )
 
-        listOf("com.android.library", "com.android.application").forEach { id ->
+        listOf(
+            "com.android.library",
+            "com.android.application"
+        ).forEach { id ->
             target.plugins.withId(id) {
                 setupAndroidGenerator(
                     target = target,
@@ -196,7 +237,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-        sourceInfo: SourceInfo
+        sourceInfo: SourceInfo,
     ) {
         val androidExtension = target.extensions.getByType(BaseExtension::class)
 
@@ -228,7 +269,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-        target: Project
+        target: Project,
     ): GenerateMultiplatformResourcesTask {
         val commonGeneratorSourceSet: MRGenerator.SourceSet = createSourceSet(commonSourceSet)
 
@@ -247,7 +288,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-        target: Project
+        target: Project,
     ) {
         val kotlinSourceSets: List<KotlinSourceSet> = targets
             .filterIsInstance<KotlinJvmTarget>()
@@ -272,7 +313,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         generatedDir: File,
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-        target: Project
+        target: Project,
     ) {
         val kotlinSourceSets: List<Pair<KotlinJsIrCompilation, KotlinSourceSet>> = targets
             .filterIsInstance<KotlinJsIrTarget>()
@@ -300,9 +341,9 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         mrSettings: MRGenerator.MRSettings,
         features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
         target: Project,
-        iosLocalizationRegion: String
+        iosLocalizationRegion: String,
     ) {
-        val compilations = targets
+        val compilations: List<KotlinNativeCompilation> = targets
             .filterIsInstance<KotlinNativeTarget>()
             .filter { it.konanTarget.family.isAppleFamily }
             .map { kotlinNativeTarget ->
@@ -310,13 +351,13 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
             }
 
-        val defSourceSets = compilations.map { it.defaultSourceSet }
+        val defSourceSets: List<KotlinSourceSet> = compilations.map { it.defaultSourceSet }
             .filter { it.isDependsOn(commonSourceSet) }
         compilations.forEach { compilation ->
             val kss = compilation.defaultSourceSet
             val depend = kss.getDependedFrom(defSourceSets)
 
-            val sourceSet = createSourceSet(depend ?: kss)
+            val sourceSet: MRGenerator.SourceSet = createSourceSet(depend ?: kss)
             AppleMRGenerator(
                 generatedDir = generatedDir,
                 sourceSet = sourceSet,
@@ -379,3 +420,9 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         return manifest.attributes.getNamedItem("package").textContent
     }
 }
+
+internal val KotlinCompilation<*>.allKotlinSourceSetsObservable
+    get() = this.allKotlinSourceSets as ObservableSet<KotlinSourceSet>
+
+internal val KotlinCompilation<*>.kotlinSourceSetsObservable
+    get() = this.kotlinSourceSets as ObservableSet<KotlinSourceSet>

@@ -52,7 +52,7 @@ kotlin {
         jsTest.dependsOn(commonTest)
     }
 
-    jvmToolchain(11)
+    jvmToolchain(17)
 }
 
 tasks.withType<AbstractTestTask> {

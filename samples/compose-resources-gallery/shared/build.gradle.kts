@@ -11,19 +11,18 @@ plugins {
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    android()
-
-    jvm("desktop")
+    androidTarget()
 
     ios()
     iosSimulatorArm64()
 
+    macosArm64()
+    macosX64()
+
+    jvm("desktop")
     js(IR) {
         browser()
     }
-
-    macosArm64()
-    macosX64()
 
     cocoapods {
         summary = "Some description for the Shared Module"
