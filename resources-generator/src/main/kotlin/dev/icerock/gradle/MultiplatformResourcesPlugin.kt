@@ -72,7 +72,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
 
             target.kotlinExtension.targets.forEach {kotlinTarget ->
                 kotlinTarget.compilations.configureEach { compilation ->
-                    compilation.kotlinSourceSetsObservable.whenObjectAdded {
+                    compilation.allKotlinSourceSetsObservable.whenObjectAdded {
                         configureGenerators(
                             target = target,
                             mrExtension = mrExtension,

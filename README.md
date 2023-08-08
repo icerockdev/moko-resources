@@ -107,6 +107,17 @@ framework {
 }
 ```
 
+#### Multi-module Gradle projects
+
+If you have multiple gradle modules and resources stored not in module that compiles into framework for iOS, for example:
+```
+- shared
+-- resources
+-- feature-1
+-- feature-2
+```
+You should enable moko-resources gradle plugin in `resources` module, that contains resources, AND in `shared` module, that compiles into framework for iOS (same for jvm, JS, macos targets. Only android will works without this).
+
 ### Xcode setup
 
 In iOS/macOS Info.plist need to add localizations, to use localizations strings.

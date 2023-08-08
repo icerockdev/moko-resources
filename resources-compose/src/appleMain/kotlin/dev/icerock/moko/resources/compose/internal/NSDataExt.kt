@@ -4,11 +4,14 @@
 
 package dev.icerock.moko.resources.compose.internal
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
 import platform.posix.memcpy
 
+
+@OptIn(ExperimentalForeignApi::class)
 internal fun NSData.toByteArray(): ByteArray {
     return ByteArray(this@toByteArray.length.toInt()).apply {
         usePinned { pinned ->
