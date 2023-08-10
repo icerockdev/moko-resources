@@ -9,6 +9,7 @@ import com.android.build.gradle.BaseExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
+import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.isDependsOn
 import java.io.File
 import java.util.Locale
@@ -63,9 +64,7 @@ internal class AndroidPluginLogic(
     ): MRGenerator.SourceSet {
         return object : MRGenerator.SourceSet {
             override val name: String
-                get() = "android${
-                    androidSourceSet.name.replaceFirstChar { it.uppercase() }
-                }"
+                get() = "android${androidSourceSet.name.capitalize()}"
 
             override fun addSourceDir(directory: File) {
                 androidSourceSet.java.srcDirs(directory)

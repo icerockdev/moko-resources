@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.apple.AppleFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.js.JsFontsGenerator
 import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
+import dev.icerock.gradle.utils.decapitalize
 import org.gradle.api.file.FileTree
 import java.io.File
 import java.util.Locale
@@ -93,7 +94,7 @@ abstract class FontsGenerator(
         fontStyleFiles
             .forEach { (styleName, file) ->
                 val styleProperty = PropertySpec
-                    .builder(styleName.replaceFirstChar { it.lowercase(Locale.ROOT) }, resourceClassName)
+                    .builder(styleName.decapitalize(), resourceClassName)
                     .addModifiers(*getPropertyModifiers())
                 getPropertyInitializer(file)?.let { codeBlock ->
                     styleProperty.initializer(codeBlock)
