@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.generator.apple
 
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
@@ -24,6 +25,7 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.maybeCreate
@@ -103,8 +105,11 @@ class AppleMRGenerator(
     }
 
     private fun setupKLibResources(generationTask: Task) {
-        val compileTask: KotlinNativeCompile = compilation.compileTaskProvider.get()
-        compileTask.dependsOn(generationTask)
+        val compileTask: TaskProvider<KotlinNativeCompile> = compilation.compileTaskProvider
+
+        compileTask.configure {
+            it.dependsOn(generationTask)
+        }
 
         // tasks like compileIosMainKotlinMetadata when only one target enabled
         generationTask.project.tasks
@@ -112,14 +117,16 @@ class AppleMRGenerator(
             .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
             .configureEach { it.dependsOn(generationTask) }
 
-        compileTask.doLast(
-            PackResourcesToKLibAction(
-                baseLocalizationRegion = baseLocalizationRegion,
-                bundleIdentifier = bundleIdentifier,
-                assetsDirectory = assetsDirectory,
-                resourcesGenerationDir = resourcesGenerationDir,
-            )
-        )
+        compileTask.configure {
+            it.doLast {
+                PackResourcesToKLibAction(
+                    baseLocalizationRegion = baseLocalizationRegion,
+                    bundleIdentifier = bundleIdentifier,
+                    assetsDirectory = assetsDirectory,
+                    resourcesGenerationDir = resourcesGenerationDir,
+                )
+            }
+        }
     }
 
     private fun setupFrameworkResources() {
