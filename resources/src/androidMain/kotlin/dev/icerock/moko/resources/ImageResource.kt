@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-actual class ImageResource(
+actual data class ImageResource(
     @DrawableRes val drawableResId: Int
 ) : Parcelable {
 
