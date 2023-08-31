@@ -4,4 +4,6 @@
 
 package dev.icerock.moko.resources
 
-expect class ImageResource
+import dev.icerock.moko.parcelize.Parcelable
+
+expect class ImageResource : Parcelable
