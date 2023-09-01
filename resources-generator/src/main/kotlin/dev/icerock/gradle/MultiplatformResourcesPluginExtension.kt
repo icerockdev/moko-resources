@@ -16,10 +16,6 @@ abstract class MultiplatformResourcesPluginExtension {
     abstract val resourcesVisibility: Property<MRVisibility>
 }
 
-internal fun MultiplatformResourcesPluginExtension.resourcesPackageValue(project : Project): String {
-    return resourcesPackage.getOrElse("${project.group}.${project.name}")
-}
-
 internal val MultiplatformResourcesPluginExtension.resourcesClassNameValue : String
     get() = resourcesClassName.getOrElse("MR")
 internal val MultiplatformResourcesPluginExtension.resourcesSourceSetValue : String
