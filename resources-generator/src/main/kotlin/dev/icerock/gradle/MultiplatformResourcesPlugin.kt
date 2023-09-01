@@ -76,7 +76,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val generatedDir = File(target.buildDir, "generated/moko")
         val mrClassPackage: String = requireNotNull(mrExtension.resourcesPackage.orNull) {
             buildString {
-                appendLine("multiplatformResources.multiplatformResourcesPackage is required!")
+                appendLine("multiplatformResources.resourcesPackage is required!")
                 append("Please configure moko-resources plugin correctly.")
             }
         }
