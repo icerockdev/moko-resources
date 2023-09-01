@@ -4,15 +4,29 @@
 
 package dev.icerock.gradle
 
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.gradle.api.Project
+import org.gradle.api.provider.Property
 
-open class MultiplatformResourcesPluginExtension {
-    var multiplatformResourcesPackage: String? = null
-    var multiplatformResourcesClassName: String = "MR"
-    var multiplatformResourcesSourceSet: String? = null
-    var iosBaseLocalizationRegion: String = "en"
-    val sourceSetName: String
-        get() = multiplatformResourcesSourceSet ?: KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME
-    var disableStaticFrameworkWarning = false
-    var multiplatformResourcesVisibility: MRVisibility = MRVisibility.Public
+abstract class MultiplatformResourcesPluginExtension {
+    abstract val resourcesPackage: Property<String>
+    abstract val resourcesClassName: Property<String>
+    abstract val resourcesSourceSet: Property<String>
+    abstract val iosBaseLocalizationRegion: Property<String>
+    abstract val staticFrameworkWarningEnabled: Property<Boolean>
+    abstract val resourcesVisibility: Property<MRVisibility>
 }
+
+internal fun MultiplatformResourcesPluginExtension.resourcesPackageValue(project : Project): String {
+    return resourcesPackage.getOrElse("${project.group}.${project.name}")
+}
+
+internal val MultiplatformResourcesPluginExtension.resourcesClassNameValue : String
+    get() = resourcesClassName.getOrElse("MR")
+internal val MultiplatformResourcesPluginExtension.resourcesSourceSetValue : String
+    get() = resourcesSourceSet.getOrElse("commonMain")
+internal val MultiplatformResourcesPluginExtension.iosBaseLocalizationRegionValue : String
+    get() = iosBaseLocalizationRegion.getOrElse("en")
+internal val MultiplatformResourcesPluginExtension.isStaticFrameworkWarningEnabledValue : Boolean
+    get() = staticFrameworkWarningEnabled.getOrElse(true)
+internal val MultiplatformResourcesPluginExtension.resourcesVisibilityValue : MRVisibility
+    get() = resourcesVisibility.getOrElse(MRVisibility.Public)

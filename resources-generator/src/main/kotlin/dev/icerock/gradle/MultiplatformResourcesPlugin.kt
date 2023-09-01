@@ -50,8 +50,6 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             "multiplatformResources",
             MultiplatformResourcesPluginExtension::class
         )
-        mrExtension.multiplatformResourcesPackage = "${target.group}.${target.name}"
-
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val multiplatformExtension =
                 target.extensions.getByType(KotlinMultiplatformExtension::class)
@@ -72,11 +70,11 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension
     ) {
-        val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
+        val commonSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.resourcesSourceSetValue)
         val commonResources = commonSourceSet.resources
 
         val generatedDir = File(target.buildDir, "generated/moko")
-        val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage) {
+        val mrClassPackage: String = requireNotNull(mrExtension.resourcesPackageValue(target)) {
             buildString {
                 appendLine("multiplatformResources.multiplatformResourcesPackage is required!")
                 append("Please configure moko-resources plugin correctly.")
@@ -84,13 +82,13 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         }
         val mrSettings = MRGenerator.MRSettings(
             packageName = mrClassPackage,
-            className = mrExtension.multiplatformResourcesClassName,
-            visibility = mrExtension.multiplatformResourcesVisibility
+            className = mrExtension.resourcesClassNameValue,
+            visibility = mrExtension.resourcesVisibilityValue
         )
         val sourceInfo = SourceInfo(
             generatedDir,
             commonResources,
-            mrExtension.multiplatformResourcesPackage!!
+            mrExtension.resourcesPackageValue(target)
         )
 
         val strictLineBreaks: Boolean = target
@@ -99,7 +97,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
             ?.toBoolean()
             ?: false
 
-        val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
+        val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegionValue
         val features = listOf(
             StringsGenerator.Feature(
                 info = sourceInfo,
