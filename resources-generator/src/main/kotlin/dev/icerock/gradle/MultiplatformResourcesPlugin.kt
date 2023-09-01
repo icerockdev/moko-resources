@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -74,7 +75,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val commonResources = commonSourceSet.resources
 
         val generatedDir = File(target.buildDir, "generated/moko")
-        val mrClassPackage: String = requireNotNull(mrExtension.resourcesPackage.orNull) {
+        val mrClassPackage: String = requireNotNull(mrExtension.resourcesPackage.orNull.orEmpty()) {
             buildString {
                 appendLine("multiplatformResources.resourcesPackage is required!")
                 append("Please configure moko-resources plugin correctly.")
@@ -320,21 +321,16 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     }
 
     private fun setupCopyXCFrameworkResourcesTask(project: Project) {
-        // can't use here configureEach because we will add new task when found xcframeworktask
-        project.afterEvaluate {
-            project.tasks.filterIsInstance<XCFrameworkTask>()
-                .forEach { task ->
-                    val copyTaskName: String =
-                        task.name.replace("assemble", "copyResources").plus("ToApp")
-
-                    val copyTask = project.tasks.create(
-                        copyTaskName,
-                        CopyXCFrameworkResourcesToApp::class.java
-                    ) {
-                        it.xcFrameworkDir = task.outputDir
-                    }
-                    copyTask.dependsOn(task)
-                }
+        //Seems that there were problem with this block in the past with mystic task adding. Need more info
+        //Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
+        //Suppose that on that moment there were no lazy register method for task container
+        project.tasks.withType(XCFrameworkTask::class).configureEach { task ->
+            val copyTaskName: String =
+                task.name.replace("assemble", "copyResources").plus("ToApp")
+            project.tasks.register(copyTaskName, CopyXCFrameworkResourcesToApp::class.java) {
+                it.xcFrameworkDir = task.outputDir
+                it.dependsOn(task)
+            }
         }
     }
 
