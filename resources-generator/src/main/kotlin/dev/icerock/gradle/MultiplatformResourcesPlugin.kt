@@ -75,7 +75,7 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         val commonResources = commonSourceSet.resources
 
         val generatedDir = File(target.buildDir, "generated/moko")
-        val mrClassPackage: String = requireNotNull(mrExtension.resourcesPackage.orNull.orEmpty()) {
+        val mrClassPackage: String = requireNotNull(mrExtension.resourcesPackage.orNull) {
             buildString {
                 appendLine("multiplatformResources.resourcesPackage is required!")
                 append("Please configure moko-resources plugin correctly.")
@@ -321,9 +321,9 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     }
 
     private fun setupCopyXCFrameworkResourcesTask(project: Project) {
-        //Seems that there were problem with this block in the past with mystic task adding. Need more info
-        //Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
-        //Suppose that on that moment there were no lazy register method for task container
+        // Seems that there were problem with this block in the past with mystic task adding. Need more info
+        // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
+        // Suppose that on that moment there were no lazy register method for task container
         project.tasks.withType(XCFrameworkTask::class).configureEach { task ->
             val copyTaskName: String =
                 task.name.replace("assemble", "copyResources").plus("ToApp")
