@@ -6,7 +6,7 @@ package dev.icerock.moko.resources
 
 actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource? {
     //get name without extension and extension
-    val ext = filePath.substringAfterLast('.')
+    val ext = filePath.substringAfterLast('.', "")
     val name = filePath.substringBeforeLast('.')
         .replace('/', '+')
 
