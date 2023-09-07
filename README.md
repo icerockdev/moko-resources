@@ -511,6 +511,20 @@ and return to system behaviour (when localization depends on device settings):
 StringDesc.localeType = StringDesc.LocaleType.System
 ```
 
+Android:
+
+Add this to your app's `build.gradle` to keep all locales in resulting [App Bundle](https://www.youtube.com/watch?v=IPLhLu0kvYw&ab_channel=AndroidDevelopers) if you want them all to be available in runtime (Otherwise, when the user downloads the app from PlayMarket, resources for his system locale only will be available).
+
+```
+android {
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+}
+```
+
 ### Example 7 - Shared Images
 
 Place images in the `commonMain/resources/MR/images` directory. Nested directories are also supported.
