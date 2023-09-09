@@ -17,7 +17,6 @@ import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
 import dev.icerock.gradle.utils.decapitalize
 import org.gradle.api.file.FileTree
 import java.io.File
-import java.util.Locale
 
 abstract class FontsGenerator(
     private val inputFileTree: FileTree
@@ -124,30 +123,32 @@ abstract class FontsGenerator(
     )
 
     class Feature(
-        private val info: SourceInfo,
-        private val mrSettings: MRGenerator.MRSettings
+        private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<FontsGenerator> {
-        private val stringsFileTree = info.commonResources.matching {
-            it.include("fonts/**.ttf", "fonts/**.otf")
-        }
+        private val stringsFileTree: FileTree = settings.resourcesSourceDirectory
+            .matching { it.include("fonts/**.ttf", "fonts/**.otf") }
 
-        override fun createCommonGenerator() = CommonFontsGenerator(stringsFileTree)
+        override fun createCommonGenerator(): FontsGenerator = CommonFontsGenerator(
+            inputFileTree = stringsFileTree
+        )
 
-        override fun createIosGenerator() = AppleFontsGenerator(stringsFileTree)
+        override fun createIosGenerator(): FontsGenerator = AppleFontsGenerator(
+            inputFileTree = stringsFileTree
+        )
 
-        override fun createAndroidGenerator() = AndroidFontsGenerator(
+        override fun createAndroidGenerator(): FontsGenerator = AndroidFontsGenerator(
             inputFileTree = stringsFileTree,
-            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
+            androidRClassPackageProvider = settings.androidRClassPackage
         )
 
         override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(
-            stringsFileTree,
-            mrSettings.packageName
+            inputFileTree = stringsFileTree,
+            mrClassPackage = settings.packageName
         )
 
-        override fun createJvmGenerator() = JvmFontsGenerator(
-            stringsFileTree,
-            mrSettings
+        override fun createJvmGenerator(): FontsGenerator = JvmFontsGenerator(
+            inputFileTree = stringsFileTree,
+            settings = settings
         )
     }
 }

@@ -14,9 +14,9 @@ import java.io.File
 
 class JvmFontsGenerator(
     inputFileTree: FileTree,
-    mrSettings: MRGenerator.MRSettings
+    settings: MRGenerator.Settings
 ) : FontsGenerator(inputFileTree),
-    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+    ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers() = arrayOf(KModifier.ACTUAL)
 

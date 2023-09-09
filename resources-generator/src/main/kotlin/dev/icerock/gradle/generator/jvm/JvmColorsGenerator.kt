@@ -16,9 +16,9 @@ import org.gradle.api.file.FileTree
 
 class JvmColorsGenerator(
     colorsFileTree: FileTree,
-    mrSettings: MRGenerator.MRSettings
+    settings: MRGenerator.Settings
 ) : ColorsGenerator(colorsFileTree),
-    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+    ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")

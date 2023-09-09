@@ -8,19 +8,20 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import java.io.File
 
 class CommonMRGenerator(
     generatedDir: File,
-    sourceSet: SourceSet,
-    mrSettings: MRSettings,
+    sourceSet: Provider<SourceSet>,
+    settings: Settings,
     generators: List<Generator>
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrSettings = mrSettings,
+    settings = settings,
     generators = generators
 ) {
 
@@ -29,7 +30,7 @@ class CommonMRGenerator(
     override fun apply(generationTask: Task, project: Project) {
         project.tasks
             .withType<KotlinCompile<*>>()
-            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
+//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
             .configureEach { it.dependsOn(generationTask) }
 
         project.rootProject.tasks.matching {

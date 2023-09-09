@@ -5,12 +5,10 @@
 package dev.icerock.gradle.generator
 
 import org.gradle.api.file.SourceDirectorySet
-import java.io.File
+import org.gradle.api.provider.Provider
 
-data class SourceInfo(
-    val generatedDir: File,
-    val commonResources: SourceDirectorySet,
-    val mrClassPackage: String
-) {
-    var getAndroidRClassPackage: (() -> String)? = null
+interface SourceInfo {
+    val commonResources: SourceDirectorySet
+    val mrClassPackage: Provider<String>
+    var androidRClassPackageProvider: Provider<String>?
 }

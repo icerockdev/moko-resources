@@ -56,7 +56,7 @@ abstract class ImagesGenerator(
     }
 
     @Suppress("SpreadOperator")
-    fun createTypeSpec(fileNames: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
+    private fun createTypeSpec(fileNames: List<String>, objectBuilder: TypeSpec.Builder): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
         extendObjectBodyAtStart(objectBuilder)
@@ -98,30 +98,35 @@ abstract class ImagesGenerator(
     abstract fun getPropertyInitializer(fileName: String): CodeBlock?
 
     class Feature(
-        private val info: SourceInfo,
-        private val mrSettings: MRGenerator.MRSettings,
+        private val settings: MRGenerator.Settings,
         private val logger: Logger
     ) : ResourceGeneratorFeature<ImagesGenerator> {
-        private val stringsFileTree = info.commonResources.matching {
-            it.include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
-        }
+        private val fileTree: FileTree = settings.resourcesSourceDirectory
+            .matching {
+                it.include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
+            }
 
-        override fun createCommonGenerator() =
-            CommonImagesGenerator(stringsFileTree)
+        override fun createCommonGenerator(): ImagesGenerator = CommonImagesGenerator(
+            inputFileTree = fileTree
+        )
 
-        override fun createIosGenerator() = AppleImagesGenerator(stringsFileTree)
+        override fun createIosGenerator(): ImagesGenerator = AppleImagesGenerator(
+            inputFileTree = fileTree
+        )
 
-        override fun createAndroidGenerator() = AndroidImagesGenerator(
-            inputFileTree = stringsFileTree,
-            getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage),
+        override fun createAndroidGenerator(): ImagesGenerator = AndroidImagesGenerator(
+            inputFileTree = fileTree,
+            androidRClassPackageProvider = settings.androidRClassPackage,
             logger = logger
         )
 
-        override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(stringsFileTree)
+        override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(
+            inputFileTree = fileTree
+        )
 
-        override fun createJvmGenerator() = JvmImagesGenerator(
-            stringsFileTree,
-            mrSettings
+        override fun createJvmGenerator(): ImagesGenerator = JvmImagesGenerator(
+            inputFileTree = fileTree,
+            settings = settings
         )
     }
 }

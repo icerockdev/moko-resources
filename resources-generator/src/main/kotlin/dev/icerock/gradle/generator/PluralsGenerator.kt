@@ -93,31 +93,38 @@ abstract class PluralsGenerator(
     }
 
     class Feature(
-        private val info: SourceInfo,
-        private val iosBaseLocalizationRegion: String,
-        private val strictLineBreaks: Boolean,
-        private val mrSettings: MRGenerator.MRSettings
+        private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
-        private val stringsFileTree =
-            info.commonResources.matching { it.include("**/plurals*.xml") }
+        private val fileTree: FileTree = settings.resourcesSourceDirectory
+            .matching { it.include("**/plurals*.xml") }
 
-        override fun createCommonGenerator(): PluralsGenerator =
-            CommonPluralsGenerator(stringsFileTree, strictLineBreaks)
+        override fun createCommonGenerator(): PluralsGenerator = CommonPluralsGenerator(
+            pluralsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks
+        )
 
-        override fun createIosGenerator(): PluralsGenerator =
-            ApplePluralsGenerator(stringsFileTree, strictLineBreaks, iosBaseLocalizationRegion)
+        override fun createIosGenerator(): PluralsGenerator = ApplePluralsGenerator(
+            pluralsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks,
+            baseLocalizationRegion = settings.iosLocalizationRegion
+        )
 
-        override fun createAndroidGenerator(): PluralsGenerator =
-            AndroidPluralsGenerator(
-                pluralsFileTree = stringsFileTree,
-                strictLineBreaks = strictLineBreaks,
-                getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
-            )
+        override fun createAndroidGenerator(): PluralsGenerator = AndroidPluralsGenerator(
+            pluralsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks,
+            androidRClassPackageProvider = settings.androidRClassPackage,
+        )
 
-        override fun createJvmGenerator() =
-            JvmPluralsGenerator(stringsFileTree, strictLineBreaks, mrSettings)
+        override fun createJvmGenerator(): PluralsGenerator = JvmPluralsGenerator(
+            pluralsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks,
+            settings = settings
+        )
 
-        override fun createJsGenerator(): PluralsGenerator =
-            JsPluralsGenerator(stringsFileTree, mrSettings.packageName, strictLineBreaks)
+        override fun createJsGenerator(): PluralsGenerator = JsPluralsGenerator(
+            pluralsFileTree = fileTree,
+            mrClassPackage = settings.packageName,
+            strictLineBreaks = settings.isStrictLineBreaks
+        )
     }
 }

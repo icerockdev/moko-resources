@@ -73,31 +73,38 @@ abstract class StringsGenerator(
     override fun getImports(): List<ClassName> = emptyList()
 
     class Feature(
-        private val info: SourceInfo,
-        private val iosBaseLocalizationRegion: String,
-        private val strictLineBreaks: Boolean,
-        private val mrSettings: MRGenerator.MRSettings
+        private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<StringsGenerator> {
-        private val stringsFileTree =
-            info.commonResources.matching { it.include("**/strings*.xml") }
+        private val fileTree: FileTree = settings.resourcesSourceDirectory
+            .matching { it.include("**/strings*.xml") }
 
-        override fun createCommonGenerator() =
-            CommonStringsGenerator(stringsFileTree, strictLineBreaks)
+        override fun createCommonGenerator(): StringsGenerator = CommonStringsGenerator(
+            stringsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks
+        )
 
-        override fun createIosGenerator() =
-            AppleStringsGenerator(stringsFileTree, strictLineBreaks, iosBaseLocalizationRegion)
+        override fun createIosGenerator(): StringsGenerator = AppleStringsGenerator(
+            stringsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks,
+            baseLocalizationRegion = settings.iosLocalizationRegion
+        )
 
-        override fun createAndroidGenerator() =
-            AndroidStringsGenerator(
-                stringsFileTree = stringsFileTree,
-                strictLineBreaks = strictLineBreaks,
-                getAndroidRClassPackage = requireNotNull(info.getAndroidRClassPackage)
-            )
+        override fun createAndroidGenerator(): StringsGenerator = AndroidStringsGenerator(
+            stringsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks,
+            androidRClassPackageProvider = settings.androidRClassPackage
+        )
 
-        override fun createJsGenerator(): StringsGenerator =
-            JsStringsGenerator(stringsFileTree, mrSettings.packageName, strictLineBreaks)
+        override fun createJsGenerator(): StringsGenerator = JsStringsGenerator(
+            stringsFileTree = fileTree,
+            mrClassPackage = settings.packageName,
+            strictLineBreaks = settings.isStrictLineBreaks
+        )
 
-        override fun createJvmGenerator() =
-            JvmStringsGenerator(stringsFileTree, strictLineBreaks, mrSettings)
+        override fun createJvmGenerator(): StringsGenerator = JvmStringsGenerator(
+            stringsFileTree = fileTree,
+            strictLineBreaks = settings.isStrictLineBreaks,
+            settings = settings
+        )
     }
 }

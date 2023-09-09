@@ -13,16 +13,18 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import java.io.File
 
 class JvmPluralsGenerator(
     pluralsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    mrSettings: MRGenerator.MRSettings
+    settings: MRGenerator.Settings
 ) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
-    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+    ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
-    private val flattenClassPackage = mrSettings.packageName.replace(".", "")
+    private val flattenClassPackage: Provider<String> = settings.packageName
+        .map { it.replace(".", "") }
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -41,7 +43,7 @@ class JvmPluralsGenerator(
         strings: Map<KeyType, PluralMap>
     ) {
         val fileDirName =
-            "${flattenClassPackage}_${JvmMRGenerator.PLURALS_BUNDLE_NAME}${language.jvmResourcesSuffix}"
+            "${flattenClassPackage.get()}_${JvmMRGenerator.PLURALS_BUNDLE_NAME}${language.jvmResourcesSuffix}"
 
         val localizationDir =
             File(resourcesGenerationDir, JvmMRGenerator.LOCALIZATION_DIR).apply { mkdirs() }

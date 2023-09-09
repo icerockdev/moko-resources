@@ -13,12 +13,13 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import java.io.File
 
 class AppleStringsGenerator(
     stringsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val baseLocalizationRegion: String
+    private val baseLocalizationRegion: Provider<String>
 ) : StringsGenerator(stringsFileTree, strictLineBreaks),
     ObjectBodyExtendable by AppleGeneratorHelper() {
 

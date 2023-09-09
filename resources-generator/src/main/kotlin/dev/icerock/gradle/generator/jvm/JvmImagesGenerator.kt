@@ -15,9 +15,9 @@ import java.io.File
 
 class JvmImagesGenerator(
     inputFileTree: FileTree,
-    mrSettings: MRGenerator.MRSettings
+    settings: MRGenerator.Settings
 ) : ImagesGenerator(inputFileTree),
-    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+    ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

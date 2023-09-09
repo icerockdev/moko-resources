@@ -14,12 +14,13 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import java.io.File
 
 class AndroidStringsGenerator(
     stringsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val getAndroidRClassPackage: () -> String
+    private val androidRClassPackageProvider: Provider<String>,
 ) : StringsGenerator(stringsFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
@@ -31,7 +32,7 @@ class AndroidStringsGenerator(
         CodeBlock.of("StringResource(R.string.%L)", processKey(key))
 
     override fun getImports(): List<ClassName> = listOf(
-        ClassName(getAndroidRClassPackage(), "R")
+        ClassName(androidRClassPackageProvider.get(), "R")
     )
 
     override fun generateResources(

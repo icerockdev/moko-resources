@@ -10,21 +10,21 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
 class AndroidMRGenerator(
     generatedDir: File,
-    sourceSet: SourceSet,
-    mrSettings: MRSettings,
-    generators: List<Generator>
+    sourceSet: Provider<SourceSet>,
+    settings: Settings,
+    generators: List<Generator>,
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrSettings = mrSettings,
+    settings = settings,
     generators = generators
 ) {
-
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun apply(generationTask: Task, project: Project) {

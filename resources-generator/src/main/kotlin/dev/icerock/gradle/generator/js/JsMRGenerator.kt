@@ -16,6 +16,7 @@ import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
@@ -26,24 +27,28 @@ import java.io.File
 
 class JsMRGenerator(
     generatedDir: File,
-    sourceSet: SourceSet,
-    mrSettings: MRSettings,
+    sourceSet: Provider<SourceSet>,
+    settings: Settings,
     generators: List<Generator>,
-    private val compilation: KotlinJsIrCompilation
+    private val compilation: KotlinJsIrCompilation,
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrSettings = mrSettings,
+    settings = settings,
     generators = generators
 ) {
-    private val flattenClassName: String get() = mrSettings.packageName.replace(".", "")
-
-    override val resourcesGenerationDir: File
-        get() = outputDir.resolve("$flattenClassName/res")
+    private val flattenClassName: Provider<String> = settings.packageName
+        .map { it.replace(".", "") }
+    override val resourcesGenerationDir: Provider<File> =
+        outputDir.zip(flattenClassName) { outputDir, className ->
+            File(File(outputDir, className), "res")
+        }
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
+        val resourcesGenerationDir: File = resourcesGenerationDir.get()
+
         mrClass.addProperty(
             PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
                 .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
@@ -116,7 +121,7 @@ class JsMRGenerator(
         val kotlinTarget: KotlinJsIrTarget = compilation.target as KotlinJsIrTarget
 
         kotlinTarget.compilations
-            .configureEach { compilation ->
+            .all { compilation ->
                 compilation.compileTaskProvider.configure { compileTask ->
                     val action = CopyResourcesToExecutableAction(resourcesGenerationDir)
                     @Suppress("UNCHECKED_CAST")
@@ -125,7 +130,9 @@ class JsMRGenerator(
             }
     }
 
-    class CopyResourcesToKLibAction(private val resourcesDir: File) : Action<Kotlin2JsCompile> {
+    class CopyResourcesToKLibAction(
+        private val resourcesDirProvider: Provider<File>,
+    ) : Action<Kotlin2JsCompile> {
         override fun execute(task: Kotlin2JsCompile) {
             val unpackedKLibDir: File = task.destinationDirectory.asFile.get()
             val defaultDir = File(unpackedKLibDir, "default")
@@ -133,7 +140,7 @@ class JsMRGenerator(
             if (resRepackDir.exists().not()) return
 
             val resDir = File(resRepackDir, "moko-resources-js")
-            resourcesDir.copyRecursively(
+            resourcesDirProvider.get().copyRecursively(
                 resDir,
                 overwrite = true
             )
@@ -141,10 +148,11 @@ class JsMRGenerator(
     }
 
     class CopyResourcesToExecutableAction(
-        private val resourcesGeneratedDir: File
+        private val resourcesGeneratedDirProvider: Provider<File>,
     ) : Action<Kotlin2JsCompile> {
         override fun execute(task: Kotlin2JsCompile) {
             val project: Project = task.project
+            val resourcesGeneratedDir: File = resourcesGeneratedDirProvider.get()
 
             task.klibs.forEach { dependency ->
                 copyResourcesFromLibraries(
@@ -159,10 +167,10 @@ class JsMRGenerator(
         }
 
         private fun generateWebpackConfig(project: Project, resourcesOutput: File) {
-            val webpackDir: File = File(project.projectDir, "webpack.config.d")
+            val webpackDir = File(project.projectDir, "webpack.config.d")
             webpackDir.mkdirs()
 
-            val webpackConfig: File = File(webpackDir, "moko-resources-generated.js")
+            val webpackConfig = File(webpackDir, "moko-resources-generated.js")
             val webpackResourcesDir: String = resourcesOutput.absolutePath
                 .replace("\\", "\\\\")
 
@@ -216,10 +224,10 @@ class JsMRGenerator(
         }
 
         private fun generateKarmaConfig(project: Project) {
-            val webpackDir: File = File(project.projectDir, "karma.config.d")
+            val webpackDir = File(project.projectDir, "karma.config.d")
             webpackDir.mkdirs()
 
-            val webpackTestConfig: File = File(webpackDir, "moko-resources-generated.js")
+            val webpackTestConfig = File(webpackDir, "moko-resources-generated.js")
             val pattern = "`\${output.path}/**/*`"
             webpackTestConfig.writeText(
                 // language=js
@@ -229,10 +237,14 @@ class JsMRGenerator(
                 const output = {
                   path: require("os").tmpdir() + '/' + '_karma_webpack_' + Math.floor(Math.random() * 1000000),
                 }
-                
+
+                const optimization = {
+                     runtimeChunk: true
+                }
+
                 config.set(
                     {
-                        webpack: {... createWebpackConfig(), output},
+                        webpack: {... createWebpackConfig(), output, optimization},
                         files: config.files.concat([{
                                 pattern: $pattern,
                                 watched: false,

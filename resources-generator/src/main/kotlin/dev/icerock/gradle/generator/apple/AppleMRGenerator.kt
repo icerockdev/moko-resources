@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle.generator.apple
 
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
@@ -16,20 +15,21 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.generator.apple.action.PackResourcesToKLibAction
-import dev.icerock.gradle.isStaticFrameworkWarningEnabledValue
+import dev.icerock.gradle.getIsStaticFrameworkWarningEnabled
 import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.utils.calculateResourcesHash
-import dev.icerock.gradle.utils.dependsOnProcessResources
+import dev.icerock.gradle.utils.klibs
+import dev.icerock.gradle.utils.maybeRegister
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.maybeCreate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -49,22 +49,20 @@ import kotlin.reflect.full.memberProperties
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
     generatedDir: File,
-    sourceSet: SourceSet,
-    mrSettings: MRSettings,
+    sourceSet: Provider<SourceSet>,
+    settings: Settings,
     generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
-    private val baseLocalizationRegion: String
+    private val baseLocalizationRegion: Provider<String>,
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrSettings = mrSettings,
+    settings = settings,
     generators = generators
 ) {
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
-    private val bundleIdentifier = "${mrSettings.packageName}.MR"
-
-    private val assetsDirectory: File get() = File(resourcesGenerationDir, ASSETS_DIR_NAME)
+    private val bundleIdentifierProvider = settings.packageName.map { "$it.MR" }
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -77,13 +75,13 @@ class AppleMRGenerator(
                 bundleClassName,
                 KModifier.PRIVATE
             )
-                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"$bundleIdentifier\") }"))
+                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"${bundleIdentifierProvider.get()}\") }"))
                 .build()
         )
 
         mrClass.addProperty(
             PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
-                .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
+                .initializer("%S", resourcesGenerationDir.get().calculateResourcesHash())
                 .build()
         )
     }
@@ -102,7 +100,7 @@ class AppleMRGenerator(
     }
 
     override fun beforeMRGeneration() {
-        assetsDirectory.mkdirs()
+        assetsGenerationDir.get().mkdirs()
     }
 
     private fun setupKLibResources(generationTask: Task) {
@@ -115,18 +113,19 @@ class AppleMRGenerator(
         // tasks like compileIosMainKotlinMetadata when only one target enabled
         generationTask.project.tasks
             .withType<KotlinCommonCompile>()
-            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
+//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
             .configureEach { it.dependsOn(generationTask) }
 
         compileTask.configure {
             it.doLast {
                 PackResourcesToKLibAction(
                     baseLocalizationRegion = baseLocalizationRegion,
-                    bundleIdentifier = bundleIdentifier,
-                    assetsDirectory = assetsDirectory,
-                    resourcesGenerationDir = resourcesGenerationDir,
+                    bundleIdentifierProvider = bundleIdentifierProvider,
+                    assetsDirectoryProvider = assetsGenerationDir,
+                    resourcesGenerationDirProvider = resourcesGenerationDir,
                 )
             }
+            it.dependsOn(generationTask)
         }
     }
 
@@ -144,9 +143,9 @@ class AppleMRGenerator(
                 linkTask.doLast(CopyResourcesFromKLibsToFrameworkAction())
 
                 if (framework.isStatic) {
-                    val resourcesExtension =
-                        project.extensions.getByType<MultiplatformResourcesPluginExtension>()
-                    if (resourcesExtension.isStaticFrameworkWarningEnabledValue) {
+                    val resourcesExtension: MultiplatformResourcesPluginExtension =
+                        project.extensions.getByType()
+                    if (resourcesExtension.getIsStaticFrameworkWarningEnabled().get()) {
                         project.logger.warn(
                             """
 $linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources
@@ -158,18 +157,18 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             }
     }
 
-    private fun createCopyResourcesToAppTask(project: Project) {
+    private fun createCopyResourcesToAppTask(project: Project) = project.afterEvaluate {
         project.tasks.withType<KotlinNativeLink>()
             .matching { it.binary is AbstractExecutable }
             .all { linkTask ->
                 val copyTaskName = linkTask.name.replace("link", "copyResources")
 
-                project.tasks
-                    .maybeCreate(copyTaskName, CopyExecutableResourcesToApp::class)
-                    .apply {
-                        this.linkTask = linkTask
-                        this.dependsOn(linkTask)
-                    }
+                project.tasks.maybeRegister<CopyExecutableResourcesToApp>(copyTaskName) {
+                    this.klibs.from(
+                        linkTask.klibs.filter { it.path.endsWith(".klib") && it.exists() }
+                    )
+                    this.dependsOn(linkTask)
+                }
             }
     }
 
@@ -207,9 +206,9 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
             .matching { it is TestExecutable && it.compilation.associateWith.contains(compilation) }
             .configureEach {
                 val executable = it as TestExecutable
-                val linkTask = executable.linkTask
-
-                linkTask.doLast(CopyResourcesFromKLibsToExecutableAction())
+                executable.linkTaskProvider.configure {
+                    it.doLast(CopyResourcesFromKLibsToExecutableAction())
+                }
             }
     }
 

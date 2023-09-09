@@ -12,12 +12,13 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import java.io.File
 
 class ApplePluralsGenerator(
     pluralsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val baseLocalizationRegion: String
+    private val baseLocalizationRegion: Provider<String>
 ) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by AppleGeneratorHelper() {
 
@@ -83,7 +84,8 @@ class ApplePluralsGenerator(
         writeStringsFile(localizableFile, strings)
 
         if (language == LanguageType.Base) {
-            val regionDir = File(resourcesGenerationDir, "$baseLocalizationRegion.lproj")
+            val localRegion: String = baseLocalizationRegion.get()
+            val regionDir = File(resourcesGenerationDir, "$localRegion.lproj")
             regionDir.mkdirs()
             val regionFile = File(regionDir, "Localizable.stringsdict")
             writeStringsFile(regionFile, strings)

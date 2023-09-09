@@ -4,7 +4,9 @@
 
 package dev.icerock.gradle
 
+import org.gradle.api.Project
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 interface MultiplatformResourcesPluginExtension {
@@ -16,13 +18,20 @@ interface MultiplatformResourcesPluginExtension {
     val resourcesVisibility: Property<MRVisibility>
 }
 
-internal val MultiplatformResourcesPluginExtension.resourcesClassNameValue: String
-    get() = resourcesClassName.getOrElse("MR")
-internal val MultiplatformResourcesPluginExtension.resourcesSourceSetValue: String
-    get() = resourcesSourceSet.getOrElse(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
-internal val MultiplatformResourcesPluginExtension.iosBaseLocalizationRegionValue: String
-    get() = iosBaseLocalizationRegion.getOrElse("en")
-internal val MultiplatformResourcesPluginExtension.isStaticFrameworkWarningEnabledValue: Boolean
-    get() = staticFrameworkWarningEnabled.getOrElse(true)
-internal val MultiplatformResourcesPluginExtension.resourcesVisibilityValue: MRVisibility
-    get() = resourcesVisibility.getOrElse(MRVisibility.Public)
+internal fun MultiplatformResourcesPluginExtension.getResourcesPackage(project: Project): Provider<String> =
+    resourcesPackage.orElse(project.provider { "${project.group}.${project.name}" })
+
+internal fun MultiplatformResourcesPluginExtension.getResourcesClassName(): Provider<String> =
+    resourcesClassName.orElse("MR")
+
+internal fun MultiplatformResourcesPluginExtension.getResourcesSourceSetName(): Provider<String> =
+    resourcesSourceSet.orElse(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
+
+internal fun MultiplatformResourcesPluginExtension.getIosBaseLocalizationRegion(): Provider<String> =
+    iosBaseLocalizationRegion.orElse("en")
+
+internal fun MultiplatformResourcesPluginExtension.getIsStaticFrameworkWarningEnabled(): Provider<Boolean> =
+    staticFrameworkWarningEnabled.orElse(true)
+
+internal fun MultiplatformResourcesPluginExtension.getResourcesVisibility(): Provider<MRVisibility> =
+    resourcesVisibility.orElse(MRVisibility.Public)

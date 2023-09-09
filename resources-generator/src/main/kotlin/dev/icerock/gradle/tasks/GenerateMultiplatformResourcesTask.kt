@@ -23,7 +23,7 @@ open class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     @get:OutputDirectory
     val outputDirectory: File
-        get() = generator.outputDir
+        get() = generator.outputDir.get()
 
     init {
         group = "moko-resources"

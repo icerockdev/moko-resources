@@ -14,58 +14,53 @@ import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.Provider
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 abstract class MRGenerator(
     generatedDir: File,
-    protected val sourceSet: SourceSet,
-    protected val mrSettings: MRSettings,
+    protected val sourceSet: Provider<SourceSet>,
+    protected val settings: Settings,
     internal val generators: List<Generator>
 ) {
-
-    internal val outputDir = File(generatedDir, sourceSet.name)
-    protected open val sourcesGenerationDir
-        get() = File(outputDir, "src")
-    protected open val resourcesGenerationDir
-        get() = File(outputDir, "res")
-
-    protected open val assetsGenerationDir: File
-        get() = File(outputDir, AssetsGenerator.ASSETS_DIR_NAME)
-
-    init {
-        setupGenerationDirs()
-    }
-
-    private fun setupGenerationDirs() {
-        sourcesGenerationDir.mkdirs()
-        sourceSet.addSourceDir(sourcesGenerationDir)
-
-        resourcesGenerationDir.mkdirs()
-        sourceSet.addResourcesDir(resourcesGenerationDir)
-
-        assetsGenerationDir.mkdirs()
-        sourceSet.addAssetsDir(assetsGenerationDir)
+    internal val outputDir: Provider<File> = sourceSet.map { File(generatedDir, it.name) }
+    protected open val sourcesGenerationDir: Provider<File> = outputDir.map { File(it, "src") }
+    protected open val resourcesGenerationDir: Provider<File> = outputDir.map { File(it, "res") }
+    protected open val assetsGenerationDir: Provider<File> = outputDir.map {
+        File(it, AssetsGenerator.ASSETS_DIR_NAME)
     }
 
     internal fun generate() {
+        val sourcesGenerationDir: File = sourcesGenerationDir.get()
+        val assetsGenerationDir: File = assetsGenerationDir.get()
+        val resourcesGenerationDir: File = resourcesGenerationDir.get()
+
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
         assetsGenerationDir.deleteRecursively()
 
         beforeMRGeneration()
 
+        val visibilityModifier: KModifier = settings.visibility.get().toModifier()
+
         @Suppress("SpreadOperator")
-        val mrClassSpec = TypeSpec.objectBuilder(mrSettings.className)
+        val mrClassSpec = TypeSpec.objectBuilder(settings.className.get())
             .addModifiers(*getMRClassModifiers())
-            .addModifiers(mrSettings.visibility.toModifier())
+            .addModifiers(visibilityModifier)
 
         generators.forEach { generator ->
             val builder = TypeSpec.objectBuilder(generator.mrObjectName)
-                .addModifiers(mrSettings.visibility.toModifier())
+                .addModifiers(visibilityModifier)
 
-            val fileResourceInterfaceClassName =
-                ClassName("dev.icerock.moko.resources", "ResourceContainer")
-            builder.addSuperinterface(fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName))
+            val fileResourceInterfaceClassName = ClassName(
+                packageName = "dev.icerock.moko.resources",
+                "ResourceContainer"
+            )
+            builder.addSuperinterface(
+                fileResourceInterfaceClassName.parameterizedBy(generator.resourceClassName)
+            )
 
             mrClassSpec.addType(
                 generator.generate(
@@ -80,8 +75,10 @@ abstract class MRGenerator(
 
         val mrClass = mrClassSpec.build()
 
-        val fileSpec = FileSpec.builder(mrSettings.packageName, mrSettings.className)
-            .addType(mrClass)
+        val fileSpec = FileSpec.builder(
+            packageName = settings.packageName.get(),
+            fileName = settings.className.get()
+        ).addType(mrClass)
 
         generators
             .flatMap { it.getImports() }
@@ -95,15 +92,17 @@ abstract class MRGenerator(
     }
 
     fun apply(project: Project): GenerateMultiplatformResourcesTask {
-        val name = sourceSet.name
-        val genTaskName = "generateMR$name"
-        val genTask = runCatching {
-            project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
-        }.getOrNull() ?: project.tasks.create(
-            genTaskName,
+        setupGenerationDirs()
+
+        val name: String = sourceSet.get().name
+        val genTask = project.tasks.create(
+            "generateMR$name",
             GenerateMultiplatformResourcesTask::class.java
         ) {
             it.generator = this
+            it.inputs.property("mokoSettingsPackageName", settings.packageName)
+            it.inputs.property("mokoSettingsClassName", settings.className)
+            it.inputs.property("mokoSettingsVisibility", settings.visibility)
         }
 
         apply(generationTask = genTask, project = project)
@@ -119,6 +118,14 @@ abstract class MRGenerator(
 
     protected open fun processMRClass(mrClass: TypeSpec.Builder) {}
     protected open fun getImports(): List<ClassName> = emptyList()
+
+    private fun setupGenerationDirs() {
+        with(sourceSet.get()) {
+            addSourceDir(sourcesGenerationDir)
+            addResourcesDir(resourcesGenerationDir)
+            addAssetsDir(assetsGenerationDir)
+        }
+    }
 
     interface Generator : ObjectBodyExtendable {
         val mrObjectName: String
@@ -137,14 +144,20 @@ abstract class MRGenerator(
     interface SourceSet {
         val name: String
 
-        fun addSourceDir(directory: File)
-        fun addResourcesDir(directory: File)
-        fun addAssetsDir(directory: File)
+        fun addSourceDir(directory: Provider<File>)
+        fun addResourcesDir(directory: Provider<File>)
+        fun addAssetsDir(directory: Provider<File>)
     }
 
-    data class MRSettings(
-        val packageName: String,
-        val className: String,
-        val visibility: MRVisibility
+    data class Settings(
+        val packageName: Provider<String>,
+        val className: Provider<String>,
+        val visibility: Provider<MRVisibility>,
+        val generatedDir: File,
+        val isStrictLineBreaks: Boolean,
+        val iosLocalizationRegion: Provider<String>,
+        val resourcesSourceDirectory: SourceDirectorySet,
+        val resourcesSourceSet: Provider<KotlinSourceSet>,
+        val androidRClassPackage: Provider<String>
     )
 }

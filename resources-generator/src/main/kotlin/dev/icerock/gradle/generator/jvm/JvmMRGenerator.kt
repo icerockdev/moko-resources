@@ -13,6 +13,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.utils.dependsOnProcessResources
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -20,22 +21,21 @@ import java.io.File
 
 class JvmMRGenerator(
     generatedDir: File,
-    sourceSet: SourceSet,
-    mrSettings: MRSettings,
+    sourceSet: Provider<SourceSet>,
+    settings: Settings,
     generators: List<Generator>
 ) : MRGenerator(
     generatedDir = generatedDir,
     sourceSet = sourceSet,
-    mrSettings = mrSettings,
+    settings = settings,
     generators = generators
 ) {
-    private val flattenClassName: String get() = mrSettings.packageName.replace(".", "")
-
-    override val resourcesGenerationDir: File
-        get() = File(
-            outputDir,
-            "$flattenClassName/res"
-        )
+    private val flattenClassNameProvider: Provider<String> = settings.packageName
+        .map { it.replace(".", "") }
+    override val resourcesGenerationDir: Provider<File> = outputDir
+        .zip(flattenClassNameProvider) { dir, className ->
+            File(File(dir, className), "res")
+        }
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -51,7 +51,7 @@ class JvmMRGenerator(
                 CodeBlock.of(
                     "\"%L/%L\"",
                     LOCALIZATION_DIR,
-                    "${flattenClassName}_$STRINGS_BUNDLE_NAME"
+                    "${flattenClassNameProvider.get()}_$STRINGS_BUNDLE_NAME"
                 )
             ).build()
         )
@@ -65,7 +65,7 @@ class JvmMRGenerator(
                 CodeBlock.of(
                     "\"%L/%L\"",
                     LOCALIZATION_DIR,
-                    "${flattenClassName}_$PLURALS_BUNDLE_NAME"
+                    "${flattenClassNameProvider.get()}_$PLURALS_BUNDLE_NAME"
                 )
             ).build()
         )

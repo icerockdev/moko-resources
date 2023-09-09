@@ -135,22 +135,20 @@ abstract class ColorsGenerator(
     }
 
     class Feature(
-        info: SourceInfo,
-        private val mrSettings: MRGenerator.MRSettings
+        private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<ColorsGenerator> {
+        private val fileTree: FileTree = settings.resourcesSourceDirectory
+            .matching { it.include("**/colors*.xml") }
 
-        private val colorsFileTree =
-            info.commonResources.matching { it.include("**/colors*.xml") }
+        override fun createCommonGenerator() = CommonColorsGenerator(fileTree)
 
-        override fun createCommonGenerator() = CommonColorsGenerator(colorsFileTree)
+        override fun createIosGenerator() = AppleColorsGenerator(fileTree)
 
-        override fun createIosGenerator() = AppleColorsGenerator(colorsFileTree)
+        override fun createAndroidGenerator() = AndroidColorsGenerator(fileTree)
 
-        override fun createAndroidGenerator() = AndroidColorsGenerator(colorsFileTree)
+        override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(fileTree)
 
-        override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(colorsFileTree)
-
-        override fun createJvmGenerator() = JvmColorsGenerator(colorsFileTree, mrSettings)
+        override fun createJvmGenerator() = JvmColorsGenerator(fileTree, settings)
     }
 
     protected fun replaceColorAlpha(color: String?): String? {

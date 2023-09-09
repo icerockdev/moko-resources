@@ -14,9 +14,9 @@ import java.io.File
 
 class JvmFilesGenerator(
     inputFileTree: FileTree,
-    mrSettings: MRGenerator.MRSettings
+    settings: MRGenerator.Settings
 ) : FilesGenerator(inputFileTree),
-    ObjectBodyExtendable by ClassLoaderExtender(mrSettings.className) {
+    ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

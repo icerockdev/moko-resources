@@ -19,16 +19,17 @@ import dev.icerock.gradle.generator.PluralsGenerator
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import java.io.File
 
 class JsPluralsGenerator(
     pluralsFileTree: FileTree,
-    mrClassPackage: String,
+    mrClassPackage: Provider<String>,
     strictLineBreaks: Boolean
 ) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
-    private val flattenClassPackage = mrClassPackage.replace(".", "")
+    private val flattenClassPackage = mrClassPackage.map { it.replace(".", "") }
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -46,10 +47,10 @@ class JsPluralsGenerator(
             languages = languageMap.keys.toList(),
             folder = JsMRGenerator.LOCALIZATION_DIR,
             fallbackFilePropertyName = JsMRGenerator.PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME,
-            fallbackFile = "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
+            fallbackFile = "${flattenClassPackage.get()}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
             supportedLocalesPropertyName = JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
             getFileNameForLanguage = { language ->
-                "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}${language.jsResourcesSuffix}.json"
+                "${flattenClassPackage.get()}_${JsMRGenerator.PLURALS_JSON_NAME}${language.jsResourcesSuffix}.json"
             }
         )
         val languageKeys = languageMap[LanguageType.Base].orEmpty().keys
@@ -73,7 +74,7 @@ class JsPluralsGenerator(
         strings: Map<KeyType, PluralMap>
     ) {
         val fileDirName =
-            "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}${language.jsResourcesSuffix}"
+            "${flattenClassPackage.get()}_${JsMRGenerator.PLURALS_JSON_NAME}${language.jsResourcesSuffix}"
 
         val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {
             mkdirs()

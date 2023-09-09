@@ -173,25 +173,28 @@ abstract class AssetsGenerator(
     ) : AssetSpec()
 
     class Feature(
-        private val info: SourceInfo,
-        private val mrSettings: MRGenerator.MRSettings
+        private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<AssetsGenerator> {
 
-        override fun createCommonGenerator() = CommonAssetsGenerator(info.commonResources)
-
-        override fun createIosGenerator() = AppleAssetsGenerator(info.commonResources)
-
-        override fun createAndroidGenerator() = AndroidAssetsGenerator(
-            info.commonResources
+        override fun createCommonGenerator(): AssetsGenerator = CommonAssetsGenerator(
+            sourceDirectorySet = settings.resourcesSourceDirectory
         )
 
-        override fun createJvmGenerator() = JvmAssetsGenerator(
-            info.commonResources,
-            mrSettings
+        override fun createIosGenerator(): AssetsGenerator = AppleAssetsGenerator(
+            sourceDirectorySet = settings.resourcesSourceDirectory
+        )
+
+        override fun createAndroidGenerator(): AssetsGenerator = AndroidAssetsGenerator(
+            sourceDirectorySet = settings.resourcesSourceDirectory
+        )
+
+        override fun createJvmGenerator(): AssetsGenerator = JvmAssetsGenerator(
+            sourceDirectorySet = settings.resourcesSourceDirectory,
+            settings = settings
         )
 
         override fun createJsGenerator(): AssetsGenerator = JsAssetsGenerator(
-            info.commonResources
+            sourceDirectorySet = settings.resourcesSourceDirectory
         )
     }
 
