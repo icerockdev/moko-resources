@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.resources
 
+import dev.icerock.moko.parcelize.Parcelable
 import org.apache.batik.transcoder.Transcoder
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
@@ -15,10 +16,10 @@ import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import javax.imageio.ImageIO
 
-actual class ImageResource(
+actual data class ImageResource(
     val resourcesClassLoader: ClassLoader,
     val filePath: String
-) {
+) : Parcelable {
     val image: BufferedImage by lazy {
         val stream = resourcesClassLoader.getResourceAsStream(filePath)
             ?: throw FileNotFoundException("Couldn't open resource as stream at: $filePath")

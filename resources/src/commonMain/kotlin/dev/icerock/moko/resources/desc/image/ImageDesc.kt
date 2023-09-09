@@ -4,6 +4,8 @@
 
 package dev.icerock.moko.resources.desc.image
 
-interface ImageDesc {
+import dev.icerock.moko.parcelize.Parcelable
+
+interface ImageDesc : Parcelable {
     companion object
 }

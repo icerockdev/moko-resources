@@ -16,6 +16,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.generator.apple.action.PackResourcesToKLibAction
+import dev.icerock.gradle.isStaticFrameworkWarningEnabledValue
 import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
@@ -145,7 +146,7 @@ class AppleMRGenerator(
                 if (framework.isStatic) {
                     val resourcesExtension =
                         project.extensions.getByType<MultiplatformResourcesPluginExtension>()
-                    if (resourcesExtension.disableStaticFrameworkWarning.not()) {
+                    if (resourcesExtension.isStaticFrameworkWarningEnabledValue) {
                         project.logger.warn(
                             """
 $linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources

@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -63,9 +64,10 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
             "multiplatformResources",
             MultiplatformResourcesPluginExtension::class
         )
-        mrExtension.multiplatformResourcesPackage = "${target.group}.${target.name}"
 
-        target.plugins.withType(KotlinMultiplatformPluginWrapper::class) { _ ->
+        mrExtension.resourcesPackage.set("${target.group}.${target.name}")
+
+        target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val multiplatformExtension = target.extensions.getByType(
                 type = KotlinMultiplatformExtension::class
             )
@@ -105,7 +107,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         multiplatformExtension: KotlinMultiplatformExtension,
     ) {
-        val commonSourceSet: KotlinSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.sourceSetName)
+        val commonSourceSet: KotlinSourceSet = multiplatformExtension.sourceSets.getByName(mrExtension.resourcesSourceSetValue)
         val commonResources: SourceDirectorySet = getObjectFactory().sourceDirectorySet(
             "moko-resources",
             "moko-resources"
@@ -122,21 +124,21 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
         )
 
         val generatedDir = File(target.buildDir, "generated/moko-resources")
-        val mrClassPackage: String = requireNotNull(mrExtension.multiplatformResourcesPackage) {
+        val mrClassPackage: String = requireNotNull(mrExtension.resourcesPackage.orNull) {
             buildString {
-                appendLine("multiplatformResources.multiplatformResourcesPackage is required!")
+                appendLine("multiplatformResources.resourcesPackage is required!")
                 append("Please configure moko-resources plugin correctly.")
             }
         }
         val mrSettings = MRGenerator.MRSettings(
             packageName = mrClassPackage,
-            className = mrExtension.multiplatformResourcesClassName,
-            visibility = mrExtension.multiplatformResourcesVisibility
+            className = mrExtension.resourcesClassNameValue,
+            visibility = mrExtension.resourcesVisibilityValue
         )
         val sourceInfo = SourceInfo(
             generatedDir = generatedDir,
             commonResources = commonResources,
-            mrClassPackage = mrExtension.multiplatformResourcesPackage!!
+            mrClassPackage = mrClassPackage
         )
 
         val strictLineBreaks: Boolean = target
@@ -145,7 +147,7 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
             ?.toBoolean()
             ?: false
 
-        val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion
+        val iosLocalizationRegion = mrExtension.iosBaseLocalizationRegionValue
         val features = listOf(
             StringsGenerator.Feature(
                 info = sourceInfo,
@@ -372,21 +374,16 @@ abstract class MultiplatformResourcesPlugin : Plugin<Project> {
     }
 
     private fun setupCopyXCFrameworkResourcesTask(project: Project) {
-        // can't use here configureEach because we will add new task when found xcframeworktask
-        project.afterEvaluate {
-            project.tasks.filterIsInstance<XCFrameworkTask>()
-                .forEach { task ->
-                    val copyTaskName: String =
-                        task.name.replace("assemble", "copyResources").plus("ToApp")
-
-                    val copyTask = project.tasks.create(
-                        copyTaskName,
-                        CopyXCFrameworkResourcesToApp::class.java
-                    ) {
-                        it.xcFrameworkDir = task.outputDir
-                    }
-                    copyTask.dependsOn(task)
-                }
+        // Seems that there were problem with this block in the past with mystic task adding. Need more info
+        // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
+        // Suppose that on that moment there were no lazy register method for task container
+        project.tasks.withType(XCFrameworkTask::class).configureEach { task ->
+            val copyTaskName: String =
+                task.name.replace("assemble", "copyResources").plus("ToApp")
+            project.tasks.register(copyTaskName, CopyXCFrameworkResourcesToApp::class.java) {
+                it.xcFrameworkDir = task.outputDir
+                it.dependsOn(task)
+            }
         }
     }
 
