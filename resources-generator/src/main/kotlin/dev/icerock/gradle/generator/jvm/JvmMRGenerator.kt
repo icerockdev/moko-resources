@@ -76,14 +76,12 @@ class JvmMRGenerator(
             it.dependsOn(generationTask)
         }
         project.tasks.withType<Jar>().configureEach {
-            it.exclude("MR/**")
             it.dependsOn(generationTask)
         }
         dependsOnProcessResources(
             project = project,
             sourceSet = sourceSet,
             task = generationTask,
-            shouldExcludeGenerated = false
         )
     }
 

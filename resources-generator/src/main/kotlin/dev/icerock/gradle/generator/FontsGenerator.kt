@@ -14,8 +14,10 @@ import dev.icerock.gradle.generator.apple.AppleFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.js.JsFontsGenerator
 import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
+import dev.icerock.gradle.utils.decapitalize
 import org.gradle.api.file.FileTree
 import java.io.File
+import java.util.Locale
 
 abstract class FontsGenerator(
     private val inputFileTree: FileTree
@@ -126,7 +128,7 @@ abstract class FontsGenerator(
         private val mrSettings: MRGenerator.MRSettings
     ) : ResourceGeneratorFeature<FontsGenerator> {
         private val stringsFileTree = info.commonResources.matching {
-            it.include("MR/fonts/**.ttf", "MR/fonts/**.otf")
+            it.include("fonts/**.ttf", "fonts/**.otf")
         }
 
         override fun createCommonGenerator() = CommonFontsGenerator(stringsFileTree)

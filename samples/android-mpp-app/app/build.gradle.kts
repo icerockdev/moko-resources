@@ -33,7 +33,7 @@ android {
 }
 
 kotlin {
-    android()
+    androidTarget()
     ios()
 }
 

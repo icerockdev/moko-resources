@@ -99,7 +99,6 @@ class JsMRGenerator(
             project = project,
             sourceSet = sourceSet,
             task = generationTask,
-            shouldExcludeGenerated = true
         )
     }
 

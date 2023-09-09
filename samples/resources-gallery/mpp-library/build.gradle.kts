@@ -12,7 +12,7 @@ plugins {
 allprojects {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         kotlin {
-            android()
+            androidTarget()
             ios()
             iosSimulatorArm64()
             jvm()

@@ -11,19 +11,18 @@ plugins {
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    android()
-
-    jvm("desktop")
+    androidTarget()
 
     ios()
     iosSimulatorArm64()
 
+    macosArm64()
+    macosX64()
+
+    jvm("desktop")
     js(IR) {
         browser()
     }
-
-    macosArm64()
-    macosX64()
 
     cocoapods {
         summary = "Some description for the Shared Module"
@@ -51,9 +50,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:1.7.1")
+                api("androidx.activity:activity-compose:1.7.2")
                 api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.0")
+                api("androidx.core:core-ktx:1.10.1")
             }
         }
         val iosMain by getting
@@ -85,7 +84,6 @@ kotlin {
 android {
     compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
 
     defaultConfig {
         minSdk = 26

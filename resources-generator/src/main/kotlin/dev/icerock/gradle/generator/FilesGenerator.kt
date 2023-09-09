@@ -98,7 +98,7 @@ abstract class FilesGenerator(
     ) : ResourceGeneratorFeature<FilesGenerator> {
 
         private val fileTree = info.commonResources.matching {
-            it.include("MR/files/**")
+            it.include("files/**")
         }
 
         override fun createCommonGenerator() = CommonFilesGenerator(fileTree)

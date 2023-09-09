@@ -7,7 +7,7 @@ plugins {
 }
 
 kotlin {
-    android {
+    androidTarget() {
         publishAllLibraryVariants()
         publishLibraryVariantsGroupedByFlavor = true
     }

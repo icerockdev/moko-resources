@@ -8,6 +8,7 @@ import cnames.structs.CGDataProvider
 import cnames.structs.__CFData
 import cnames.structs.__CTFont
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AppKit.NSFont
 import platform.CoreFoundation.CFDataCreate
 import platform.CoreFoundation.kCFAllocatorDefault
@@ -21,6 +22,7 @@ import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.darwin.UInt8Var
 
+@OptIn(ExperimentalForeignApi::class)
 actual class FontResource(
     val fontName: String,
     val bundle: NSBundle = NSBundle.mainBundle

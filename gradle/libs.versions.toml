@@ -1,10 +1,10 @@
 [versions]
-kotlinVersion = "1.8.20"
-androidGradleVersion = "7.4.2"
-androidSdkCommonVersion = "31.0.0"
+kotlinVersion = "1.9.0"
+androidGradleVersion = "8.0.2"
+androidSdkCommonVersion = "31.1.0"
 
 # kotlinx
-kotlinxSerializationVersion = "1.5.0"
+kotlinxSerializationVersion = "1.5.1"
 kotlinxCoroutinesVersion = "1.6.4"
 
 # android
@@ -12,11 +12,11 @@ constraintLayoutVersion = "2.1.4"
 androidAppCompatVersion = "1.6.1"
 
 # android compose
-composeVersion = "1.4.2"
-composeActivityVersion = "1.7.1"
+composeVersion = "1.5.0"
+composeActivityVersion = "1.7.2"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.4.0"
+composeJetbrainsVersion = "1.4.3"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
@@ -36,7 +36,7 @@ robolectricVersion = "4.8.1"
 
 # moko
 mokoGraphicsVersion = "0.9.0"
-mokoParcelizeVersion = "0.8.0"
+mokoParcelizeVersion = "0.9.0"
 mokoTestVersion = "0.6.1"
 mokoMultiplatformPluginVersion = "0.14.2"
 

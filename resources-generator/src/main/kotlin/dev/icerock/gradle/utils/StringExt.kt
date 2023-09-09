@@ -4,6 +4,8 @@
 
 package dev.icerock.gradle.utils
 
+import java.util.Locale
+
 /**
  * Replace all new lines including space characters before and after.
  * This is required to remove the IDE indentation.
@@ -12,5 +14,15 @@ internal fun String.removeLineWraps(): String {
     return replace(Regex("\\s*\n\\s*"), " ")
 }
 
-internal val String.withoutScale get() =
-    substringBefore("@")
+internal val String.withoutScale
+    get() = substringBefore("@")
+
+internal fun String.capitalize(): String {
+    return replaceFirstChar { char ->
+        if (char.isLowerCase()) char.titlecase(Locale.ROOT) else char.toString()
+    }
+}
+
+internal fun String.decapitalize(): String {
+    return replaceFirstChar { it.lowercase(Locale.ROOT) }
+}

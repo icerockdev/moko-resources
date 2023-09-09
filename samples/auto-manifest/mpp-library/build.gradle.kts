@@ -18,7 +18,7 @@ android {
 }
 
 kotlin {
-    android()
+    androidTarget()
 }
 
 dependencies {

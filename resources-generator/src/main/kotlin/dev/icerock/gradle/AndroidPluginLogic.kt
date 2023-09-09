@@ -9,7 +9,10 @@ import com.android.build.gradle.BaseExtension
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
+import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.isDependsOn
+import java.io.File
+import java.util.Locale
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -17,7 +20,6 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import java.io.File
 
 internal class AndroidPluginLogic(
     private val commonSourceSet: KotlinSourceSet,
@@ -25,19 +27,10 @@ internal class AndroidPluginLogic(
     private val generatedDir: File,
     private val mrSettings: MRGenerator.MRSettings,
     private val features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-    private val project: Project
+    private val project: Project,
 ) {
     fun setup(androidMainSourceSet: AndroidSourceSet) {
-        val kotlinSourceSets: List<KotlinSourceSet> = targets
-            .filterIsInstance<KotlinAndroidTarget>()
-            .flatMap { it.compilations }
-            .filter { compilation ->
-                compilation.kotlinSourceSets.any { it.isDependsOn(commonSourceSet) }
-            }
-            .map { it.defaultSourceSet }
-
-        val androidSourceSet: MRGenerator.SourceSet =
-            createSourceSet(androidMainSourceSet, kotlinSourceSets)
+        val androidSourceSet: MRGenerator.SourceSet = createSourceSet(androidMainSourceSet)
 
         setAssetsDirsRefresh()
 
@@ -68,14 +61,13 @@ internal class AndroidPluginLogic(
 
     private fun createSourceSet(
         androidSourceSet: AndroidSourceSet,
-        kotlinSourceSets: List<KotlinSourceSet>
     ): MRGenerator.SourceSet {
         return object : MRGenerator.SourceSet {
             override val name: String
                 get() = "android${androidSourceSet.name.capitalize()}"
 
             override fun addSourceDir(directory: File) {
-                kotlinSourceSets.forEach { it.kotlin.srcDir(directory) }
+                androidSourceSet.java.srcDirs(directory)
             }
 
             override fun addResourcesDir(directory: File) {

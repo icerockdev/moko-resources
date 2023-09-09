@@ -103,7 +103,7 @@ abstract class ImagesGenerator(
         private val logger: Logger
     ) : ResourceGeneratorFeature<ImagesGenerator> {
         private val stringsFileTree = info.commonResources.matching {
-            it.include("MR/images/**/*.png", "MR/images/**/*.jpg", "MR/images/**/*.svg")
+            it.include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
         }
 
         override fun createCommonGenerator() =
