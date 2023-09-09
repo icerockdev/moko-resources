@@ -16,12 +16,9 @@ import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToExecuta
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.generator.apple.action.PackResourcesToKLibAction
 import dev.icerock.gradle.getIsStaticFrameworkWarningEnabled
-import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.utils.calculateResourcesHash
-import dev.icerock.gradle.utils.klibs
-import dev.icerock.gradle.utils.maybeRegister
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -34,7 +31,6 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -92,7 +88,6 @@ class AppleMRGenerator(
     )
 
     override fun apply(generationTask: Task, project: Project) {
-        createCopyResourcesToAppTask(project)
         setupKLibResources(generationTask)
         setupFrameworkResources()
         setupTestsResources()
@@ -153,21 +148,6 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
                         )
                     }
                     createCopyFrameworkResourcesTask(linkTask)
-                }
-            }
-    }
-
-    private fun createCopyResourcesToAppTask(project: Project) = project.afterEvaluate {
-        project.tasks.withType<KotlinNativeLink>()
-            .matching { it.binary is AbstractExecutable }
-            .all { linkTask ->
-                val copyTaskName = linkTask.name.replace("link", "copyResources")
-
-                project.tasks.maybeRegister<CopyExecutableResourcesToApp>(copyTaskName) {
-                    this.klibs.from(
-                        linkTask.klibs.filter { it.path.endsWith(".klib") && it.exists() }
-                    )
-                    this.dependsOn(linkTask)
                 }
             }
     }

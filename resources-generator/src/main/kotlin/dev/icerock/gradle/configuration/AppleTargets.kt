@@ -7,13 +7,18 @@ package dev.icerock.gradle.configuration
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
+import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
+import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.target.HostManager
 
 internal fun configureAppleTargetGenerator(
@@ -37,15 +42,23 @@ internal fun configureAppleTargetGenerator(
         compilation = mainCompilation,
         baseLocalizationRegion = settings.iosLocalizationRegion
     ).apply(target.project)
+}
 
-    setupCopyXCFrameworkResourcesTask(project = target.project)
+internal fun setupProjectForApple(project: Project) {
+    if (HostManager.hostIsMac.not()) {
+        project.logger.warn("MR file generation for Apple is not supported on your system!")
+        return
+    }
+
+    setupCopyXCFrameworkResourcesTask(project)
+    createCopyResourcesToAppTask(project)
 }
 
 private fun setupCopyXCFrameworkResourcesTask(project: Project) {
     // Seems that there were problem with this block in the past with mystic task adding. Need more info
     // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
     // Suppose that on that moment there were no lazy register method for task container
-    project.tasks.withType(XCFrameworkTask::class).configureEach { task ->
+    project.tasks.withType(XCFrameworkTask::class).all { task ->
         val copyTaskName: String = task.name
             .replace("assemble", "copyResources").plus("ToApp")
 
@@ -54,4 +67,20 @@ private fun setupCopyXCFrameworkResourcesTask(project: Project) {
             it.dependsOn(task)
         }
     }
+}
+
+private fun createCopyResourcesToAppTask(project: Project) {
+    project.tasks
+        .withType<KotlinNativeLink>()
+        .matching { it.binary is AbstractExecutable }
+        .all { linkTask ->
+            val copyTaskName: String = linkTask.name.replace("link", "copyResources")
+
+            project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
+                this.klibs.from(
+                    linkTask.klibs.filter { it.path.endsWith(".klib") && it.exists() }
+                )
+                this.dependsOn(linkTask)
+            }
+        }
 }

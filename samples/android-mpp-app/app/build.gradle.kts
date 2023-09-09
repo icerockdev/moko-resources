@@ -44,5 +44,5 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
 }

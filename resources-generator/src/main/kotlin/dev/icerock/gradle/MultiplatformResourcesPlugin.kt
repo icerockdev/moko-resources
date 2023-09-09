@@ -10,6 +10,7 @@ import dev.icerock.gradle.configuration.configureCommonTargetGenerator
 import dev.icerock.gradle.configuration.configureJsTargetGenerator
 import dev.icerock.gradle.configuration.configureJvmTargetGenerator
 import dev.icerock.gradle.configuration.getAndroidRClassPackage
+import dev.icerock.gradle.configuration.setupProjectForApple
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.FilesGenerator
@@ -99,6 +100,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 settings = settings
             )
         }
+
+        setupProjectForApple(project)
     }
 
     private fun configureKotlinTargetGenerator(
