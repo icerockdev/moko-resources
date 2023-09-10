@@ -18,7 +18,9 @@ import dev.icerock.gradle.generator.apple.action.PackResourcesToKLibAction
 import dev.icerock.gradle.getIsStaticFrameworkWarningEnabled
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
+import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
+import dev.icerock.gradle.utils.dependsOnProcessResources
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -87,7 +89,7 @@ class AppleMRGenerator(
         ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
     )
 
-    override fun apply(generationTask: Task, project: Project) {
+    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
         setupKLibResources(generationTask)
         setupFrameworkResources()
         setupTestsResources()
@@ -98,12 +100,10 @@ class AppleMRGenerator(
         assetsGenerationDir.get().mkdirs()
     }
 
-    private fun setupKLibResources(generationTask: Task) {
+    private fun setupKLibResources(generationTask: GenerateMultiplatformResourcesTask) {
         val compileTask: TaskProvider<KotlinNativeCompile> = compilation.compileTaskProvider
 
-        compileTask.configure {
-            it.dependsOn(generationTask)
-        }
+        compileTask.configure { it.dependsOn(generationTask) }
 
         // tasks like compileIosMainKotlinMetadata when only one target enabled
         generationTask.project.tasks
@@ -122,6 +122,12 @@ class AppleMRGenerator(
             }
             it.dependsOn(generationTask)
         }
+
+        dependsOnProcessResources(
+            project = generationTask.project,
+            sourceSet = sourceSet,
+            task = generationTask,
+        )
     }
 
     private fun setupFrameworkResources() {

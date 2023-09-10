@@ -10,6 +10,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnProcessResources
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -71,7 +72,7 @@ class JvmMRGenerator(
         )
     }
 
-    override fun apply(generationTask: Task, project: Project) {
+    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
         project.tasks.withType<KotlinCompile>().configureEach {
             it.dependsOn(generationTask)
         }

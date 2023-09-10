@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.common
 
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
@@ -27,7 +28,7 @@ class CommonMRGenerator(
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.EXPECT)
 
-    override fun apply(generationTask: Task, project: Project) {
+    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
         project.tasks
             .withType<KotlinCompile<*>>()
 //            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }

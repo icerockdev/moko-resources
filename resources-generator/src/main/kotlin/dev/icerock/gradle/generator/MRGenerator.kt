@@ -13,7 +13,6 @@ import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -114,7 +113,10 @@ abstract class MRGenerator(
     protected open fun afterMRGeneration() = Unit
 
     protected abstract fun getMRClassModifiers(): Array<KModifier>
-    protected abstract fun apply(generationTask: Task, project: Project)
+    protected abstract fun apply(
+        generationTask: GenerateMultiplatformResourcesTask,
+        project: Project
+    )
 
     protected open fun processMRClass(mrClass: TypeSpec.Builder) {}
     protected open fun getImports(): List<ClassName> = emptyList()

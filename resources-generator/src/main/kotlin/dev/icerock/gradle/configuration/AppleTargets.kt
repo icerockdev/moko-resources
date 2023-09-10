@@ -9,7 +9,6 @@ import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.apple.AppleMRGenerator
 import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
-import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
@@ -50,8 +49,12 @@ internal fun setupProjectForApple(project: Project) {
         return
     }
 
-    setupCopyXCFrameworkResourcesTask(project)
-    createCopyResourcesToAppTask(project)
+    // without this afterEvaluate in ios-static-xcframework sample we got
+    // configuration iosArm64DebugFrameworkExport not found error
+    project.afterEvaluate {
+        setupCopyXCFrameworkResourcesTask(project)
+        createCopyResourcesToAppTask(project)
+    }
 }
 
 private fun setupCopyXCFrameworkResourcesTask(project: Project) {
@@ -62,9 +65,9 @@ private fun setupCopyXCFrameworkResourcesTask(project: Project) {
         val copyTaskName: String = task.name
             .replace("assemble", "copyResources").plus("ToApp")
 
-        project.tasks.register(copyTaskName, CopyXCFrameworkResourcesToApp::class.java) {
-            it.xcFrameworkDir = task.outputDir
-            it.dependsOn(task)
+        project.tasks.register<CopyXCFrameworkResourcesToApp>(copyTaskName) {
+            xcFrameworkDir = task.outputDir
+            dependsOn(task)
         }
     }
 }
@@ -77,10 +80,8 @@ private fun createCopyResourcesToAppTask(project: Project) {
             val copyTaskName: String = linkTask.name.replace("link", "copyResources")
 
             project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
-                this.klibs.from(
-                    linkTask.klibs.filter { it.path.endsWith(".klib") && it.exists() }
-                )
-                this.dependsOn(linkTask)
+                this.linkTask = linkTask
+                dependsOn(linkTask)
             }
         }
 }

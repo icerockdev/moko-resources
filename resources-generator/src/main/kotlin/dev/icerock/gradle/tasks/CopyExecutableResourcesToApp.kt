@@ -4,17 +4,19 @@
 
 package dev.icerock.gradle.tasks
 
+import dev.icerock.gradle.utils.klibs
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.FileFilter
 
 abstract class CopyExecutableResourcesToApp : DefaultTask() {
     @get:Internal
-    abstract val klibs: ConfigurableFileCollection
+    abstract var linkTask: KotlinNativeLink
 
     init {
         group = "moko-resources"
@@ -29,7 +31,7 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
 
         val outputDir = File(buildProductsDir, contentsFolderPath)
 
-        klibs
+        linkTask.klibs
             .filter { library -> library.extension == "klib" }
             .filter(File::exists)
             .forEach { inputFile ->
