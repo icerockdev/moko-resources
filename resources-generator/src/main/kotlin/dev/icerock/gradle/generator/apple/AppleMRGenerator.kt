@@ -103,7 +103,9 @@ class AppleMRGenerator(
     private fun setupKLibResources(generationTask: GenerateMultiplatformResourcesTask) {
         val compileTask: TaskProvider<KotlinNativeCompile> = compilation.compileTaskProvider
 
-        compileTask.configure { it.dependsOn(generationTask) }
+        compileTask.configure { task ->
+            task.dependsOn(generationTask)
+        }
 
         // tasks like compileIosMainKotlinMetadata when only one target enabled
         generationTask.project.tasks

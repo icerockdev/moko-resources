@@ -119,16 +119,11 @@ class JsMRGenerator(
     }
 
     private fun setupResources() {
-        val kotlinTarget: KotlinJsIrTarget = compilation.target as KotlinJsIrTarget
-
-        kotlinTarget.compilations
-            .all { compilation ->
-                compilation.compileTaskProvider.configure { compileTask ->
-                    val action = CopyResourcesToExecutableAction(resourcesGenerationDir)
-                    @Suppress("UNCHECKED_CAST")
-                    compileTask.doLast(action as Action<in Task>)
-                }
-            }
+        compilation.compileTaskProvider.configure { compileTask ->
+            val action = CopyResourcesToExecutableAction(resourcesGenerationDir)
+            @Suppress("UNCHECKED_CAST")
+            compileTask.doLast(action as Action<in Task>)
+        }
     }
 
     class CopyResourcesToKLibAction(
