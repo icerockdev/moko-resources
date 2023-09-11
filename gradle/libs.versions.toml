@@ -1,22 +1,20 @@
 [versions]
 kotlinVersion = "1.9.0"
-androidGradleVersion = "8.0.2"
-androidSdkCommonVersion = "31.1.0"
+androidGradleVersion = "7.4.2"
+androidSdkCommonVersion = "31.0.0"
 
 # kotlinx
 kotlinxSerializationVersion = "1.5.1"
 kotlinxCoroutinesVersion = "1.6.4"
 
 # android
-constraintLayoutVersion = "2.1.4"
 androidAppCompatVersion = "1.6.1"
 
 # android compose
-composeVersion = "1.5.0"
-composeActivityVersion = "1.7.2"
+composeUiVersion = "1.5.1"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.4.3"
+composeJetbrainsVersion = "1.5.0"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
@@ -25,14 +23,6 @@ detektVersion = "1.22.0"
 icu4jVersion = "73.1"
 commonsCodecVersion = "1.15"
 batikVersion = "1.16"
-
-# tests
-espressoCoreVersion = "3.5.1"
-testRunnerVersion = "1.5.2"
-testRulesVersion = "1.5.0"
-testExtJunitVersion = "1.1.5"
-testCoreVersion = "1.5.0"
-robolectricVersion = "4.8.1"
 
 # moko
 mokoGraphicsVersion = "0.9.0"
@@ -44,7 +34,6 @@ mokoMultiplatformPluginVersion = "0.14.2"
 # kotlinx
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationVersion" }
 kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesVersion" }
-coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesVersion" }
 
 # moko
 mokoParcelize = { module = "dev.icerock.moko:parcelize", version.ref = "mokoParcelizeVersion" }
@@ -53,19 +42,9 @@ mokoTestCore = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestV
 
 # android
 appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayoutVersion" }
 
 # android compose
-composeUi = { module = "androidx.compose.ui:ui", version.ref = "composeVersion" }
-composeUiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeVersion" }
-composeUiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeVersion" }
-composeRuntime = { module = "androidx.compose.runtime:runtime", version.ref = "composeVersion" }
-composeMaterial = { module = "androidx.compose.material:material", version.ref = "composeVersion" }
-composeFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "composeVersion" }
-composeActivity = { module = "androidx.activity:activity-compose", version.ref = "composeActivityVersion" }
-
-# jetbrains compose
-composeGradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeJetbrainsVersion" }
+composeUi = { module = "androidx.compose.ui:ui", version.ref = "composeUiVersion" }
 
 # jvm
 kotlinPoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinPoetVersion" }
@@ -74,17 +53,6 @@ batikRasterizer = { module = "org.apache.xmlgraphics:batik-rasterizer", version.
 batikTranscoder = { module = "org.apache.xmlgraphics:batik-transcoder", version.ref = "batikVersion" }
 commonsCodec = { module = "commons-codec:commons-codec", version.ref = "commonsCodecVersion" }
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4jVersion" }
-
-# tests
-espressoCore = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
-kotlinTestJUnit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinVersion" }
-testCore = { module = "androidx.test:core", version.ref = "testCoreVersion" }
-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectricVersion" }
-testRunner = { module = "androidx.test:runner", version.ref = "testRunnerVersion" }
-testRules = { module = "androidx.test:rules", version.ref = "testRulesVersion" }
-testExtJunit = { module = "androidx.test.ext:junit", version.ref = "testExtJunitVersion" }
-kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlinVersion" }
-kotlinTestAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlinVersion" }
 
 # gradle
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }

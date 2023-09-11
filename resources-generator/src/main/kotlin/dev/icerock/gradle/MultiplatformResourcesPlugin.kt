@@ -45,8 +45,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             type = MultiplatformResourcesPluginExtension::class
         )
 
-        mrExtension.resourcesPackage.set("${project.group}.${project.name}")
-
         project.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val kmpExtension: KotlinMultiplatformExtension = project.extensions.getByType()
 
