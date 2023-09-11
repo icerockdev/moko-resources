@@ -97,7 +97,7 @@ android {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
 }
 
 // TODO move to gradle plugin

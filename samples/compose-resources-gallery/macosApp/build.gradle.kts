@@ -62,7 +62,7 @@ kotlin {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "dev.icerock.moko.resources.sample"
+    resourcesPackage.set("dev.icerock.moko.resources.sample")
 }
 
 // TODO move to moko-resources gradle plugin

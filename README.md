@@ -87,11 +87,11 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "org.example.library" // required
-    multiplatformResourcesClassName = "SharedRes" // optional, default MR
-    multiplatformResourcesVisibility = MRVisibility.Internal // optional, default Public
-    iosBaseLocalizationRegion = "en" // optional, default "en"
-    multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
+    resourcesPackage.set("org.example.library") // required
+    resourcesClassName.set("SharedRes") // optional, default MR
+    resourcesVisibility.set(MRVisibility.Internal) // optional, default Public
+    iosBaseLocalizationRegion.set("en") // optional, default "en"
+    resourcesSourceSet.set("commonClientMain")  // optional, default "commonMain"
 }
 ```
 

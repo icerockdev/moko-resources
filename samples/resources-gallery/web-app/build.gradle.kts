@@ -27,5 +27,5 @@ kotlin {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.app"
+    resourcesPackage.set("com.icerockdev.app")
 }
