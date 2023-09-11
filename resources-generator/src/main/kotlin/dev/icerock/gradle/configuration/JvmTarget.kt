@@ -24,10 +24,6 @@ internal fun configureJvmTargetGenerator(
         settings = settings,
         generators = features.map { it.createJvmGenerator() }
     ).apply(project = target.project)
-
-
     // TODO fix depends on
 //            compilation.defaultSourceSet.ifDependsOn(commonSourceSet) {
-
-//            }
 }

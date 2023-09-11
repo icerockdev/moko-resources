@@ -6,7 +6,6 @@ package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink

@@ -13,7 +13,6 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnProcessResources
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType

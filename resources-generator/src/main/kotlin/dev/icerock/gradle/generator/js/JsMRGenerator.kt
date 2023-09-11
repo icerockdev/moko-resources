@@ -21,7 +21,6 @@ import org.gradle.api.provider.Provider
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
-import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
