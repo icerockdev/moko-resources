@@ -16,8 +16,11 @@ fun dependsOnProcessResources(
     @Suppress("UNUSED_PARAMETER") sourceSet: Provider<MRGenerator.SourceSet>,
     task: Task,
 ) {
+    val sourceSet: MRGenerator.SourceSet = sourceSet.get()
+    project.logger.warn("source set name is ${sourceSet.name}")
+
     project.tasks
-//        .matching { it.name == sourceSet.name.removeSuffix("Main") + "ProcessResources" }
+        .matching { it.name == sourceSet.name.removeSuffix("Main") + "ProcessResources" }
         .withType<ProcessResources>()
         .configureEach { processResourcesTask ->
             processResourcesTask.dependsOn(task)

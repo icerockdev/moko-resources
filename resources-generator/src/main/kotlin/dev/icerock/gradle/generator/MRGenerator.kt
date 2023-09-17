@@ -15,7 +15,6 @@ import dev.icerock.gradle.toModifier
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
 abstract class MRGenerator(
@@ -98,7 +97,7 @@ abstract class MRGenerator(
             "generateMR$name",
             GenerateMultiplatformResourcesTask::class.java
         ) {
-            it.generator = this
+//            it.generator = this
             it.inputs.property("mokoSettingsPackageName", settings.packageName)
             it.inputs.property("mokoSettingsClassName", settings.className)
             it.inputs.property("mokoSettingsVisibility", settings.visibility)
@@ -159,7 +158,6 @@ abstract class MRGenerator(
         val isStrictLineBreaks: Boolean,
         val iosLocalizationRegion: Provider<String>,
         val resourcesSourceDirectory: SourceDirectorySet,
-        val resourcesSourceSet: Provider<KotlinSourceSet>,
         val androidRClassPackage: Provider<String>
     )
 }

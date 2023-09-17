@@ -6,32 +6,19 @@ package dev.icerock.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
-interface MultiplatformResourcesPluginExtension {
-    val resourcesPackage: Property<String>
-    val resourcesClassName: Property<String>
-    val resourcesSourceSet: Property<String>
-    val iosBaseLocalizationRegion: Property<String>
-    val staticFrameworkWarningEnabled: Property<Boolean>
-    val resourcesVisibility: Property<MRVisibility>
+abstract class MultiplatformResourcesPluginExtension {
+    abstract val resourcesPackage: Property<String>
+    abstract val resourcesClassName: Property<String>
+    abstract val iosBaseLocalizationRegion: Property<String>
+    abstract val staticFrameworkWarningEnabled: Property<Boolean>
+    abstract val resourcesVisibility: Property<MRVisibility>
 }
 
-internal fun MultiplatformResourcesPluginExtension.getResourcesPackage(project: Project): Provider<String> =
-    resourcesPackage.orElse(project.provider { "${project.group}.${project.name}" })
-
-internal fun MultiplatformResourcesPluginExtension.getResourcesClassName(): Provider<String> =
-    resourcesClassName.orElse("MR")
-
-internal fun MultiplatformResourcesPluginExtension.getResourcesSourceSetName(): Provider<String> =
-    resourcesSourceSet.orElse(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
-
-internal fun MultiplatformResourcesPluginExtension.getIosBaseLocalizationRegion(): Provider<String> =
-    iosBaseLocalizationRegion.orElse("en")
-
-internal fun MultiplatformResourcesPluginExtension.getIsStaticFrameworkWarningEnabled(): Provider<Boolean> =
-    staticFrameworkWarningEnabled.orElse(true)
-
-internal fun MultiplatformResourcesPluginExtension.getResourcesVisibility(): Provider<MRVisibility> =
-    resourcesVisibility.orElse(MRVisibility.Public)
+internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Project) {
+    resourcesPackage.convention(project.provider { "${project.group}.${project.name}" })
+    resourcesClassName.convention("MR")
+    iosBaseLocalizationRegion.convention("en")
+    staticFrameworkWarningEnabled.convention(true)
+    resourcesVisibility.convention(MRVisibility.Public)
+}

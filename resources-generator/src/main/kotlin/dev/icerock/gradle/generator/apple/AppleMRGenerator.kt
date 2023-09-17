@@ -15,7 +15,6 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.generator.apple.action.PackResourcesToKLibAction
-import dev.icerock.gradle.getIsStaticFrameworkWarningEnabled
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
@@ -30,7 +29,6 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
@@ -105,16 +103,8 @@ class AppleMRGenerator(
 
         compileTask.configure { task ->
             task.dependsOn(generationTask)
-        }
 
-        // tasks like compileIosMainKotlinMetadata when only one target enabled
-        generationTask.project.tasks
-            .withType<KotlinCommonCompile>()
-//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
-            .configureEach { it.dependsOn(generationTask) }
-
-        compileTask.configure {
-            it.doLast {
+            task.doLast {
                 PackResourcesToKLibAction(
                     baseLocalizationRegion = baseLocalizationRegion,
                     bundleIdentifierProvider = bundleIdentifierProvider,
@@ -122,8 +112,13 @@ class AppleMRGenerator(
                     resourcesGenerationDirProvider = resourcesGenerationDir,
                 )
             }
-            it.dependsOn(generationTask)
         }
+
+        // tasks like compileIosMainKotlinMetadata when only one target enabled
+//        generationTask.project.tasks
+//            .withType<KotlinCommonCompile>()
+//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
+//            .configureEach { it.dependsOn(generationTask) }
 
         dependsOnProcessResources(
             project = generationTask.project,
@@ -148,7 +143,7 @@ class AppleMRGenerator(
                 if (framework.isStatic) {
                     val resourcesExtension: MultiplatformResourcesPluginExtension =
                         project.extensions.getByType()
-                    if (resourcesExtension.getIsStaticFrameworkWarningEnabled().get()) {
+                    if (resourcesExtension.staticFrameworkWarningEnabled.get()) {
                         project.logger.warn(
                             """
 $linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources

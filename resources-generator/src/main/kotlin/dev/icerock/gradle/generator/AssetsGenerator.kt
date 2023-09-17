@@ -21,7 +21,7 @@ import java.io.File
 abstract class AssetsGenerator(
     private val sourceDirectorySet: SourceDirectorySet
 ) : MRGenerator.Generator {
-    override val inputFiles: Iterable<File> = sourceDirectorySet.files
+    override val inputFiles: Iterable<File> get() = sourceDirectorySet.files
     override val mrObjectName: String = ASSETS_DIR_NAME
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "AssetResource")
 
