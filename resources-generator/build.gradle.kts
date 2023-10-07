@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 /*
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
@@ -26,6 +29,9 @@ dependencies {
 }
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
     withJavadocJar()
     withSourcesJar()
 }
@@ -33,6 +39,12 @@ java {
 kotlin {
     jvmToolchain(11)
 }
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>()
+    .configureEach {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_8)
+    }
 
 gradlePlugin {
     plugins {
