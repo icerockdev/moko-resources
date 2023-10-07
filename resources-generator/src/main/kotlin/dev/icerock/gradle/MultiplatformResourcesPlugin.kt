@@ -23,6 +23,7 @@ import dev.icerock.gradle.utils.dependsOnObservable
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
@@ -62,33 +63,44 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         kmpExtension.sourceSets
             .configureEach { kotlinSourceSet ->
-                val sources = File(project.projectDir, "src")
-                val resourceSourceSetDir = File(sources, kotlinSourceSet.name)
-                val mokoResourcesDir = File(resourceSourceSetDir, "moko-resources")
+                val resourcesSourceDirectory: SourceDirectorySet = createMokoResourcesSourceSet(
+                    project = project,
+                    kotlinSourceSet = kotlinSourceSet
+                )
 
-                val resourcesSourceDirectory: SourceDirectorySet =
-                    project.objects.sourceDirectorySet(
-                        kotlinSourceSet.name + "MokoResources",
-                        "moko-resources for ${kotlinSourceSet.name} sourceSet"
+                val genTask: TaskProvider<GenerateMultiplatformResourcesTask> =
+                    registerGenerateTask(
+                        kotlinSourceSet = kotlinSourceSet,
+                        project = project,
+                        resourcesSourceDirectory = resourcesSourceDirectory
                     )
-                resourcesSourceDirectory.srcDirs(mokoResourcesDir)
 
-                kotlinSourceSet.extras[mokoResourcesSourceDirectoryKey()] = resourcesSourceDirectory
+                configureLowerDependencies(
+                    kotlinSourceSet = kotlinSourceSet,
+                    genTask = genTask
+                )
 
-                project.logger.warn("created source directory set $resourcesSourceDirectory")
+                configureUpperDependencies(
+                    kotlinSourceSet = kotlinSourceSet,
+                    resourcesSourceDirectory = resourcesSourceDirectory
+                )
 
-                val generateTaskName: String = "generateMR" + kotlinSourceSet.name
-                val task = project.tasks.register(
-                    generateTaskName,
-                    GenerateMultiplatformResourcesTask::class.java
-                ) {
-                    it.kotlinSourceSet.set(kotlinSourceSet)
-                }
+                configureTaskDependencies(
+                    kotlinSourceSet = kotlinSourceSet,
+                    genTask = genTask
+                )
             }
 
         kmpExtension.targets.configureEach { target ->
             target.compilations.configureEach { compilation ->
-                project.logger.warn("target $target with $compilation found")
+                val sourceSet: KotlinSourceSet = compilation.defaultSourceSet
+                val genTask: TaskProvider<GenerateMultiplatformResourcesTask> = requireNotNull(
+                    sourceSet.extras[mokoResourcesGenTaskKey()]
+                )
+
+                genTask.configure {
+                    it.kotlinTarget.set(target.targetName)
+                }
             }
         }
 
@@ -143,6 +155,101 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 //        }
 //
 //        setupProjectForApple(project)
+    }
+
+    private fun createMokoResourcesSourceSet(
+        project: Project,
+        kotlinSourceSet: KotlinSourceSet
+    ): SourceDirectorySet {
+        val sources = File(project.projectDir, "src")
+        val resourceSourceSetDir = File(sources, kotlinSourceSet.name)
+        val mokoResourcesDir = File(resourceSourceSetDir, "moko-resources")
+
+        val resourcesSourceDirectory: SourceDirectorySet = project.objects.sourceDirectorySet(
+            kotlinSourceSet.name + "MokoResources",
+            "moko-resources for ${kotlinSourceSet.name} sourceSet"
+        )
+        resourcesSourceDirectory.srcDirs(mokoResourcesDir)
+
+        kotlinSourceSet.extras[mokoResourcesSourceDirectoryKey()] = resourcesSourceDirectory
+
+        return resourcesSourceDirectory
+    }
+
+    private fun registerGenerateTask(
+        kotlinSourceSet: KotlinSourceSet,
+        project: Project,
+        resourcesSourceDirectory: SourceDirectorySet
+    ): TaskProvider<GenerateMultiplatformResourcesTask> {
+        val generateTaskName: String = "generateMR" + kotlinSourceSet.name
+        val taskProvider: TaskProvider<GenerateMultiplatformResourcesTask> = project.tasks.register(
+            generateTaskName,
+            GenerateMultiplatformResourcesTask::class.java
+        ) {
+            val files: Set<File> = resourcesSourceDirectory.srcDirs
+            it.ownResources.setFrom(files)
+        }
+
+        kotlinSourceSet.extras[mokoResourcesGenTaskKey()] = taskProvider
+
+        return taskProvider
+    }
+
+    private fun configureLowerDependencies(
+        kotlinSourceSet: KotlinSourceSet,
+        genTask: TaskProvider<GenerateMultiplatformResourcesTask>
+    ) {
+        kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
+            val resourcesDir: SourceDirectorySet = requireNotNull(
+                dependsSourceSet.extras[mokoResourcesSourceDirectoryKey()]
+            )
+
+            genTask.configure {
+                val files: Set<File> = resourcesDir.srcDirs
+                it.lowerResources.from(files)
+            }
+
+            configureLowerDependencies(
+                kotlinSourceSet = dependsSourceSet,
+                genTask = genTask
+            )
+        }
+    }
+
+    private fun configureUpperDependencies(
+        kotlinSourceSet: KotlinSourceSet,
+        resourcesSourceDirectory: SourceDirectorySet,
+    ) {
+        kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
+            val dependsGenTask: TaskProvider<GenerateMultiplatformResourcesTask> = requireNotNull(
+                dependsSourceSet.extras[mokoResourcesGenTaskKey()]
+            )
+
+            dependsGenTask.configure {
+                val files: Set<File> = resourcesSourceDirectory.srcDirs
+                it.upperResources.from(files)
+            }
+
+            configureUpperDependencies(
+                kotlinSourceSet = dependsSourceSet,
+                resourcesSourceDirectory = resourcesSourceDirectory
+            )
+        }
+    }
+
+    private fun configureTaskDependencies(
+        kotlinSourceSet: KotlinSourceSet,
+        genTask: TaskProvider<GenerateMultiplatformResourcesTask>,
+    ) {
+        kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
+            val dependsGenTask: TaskProvider<GenerateMultiplatformResourcesTask> = requireNotNull(
+                dependsSourceSet.extras[mokoResourcesGenTaskKey()]
+            )
+
+            genTask.configure {
+                it.dependsOn(dependsGenTask)
+            }
+        }
     }
 
     private fun configureKotlinTargetGenerator(
@@ -228,5 +335,8 @@ private fun KotlinSourceSet.whenDependsOn(sourceSetName: String, action: () -> U
     }
 }
 
-fun mokoResourcesSourceDirectoryKey() =
+internal fun mokoResourcesSourceDirectoryKey() =
     extrasKeyOf<SourceDirectorySet>("moko-resources-source-directory")
+
+internal fun mokoResourcesGenTaskKey() =
+    extrasKeyOf<TaskProvider<GenerateMultiplatformResourcesTask>>("moko-resources-generate-task")
