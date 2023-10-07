@@ -101,6 +101,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 genTask.configure {
                     it.kotlinTarget.set(target.targetName)
                 }
+
+                compilation.compileTaskProvider.configure {
+                    it.dependsOn(genTask)
+                }
             }
         }
 
