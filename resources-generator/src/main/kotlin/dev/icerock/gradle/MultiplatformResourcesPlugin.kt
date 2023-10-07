@@ -61,35 +61,34 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         kmpExtension: KotlinMultiplatformExtension
     ) {
-        kmpExtension.sourceSets
-            .configureEach { kotlinSourceSet ->
-                val resourcesSourceDirectory: SourceDirectorySet = createMokoResourcesSourceSet(
+        kmpExtension.sourceSets.configureEach { kotlinSourceSet ->
+            val resourcesSourceDirectory: SourceDirectorySet = createMokoResourcesSourceSet(
+                project = project,
+                kotlinSourceSet = kotlinSourceSet
+            )
+
+            val genTask: TaskProvider<GenerateMultiplatformResourcesTask> =
+                registerGenerateTask(
+                    kotlinSourceSet = kotlinSourceSet,
                     project = project,
-                    kotlinSourceSet = kotlinSourceSet
-                )
-
-                val genTask: TaskProvider<GenerateMultiplatformResourcesTask> =
-                    registerGenerateTask(
-                        kotlinSourceSet = kotlinSourceSet,
-                        project = project,
-                        resourcesSourceDirectory = resourcesSourceDirectory
-                    )
-
-                configureLowerDependencies(
-                    kotlinSourceSet = kotlinSourceSet,
-                    genTask = genTask
-                )
-
-                configureUpperDependencies(
-                    kotlinSourceSet = kotlinSourceSet,
                     resourcesSourceDirectory = resourcesSourceDirectory
                 )
 
-                configureTaskDependencies(
-                    kotlinSourceSet = kotlinSourceSet,
-                    genTask = genTask
-                )
-            }
+            configureLowerDependencies(
+                kotlinSourceSet = kotlinSourceSet,
+                genTask = genTask
+            )
+
+            configureUpperDependencies(
+                kotlinSourceSet = kotlinSourceSet,
+                resourcesSourceDirectory = resourcesSourceDirectory
+            )
+
+            configureTaskDependencies(
+                kotlinSourceSet = kotlinSourceSet,
+                genTask = genTask
+            )
+        }
 
         kmpExtension.targets.configureEach { target ->
             target.compilations.configureEach { compilation ->
