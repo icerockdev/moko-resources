@@ -98,7 +98,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 )
 
                 genTask.configure {
-                    it.kotlinTarget.set(target.targetName)
+                    it.platformType.set(target.platformType.name)
+                    if (target is KotlinNativeTarget) {
+                        it.konanTarget.set(target.konanTarget.name)
+                    }
                 }
 
                 compilation.compileTaskProvider.configure {
