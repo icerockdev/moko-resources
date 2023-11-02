@@ -101,7 +101,7 @@ abstract class ImagesGenerator(
         private val settings: MRGenerator.Settings,
         private val logger: Logger
     ) : ResourceGeneratorFeature<ImagesGenerator> {
-        private val fileTree: FileTree = settings.resourcesSourceDirectory
+        private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching {
                 it.include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
             }

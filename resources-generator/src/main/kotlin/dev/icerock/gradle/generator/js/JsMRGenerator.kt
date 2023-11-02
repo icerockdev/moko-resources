@@ -13,6 +13,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
 import dev.icerock.gradle.utils.dependsOnProcessResources
+import dev.icerock.gradle.utils.flatName
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -26,29 +27,21 @@ import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 class JsMRGenerator(
-    generatedDir: File,
     sourceSet: Provider<SourceSet>,
     settings: Settings,
     generators: List<Generator>,
     private val compilation: KotlinJsIrCompilation,
 ) : MRGenerator(
-    generatedDir = generatedDir,
     sourceSet = sourceSet,
     settings = settings,
     generators = generators
 ) {
-    private val flattenClassName: Provider<String> = settings.packageName
-        .map { it.replace(".", "") }
-    override val resourcesGenerationDir: Provider<File> =
-        outputDir.zip(flattenClassName) { outputDir, className ->
-            File(File(outputDir, className), "res")
-        }
+    private val flattenClassName: String = settings.packageName.flatName
+    override val resourcesGenerationDir: File = File(File(outputDir, flattenClassName), "res")
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
-        val resourcesGenerationDir: File = resourcesGenerationDir.get()
-
         mrClass.addProperty(
             PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
                 .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
@@ -126,7 +119,7 @@ class JsMRGenerator(
     }
 
     class CopyResourcesToKLibAction(
-        private val resourcesDirProvider: Provider<File>,
+        private val resourcesDirProvider: File,
     ) : Action<Kotlin2JsCompile> {
         override fun execute(task: Kotlin2JsCompile) {
             val unpackedKLibDir: File = task.destinationDirectory.asFile.get()
@@ -135,7 +128,7 @@ class JsMRGenerator(
             if (resRepackDir.exists().not()) return
 
             val resDir = File(resRepackDir, "moko-resources-js")
-            resourcesDirProvider.get().copyRecursively(
+            resourcesDirProvider.copyRecursively(
                 resDir,
                 overwrite = true
             )
@@ -143,11 +136,10 @@ class JsMRGenerator(
     }
 
     class CopyResourcesToExecutableAction(
-        private val resourcesGeneratedDirProvider: Provider<File>,
+        private val resourcesGeneratedDir: File,
     ) : Action<Kotlin2JsCompile> {
         override fun execute(task: Kotlin2JsCompile) {
             val project: Project = task.project
-            val resourcesGeneratedDir: File = resourcesGeneratedDirProvider.get()
 
             task.klibs.forEach { dependency ->
                 copyResourcesFromLibraries(

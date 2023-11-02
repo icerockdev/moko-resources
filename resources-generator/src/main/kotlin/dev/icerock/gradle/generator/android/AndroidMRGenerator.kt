@@ -15,12 +15,10 @@ import org.gradle.kotlin.dsl.withType
 import java.io.File
 
 class AndroidMRGenerator(
-    generatedDir: File,
     sourceSet: Provider<SourceSet>,
     settings: Settings,
     generators: List<Generator>,
 ) : MRGenerator(
-    generatedDir = generatedDir,
     sourceSet = sourceSet,
     settings = settings,
     generators = generators

@@ -125,7 +125,7 @@ abstract class FontsGenerator(
     class Feature(
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<FontsGenerator> {
-        private val stringsFileTree: FileTree = settings.resourcesSourceDirectory
+        private val stringsFileTree: FileTree = settings.ownResourcesFileTree
             .matching { it.include("fonts/**.ttf", "fonts/**.otf") }
 
         override fun createCommonGenerator(): FontsGenerator = CommonFontsGenerator(
@@ -138,7 +138,7 @@ abstract class FontsGenerator(
 
         override fun createAndroidGenerator(): FontsGenerator = AndroidFontsGenerator(
             inputFileTree = stringsFileTree,
-            androidRClassPackageProvider = settings.androidRClassPackage
+            androidRClassPackage = settings.androidRClassPackage
         )
 
         override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(

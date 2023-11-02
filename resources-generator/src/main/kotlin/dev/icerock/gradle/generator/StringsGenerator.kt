@@ -75,7 +75,7 @@ abstract class StringsGenerator(
     class Feature(
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<StringsGenerator> {
-        private val fileTree: FileTree = settings.resourcesSourceDirectory
+        private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching { it.include("**/strings*.xml") }
 
         override fun createCommonGenerator(): StringsGenerator = CommonStringsGenerator(
@@ -92,7 +92,7 @@ abstract class StringsGenerator(
         override fun createAndroidGenerator(): StringsGenerator = AndroidStringsGenerator(
             stringsFileTree = fileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
-            androidRClassPackageProvider = settings.androidRClassPackage
+            androidRClassPackage = settings.androidRClassPackage
         )
 
         override fun createJsGenerator(): StringsGenerator = JsStringsGenerator(

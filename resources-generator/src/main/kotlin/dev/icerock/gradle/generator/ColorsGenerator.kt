@@ -137,7 +137,7 @@ abstract class ColorsGenerator(
     class Feature(
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<ColorsGenerator> {
-        private val fileTree: FileTree = settings.resourcesSourceDirectory
+        private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching { it.include("**/colors*.xml") }
 
         override fun createCommonGenerator() = CommonColorsGenerator(fileTree)

@@ -96,7 +96,7 @@ abstract class FilesGenerator(
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<FilesGenerator> {
 
-        private val fileTree: FileTree = settings.resourcesSourceDirectory
+        private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching { it.include("files/**") }
 
         override fun createCommonGenerator(): FilesGenerator = CommonFilesGenerator(
@@ -109,7 +109,7 @@ abstract class FilesGenerator(
 
         override fun createAndroidGenerator(): FilesGenerator = AndroidFilesGenerator(
             inputFileTree = fileTree,
-            androidRClassPackageProvider = settings.androidRClassPackage,
+            androidRClassPackage = settings.androidRClassPackage,
         )
 
         override fun createJsGenerator(): FilesGenerator = JsFilesGenerator(

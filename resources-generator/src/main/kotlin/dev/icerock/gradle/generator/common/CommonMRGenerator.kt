@@ -14,12 +14,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import java.io.File
 
 class CommonMRGenerator(
-    generatedDir: File,
     sourceSet: Provider<SourceSet>,
     settings: Settings,
     generators: List<Generator>
 ) : MRGenerator(
-    generatedDir = generatedDir,
     sourceSet = sourceSet,
     settings = settings,
     generators = generators

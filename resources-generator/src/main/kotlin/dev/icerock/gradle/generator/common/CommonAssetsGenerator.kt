@@ -9,11 +9,12 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import org.gradle.api.file.FileTree
 import org.gradle.api.file.SourceDirectorySet
 
 class CommonAssetsGenerator(
-    sourceDirectorySet: SourceDirectorySet
-) : AssetsGenerator(sourceDirectorySet), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    fileTree: FileTree
+) : AssetsGenerator(fileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = emptyArray()
 

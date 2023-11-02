@@ -14,14 +14,15 @@ import dev.icerock.gradle.generator.apple.AppleAssetsGenerator
 import dev.icerock.gradle.generator.common.CommonAssetsGenerator
 import dev.icerock.gradle.generator.js.JsAssetsGenerator
 import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
-import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.file.FileTree
 import java.io.File
 
 @Suppress("TooManyFunctions")
 abstract class AssetsGenerator(
-    private val sourceDirectorySet: SourceDirectorySet
+    private val fileTree: FileTree
 ) : MRGenerator.Generator {
-    override val inputFiles: Iterable<File> get() = sourceDirectorySet.files
+    override val inputFiles: Iterable<File>
+        get() = fileTree.files
     override val mrObjectName: String = ASSETS_DIR_NAME
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "AssetResource")
 
@@ -89,7 +90,7 @@ abstract class AssetsGenerator(
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder
     ): TypeSpec {
-        val rootContent = parseRootContent(sourceDirectorySet.sourceDirectories.files)
+        val rootContent = parseRootContent(fileTree.files)
 
         beforeGenerate(objectBuilder, rootContent)
 
@@ -158,15 +159,15 @@ abstract class AssetsGenerator(
 
     abstract fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock?
 
-    /*
-     * @param pathRelativeToBase used to copy necessary resources in AssetsGenerator
-     * @param newFilePath is a new name a of copied resource for systems which do not support path with / symbol
-     */
 
     sealed class AssetSpec
 
     class AssetSpecDirectory(val name: String, val assets: List<AssetSpec>) : AssetSpec()
 
+    /**
+     * @param pathRelativeToBase used to copy necessary resources in AssetsGenerator
+     * @param file is a new name a of copied resource for systems which do not support path with / symbol
+     */
     class AssetSpecFile(
         val pathRelativeToBase: String,
         val file: File
@@ -177,24 +178,24 @@ abstract class AssetsGenerator(
     ) : ResourceGeneratorFeature<AssetsGenerator> {
 
         override fun createCommonGenerator(): AssetsGenerator = CommonAssetsGenerator(
-            sourceDirectorySet = settings.resourcesSourceDirectory
+            fileTree = settings.ownResourcesFileTree
         )
 
         override fun createIosGenerator(): AssetsGenerator = AppleAssetsGenerator(
-            sourceDirectorySet = settings.resourcesSourceDirectory
+            fileTree = settings.ownResourcesFileTree
         )
 
         override fun createAndroidGenerator(): AssetsGenerator = AndroidAssetsGenerator(
-            sourceDirectorySet = settings.resourcesSourceDirectory
+            fileTree = settings.ownResourcesFileTree
         )
 
         override fun createJvmGenerator(): AssetsGenerator = JvmAssetsGenerator(
-            sourceDirectorySet = settings.resourcesSourceDirectory,
+            fileTree = settings.ownResourcesFileTree,
             settings = settings
         )
 
         override fun createJsGenerator(): AssetsGenerator = JsAssetsGenerator(
-            sourceDirectorySet = settings.resourcesSourceDirectory
+            fileTree = settings.ownResourcesFileTree
         )
     }
 

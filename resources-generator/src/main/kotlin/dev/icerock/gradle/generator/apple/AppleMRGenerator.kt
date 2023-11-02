@@ -44,21 +44,19 @@ import kotlin.reflect.full.memberProperties
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
-    generatedDir: File,
     sourceSet: Provider<SourceSet>,
     settings: Settings,
     generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
-    private val baseLocalizationRegion: Provider<String>,
+    private val baseLocalizationRegion: String,
 ) : MRGenerator(
-    generatedDir = generatedDir,
     sourceSet = sourceSet,
     settings = settings,
     generators = generators
 ) {
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
-    private val bundleIdentifierProvider = settings.packageName.map { "$it.MR" }
+    private val bundleIdentifier = "${settings.packageName}.MR"
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -71,13 +69,13 @@ class AppleMRGenerator(
                 bundleClassName,
                 KModifier.PRIVATE
             )
-                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"${bundleIdentifierProvider.get()}\") }"))
+                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"${bundleIdentifier}\") }"))
                 .build()
         )
 
         mrClass.addProperty(
             PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
-                .initializer("%S", resourcesGenerationDir.get().calculateResourcesHash())
+                .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
                 .build()
         )
     }
@@ -95,7 +93,7 @@ class AppleMRGenerator(
     }
 
     override fun beforeMRGeneration() {
-        assetsGenerationDir.get().mkdirs()
+        assetsGenerationDir.mkdirs()
     }
 
     private fun setupKLibResources(generationTask: GenerateMultiplatformResourcesTask) {
@@ -107,9 +105,9 @@ class AppleMRGenerator(
             task.doLast {
                 PackResourcesToKLibAction(
                     baseLocalizationRegion = baseLocalizationRegion,
-                    bundleIdentifierProvider = bundleIdentifierProvider,
-                    assetsDirectoryProvider = assetsGenerationDir,
-                    resourcesGenerationDirProvider = resourcesGenerationDir,
+                    bundleIdentifier = bundleIdentifier,
+                    assetsDirectory = assetsGenerationDir,
+                    resourcesGenerationDir = resourcesGenerationDir,
                 )
             }
         }
@@ -199,7 +197,6 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         val kotlinNativeTarget = compilation.target as KotlinNativeTarget
         val project = kotlinNativeTarget.project
 
-        @Suppress("ObjectLiteralToLambda")
         val fatAction: Action<Task> = object : Action<Task> {
             override fun execute(task: Task) {
                 val fatTask: FatFrameworkTask = task as FatFrameworkTask

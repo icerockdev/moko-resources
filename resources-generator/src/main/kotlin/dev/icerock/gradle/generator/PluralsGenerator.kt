@@ -95,7 +95,7 @@ abstract class PluralsGenerator(
     class Feature(
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
-        private val fileTree: FileTree = settings.resourcesSourceDirectory
+        private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching { it.include("**/plurals*.xml") }
 
         override fun createCommonGenerator(): PluralsGenerator = CommonPluralsGenerator(
@@ -112,7 +112,7 @@ abstract class PluralsGenerator(
         override fun createAndroidGenerator(): PluralsGenerator = AndroidPluralsGenerator(
             pluralsFileTree = fileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
-            androidRClassPackageProvider = settings.androidRClassPackage,
+            androidRClassPackage = settings.androidRClassPackage,
         )
 
         override fun createJvmGenerator(): PluralsGenerator = JvmPluralsGenerator(

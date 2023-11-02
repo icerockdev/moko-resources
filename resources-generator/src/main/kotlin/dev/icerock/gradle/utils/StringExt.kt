@@ -26,3 +26,14 @@ internal fun String.capitalize(): String {
 internal fun String.decapitalize(): String {
     return replaceFirstChar { it.lowercase(Locale.ROOT) }
 }
+
+internal fun String.remove(char: Char): String {
+    return this.remove(char.toString())
+}
+
+internal fun String.remove(char: String): String {
+    return this.replace(char, "")
+}
+
+internal val String.flatName: String
+    get() = this.remove('.')

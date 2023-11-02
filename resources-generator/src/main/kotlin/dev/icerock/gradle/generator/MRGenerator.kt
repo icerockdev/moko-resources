@@ -10,11 +10,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MRVisibility
-import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
-import org.gradle.api.Project
 import org.gradle.api.file.Directory
-import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.file.FileTree
 import org.gradle.api.provider.Provider
 import java.io.File
 
@@ -150,6 +148,10 @@ abstract class MRGenerator(
         val visibility: MRVisibility,
         val generatedDir: Directory,
         val isStrictLineBreaks: Boolean,
-        val resourcesSourceDirectory: SourceDirectorySet,
+        val iosLocalizationRegion: String,
+        val ownResourcesFileTree: FileTree,
+        val lowerResourcesFileTree: FileTree,
+        val upperResourcesFileTree: FileTree,
+        val androidRClassPackage: String
     )
 }

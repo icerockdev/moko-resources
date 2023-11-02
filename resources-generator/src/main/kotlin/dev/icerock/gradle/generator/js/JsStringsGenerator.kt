@@ -17,6 +17,7 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME
 import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.SUPPORTED_LOCALES_PROPERTY_NAME
+import dev.icerock.gradle.utils.flatName
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
@@ -25,12 +26,12 @@ import java.io.File
 
 class JsStringsGenerator(
     stringsFileTree: FileTree,
-    mrClassPackage: Provider<String>,
+    mrClassPackage: String,
     strictLineBreaks: Boolean
 ) : StringsGenerator(stringsFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
-    private val flattenClassPackage = mrClassPackage.map { it.replace(".", "") }
+    private val flattenClassPackage = mrClassPackage.flatName
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -48,10 +49,10 @@ class JsStringsGenerator(
             languages = languageMap.keys.toList(),
             folder = JsMRGenerator.LOCALIZATION_DIR,
             fallbackFilePropertyName = STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME,
-            fallbackFile = "${flattenClassPackage.get()}_${JsMRGenerator.STRINGS_JSON_NAME}.json",
+            fallbackFile = "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}.json",
             supportedLocalesPropertyName = SUPPORTED_LOCALES_PROPERTY_NAME,
             getFileNameForLanguage = { language ->
-                "${flattenClassPackage.get()}_${JsMRGenerator.STRINGS_JSON_NAME}${language.jsResourcesSuffix}.json"
+                "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}${language.jsResourcesSuffix}.json"
             }
         )
         val languageKeys = languageMap[LanguageType.Base].orEmpty().keys
@@ -75,7 +76,7 @@ class JsStringsGenerator(
         strings: Map<KeyType, String>
     ) {
         val fileDirName =
-            "${flattenClassPackage.get()}_${JsMRGenerator.STRINGS_JSON_NAME}${language.jsResourcesSuffix}"
+            "${flattenClassPackage}_${JsMRGenerator.STRINGS_JSON_NAME}${language.jsResourcesSuffix}"
 
         val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {
             mkdirs()

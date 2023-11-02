@@ -19,7 +19,7 @@ import java.io.File
 class AppleStringsGenerator(
     stringsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val baseLocalizationRegion: Provider<String>
+    private val baseLocalizationRegion: String
 ) : StringsGenerator(stringsFileTree, strictLineBreaks),
     ObjectBodyExtendable by AppleGeneratorHelper() {
 
