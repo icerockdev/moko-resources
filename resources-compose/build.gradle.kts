@@ -52,7 +52,6 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 api(compose.desktop.common)
-                implementation(compose.desktop.currentOs)
             }
         }
     }
