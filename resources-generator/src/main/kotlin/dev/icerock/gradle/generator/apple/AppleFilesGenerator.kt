@@ -12,8 +12,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleFilesGenerator(
-    inputFileTree: FileTree
-) : FilesGenerator(inputFileTree = inputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
+) : FilesGenerator(inputFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -27,7 +28,7 @@ class AppleFilesGenerator(
 
     override fun generateResources(
         resourcesGenerationDir: File,
-        files: List<FileSpec>
+        files: List<FileSpec>,
     ) {
         val targetDir = File(resourcesGenerationDir, "files")
         targetDir.mkdirs()

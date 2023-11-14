@@ -99,30 +99,35 @@ abstract class PluralsGenerator(
             .matching { it.include("**/plurals*.xml") }
 
         override fun createCommonGenerator(): PluralsGenerator = CommonPluralsGenerator(
-            pluralsFileTree = fileTree,
+            ownPluralsFileTree = settings.ownResourcesFileTree,
+            upperPluralsFileTree = settings.upperResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
         override fun createIosGenerator(): PluralsGenerator = ApplePluralsGenerator(
-            pluralsFileTree = fileTree,
+            ownPluralsFileTree = settings.ownResourcesFileTree,
+            lowerPluralsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             baseLocalizationRegion = settings.iosLocalizationRegion
         )
 
         override fun createAndroidGenerator(): PluralsGenerator = AndroidPluralsGenerator(
-            pluralsFileTree = fileTree,
+            ownPluralsFileTree = settings.ownResourcesFileTree,
+            lowerPluralsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             androidRClassPackage = settings.androidRClassPackage,
         )
 
         override fun createJvmGenerator(): PluralsGenerator = JvmPluralsGenerator(
-            pluralsFileTree = fileTree,
+            ownPluralsFileTree = settings.ownResourcesFileTree,
+            lowerPluralsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             settings = settings
         )
 
         override fun createJsGenerator(): PluralsGenerator = JsPluralsGenerator(
-            pluralsFileTree = fileTree,
+            ownPluralsFileTree = settings.ownResourcesFileTree,
+            lowerPluralsFileTree = settings.lowerResourcesFileTree,
             mrClassPackage = settings.packageName,
             strictLineBreaks = settings.isStrictLineBreaks
         )

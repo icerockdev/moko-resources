@@ -11,14 +11,14 @@ import dev.icerock.gradle.generator.FontsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 import java.util.Locale
 
 class AndroidFontsGenerator(
-    inputFileTree: FileTree,
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
     private val androidRClassPackage: String,
-) : FontsGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -15,9 +15,10 @@ import java.io.File
 import java.util.Locale
 
 class AndroidFilesGenerator(
-    inputFileTree: FileTree,
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
     private val androidRClassPackage: String,
-) : FilesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : FilesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

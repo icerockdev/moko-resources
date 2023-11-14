@@ -20,14 +20,14 @@ import dev.icerock.gradle.utils.flatName
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 
 class JsPluralsGenerator(
-    pluralsFileTree: FileTree,
+    ownPluralsFileTree: FileTree,
+    lowerPluralsFileTree: FileTree,
     mrClassPackage: String,
     strictLineBreaks: Boolean
-) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     private val flattenClassPackage = mrClassPackage.flatName

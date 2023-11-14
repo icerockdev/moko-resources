@@ -12,8 +12,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleFontsGenerator(
-    inputFileTree: FileTree
-) : FontsGenerator(inputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
+) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

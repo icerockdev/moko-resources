@@ -13,9 +13,10 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmFilesGenerator(
-    inputFileTree: FileTree,
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
     settings: MRGenerator.Settings
-) : FilesGenerator(inputFileTree),
+) : FilesGenerator(ownInputFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -10,12 +10,12 @@ import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
-import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
 class AndroidAssetsGenerator(
-    fileTree: FileTree
-) : AssetsGenerator(fileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ownResourcesFileTree: FileTree,
+    lowerResourcesFileTree: FileTree,
+) : AssetsGenerator(ownResourcesFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun generateResources(
         assetsGenerationDir: File,

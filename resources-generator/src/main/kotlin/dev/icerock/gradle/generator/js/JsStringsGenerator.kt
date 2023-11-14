@@ -21,14 +21,18 @@ import dev.icerock.gradle.utils.flatName
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 
 class JsStringsGenerator(
-    stringsFileTree: FileTree,
+    ownStringsFileTree: FileTree,
+    lowerStringsFileTree: FileTree,
     mrClassPackage: String,
     strictLineBreaks: Boolean
-) : StringsGenerator(stringsFileTree, strictLineBreaks),
+) : StringsGenerator(
+    lowerStringsFileTree = lowerStringsFileTree,
+    ownStringsFileTree = ownStringsFileTree,
+    strictLineBreaks = strictLineBreaks
+),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     private val flattenClassPackage = mrClassPackage.flatName

@@ -10,13 +10,13 @@ import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
-import org.gradle.api.file.SourceDirectorySet
 import java.io.File
 
 class JvmAssetsGenerator(
-    fileTree: FileTree,
+    ownResourcesFileTree: FileTree,
+    lowerResourcesFileTree: FileTree,
     settings: MRGenerator.Settings
-) : AssetsGenerator(fileTree),
+) : AssetsGenerator(ownResourcesFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

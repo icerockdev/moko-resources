@@ -15,10 +15,11 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class ApplePluralsGenerator(
-    pluralsFileTree: FileTree,
+    ownPluralsFileTree: FileTree,
+    lowerPluralsFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val baseLocalizationRegion: String
-) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

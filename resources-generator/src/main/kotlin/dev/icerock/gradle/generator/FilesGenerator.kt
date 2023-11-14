@@ -96,28 +96,33 @@ abstract class FilesGenerator(
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<FilesGenerator> {
 
-        private val fileTree: FileTree = settings.ownResourcesFileTree
-            .matching { it.include("files/**") }
+//        private val fileTree: FileTree = settings.ownResourcesFileTree
+//            .matching { it.include("files/**") }
 
         override fun createCommonGenerator(): FilesGenerator = CommonFilesGenerator(
-            inputFileTree = fileTree
+            ownInputFileTree = settings.ownResourcesFileTree,
+            upperInputFileTree = settings.upperResourcesFileTree
         )
 
         override fun createIosGenerator(): FilesGenerator = AppleFilesGenerator(
-            inputFileTree = fileTree
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree
         )
 
         override fun createAndroidGenerator(): FilesGenerator = AndroidFilesGenerator(
-            inputFileTree = fileTree,
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree,
             androidRClassPackage = settings.androidRClassPackage,
         )
 
         override fun createJsGenerator(): FilesGenerator = JsFilesGenerator(
-            inputFileTree = fileTree
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree
         )
 
         override fun createJvmGenerator(): FilesGenerator = JvmFilesGenerator(
-            inputFileTree = fileTree,
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree,
             settings = settings
         )
     }

@@ -178,24 +178,29 @@ abstract class AssetsGenerator(
     ) : ResourceGeneratorFeature<AssetsGenerator> {
 
         override fun createCommonGenerator(): AssetsGenerator = CommonAssetsGenerator(
-            fileTree = settings.ownResourcesFileTree
+            ownResourcesFileTree = settings.ownResourcesFileTree,
+            upperResourcesFileTree = settings.upperResourcesFileTree,
         )
 
         override fun createIosGenerator(): AssetsGenerator = AppleAssetsGenerator(
-            fileTree = settings.ownResourcesFileTree
+            ownResourcesFileTree = settings.ownResourcesFileTree,
+            lowerResourcesFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createAndroidGenerator(): AssetsGenerator = AndroidAssetsGenerator(
-            fileTree = settings.ownResourcesFileTree
+            ownResourcesFileTree = settings.ownResourcesFileTree,
+            lowerResourcesFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createJvmGenerator(): AssetsGenerator = JvmAssetsGenerator(
-            fileTree = settings.ownResourcesFileTree,
+            ownResourcesFileTree = settings.ownResourcesFileTree,
+            lowerResourcesFileTree = settings.lowerResourcesFileTree,
             settings = settings
         )
 
         override fun createJsGenerator(): AssetsGenerator = JsAssetsGenerator(
-            fileTree = settings.ownResourcesFileTree
+            ownResourcesFileTree = settings.ownResourcesFileTree,
+            lowerResourcesFileTree = settings.lowerResourcesFileTree,
         )
     }
 

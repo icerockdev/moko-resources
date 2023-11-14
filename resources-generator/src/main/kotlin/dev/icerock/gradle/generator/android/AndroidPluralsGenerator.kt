@@ -15,14 +15,14 @@ import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 
 class AndroidPluralsGenerator(
-    pluralsFileTree: FileTree,
+    ownPluralsFileTree: FileTree,
+    lowerPluralsFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val androidRClassPackage: String,
-) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

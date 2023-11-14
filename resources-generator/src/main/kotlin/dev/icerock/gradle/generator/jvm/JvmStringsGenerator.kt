@@ -12,16 +12,19 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.utils.flatName
-import dev.icerock.gradle.utils.remove
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 
 class JvmStringsGenerator(
-    stringsFileTree: FileTree,
+    ownStringsFileTree: FileTree,
+    lowerStringsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    settings: MRGenerator.Settings
-) : StringsGenerator(stringsFileTree, strictLineBreaks),
+    settings: MRGenerator.Settings,
+) : StringsGenerator(
+    lowerStringsFileTree = lowerStringsFileTree,
+    ownStringsFileTree = ownStringsFileTree,
+    strictLineBreaks = strictLineBreaks
+),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     private val flattenClassPackage = settings.packageName.flatName
@@ -40,7 +43,7 @@ class JvmStringsGenerator(
     override fun generateResources(
         resourcesGenerationDir: File,
         language: LanguageType,
-        strings: Map<KeyType, String>
+        strings: Map<KeyType, String>,
     ) {
         val fileDirName =
             "${flattenClassPackage}_${JvmMRGenerator.STRINGS_BUNDLE_NAME}${language.jvmResourcesSuffix}"

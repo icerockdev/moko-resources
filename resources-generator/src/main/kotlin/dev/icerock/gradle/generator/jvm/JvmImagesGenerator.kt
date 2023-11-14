@@ -14,9 +14,10 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmImagesGenerator(
-    inputFileTree: FileTree,
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
     settings: MRGenerator.Settings
-) : ImagesGenerator(inputFileTree),
+) : ImagesGenerator(ownInputFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

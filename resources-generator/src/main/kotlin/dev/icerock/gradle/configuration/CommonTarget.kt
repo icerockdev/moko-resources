@@ -9,23 +9,18 @@ import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.common.CommonMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 internal fun configureCommonTargetGenerator(
     target: KotlinTarget,
     settings: MRGenerator.Settings,
-    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
+    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
 ) {
     val generationTask: GenerateMultiplatformResourcesTask = CommonMRGenerator(
-        generatedDir = settings.generatedDir,
-        sourceSet = target.project.provider {
-            val compilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
-            createSourceSet(compilation.defaultSourceSet)
-        },
+        project = target.project,
         settings = settings,
         generators = features.map { it.createCommonGenerator() }
-    ).apply(project = target.project)
+    ).apply(project = target.project,)
 
     target.project.tasks
         .withType<GenerateMultiplatformResourcesTask>()

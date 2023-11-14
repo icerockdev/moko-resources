@@ -27,8 +27,6 @@ internal fun configureJsTargetGenerator(
         // TODO rollback ifDepends
 //            compilation.defaultSourceSet.ifDependsOn(commonSourceSet) {
         JsMRGenerator(
-            generatedDir = settings.generatedDir,
-            sourceSet = project.provider { createSourceSet(compilation.defaultSourceSet) },
             settings = settings,
             generators = features.map { it.createJsGenerator() },
             compilation = compilation,

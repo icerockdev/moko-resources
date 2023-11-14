@@ -12,8 +12,9 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 
 class CommonFilesGenerator(
-    inputFileTree: FileTree
-) : FilesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ownInputFileTree: FileTree,
+    upperInputFileTree: FileTree,
+) : FilesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()

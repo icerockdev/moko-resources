@@ -18,16 +18,22 @@ import javax.xml.parsers.DocumentBuilderFactory
 typealias KeyType = String
 
 abstract class StringsGenerator(
-    private val stringsFileTree: FileTree,
-    private val strictLineBreaks: Boolean
+    private val lowerStringsFileTree: FileTree,
+    private val ownStringsFileTree: FileTree,
+    private val upperStringsFileTree: FileTree? = null,
+    private val strictLineBreaks: Boolean,
 ) : BaseGenerator<String>() {
 
-    override val inputFiles: Iterable<File> get() = stringsFileTree.files
+    override val inputFiles: Iterable<File>
+        get() = ownStringsFileTree.matching {
+            it.include(STRINGS_MASK)
+        }.files
+
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "StringResource")
     override val mrObjectName: String = "strings"
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
-        return stringsFileTree.map { file ->
+        return inputFiles.map { file ->
             val language: LanguageType = LanguageType.fromFileName(file.parentFile.name)
             val strings: Map<KeyType, String> = loadLanguageStrings(file)
             language to strings
@@ -63,6 +69,7 @@ abstract class StringsGenerator(
             .filter { it.key == it.value }
             .keys
             .toList()
+
         if (incorrectKeys.isNotEmpty()) {
             throw EqualStringKeysException(incorrectKeys)
         }
@@ -73,38 +80,45 @@ abstract class StringsGenerator(
     override fun getImports(): List<ClassName> = emptyList()
 
     class Feature(
-        private val settings: MRGenerator.Settings
+        private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<StringsGenerator> {
-        private val fileTree: FileTree = settings.ownResourcesFileTree
-            .matching { it.include("**/strings*.xml") }
-
         override fun createCommonGenerator(): StringsGenerator = CommonStringsGenerator(
-            stringsFileTree = fileTree,
+            lowerStringsFileTree = settings.lowerResourcesFileTree,
+            ownStringsFileTree = settings.ownResourcesFileTree,
+            upperStringsFileTree = settings.upperResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
         override fun createIosGenerator(): StringsGenerator = AppleStringsGenerator(
-            stringsFileTree = fileTree,
+            ownStringsFileTree = settings.ownResourcesFileTree,
+            lowerStringsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             baseLocalizationRegion = settings.iosLocalizationRegion
         )
 
         override fun createAndroidGenerator(): StringsGenerator = AndroidStringsGenerator(
-            stringsFileTree = fileTree,
+            ownStringsFileTree = settings.ownResourcesFileTree,
+            lowerStringsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             androidRClassPackage = settings.androidRClassPackage
         )
 
         override fun createJsGenerator(): StringsGenerator = JsStringsGenerator(
-            stringsFileTree = fileTree,
+            ownStringsFileTree = settings.ownResourcesFileTree,
+            lowerStringsFileTree = settings.lowerResourcesFileTree,
             mrClassPackage = settings.packageName,
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
         override fun createJvmGenerator(): StringsGenerator = JvmStringsGenerator(
-            stringsFileTree = fileTree,
+            ownStringsFileTree = settings.ownResourcesFileTree,
+            lowerStringsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             settings = settings
         )
+    }
+
+    companion object {
+        const val STRINGS_MASK = "**/strings*.xml"
     }
 }

@@ -20,9 +20,10 @@ import org.gradle.kotlin.dsl.provideDelegate
 import java.io.File
 
 class JsFontsGenerator(
-    inputFileTree: FileTree,
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
     mrClassPackage: String,
-) : FontsGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     private val flattenPackage: String = mrClassPackage.flatName
     private val cssDeclarationsFileName: String = "$flattenPackage-generated-declarations.css"

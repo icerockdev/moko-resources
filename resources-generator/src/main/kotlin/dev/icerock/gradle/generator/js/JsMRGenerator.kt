@@ -9,16 +9,14 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.TargetMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
-import dev.icerock.gradle.utils.dependsOnProcessResources
 import dev.icerock.gradle.utils.flatName
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.provider.Provider
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
@@ -27,12 +25,10 @@ import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 class JsMRGenerator(
-    sourceSet: Provider<SourceSet>,
     settings: Settings,
     generators: List<Generator>,
     private val compilation: KotlinJsIrCompilation,
-) : MRGenerator(
-    sourceSet = sourceSet,
+) : TargetMRGenerator(
     settings = settings,
     generators = generators
 ) {
@@ -93,11 +89,11 @@ class JsMRGenerator(
             it.dependsOn(generationTask)
         }
 
-        dependsOnProcessResources(
-            project = project,
-            sourceSet = sourceSet,
-            task = generationTask,
-        )
+//        dependsOnProcessResources(
+//            project = project,
+//            sourceSet = sourceSet,
+//            task = generationTask,
+//        )
     }
 
     private fun setupKLibResources(generationTask: Task) {

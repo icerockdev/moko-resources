@@ -19,8 +19,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleImagesGenerator(
-    inputFileTree: FileTree
-) : ImagesGenerator(inputFileTree = inputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
+) : ImagesGenerator(inputFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

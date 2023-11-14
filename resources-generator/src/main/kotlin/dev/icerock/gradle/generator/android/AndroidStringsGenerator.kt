@@ -14,19 +14,42 @@ import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 
 class AndroidStringsGenerator(
-    stringsFileTree: FileTree,
+    private val ownStringsFileTree: FileTree,
+    private val lowerStringsFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val androidRClassPackage: String,
-) : StringsGenerator(stringsFileTree, strictLineBreaks),
-    ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : StringsGenerator(
+    lowerStringsFileTree = lowerStringsFileTree,
+    ownStringsFileTree = ownStringsFileTree,
+    strictLineBreaks = strictLineBreaks
+), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
-    override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
+    override fun getClassModifiers(): Array<KModifier> {
+        val ownIsEmpty = ownStringsFileTree.matching {
+            it.include(STRINGS_MASK)
+        }.isEmpty
 
-    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
+        val lowerIsEmpty = lowerStringsFileTree.matching {
+            it.include(STRINGS_MASK)
+        }.isEmpty
+
+        return arrayOf(KModifier.ACTUAL)
+    }
+
+    override fun getPropertyModifiers(): Array<KModifier> {
+        val ownIsEmpty = ownStringsFileTree.matching {
+            it.include(STRINGS_MASK)
+        }.isEmpty
+
+        val lowerIsEmpty = lowerStringsFileTree.matching {
+            it.include(STRINGS_MASK)
+        }.isEmpty
+
+        return arrayOf(KModifier.ACTUAL)
+    }
 
     override fun getPropertyInitializer(key: String) =
         CodeBlock.of("StringResource(R.string.%L)", processKey(key))

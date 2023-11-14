@@ -18,8 +18,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JsImagesGenerator(
-    inputFileTree: FileTree
-) : ImagesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
+) : ImagesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

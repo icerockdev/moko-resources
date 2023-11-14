@@ -16,15 +16,15 @@ internal fun createSourceSet(kotlinSourceSet: KotlinSourceSet): MRGenerator.Sour
         override val name: String
             get() = kotlinSourceSet.name
 
-        override fun addSourceDir(directory: Provider<File>) {
+        override fun addSourceDir(directory: File) {
             kotlinSourceSet.kotlin.srcDir(directory)
         }
 
-        override fun addResourcesDir(directory: Provider<File>) {
+        override fun addResourcesDir(directory: File) {
             kotlinSourceSet.resources.srcDir(directory)
         }
 
-        override fun addAssetsDir(directory: Provider<File>) {
+        override fun addAssetsDir(directory: File) {
             // nothing
         }
     }
@@ -37,7 +37,7 @@ internal fun createSourceSet(
         override val name: String
             get() = "android${androidSourceSet.name.capitalize()}"
 
-        override fun addSourceDir(directory: Provider<File>) {
+        override fun addSourceDir(directory: File) {
             androidSourceSet.java.srcDirs(directory)
 //                targets.configureEach { target ->
 //                    target.compilations.configureEach { compilation ->
@@ -53,11 +53,11 @@ internal fun createSourceSet(
 //                }
         }
 
-        override fun addResourcesDir(directory: Provider<File>) {
+        override fun addResourcesDir(directory: File) {
             androidSourceSet.res.srcDir(directory)
         }
 
-        override fun addAssetsDir(directory: Provider<File>) {
+        override fun addAssetsDir(directory: File) {
             androidSourceSet.assets.srcDir(directory)
         }
     }
