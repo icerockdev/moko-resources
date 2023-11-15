@@ -32,14 +32,14 @@ actual class FontResource(
             return bundle.pathForResource(
                 name = fontName,
                 ofType = null
-            ) ?: throw IllegalStateException("file $fontName not found in $bundle")
+            ) ?: error("file $fontName not found in $bundle")
         }
 
     val data: NSData
         get() {
             val filePath: String = this.filePath
             return NSData.create(contentsOfFile = filePath)
-                ?: throw IllegalStateException("can't read $filePath file")
+                ?: error("can't read $filePath file")
         }
 
     init {
