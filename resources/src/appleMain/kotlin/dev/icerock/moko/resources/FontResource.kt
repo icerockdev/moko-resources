@@ -1,21 +1,17 @@
 /*
- * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.moko.resources
 
 import cnames.structs.CGDataProvider
 import cnames.structs.__CFData
-import cnames.structs.__CTFont
 import kotlinx.cinterop.CPointer
-import platform.AppKit.NSFont
 import platform.CoreFoundation.CFDataCreate
 import platform.CoreFoundation.kCFAllocatorDefault
 import platform.CoreGraphics.CGDataProviderCreateWithCFData
 import platform.CoreGraphics.CGFontCreateWithDataProvider
 import platform.CoreGraphics.CGFontRef
-import platform.CoreText.CTFontCreateWithGraphicsFont
-import platform.Foundation.CFBridgingRelease
 import platform.Foundation.NSBundle
 import platform.Foundation.NSData
 import platform.Foundation.create
@@ -25,7 +21,7 @@ actual class FontResource(
     val fontName: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {
-    private val fontRef: CGFontRef
+    internal val fontRef: CGFontRef
 
     val filePath: String
         get() {
@@ -51,15 +47,5 @@ actual class FontResource(
         )
         val dataProvider: CPointer<CGDataProvider>? = CGDataProviderCreateWithCFData(cfDataRef)
         fontRef = CGFontCreateWithDataProvider(dataProvider)!!
-    }
-
-    fun nsFont(withSize: Double): NSFont {
-        val ctFont: CPointer<__CTFont>? = CTFontCreateWithGraphicsFont(
-            graphicsFont = fontRef,
-            size = withSize,
-            matrix = null,
-            attributes = null
-        )
-        return CFBridgingRelease(ctFont) as NSFont
     }
 }
