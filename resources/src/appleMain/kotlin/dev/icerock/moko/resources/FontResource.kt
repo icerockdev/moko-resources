@@ -7,13 +7,21 @@ package dev.icerock.moko.resources
 import cnames.structs.CGDataProvider
 import cnames.structs.__CFData
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.value
 import platform.CoreFoundation.CFDataCreate
+import platform.CoreFoundation.CFErrorRefVar
 import platform.CoreFoundation.kCFAllocatorDefault
 import platform.CoreGraphics.CGDataProviderCreateWithCFData
 import platform.CoreGraphics.CGFontCreateWithDataProvider
 import platform.CoreGraphics.CGFontRef
+import platform.CoreText.CTFontManagerRegisterGraphicsFont
+import platform.Foundation.CFBridgingRelease
 import platform.Foundation.NSBundle
 import platform.Foundation.NSData
+import platform.Foundation.NSError
 import platform.Foundation.create
 import platform.darwin.UInt8Var
 
@@ -48,4 +56,17 @@ actual class FontResource(
         val dataProvider: CPointer<CGDataProvider>? = CGDataProviderCreateWithCFData(cfDataRef)
         fontRef = CGFontCreateWithDataProvider(dataProvider)!!
     }
+
+    @Throws(NSErrorException::class)
+    @Suppress("unused")
+    fun registerFont() =
+        memScoped {
+            val error = alloc<CFErrorRefVar>()
+            if (!CTFontManagerRegisterGraphicsFont(fontRef, error.ptr)) {
+                error.value?.let {
+                    val nsError = CFBridgingRelease(it) as NSError
+                    throw NSErrorException(nsError)
+                }
+            }
+        }
 }
