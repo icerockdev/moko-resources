@@ -36,7 +36,17 @@ actual class FontResource(
     val fontName: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {
-    internal val fontRef: CGFontRef
+    internal val fontRef: CGFontRef by lazy {
+        val fontData: NSData = this.data
+        val cfDataRef: CPointer<__CFData>? = CFDataCreate(
+            kCFAllocatorDefault,
+            fontData.bytes() as CPointer<UInt8Var>,
+            fontData.length.toLong()
+        )
+        val dataProvider: CPointer<CGDataProvider>? = CGDataProviderCreateWithCFData(cfDataRef)
+
+        CGFontCreateWithDataProvider(dataProvider)!!
+    }
 
     val filePath: String
         get() {
@@ -52,17 +62,6 @@ actual class FontResource(
             return NSData.create(contentsOfFile = filePath)
                 ?: error("can't read $filePath file")
         }
-
-    init {
-        val fontData: NSData = this.data
-        val cfDataRef: CPointer<__CFData>? = CFDataCreate(
-            kCFAllocatorDefault,
-            fontData.bytes() as CPointer<UInt8Var>,
-            fontData.length.toLong()
-        )
-        val dataProvider: CPointer<CGDataProvider>? = CGDataProviderCreateWithCFData(cfDataRef)
-        fontRef = CGFontCreateWithDataProvider(dataProvider)!!
-    }
 
     @Throws(NSErrorException::class)
     @Suppress("unused")
