@@ -4,7 +4,6 @@
 
 package dev.icerock.moko.resources
 
-import cnames.structs.CGDataProvider
 import cnames.structs.__CFData
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.alloc
@@ -19,6 +18,7 @@ import platform.CoreFoundation.CFURLCreateWithFileSystemPath
 import platform.CoreFoundation.kCFAllocatorDefault
 import platform.CoreFoundation.kCFURLPOSIXPathStyle
 import platform.CoreGraphics.CGDataProviderCreateWithCFData
+import platform.CoreGraphics.CGDataProviderRelease
 import platform.CoreGraphics.CGFontCreateWithDataProvider
 import platform.CoreGraphics.CGFontRef
 import platform.CoreText.CTFontManagerRegisterFontsForURL
@@ -43,9 +43,13 @@ actual class FontResource(
             fontData.bytes() as CPointer<UInt8Var>,
             fontData.length.toLong()
         )
-        val dataProvider: CPointer<CGDataProvider>? = CGDataProviderCreateWithCFData(cfDataRef)
+        val dataProvider = CGDataProviderCreateWithCFData(cfDataRef)
+        val cgFont = CGFontCreateWithDataProvider(dataProvider)!!
 
-        CGFontCreateWithDataProvider(dataProvider)!!
+        CGDataProviderRelease(dataProvider)
+        CFRelease(cfDataRef)
+
+        cgFont
     }
 
     val filePath: String
