@@ -7,6 +7,7 @@ package dev.icerock.gradle.tasks
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.configuration.getAndroidRClassPackage
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.android.AndroidMRGenerator
@@ -162,7 +163,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         generators: List<ResourceGeneratorFeature<*>>,
     ): JvmMRGenerator {
         return JvmMRGenerator(
-            settings = settings, generators = generators.map {
+            settings = settings,
+            generators = generators.map {
                 it.createJvmGenerator()
             }
         )
