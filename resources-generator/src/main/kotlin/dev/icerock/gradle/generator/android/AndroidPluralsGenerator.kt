@@ -15,14 +15,14 @@ import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
 import org.apache.commons.lang3.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 
 class AndroidPluralsGenerator(
-    pluralsFileTree: FileTree,
+    ownPluralsFileTree: FileTree,
+    lowerPluralsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val androidRClassPackageProvider: Provider<String>,
-) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+    private val androidRClassPackage: String,
+) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -32,13 +32,13 @@ class AndroidPluralsGenerator(
         CodeBlock.of("PluralsResource(R.plurals.%L)", processKey(key))
 
     override fun getImports(): List<ClassName> = listOf(
-        ClassName(androidRClassPackageProvider.get(), "R")
+        ClassName(androidRClassPackage, "R")
     )
 
     override fun generateResources(
         resourcesGenerationDir: File,
         language: LanguageType,
-        strings: Map<KeyType, PluralMap>
+        strings: Map<KeyType, PluralMap>,
     ) {
         val valuesDir = File(resourcesGenerationDir, language.androidResourcesDir)
         val stringsFile = File(valuesDir, "multiplatform_plurals.xml")

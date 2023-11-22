@@ -23,7 +23,9 @@ abstract class ImagesGenerator(
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
-    override val inputFiles: Iterable<File> get() = inputFileTree.files
+    override val inputFiles: Iterable<File>
+        get() = inputFileTree.files
+
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"
 
@@ -101,31 +103,36 @@ abstract class ImagesGenerator(
         private val settings: MRGenerator.Settings,
         private val logger: Logger
     ) : ResourceGeneratorFeature<ImagesGenerator> {
-        private val fileTree: FileTree = settings.resourcesSourceDirectory
+        private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching {
                 it.include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
             }
 
         override fun createCommonGenerator(): ImagesGenerator = CommonImagesGenerator(
-            inputFileTree = fileTree
+            ownInputFileTree = settings.ownResourcesFileTree,
+            upperInputFileTree = settings.upperResourcesFileTree
         )
 
         override fun createIosGenerator(): ImagesGenerator = AppleImagesGenerator(
-            inputFileTree = fileTree
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createAndroidGenerator(): ImagesGenerator = AndroidImagesGenerator(
-            inputFileTree = fileTree,
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree,
             androidRClassPackageProvider = settings.androidRClassPackage,
             logger = logger
         )
 
         override fun createJsGenerator(): ImagesGenerator = JsImagesGenerator(
-            inputFileTree = fileTree
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createJvmGenerator(): ImagesGenerator = JvmImagesGenerator(
-            inputFileTree = fileTree,
+            ownInputFileTree = settings.ownResourcesFileTree,
+            lowerInputFileTree = settings.lowerResourcesFileTree,
             settings = settings
         )
     }

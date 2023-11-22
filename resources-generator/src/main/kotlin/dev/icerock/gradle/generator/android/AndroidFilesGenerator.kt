@@ -11,14 +11,14 @@ import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 import java.util.Locale
 
 class AndroidFilesGenerator(
-    inputFileTree: FileTree,
-    private val androidRClassPackageProvider: Provider<String>,
-) : FilesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
+    private val androidRClassPackage: String,
+) : FilesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -27,7 +27,7 @@ class AndroidFilesGenerator(
         CodeBlock.of("FileResource(rawResId = R.raw.%L)", keyToResourceId(fileSpec.key))
 
     override fun getImports() = listOf(
-        ClassName(androidRClassPackageProvider.get(), "R")
+        ClassName(androidRClassPackage, "R")
     )
 
     override fun generateResources(

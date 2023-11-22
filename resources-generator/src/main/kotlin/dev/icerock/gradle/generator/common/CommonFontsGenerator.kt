@@ -13,8 +13,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class CommonFontsGenerator(
-    inputFileTree: FileTree
-) : FontsGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ownInputFileTree: FileTree,
+    upperInputFileTree: FileTree,
+) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()

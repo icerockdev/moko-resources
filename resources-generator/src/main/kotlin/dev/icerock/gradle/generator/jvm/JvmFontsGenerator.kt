@@ -13,9 +13,10 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmFontsGenerator(
-    inputFileTree: FileTree,
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
     settings: MRGenerator.Settings
-) : FontsGenerator(inputFileTree),
+) : FontsGenerator(ownInputFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers() = arrayOf(KModifier.ACTUAL)

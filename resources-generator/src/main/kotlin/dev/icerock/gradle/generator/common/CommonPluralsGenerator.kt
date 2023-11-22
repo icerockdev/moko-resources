@@ -11,9 +11,10 @@ import dev.icerock.gradle.generator.PluralsGenerator
 import org.gradle.api.file.FileTree
 
 class CommonPluralsGenerator(
-    pluralsFileTree: FileTree,
+    ownPluralsFileTree: FileTree,
+    upperPluralsFileTree: FileTree,
     strictLineBreaks: Boolean,
-) : PluralsGenerator(pluralsFileTree, strictLineBreaks),
+) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getPropertyInitializer(
         key: String

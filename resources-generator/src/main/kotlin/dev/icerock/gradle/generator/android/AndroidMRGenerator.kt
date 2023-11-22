@@ -7,21 +7,15 @@ package dev.icerock.gradle.generator.android
 import com.android.build.gradle.tasks.GenerateResValues
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.squareup.kotlinpoet.KModifier
-import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.TargetMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.withType
-import java.io.File
 
 class AndroidMRGenerator(
-    generatedDir: File,
-    sourceSet: Provider<SourceSet>,
     settings: Settings,
     generators: List<Generator>,
-) : MRGenerator(
-    generatedDir = generatedDir,
-    sourceSet = sourceSet,
+) : TargetMRGenerator(
     settings = settings,
     generators = generators
 ) {

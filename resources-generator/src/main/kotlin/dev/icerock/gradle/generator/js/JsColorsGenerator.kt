@@ -18,8 +18,9 @@ import dev.icerock.gradle.generator.jsJvmCommon.createColorResourceInitializer
 import org.gradle.api.file.FileTree
 
 class JsColorsGenerator(
-    colorsFileTree: FileTree
-) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ownColorsFileTree: FileTree,
+    lowerColorsFileTree: FileTree,
+) : ColorsGenerator(ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

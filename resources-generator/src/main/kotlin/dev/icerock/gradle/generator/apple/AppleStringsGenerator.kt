@@ -13,14 +13,18 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import org.gradle.api.provider.Provider
 import java.io.File
 
 class AppleStringsGenerator(
-    stringsFileTree: FileTree,
+    ownStringsFileTree: FileTree,
+    lowerStringsFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val baseLocalizationRegion: Provider<String>
-) : StringsGenerator(stringsFileTree, strictLineBreaks),
+    private val baseLocalizationRegion: String
+) : StringsGenerator(
+    lowerStringsFileTree = lowerStringsFileTree,
+    ownStringsFileTree = ownStringsFileTree,
+    strictLineBreaks = strictLineBreaks
+),
     ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -15,12 +15,7 @@ internal fun configureJvmTargetGenerator(
     settings: MRGenerator.Settings,
     features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
 ) {
-    val mainCompilation: KotlinCompilation<*> = target.compilations
-        .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
-
     JvmMRGenerator(
-        generatedDir = settings.generatedDir,
-        sourceSet = target.project.provider { createSourceSet(mainCompilation.defaultSourceSet) },
         settings = settings,
         generators = features.map { it.createJvmGenerator() }
     ).apply(project = target.project)

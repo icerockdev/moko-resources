@@ -21,7 +21,7 @@ import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class ColorsGenerator(
-    private val colorsFileTree: FileTree
+    private val colorsFileTree: FileTree,
 ) : MRGenerator.Generator {
 
     override val inputFiles: Iterable<File> get() = colorsFileTree.files
@@ -38,7 +38,7 @@ abstract class ColorsGenerator(
     override fun generate(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder
+        objectBuilder: TypeSpec.Builder,
     ): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
         extendObjectBodyAtStart(objectBuilder)
@@ -68,7 +68,7 @@ abstract class ColorsGenerator(
 
     protected open fun generateResources(
         resourcesGenerationDir: File,
-        colors: List<ColorNode>
+        colors: List<ColorNode>,
     ) = Unit
 
     private fun parseColors(): List<ColorNode> {
@@ -135,20 +135,35 @@ abstract class ColorsGenerator(
     }
 
     class Feature(
-        private val settings: MRGenerator.Settings
+        private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<ColorsGenerator> {
-        private val fileTree: FileTree = settings.resourcesSourceDirectory
+        private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching { it.include("**/colors*.xml") }
 
-        override fun createCommonGenerator() = CommonColorsGenerator(fileTree)
+        override fun createCommonGenerator() = CommonColorsGenerator(
+            ownColorsFileTree = settings.ownResourcesFileTree,
+            upperColorsFileTree = settings.upperResourcesFileTree
+        )
 
-        override fun createIosGenerator() = AppleColorsGenerator(fileTree)
+        override fun createIosGenerator() = AppleColorsGenerator(
+            ownColorsFileTree = settings.ownResourcesFileTree,
+            lowerColorsFileTree = settings.lowerResourcesFileTree
+        )
 
-        override fun createAndroidGenerator() = AndroidColorsGenerator(fileTree)
+        override fun createAndroidGenerator() = AndroidColorsGenerator(
+            ownColorsFileTree = settings.ownResourcesFileTree,
+            lowerColorsFileTree = settings.lowerResourcesFileTree
+        )
 
-        override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(fileTree)
+        override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(
+            ownColorsFileTree = settings.ownResourcesFileTree,
+            lowerColorsFileTree = settings.lowerResourcesFileTree
+        )
 
-        override fun createJvmGenerator() = JvmColorsGenerator(fileTree, settings)
+        override fun createJvmGenerator() = JvmColorsGenerator(
+            ownColorsFileTree = settings.ownResourcesFileTree,
+            lowerColorsFileTree = settings.lowerResourcesFileTree, settings
+        )
     }
 
     protected fun replaceColorAlpha(color: String?): String? {
@@ -182,7 +197,7 @@ data class ColorNode(
     val name: String,
     val lightColor: String?, // as rgba
     val darkColor: String?, // as rgba
-    val singleColor: String? // as rgba
+    val singleColor: String?, // as rgba
 ) {
     fun isThemed(): Boolean = lightColor != null && darkColor != null
 }

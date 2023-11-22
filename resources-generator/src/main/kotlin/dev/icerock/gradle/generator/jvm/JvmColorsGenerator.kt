@@ -15,9 +15,10 @@ import dev.icerock.gradle.generator.jsJvmCommon.createColorResourceInitializer
 import org.gradle.api.file.FileTree
 
 class JvmColorsGenerator(
-    colorsFileTree: FileTree,
+    ownColorsFileTree: FileTree,
+    lowerColorsFileTree: FileTree,
     settings: MRGenerator.Settings
-) : ColorsGenerator(colorsFileTree),
+) : ColorsGenerator(ownColorsFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getImports() = listOf(

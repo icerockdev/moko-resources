@@ -21,8 +21,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleColorsGenerator(
-    colorsFileTree: FileTree
-) : ColorsGenerator(colorsFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+    ownColorsFileTree: FileTree,
+    lowerColorsFileTree: FileTree,
+) : ColorsGenerator(ownColorsFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
     override fun getImports(): List<ClassName> {
         return listOf(
             ClassName("dev.icerock.moko.graphics", "Color")

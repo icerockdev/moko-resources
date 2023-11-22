@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
-import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.TargetMRGenerator
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.generator.apple.action.PackResourcesToKLibAction
@@ -19,12 +19,10 @@ import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
-import dev.icerock.gradle.utils.dependsOnProcessResources
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
@@ -44,21 +42,17 @@ import kotlin.reflect.full.memberProperties
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
-    generatedDir: File,
-    sourceSet: Provider<SourceSet>,
     settings: Settings,
     generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
-    private val baseLocalizationRegion: Provider<String>,
-) : MRGenerator(
-    generatedDir = generatedDir,
-    sourceSet = sourceSet,
+    private val baseLocalizationRegion: String,
+) : TargetMRGenerator(
     settings = settings,
     generators = generators
 ) {
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
-    private val bundleIdentifierProvider = settings.packageName.map { "$it.MR" }
+    private val bundleIdentifier = "${settings.packageName}.MR"
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
@@ -71,13 +65,13 @@ class AppleMRGenerator(
                 bundleClassName,
                 KModifier.PRIVATE
             )
-                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"${bundleIdentifierProvider.get()}\") }"))
+                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"${bundleIdentifier}\") }"))
                 .build()
         )
 
         mrClass.addProperty(
             PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
-                .initializer("%S", resourcesGenerationDir.get().calculateResourcesHash())
+                .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
                 .build()
         )
     }
@@ -95,7 +89,7 @@ class AppleMRGenerator(
     }
 
     override fun beforeMRGeneration() {
-        assetsGenerationDir.get().mkdirs()
+        assetsGenerationDir.mkdirs()
     }
 
     private fun setupKLibResources(generationTask: GenerateMultiplatformResourcesTask) {
@@ -107,9 +101,9 @@ class AppleMRGenerator(
             task.doLast {
                 PackResourcesToKLibAction(
                     baseLocalizationRegion = baseLocalizationRegion,
-                    bundleIdentifierProvider = bundleIdentifierProvider,
-                    assetsDirectoryProvider = assetsGenerationDir,
-                    resourcesGenerationDirProvider = resourcesGenerationDir,
+                    bundleIdentifier = bundleIdentifier,
+                    assetsDirectory = assetsGenerationDir,
+                    resourcesGenerationDir = resourcesGenerationDir,
                 )
             }
         }
@@ -120,11 +114,12 @@ class AppleMRGenerator(
 //            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
 //            .configureEach { it.dependsOn(generationTask) }
 
-        dependsOnProcessResources(
-            project = generationTask.project,
-            sourceSet = sourceSet,
-            task = generationTask,
-        )
+    //TODO fix usage of sourceSet
+//        dependsOnProcessResources(
+//            project = generationTask.project,
+//            sourceSet = sourceSet,
+//            task = generationTask,
+//        )
     }
 
     private fun setupFrameworkResources() {
@@ -187,10 +182,10 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
 
         kotlinNativeTarget.binaries
             .matching { it is TestExecutable && it.compilation.associateWith.contains(compilation) }
-            .configureEach {
-                val executable = it as TestExecutable
-                executable.linkTaskProvider.configure {
-                    it.doLast(CopyResourcesFromKLibsToExecutableAction())
+            .configureEach { binary ->
+                val executable = binary as TestExecutable
+                executable.linkTaskProvider.configure { link ->
+                    link.doLast(CopyResourcesFromKLibsToExecutableAction())
                 }
             }
     }
@@ -199,7 +194,6 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         val kotlinNativeTarget = compilation.target as KotlinNativeTarget
         val project = kotlinNativeTarget.project
 
-        @Suppress("ObjectLiteralToLambda")
         val fatAction: Action<Task> = object : Action<Task> {
             override fun execute(task: Task) {
                 val fatTask: FatFrameworkTask = task as FatFrameworkTask

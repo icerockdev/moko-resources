@@ -58,14 +58,9 @@ private fun setupAndroidGenerator(
     settings: MRGenerator.Settings,
     features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
 ) {
-    val androidExtension: BaseExtension = project.extensions.getByType(BaseExtension::class)
-    val androidMainSourceSet: AndroidSourceSet = androidExtension.mainSourceSet
-
     setAssetsDirsRefresh(project)
 
     AndroidMRGenerator(
-        generatedDir = settings.generatedDir,
-        sourceSet = project.provider { createSourceSet(androidMainSourceSet) },
         settings = settings,
         generators = features.map { it.createAndroidGenerator() },
     ).apply(project)

@@ -17,8 +17,9 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JsFilesGenerator(
-    inputFileTree: FileTree
-) : FilesGenerator(inputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    ownInputFileTree: FileTree,
+    lowerInputFileTree: FileTree,
+) : FilesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
