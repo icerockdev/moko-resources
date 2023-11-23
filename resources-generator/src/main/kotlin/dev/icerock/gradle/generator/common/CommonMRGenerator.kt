@@ -8,8 +8,10 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FileSpec.Builder
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.KModifier.ACTUAL
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
+import dev.icerock.gradle.generator.MRGenerator.Generator
 import dev.icerock.gradle.generator.common.GeneratedObject.GeneratedObjectModifier
 import dev.icerock.gradle.generator.common.GeneratedObject.GeneratedObjectModifier.Companion.asGeneratedModifier
 import dev.icerock.gradle.generator.common.GeneratedObject.GeneratedObjectType
@@ -34,6 +36,27 @@ class CommonMRGenerator(
 ) {
     val logger = project.logger
 
+    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.EXPECT)
+
+    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
+        project.tasks
+            .withType<KotlinCompile<*>>()
+//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
+            .configureEach { it.dependsOn(generationTask) }
+
+        project.rootProject.tasks.matching {
+            it.name.contains("prepareKotlinBuildScriptModel")
+        }.configureEach {
+            it.dependsOn(generationTask)
+        }
+
+        project.tasks
+            .matching { it.name.startsWith("metadata") && it.name.endsWith("ProcessResources") }
+            .configureEach {
+                it.dependsOn(generationTask)
+            }
+    }
+
     override fun generateFileSpec(): FileSpec? {
         if (settings.ownResourcesFileTree.files.isEmpty()) return null
 
@@ -47,7 +70,7 @@ class CommonMRGenerator(
 
         val lowerResourcesIsEmpty = settings.lowerResourcesFileTree.files.isEmpty()
 
-        if (!lowerResourcesIsEmpty) {
+        if (lowerResourcesIsEmpty) {
             generateExpectMRObjectFileSpec(
                 visibilityModifier = visibilityModifier,
                 generatedObjectsList = generatedObjectsList,
@@ -56,62 +79,21 @@ class CommonMRGenerator(
         } else {
             // If lower resources has files, when on lower level has expect object and
             // need to generate actual interface with fields
-
-            //TODO actual
-            // Добавить генерацию actual интерфейсов в которых будут поля
-
-            // generated MR class structure:
-//            val mrClassSpec: TypeSpec.Builder = TypeSpec.classBuilder(settings.className) // default: object MR
-
-            val ownDirectoryWithResources: FileCollection = settings.ownResourcesFileTree
-
-            ownDirectoryWithResources.forEach {
-                logger.warn("ownDirectoryWithResources: ${it.absoluteFile}")
-            }
-
-            generators.forEach { generator ->
-                ownDirectoryWithResources.forEach { file: File ->
-                    val sourceSetName: String = file.targetName
-
-                    val interfaceName =
-                        sourceSetName.capitalize() + generator.mrObjectName.capitalize()
-                    val resourcesInterfaceBuilder: TypeSpec.Builder =
-                        TypeSpec.interfaceBuilder("${interfaceName}${generator.resourceClassName.simpleName}")
-                            .addModifiers(visibilityModifier)
-                            .addModifiers(KModifier.ACTUAL)
-
-                    generatedObjectsList.add(
-                        GeneratedObject(
-                            type = GeneratedObjectType.INTERFACE,
-                            name = interfaceName,
-                            modifier = GeneratedObjectModifier.ACTUAL
-                        )
-                    )
-
-                    resourcesInterfaceBuilder.addType(
-                        generator.generate(
-                            assetsGenerationDir,
-                            resourcesGenerationDir,
-                            resourcesInterfaceBuilder
-                        )
-                    )
-                    processMRClass(resourcesInterfaceBuilder)
-
-                    val mrClass: TypeSpec = resourcesInterfaceBuilder.build()
-                    fileSpec.addType(mrClass)
-                }
-            }
-
-//            processMRClass(mrClassSpec)
-//
-//            val mrClass: TypeSpec = mrClassSpec.build()
-//            fileSpec.addType(mrClass)
+            generateActualInterfacesFileSpec(
+                visibilityModifier = visibilityModifier,
+                generatedObjectsList = generatedObjectsList,
+                fileSpec = fileSpec
+            )
         }
 
         generators
             .flatMap { it.getImports() }
             .plus(getImports())
-            .forEach { fileSpec.addImport(it.packageName, it.simpleName) }
+            .forEach {
+                logger.warn("Imports: ${it.packageName}, ${it.simpleName}")
+
+                fileSpec.addImport(it.packageName, it.simpleName)
+            }
 
         return fileSpec.build()
     }
@@ -143,7 +125,6 @@ class CommonMRGenerator(
                 .addModifiers(visibilityModifier) // public/internal
 
             // Check upper directories on files with resources
-            //TODO: Спискок ресурсов содержит только файлы, без "пустых" директорий
             val upperDirectoryWithResources: FileCollection = settings.upperResourcesFileTree
             //                .filter { it.isDirectory }
             //                .filter { file: File ->
@@ -156,10 +137,11 @@ class CommonMRGenerator(
                 // If upper directory has files of resources, need to generate
                 // expect interface for sourceSet
                 upperDirectoryWithResources.forEach { file: File ->
-                    val sourceSetName: String = file.targetName
+                    val interfaceName = getInterfaceName(
+                        targetName = file.targetName,
+                        generator = generator
+                    )
 
-                    val interfaceName =
-                        sourceSetName.capitalize() + generator.mrObjectName.capitalize()
                     val resourcesInterface: TypeSpec =
                         TypeSpec.interfaceBuilder(interfaceName)
                             .addModifiers(visibilityModifier)
@@ -173,6 +155,7 @@ class CommonMRGenerator(
                 expectInterfacesList
             } else emptyList()
 
+            //Implement interfaces for generated expect object
             generatedInterfaces.forEach { interfaceName ->
                 builder.addSuperinterface(
                     ClassName(
@@ -183,8 +166,8 @@ class CommonMRGenerator(
 
                 generatedObjectsList.add(
                     GeneratedObject(
-                        type = GeneratedObjectType.INTERFACE,
                         name = interfaceName,
+                        type = GeneratedObjectType.INTERFACE,
                         modifier = GeneratedObjectModifier.EXPECT
                     )
                 )
@@ -205,26 +188,50 @@ class CommonMRGenerator(
         fileSpec.addType(mrClass)
     }
 
-    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.EXPECT)
 
-    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
-        project.tasks
-            .withType<KotlinCompile<*>>()
-//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
-            .configureEach { it.dependsOn(generationTask) }
+    private fun generateActualInterfacesFileSpec(
+        visibilityModifier: KModifier,
+        generatedObjectsList: MutableList<GeneratedObject>,
+        fileSpec: Builder,
+    ) {
+        val targetName = settings.ownResourcesFileTree.files.first().targetName
 
-        project.rootProject.tasks.matching {
-            it.name.contains("prepareKotlinBuildScriptModel")
-        }.configureEach {
-            it.dependsOn(generationTask)
+        settings.ownResourcesFileTree.forEach {
+            logger.warn("ownDirectoryWithResources: ${it.absoluteFile}")
         }
 
-        project.tasks
-            .matching { it.name.startsWith("metadata") && it.name.endsWith("ProcessResources") }
-            .configureEach {
-                it.dependsOn(generationTask)
-            }
+        generators.forEach { generator ->
+            val interfaceName = getInterfaceName(
+                targetName = targetName,
+                generator = generator
+            )
+
+            val resourcesInterfaceBuilder: TypeSpec.Builder =
+                TypeSpec.interfaceBuilder(interfaceName)
+                    .addModifiers(visibilityModifier)
+                    .addModifiers(ACTUAL)
+
+            generatedObjectsList.add(
+                GeneratedObject(
+                    name = interfaceName,
+                    type = GeneratedObjectType.INTERFACE,
+                    modifier = GeneratedObjectModifier.ACTUAL
+                )
+            )
+
+            fileSpec.addType(
+                generator.generate(
+                    assetsGenerationDir,
+                    resourcesGenerationDir,
+                    resourcesInterfaceBuilder
+                )
+            )
+        }
     }
+}
+
+private fun getInterfaceName(targetName: String, generator: Generator): String{
+    return targetName.capitalize() + generator.mrObjectName.capitalize()
 }
 
 data class GeneratedObject(
