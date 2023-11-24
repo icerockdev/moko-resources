@@ -42,11 +42,13 @@ import kotlin.reflect.full.memberProperties
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
+    project: Project,
     settings: Settings,
     generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
     private val baseLocalizationRegion: String,
 ) : TargetMRGenerator(
+    project = project,
     settings = settings,
     generators = generators
 ) {

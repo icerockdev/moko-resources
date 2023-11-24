@@ -7,7 +7,6 @@ package dev.icerock.gradle.configuration
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 internal fun configureJvmTargetGenerator(
@@ -16,6 +15,7 @@ internal fun configureJvmTargetGenerator(
     features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
 ) {
     JvmMRGenerator(
+        project = target.project,
         settings = settings,
         generators = features.map { it.createJvmGenerator() }
     ).apply(project = target.project)

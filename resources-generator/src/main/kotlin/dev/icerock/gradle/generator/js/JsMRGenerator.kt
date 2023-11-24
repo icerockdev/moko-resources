@@ -25,10 +25,12 @@ import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 class JsMRGenerator(
+    project: Project,
     settings: Settings,
     generators: List<Generator>,
     private val compilation: KotlinJsIrCompilation,
 ) : TargetMRGenerator(
+    project = project,
     settings = settings,
     generators = generators
 ) {

@@ -11,15 +11,14 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.MRGenerator.Generator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratedObjectType
 import dev.icerock.gradle.metadata.GeneratedVariables
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
+import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
-import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.targetName
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
@@ -241,10 +240,6 @@ class CommonMRGenerator(
             )
         }
     }
-}
-
-private fun getInterfaceName(targetName: String, generator: Generator): String {
-    return targetName.capitalize() + generator.mrObjectName.capitalize()
 }
 
 private fun List<PropertySpec>.toGeneratedVariables() : List<GeneratedVariables> {

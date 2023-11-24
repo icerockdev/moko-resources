@@ -13,9 +13,11 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 
 class AndroidMRGenerator(
+    project: Project,
     settings: Settings,
     generators: List<Generator>,
 ) : TargetMRGenerator(
+    project = project,
     settings = settings,
     generators = generators
 ) {

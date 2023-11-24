@@ -61,6 +61,7 @@ private fun setupAndroidGenerator(
     setAssetsDirsRefresh(project)
 
     AndroidMRGenerator(
+        project = project,
         settings = settings,
         generators = features.map { it.createAndroidGenerator() },
     ).apply(project)

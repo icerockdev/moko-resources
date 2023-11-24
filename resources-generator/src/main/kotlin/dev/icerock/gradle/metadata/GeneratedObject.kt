@@ -4,7 +4,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import org.jetbrains.kotlin.com.google.gson.annotations.SerializedName
 
 data class GeneratedObject(
     val type: GeneratedObjectType,
@@ -26,29 +25,6 @@ data class GeneratedObject(
                     variables.forEach {
                         add(it.asJsonObject)
                     }
-                }
-            )
-        }
-}
-
-data class GeneratedObjectMetadata(
-    @SerializedName("type")
-    val type: String,
-    @SerializedName("name")
-    val name: String,
-    @SerializedName("modifier")
-    val modifier: String,
-    @SerializedName("variables")
-    val variables: List<GeneratedVariablesMetadata>,
-) {
-    val asGeneratedObject: GeneratedObject
-        get() {
-            return GeneratedObject(
-                type = GeneratedObjectType.getByValue(type),
-                name = name,
-                modifier = GeneratedObjectModifier.getByValue(modifier),
-                variables = variables.map {
-                    it.asGeneratedVariables
                 }
             )
         }

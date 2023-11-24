@@ -34,6 +34,7 @@ internal fun configureAppleTargetGenerator(
         .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
 
     AppleMRGenerator(
+        project = target.project,
         settings = settings,
         generators = features.map { it.createIosGenerator() },
         compilation = mainCompilation,
