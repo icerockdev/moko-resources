@@ -8,22 +8,25 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FileSpec.Builder
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.MRGenerator.Generator
-import dev.icerock.gradle.generator.common.GeneratedObject.GeneratedObjectModifier
-import dev.icerock.gradle.generator.common.GeneratedObject.GeneratedObjectType
+import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.GeneratedObjectType
+import dev.icerock.gradle.metadata.GeneratedVariables
+import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.targetName
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 class CommonMRGenerator(
-    project: Project,
+    private val project: Project,
     settings: Settings,
     generators: List<Generator>,
 ) : MRGenerator(
@@ -89,6 +92,12 @@ class CommonMRGenerator(
                 fileSpec.addImport(className.packageName, className.simpleName)
             }
 
+        createOutputMetadata(
+            buildDir = project.buildDir,
+            sourceSetName = settings.ownResourcesFileTree.first().targetName,
+            generatedObjects = generatedObjectsList
+        )
+
         return fileSpec.build()
     }
 
@@ -108,7 +117,8 @@ class CommonMRGenerator(
             GeneratedObject(
                 type = GeneratedObjectType.OBJECT,
                 name = settings.className,
-                modifier = GeneratedObjectModifier.EXPECT
+                modifier = GeneratedObjectModifier.EXPECT,
+                variables = emptyList()
             )
         )
 
@@ -163,18 +173,28 @@ class CommonMRGenerator(
                     GeneratedObject(
                         name = interfaceName,
                         type = GeneratedObjectType.INTERFACE,
-                        modifier = GeneratedObjectModifier.EXPECT
+                        modifier = GeneratedObjectModifier.EXPECT,
+                        variables = emptyList()
                     )
                 )
             }
 
-            mrClassSpec.addType(
-                generator.generate(
-                    assetsGenerationDir = assetsGenerationDir,
-                    resourcesGenerationDir = resourcesGenerationDir,
-                    objectBuilder = builder
+            val generatedResources = generator.generate(
+                assetsGenerationDir = assetsGenerationDir,
+                resourcesGenerationDir = resourcesGenerationDir,
+                objectBuilder = builder
+            )
+
+            generatedObjectsList.add(
+                GeneratedObject(
+                    name = generator.mrObjectName,
+                    type = GeneratedObjectType.OBJECT,
+                    modifier = GeneratedObjectModifier.EXPECT,
+                    variables = generatedResources.propertySpecs.toGeneratedVariables(),
                 )
             )
+
+            mrClassSpec.addType(generatedResources)
         }
 
         processMRClass(mrClassSpec)
@@ -182,7 +202,6 @@ class CommonMRGenerator(
         val mrClass: TypeSpec = mrClassSpec.build()
         fileSpec.addType(mrClass)
     }
-
 
     private fun generateActualInterfacesFileSpec(
         visibilityModifier: KModifier,
@@ -202,20 +221,23 @@ class CommonMRGenerator(
                     .addModifiers(visibilityModifier)
                     .addModifiers(KModifier.ACTUAL)
 
+            val generatedResources: TypeSpec = generator.generate(
+                assetsGenerationDir,
+                resourcesGenerationDir,
+                resourcesInterfaceBuilder
+            )
+
             generatedObjectsList.add(
                 GeneratedObject(
                     name = interfaceName,
                     type = GeneratedObjectType.INTERFACE,
-                    modifier = GeneratedObjectModifier.ACTUAL
+                    modifier = GeneratedObjectModifier.ACTUAL,
+                    variables = generatedResources.propertySpecs.toGeneratedVariables()
                 )
             )
 
             fileSpec.addType(
-                generator.generate(
-                    assetsGenerationDir,
-                    resourcesGenerationDir,
-                    resourcesInterfaceBuilder
-                )
+                generatedResources
             )
         }
     }
@@ -225,31 +247,15 @@ private fun getInterfaceName(targetName: String, generator: Generator): String {
     return targetName.capitalize() + generator.mrObjectName.capitalize()
 }
 
-data class GeneratedObject(
-    val type: GeneratedObjectType,
-    val name: String,
-    val modifier: GeneratedObjectModifier,
-) {
-    val objectSpec: String
-        get() = "${modifier.name.lowercase()} ${type.name.lowercase()} $name"
-
-    enum class GeneratedObjectType {
-        OBJECT,
-        INTERFACE
-    }
-
-    enum class GeneratedObjectModifier {
-        EXPECT,
-        ACTUAL;
-
-        companion object {
-            fun KModifier.asGeneratedModifier(): GeneratedObjectModifier {
-                return when (this) {
-                    KModifier.EXPECT -> EXPECT
-                    KModifier.ACTUAL -> ACTUAL
-                    else -> throw GradleException("Invalid object modifier")
-                }
+private fun List<PropertySpec>.toGeneratedVariables() : List<GeneratedVariables> {
+    return map {
+        GeneratedVariables(
+            name = it.name,
+            modifier = if (it.modifiers.contains(KModifier.ACTUAL)) {
+                GeneratedObjectModifier.ACTUAL
+            } else {
+                GeneratedObjectModifier.EXPECT
             }
-        }
+        )
     }
 }
