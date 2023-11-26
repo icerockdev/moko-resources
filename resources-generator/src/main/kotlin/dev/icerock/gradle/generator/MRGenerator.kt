@@ -104,12 +104,12 @@ abstract class MRGenerator(
                 }
                 it.generator = this
             } as GenerateMultiplatformResourcesTask
-        }.getOrNull() ?: project.tasks.register(
+        }.getOrNull() ?: project.tasks.create(
             genTaskName,
             GenerateMultiplatformResourcesTask::class.java
         ) {
             it.generator = this
-        }.get()
+        }
 
         apply(generationTask = genTask, project = project)
 
