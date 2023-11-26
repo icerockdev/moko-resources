@@ -46,7 +46,6 @@ class AppleMRGenerator(
     settings: Settings,
     generators: List<Generator>,
     private val compilation: AbstractKotlinNativeCompilation,
-    private val baseLocalizationRegion: String,
 ) : TargetMRGenerator(
     project = project,
     settings = settings,
@@ -102,7 +101,7 @@ class AppleMRGenerator(
 
             task.doLast {
                 PackResourcesToKLibAction(
-                    baseLocalizationRegion = baseLocalizationRegion,
+                    baseLocalizationRegion = settings.iosLocalizationRegion,
                     bundleIdentifier = bundleIdentifier,
                     assetsDirectory = assetsGenerationDir,
                     resourcesGenerationDir = resourcesGenerationDir,

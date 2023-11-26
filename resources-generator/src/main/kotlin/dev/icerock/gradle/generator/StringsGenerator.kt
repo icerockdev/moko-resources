@@ -25,7 +25,7 @@ abstract class StringsGenerator(
 ) : BaseGenerator<String>() {
 
     override val inputFiles: Iterable<File>
-        get() = ownStringsFileTree.matching {
+        get() = (lowerStringsFileTree + ownStringsFileTree).matching {
             it.include(STRINGS_MASK)
         }.files
 

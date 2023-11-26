@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="androidHelloWorld">Android, Hello  World</string>
-    <string name="hello_world">Hello moko-resources Android World</string>
 </resources>

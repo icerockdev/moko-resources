@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.BufferedReader
 import java.io.File
 
@@ -50,27 +51,31 @@ object Metadata {
 
         parsedArray.forEach { generatedObjectJson: JsonElement ->
             val element: JsonObject = generatedObjectJson.jsonObject
-            val name: String = element["name"].cleanValue()
-            val type: String = element["type"].cleanValue()
-            val modifier: String = element["modifier"].cleanValue()
-            val variables: JsonArray? = element["variables"]?.jsonArray
+            val name: String = element.getValue(GeneratedObject.KEY_NAME)
+            val type: String = element.getValue(GeneratedObject.KEY_TYPE)
+            val modifier: String = element.getValue(GeneratedObject.KEY_MODIFIER)
+            val variables: JsonArray? = element[GeneratedObject.KEY_PROPERTIES]?.jsonArray
 
             generatedObjects.add(
                 GeneratedObject(
                     name = name,
                     type = GeneratedObjectType.getByValue(type),
                     modifier = GeneratedObjectModifier.getByValue(modifier),
-                    variables = variables?.map { variableJson ->
+                    properties = variables?.map { variableJson ->
                         val variableElement: JsonObject = variableJson.jsonObject
-                        val variableName: String = variableElement["name"].cleanValue()
-                        val variableModifier: String = variableElement["modifier"].cleanValue()
+                        val variableName: String = variableElement.getValue(
+                            key = GeneratedProperties.KEY_NAME
+                        )
+                        val variableModifier: String = variableElement.getValue(
+                            key = GeneratedProperties.KEY_MODIFIER
+                        )
 
-                        GeneratedVariables(
+                        GeneratedProperties(
                             name = variableName,
                             modifier = GeneratedObjectModifier.getByValue(variableModifier)
 
                         )
-                    } ?: emptyList()
+                    }.orEmpty()
                 )
             )
         }
@@ -78,7 +83,7 @@ object Metadata {
         return generatedObjects
     }
 
-    private fun JsonElement?.cleanValue():String {
-        return this.toString().replace("\"", "")
+    private fun JsonObject.getValue(key: String): String {
+        return this[key]?.jsonPrimitive?.content ?: ""
     }
 }

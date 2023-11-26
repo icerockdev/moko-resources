@@ -14,7 +14,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratedObjectType
-import dev.icerock.gradle.metadata.GeneratedVariables
+import dev.icerock.gradle.metadata.GeneratedProperties
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
@@ -117,7 +117,7 @@ class CommonMRGenerator(
                 type = GeneratedObjectType.OBJECT,
                 name = settings.className,
                 modifier = GeneratedObjectModifier.EXPECT,
-                variables = emptyList()
+                properties = emptyList()
             )
         )
 
@@ -173,7 +173,7 @@ class CommonMRGenerator(
                         name = interfaceName,
                         type = GeneratedObjectType.INTERFACE,
                         modifier = GeneratedObjectModifier.EXPECT,
-                        variables = emptyList()
+                        properties = emptyList()
                     )
                 )
             }
@@ -189,7 +189,7 @@ class CommonMRGenerator(
                     name = generator.mrObjectName,
                     type = GeneratedObjectType.OBJECT,
                     modifier = GeneratedObjectModifier.EXPECT,
-                    variables = generatedResources.propertySpecs.toGeneratedVariables(),
+                    properties = generatedResources.propertySpecs.toGeneratedVariables(),
                 )
             )
 
@@ -231,20 +231,18 @@ class CommonMRGenerator(
                     name = interfaceName,
                     type = GeneratedObjectType.INTERFACE,
                     modifier = GeneratedObjectModifier.ACTUAL,
-                    variables = generatedResources.propertySpecs.toGeneratedVariables()
+                    properties = generatedResources.propertySpecs.toGeneratedVariables()
                 )
             )
 
-            fileSpec.addType(
-                generatedResources
-            )
+            fileSpec.addType(generatedResources)
         }
     }
 }
 
-private fun List<PropertySpec>.toGeneratedVariables() : List<GeneratedVariables> {
+fun List<PropertySpec>.toGeneratedVariables() : List<GeneratedProperties> {
     return map {
-        GeneratedVariables(
+        GeneratedProperties(
             name = it.name,
             modifier = if (it.modifiers.contains(KModifier.ACTUAL)) {
                 GeneratedObjectModifier.ACTUAL

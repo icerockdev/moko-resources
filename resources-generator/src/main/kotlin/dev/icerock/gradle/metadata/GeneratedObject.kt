@@ -9,23 +9,30 @@ data class GeneratedObject(
     val type: GeneratedObjectType,
     val name: String,
     val modifier: GeneratedObjectModifier,
-    val variables: List<GeneratedVariables>,
+    val properties: List<GeneratedProperties>,
 ) {
     val objectSpec: String
         get() = "${modifier.value} ${type.value} $name"
 
     val asJsonObject: JsonObject
         get() = buildJsonObject {
-            put(key = "name", value = name)
-            put(key = "type", value = type.value)
-            put(key = "modifier", value = modifier.value)
+            put(key = KEY_NAME, value = name)
+            put(key = KEY_TYPE, value = type.value)
+            put(key = KEY_MODIFIER, value = modifier.value)
             put(
-                key = "variables",
+                key = KEY_PROPERTIES,
                 element = buildJsonArray {
-                    variables.forEach {
+                    properties.forEach {
                         add(it.asJsonObject)
                     }
                 }
             )
         }
+
+    companion object {
+        const val KEY_NAME = "name"
+        const val KEY_TYPE = "type"
+        const val KEY_MODIFIER = "modifier"
+        const val KEY_PROPERTIES = "properties"
+    }
 }

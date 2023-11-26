@@ -38,7 +38,6 @@ internal fun configureAppleTargetGenerator(
         settings = settings,
         generators = features.map { it.createIosGenerator() },
         compilation = mainCompilation,
-        baseLocalizationRegion = settings.iosLocalizationRegion
     ).apply(target.project)
 }
 

@@ -48,7 +48,6 @@ abstract class MRGenerator(
             "generateMR$name",
             GenerateMultiplatformResourcesTask::class.java
         ) {
-//            it.generator = this
             it.inputs.property("mokoSettingsPackageName", settings.packageName)
             it.inputs.property("mokoSettingsClassName", settings.className)
             it.inputs.property("mokoSettingsVisibility", settings.visibility)

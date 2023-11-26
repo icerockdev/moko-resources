@@ -177,7 +177,9 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     ): JsMRGenerator {
         TODO()
 //        return JsMRGenerator(
+//            project = project,
 //            settings = settings,
+//            compilation = , //TODO: Research implementation
 //            generators = generators.map {
 //                it.createJsGenerator()
 //            }
@@ -222,5 +224,13 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         generators: List<ResourceGeneratorFeature<*>>,
     ): AppleMRGenerator {
         TODO()
+//        return AppleMRGenerator(
+//            project = project,
+//            settings = settings,
+//            generators = generators.map {
+//                it.createIosGenerator()
+//            },
+//            compilation = ,
+//        )
     }
 }

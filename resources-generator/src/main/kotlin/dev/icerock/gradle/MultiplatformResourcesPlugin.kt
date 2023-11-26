@@ -111,6 +111,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 
                     it.platformType.set(target.platformType.name)
 
+                    project.logger.warn("i configure it.platformType = ${it.platformType.get()}")
+
                     if (target is KotlinNativeTarget) {
                         it.konanTarget.set(target.konanTarget.name)
                     }
@@ -190,27 +192,25 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         val androidSourceSet: com.android.build.gradle.api.AndroidSourceSet? =
             androidExtension?.sourceSets?.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
-        when {
-            commonSourceSet != null -> {
-                setupKotlinSourceSet(
-                    project = project,
-                    kotlinSourceSet = commonSourceSet,
-                )
-            }
-            androidSourceSet != null -> {
-                setupAndroidSourceSet(
-                    project = project,
-                    androidSourceSet = androidSourceSet
-                )
-            }
-            else -> {
-                kmpExtension.sourceSets.configureEach { kotlinSourceSet ->
-                    setupKotlinSourceSet(
-                        project = project,
-                        kotlinSourceSet = kotlinSourceSet,
-                    )
-                }
-            }
+        if (commonSourceSet != null) {
+            setupKotlinSourceSet(
+                project = project,
+                kotlinSourceSet = commonSourceSet,
+            )
+        }
+
+        if (androidSourceSet != null) {
+            setupAndroidSourceSet(
+                project = project,
+                androidSourceSet = androidSourceSet
+            )
+        }
+
+        kmpExtension.sourceSets.configureEach { kotlinSourceSet ->
+            setupKotlinSourceSet(
+                project = project,
+                kotlinSourceSet = kotlinSourceSet,
+            )
         }
     }
 
@@ -234,6 +234,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         project: Project,
         androidSourceSet: AndroidSourceSet,
     ) {
+        project.logger.warn("i android sourceSets: ${androidSourceSet.name}")
+
         val mokoResourcesDir = getGeneratedResourcesDir(
             project = project,
             sourceSetName = androidSourceSet.name

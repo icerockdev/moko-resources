@@ -17,8 +17,8 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AndroidStringsGenerator(
-    private val ownStringsFileTree: FileTree,
     private val lowerStringsFileTree: FileTree,
+    private val ownStringsFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val androidRClassPackage: String,
 ) : StringsGenerator(
@@ -27,29 +27,9 @@ class AndroidStringsGenerator(
     strictLineBreaks = strictLineBreaks
 ), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
-    override fun getClassModifiers(): Array<KModifier> {
-        val ownIsEmpty = ownStringsFileTree.matching {
-            it.include(STRINGS_MASK)
-        }.isEmpty
+    override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-        val lowerIsEmpty = lowerStringsFileTree.matching {
-            it.include(STRINGS_MASK)
-        }.isEmpty
-
-        return arrayOf(KModifier.ACTUAL)
-    }
-
-    override fun getPropertyModifiers(): Array<KModifier> {
-        val ownIsEmpty = ownStringsFileTree.matching {
-            it.include(STRINGS_MASK)
-        }.isEmpty
-
-        val lowerIsEmpty = lowerStringsFileTree.matching {
-            it.include(STRINGS_MASK)
-        }.isEmpty
-
-        return arrayOf(KModifier.ACTUAL)
-    }
+    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(key: String) =
         CodeBlock.of("StringResource(R.string.%L)", processKey(key))

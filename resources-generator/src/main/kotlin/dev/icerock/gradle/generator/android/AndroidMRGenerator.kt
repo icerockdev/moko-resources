@@ -24,6 +24,7 @@ class AndroidMRGenerator(
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
+
         project.tasks.withType<GenerateResValues>().configureEach {
             it.dependsOn(generationTask)
         }
