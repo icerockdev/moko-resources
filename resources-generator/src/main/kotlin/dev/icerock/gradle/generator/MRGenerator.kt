@@ -98,7 +98,12 @@ abstract class MRGenerator(
         val name = sourceSet.name
         val genTaskName = "generateMR$name"
         val genTask = runCatching {
-            project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
+            project.tasks.getByName(genTaskName) {
+                require(it is GenerateMultiplatformResourcesTask) {
+                    "Cannot register generateMR$name as this name is already used"
+                }
+                it.generator = this
+            } as GenerateMultiplatformResourcesTask
         }.getOrNull() ?: project.tasks.register(
             genTaskName,
             GenerateMultiplatformResourcesTask::class.java

@@ -52,6 +52,10 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
         )
         mrExtension.multiplatformResourcesPackage = "${target.group}.${target.name}"
 
+        // register generateMRcommonMain now as it will be created anyway. This way users can define
+        // dependencies for that task
+        target.tasks.register("generateMRcommonMain", GenerateMultiplatformResourcesTask::class.java)
+
         target.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val multiplatformExtension =
                 target.extensions.getByType(KotlinMultiplatformExtension::class)
