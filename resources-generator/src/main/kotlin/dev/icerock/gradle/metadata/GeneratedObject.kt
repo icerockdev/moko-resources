@@ -4,9 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GeneratedObject(
+    val modifier: GeneratedObjectModifier,
     val type: GeneratedObjectType,
     val name: String,
-    val modifier: GeneratedObjectModifier,
     val properties: List<GeneratedProperties>,
 ) {
     val objectSpec: String

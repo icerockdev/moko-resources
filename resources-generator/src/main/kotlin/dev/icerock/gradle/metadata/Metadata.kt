@@ -9,13 +9,13 @@ object Metadata {
     private const val DIRECTORY = "generated/moko-resources/metadata"
 
     fun createOutputMetadata(
-        buildDir: File,
+        outputMetadataFile: File,
         sourceSetName: String,
         generatedObjects: List<GeneratedObject>,
     ) {
         if (generatedObjects.isEmpty()) return
 
-        val metadataDir = File(buildDir, DIRECTORY).apply {
+        val metadataDir = File(outputMetadataFile, DIRECTORY).apply {
             mkdirs()
         }
         val metadataFile = File(metadataDir, "$sourceSetName-metadata.json")
@@ -27,10 +27,10 @@ object Metadata {
     }
 
     fun readInputMetadata(
-        buildDir: File,
+        inputMetadataFile: File,
         sourceSetName: String,
     ): List<GeneratedObject> {
-        val metadataDir = File(buildDir, DIRECTORY)
+        val metadataDir = File(inputMetadataFile, DIRECTORY)
         val inputMetadata = File(metadataDir, "$sourceSetName-metadata.json")
         val bufferedReader: BufferedReader = File(inputMetadata.toURI()).bufferedReader()
         val inputString: String = bufferedReader.use { it.readText() }

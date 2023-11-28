@@ -7,15 +7,19 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.PropertySpec.Builder
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.metadata.GeneratedObject
 import java.io.File
 
 abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     override fun generate(
+        metadata: List<GeneratedObject>,
+        typeSpecIsInterface: Boolean,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder
+        objectBuilder: TypeSpec.Builder,
     ): TypeSpec {
         // language - key - value
         val languageMap: Map<LanguageType, Map<KeyType, T>> = loadLanguageMap()
@@ -23,7 +27,12 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         beforeGenerateResources(objectBuilder, languageMap)
 
-        val stringsClass = createTypeSpec(languageKeyValues.keys.toList(), objectBuilder)
+        val stringsClass = createTypeSpec(
+            metadata = metadata,
+            typeSpecIsInterface = typeSpecIsInterface,
+            keys = languageKeyValues.keys.toList(),
+            objectBuilder = objectBuilder
+        )
 
         languageMap.forEach { (language, strings) ->
             generateResources(resourcesGenerationDir, language, strings)
@@ -33,24 +42,47 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     }
 
     @Suppress("SpreadOperator")
-    private fun createTypeSpec(keys: List<KeyType>, objectBuilder: TypeSpec.Builder): TypeSpec {
+    private fun createTypeSpec(
+        metadata: List<GeneratedObject> = emptyList(),
+        typeSpecIsInterface: Boolean,
+        keys: List<KeyType>,
+        objectBuilder: TypeSpec.Builder,
+    ): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
         extendObjectBodyAtStart(objectBuilder)
 
         keys.forEach { key ->
             val name = key.replace(".", "_")
-            val property =
-                PropertySpec.builder(name, resourceClassName)
-            property.addModifiers(*getPropertyModifiers())
-            getPropertyInitializer(
-                key
-            )?.let { property.initializer(it) }
+            val property: Builder = PropertySpec.builder(name, resourceClassName)
+
+            if (!typeSpecIsInterface) {
+                property
+                    .addModifiers(*getPropertyModifiers())
+
+                addOverrideModifier(property, metadata)
+
+                getPropertyInitializer(
+                    key
+                )?.let { property.initializer(it) }
+            }
+
             objectBuilder.addProperty(property.build())
         }
 
         extendObjectBodyAtEnd(objectBuilder)
         return objectBuilder.build()
+    }
+
+    private fun addActualOverrideModifier(
+        property: PropertySpec.Builder,
+        metadata: List<GeneratedObject>,
+    ) {
+
+
+        property
+            .addModifiers(KModifier.OVERRIDE)
+
     }
 
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
@@ -61,15 +93,14 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     protected open fun beforeGenerateResources(
         objectBuilder: TypeSpec.Builder,
-        languageMap: Map<LanguageType, Map<KeyType, T>>
+        languageMap: Map<LanguageType, Map<KeyType, T>>,
     ) = Unit
 
     protected open fun generateResources(
         resourcesGenerationDir: File,
         language: LanguageType,
-        strings: Map<KeyType, T>
-    ) {
-    }
+        strings: Map<KeyType, T>,
+    ) = Unit
 
     protected companion object {
         const val BASE_LANGUAGE = "base"

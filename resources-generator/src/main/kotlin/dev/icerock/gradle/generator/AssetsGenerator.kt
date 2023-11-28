@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.apple.AppleAssetsGenerator
 import dev.icerock.gradle.generator.common.CommonAssetsGenerator
 import dev.icerock.gradle.generator.js.JsAssetsGenerator
 import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
+import dev.icerock.gradle.metadata.GeneratedObject
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -86,6 +87,8 @@ abstract class AssetsGenerator(
     }
 
     override fun generate(
+        metadata: List<GeneratedObject>,
+        typeSpecIsInterface: Boolean,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder

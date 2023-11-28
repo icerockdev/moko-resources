@@ -28,14 +28,25 @@ abstract class TargetMRGenerator(
 
     override fun generateFileSpec(): FileSpec? {
         val visibilityModifier: KModifier = settings.visibility.toModifier()
+        val inputMetadata: MutableList<GeneratedObject> = mutableListOf()
 
         //Read list of generated resources on previous level
-        val inputMetadata: List<GeneratedObject> = readInputMetadata(
-            buildDir = project.buildDir,
-            sourceSetName = settings.lowerResourcesFileTree.files.first().targetName
-        )
-// TODO: Check need of this for empty resources targets
-//        if (hasNoResourcesForGenerator(inputMetadata)) return null
+        if (settings.lowerResourcesFileTree.files.isNotEmpty()) {
+            inputMetadata.addAll(
+                readInputMetadata(
+                    inputMetadataFile = project.buildDir,
+                    sourceSetName = settings.lowerResourcesFileTree.files.firstOrNull()?.targetName
+                        ?: throw Exception("Lower resources is empty")
+                )
+            )
+        }
+
+        inputMetadata.forEach {
+            logger.warn("i prev: $it")
+        }
+
+        // TODO: Check need of this for empty resources targets
+        // if (hasNoResourcesForGenerator(inputMetadata)) return null
 
         val fileSpec: FileSpec.Builder = FileSpec.builder(
             packageName = settings.packageName,
@@ -43,12 +54,6 @@ abstract class TargetMRGenerator(
         )
 
         val generatedObjects = mutableListOf<GeneratedObject>()
-
-        inputMetadata.forEach {
-            logger.warn("i prev: $it")
-        }
-
-        logger.warn("i mrClassSpec")
 
         @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(settings.className) // default: object MR
@@ -69,38 +74,30 @@ abstract class TargetMRGenerator(
                     it.modifier == GeneratedObjectModifier.EXPECT
         }
 
-        //Add actual implementation of expect interfaces from previous level
-        generateActualInterface(
-            visibilityModifier = settings.visibility.toModifier(),
-            generatedObjectsList = generatedObjects,
-            fileSpec = fileSpec
-        )
+        // Add actual implementation of expect interfaces from previous levels
+        if (inputMetadata.isNotEmpty()) {
+            generateActualInterface(
+                visibilityModifier = settings.visibility.toModifier(),
+                generatedObjectsList = generatedObjects,
+                fileSpec = fileSpec
+            )
 
-        generatedObjects.forEach {
-            logger.warn("i generated objects item: ${it.name}")
-        }
+            // Generation of actual interfaces not realised on current level
+            expectInterfacesList.forEach { expectInterface ->
+                val hasInGeneratedActualObjects = generatedObjects.firstOrNull {
+                    it.name == expectInterface.name
+                } != null
 
-        //Implementation not realised expect interfaces
-        expectInterfacesList.forEach { expectInterface ->
-            val hasInGeneratedActualObjects = generatedObjects.firstOrNull {
-                it.name == expectInterface.name
-            } != null
+                if (hasInGeneratedActualObjects) return@forEach
 
-            logger.warn("i has in generatedObjects: $hasInGeneratedActualObjects")
+                val resourcesInterface: TypeSpec =
+                    TypeSpec.interfaceBuilder(expectInterface.name)
+                        .addModifiers(visibilityModifier)
+                        .addModifiers(KModifier.ACTUAL)
+                        .build()
 
-            if (hasInGeneratedActualObjects) return@forEach
-
-            val resourcesInterface: TypeSpec =
-                TypeSpec.interfaceBuilder(expectInterface.name)
-                    .addModifiers(visibilityModifier)
-                    .addModifiers(KModifier.ACTUAL)
-                    .build()
-
-            fileSpec.addType(resourcesInterface)
-        }
-
-        expectInterfacesList.forEach {
-            logger.warn("i expectInterfacesList item: $it")
+                fileSpec.addType(resourcesInterface)
+            }
         }
 
         generators.forEach { generator ->
@@ -108,6 +105,8 @@ abstract class TargetMRGenerator(
                 .objectBuilder(generator.mrObjectName)
                 .addModifiers(visibilityModifier)
 
+            // Implement to object expect interfaces from previous
+            // levels of resources
             expectInterfacesList.forEach { generatedObject: GeneratedObject ->
                 builder.addSuperinterface(
                     ClassName(
@@ -119,9 +118,9 @@ abstract class TargetMRGenerator(
 
             mrClassSpec.addType(
                 generator.generate(
-                    assetsGenerationDir,
-                    resourcesGenerationDir,
-                    builder
+                    assetsGenerationDir = assetsGenerationDir,
+                    resourcesGenerationDir = resourcesGenerationDir,
+                    objectBuilder = builder,
                 )
             )
         }
@@ -132,8 +131,9 @@ abstract class TargetMRGenerator(
         fileSpec.addType(mrClass)
 
         createOutputMetadata(
-            buildDir = project.buildDir,
-            sourceSetName = settings.ownResourcesFileTree.first().targetName,
+            outputMetadataFile = project.buildDir,
+            sourceSetName = settings.ownResourcesFileTree.firstOrNull()?.targetName
+                ?: "unknownTarget",
             generatedObjects = generatedObjects
         )
 
@@ -150,18 +150,20 @@ abstract class TargetMRGenerator(
         generatedObjectsList: MutableList<GeneratedObject>,
         fileSpec: FileSpec.Builder,
     ) {
-        logger.warn("i res")
         settings.lowerResourcesFileTree.forEach {
-            logger.warn("i lowerResourcesFileTree file: $it")
+            logger.warn("i generateActualInterface lowerResourcesFileTree file: $it")
         }
         settings.upperResourcesFileTree.forEach {
-            logger.warn("i upperResourcesFileTree file: $it")
+            logger.warn("i generateActualInterface upperResourcesFileTree file: $it")
         }
         settings.ownResourcesFileTree.forEach {
-            logger.warn("i ownResourcesFileTree file: $it")
+            logger.warn("i generateActualInterface ownResourcesFileTree file: $it")
         }
-        val targetName =
-            settings.ownResourcesFileTree.files.firstOrNull()?.targetName ?: "androidMain"
+
+        if (settings.ownResourcesFileTree.files.isEmpty()) return
+
+        val targetName: String =
+            settings.ownResourcesFileTree.files.firstOrNull()?.targetName ?: return
 
         generators.forEach { generator ->
             val interfaceName = getInterfaceName(
@@ -174,9 +176,11 @@ abstract class TargetMRGenerator(
                     .addModifiers(visibilityModifier)
 
             val generatedResources: TypeSpec = generator.generate(
-                assetsGenerationDir,
-                resourcesGenerationDir,
-                resourcesInterfaceBuilder
+                metadata = generatedObjectsList,
+                typeSpecIsInterface = true,
+                assetsGenerationDir = assetsGenerationDir,
+                resourcesGenerationDir = resourcesGenerationDir,
+                objectBuilder = resourcesInterfaceBuilder
             )
 
             generatedObjectsList.add(

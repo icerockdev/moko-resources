@@ -15,6 +15,7 @@ import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratedObjectType
 import dev.icerock.gradle.metadata.GeneratedProperties
+import dev.icerock.gradle.metadata.Metadata
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
@@ -58,6 +59,23 @@ class CommonMRGenerator(
     override fun generateFileSpec(): FileSpec? {
         if (settings.ownResourcesFileTree.files.isEmpty()) return null
 
+        val inputMetadata: MutableList<GeneratedObject> = mutableListOf()
+
+        //Read list of generated resources on previous level
+        if (settings.lowerResourcesFileTree.files.isNotEmpty()) {
+            inputMetadata.addAll(
+                Metadata.readInputMetadata(
+                    inputMetadataFile = project.buildDir,
+                    sourceSetName = settings.lowerResourcesFileTree.files.firstOrNull()?.targetName
+                        ?: throw Exception("Lower resources is empty")
+                )
+            )
+        }
+
+        inputMetadata.forEach {
+            logger.warn("i prev: $it")
+        }
+
         val visibilityModifier: KModifier = settings.visibility.toModifier()
         val generatedObjectsList = mutableListOf<GeneratedObject>()
 
@@ -79,7 +97,8 @@ class CommonMRGenerator(
             // need to generate actual interface with fields
             generateActualInterfacesFileSpec(
                 visibilityModifier = visibilityModifier,
-                generatedObjectsList = generatedObjectsList,
+                generatedObjects = generatedObjectsList,
+                inputMetadata = inputMetadata,
                 fileSpec = fileSpec
             )
         }
@@ -92,7 +111,7 @@ class CommonMRGenerator(
             }
 
         createOutputMetadata(
-            buildDir = project.buildDir,
+            outputMetadataFile = project.buildDir,
             sourceSetName = settings.ownResourcesFileTree.first().targetName,
             generatedObjects = generatedObjectsList
         )
@@ -204,7 +223,8 @@ class CommonMRGenerator(
 
     private fun generateActualInterfacesFileSpec(
         visibilityModifier: KModifier,
-        generatedObjectsList: MutableList<GeneratedObject>,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
         fileSpec: Builder,
     ) {
         val targetName = settings.ownResourcesFileTree.files.first().targetName
@@ -221,12 +241,14 @@ class CommonMRGenerator(
                     .addModifiers(KModifier.ACTUAL)
 
             val generatedResources: TypeSpec = generator.generate(
-                assetsGenerationDir,
-                resourcesGenerationDir,
-                resourcesInterfaceBuilder
+                metadata = generatedObjects,
+                typeSpecIsInterface = true,
+                assetsGenerationDir = assetsGenerationDir,
+                resourcesGenerationDir = resourcesGenerationDir,
+                objectBuilder = resourcesInterfaceBuilder,
             )
 
-            generatedObjectsList.add(
+            generatedObjects.add(
                 GeneratedObject(
                     name = interfaceName,
                     type = GeneratedObjectType.INTERFACE,
@@ -237,10 +259,20 @@ class CommonMRGenerator(
 
             fileSpec.addType(generatedResources)
         }
+
+        inputMetadata.forEach { metadata ->
+            val hasInGeneratedActual = generatedObjects.firstOrNull { actualMetadata ->
+                metadata.name == actualMetadata.name
+            } != null
+
+            if (!hasInGeneratedActual) {
+                generatedObjects.add(metadata)
+            }
+        }
     }
 }
 
-fun List<PropertySpec>.toGeneratedVariables() : List<GeneratedProperties> {
+fun List<PropertySpec>.toGeneratedVariables(): List<GeneratedProperties> {
     return map {
         GeneratedProperties(
             name = it.name,

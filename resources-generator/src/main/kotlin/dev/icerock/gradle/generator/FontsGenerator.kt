@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.apple.AppleFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.js.JsFontsGenerator
 import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
+import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.utils.decapitalize
 import org.gradle.api.file.FileTree
 import java.io.File
@@ -27,6 +28,8 @@ abstract class FontsGenerator(
     override val mrObjectName: String = "fonts"
 
     override fun generate(
+        metadata: List<GeneratedObject>,
+        typeSpecIsInterface: Boolean,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder

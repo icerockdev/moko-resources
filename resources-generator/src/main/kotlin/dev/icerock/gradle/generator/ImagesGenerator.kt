@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.apple.AppleImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
+import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.utils.withoutScale
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
@@ -30,6 +31,8 @@ abstract class ImagesGenerator(
     override val mrObjectName: String = "images"
 
     override fun generate(
+        metadata: List<GeneratedObject>,
+        typeSpecIsInterface: Boolean,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder

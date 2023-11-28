@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MRVisibility
+import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
@@ -80,6 +81,8 @@ abstract class MRGenerator(
         val inputFiles: Iterable<File>
 
         fun generate(
+            metadata: List<GeneratedObject> = emptyList(),
+            typeSpecIsInterface: Boolean = false,
             assetsGenerationDir: File,
             resourcesGenerationDir: File,
             objectBuilder: TypeSpec.Builder,

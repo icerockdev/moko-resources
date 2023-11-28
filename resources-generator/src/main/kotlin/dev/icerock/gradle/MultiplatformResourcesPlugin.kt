@@ -22,6 +22,7 @@ import dev.icerock.gradle.generator.ResourceGeneratorFeature
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
+import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -68,7 +69,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         kmpExtension: KotlinMultiplatformExtension,
     ) {
+
         kmpExtension.sourceSets.configureEach { kotlinSourceSet: KotlinSourceSet ->
+            project.logger.warn("i kmpExtension.sourceSets: ${kotlinSourceSet.name}")
+
             val resourcesSourceDirectory: SourceDirectorySet = createMokoResourcesSourceSet(
                 project = project,
                 kotlinSourceSet = kotlinSourceSet
@@ -101,25 +105,25 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             project.logger.warn("i target ${target.targetName}")
 
             target.compilations.configureEach { compilation ->
-                val sourceSet: KotlinSourceSet = compilation.defaultSourceSet
-                val genTask: TaskProvider<GenerateMultiplatformResourcesTask> = requireNotNull(
-                    sourceSet.extras[mokoResourcesGenTaskKey()]
-                )
 
-                genTask.configure {
-                    project.logger.warn("i configure platformName ${target.platformType.name}")
+                compilation.kotlinSourceSetsObservable.forAll { sourceSet ->
+                    project.logger.warn("i compilation kotlinSourceSets: $sourceSet")
 
-                    it.platformType.set(target.platformType.name)
+                    project.logger.warn(("i compilationSourceSet: $sourceSet"))
 
-                    project.logger.warn("i configure it.platformType = ${it.platformType.get()}")
+                    val genTask: TaskProvider<GenerateMultiplatformResourcesTask> = requireNotNull(
+                        sourceSet.extras[mokoResourcesGenTaskKey()]
+                    )
 
-                    if (target is KotlinNativeTarget) {
-                        it.konanTarget.set(target.konanTarget.name)
+                    genTask.configure {
+                        project.logger.warn("i configure platformName ${target.platformType.name}")
+
+                        it.platformType.set(target.platformType.name)
                     }
-                }
 
-                compilation.compileTaskProvider.configure {
-                    it.dependsOn(genTask)
+                    compilation.compileTaskProvider.configure {
+                        it.dependsOn(genTask)
+                    }
                 }
             }
         }
@@ -357,8 +361,14 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 dependsSourceSet.extras[mokoResourcesGenTaskKey()]
             )
 
-            genTask.configure {
-                it.dependsOn(dependsGenTask)
+            genTask.configure { resourceTask ->
+                resourceTask.dependsOn(dependsGenTask) //TODO: Убрать после реализации связи через метадату
+
+                resourceTask.inputMetadataFile.set(
+                    dependsGenTask.flatMap {
+                        it.outputMetadataFile
+                    }
+                )
             }
         }
     }

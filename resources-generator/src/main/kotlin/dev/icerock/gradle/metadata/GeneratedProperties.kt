@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GeneratedProperties(
-    val name: String,
     val modifier: GeneratedObjectModifier,
+    val name: String,
 )

@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.apple.AppleColorsGenerator
 import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
+import dev.icerock.gradle.metadata.GeneratedObject
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -36,6 +37,8 @@ abstract class ColorsGenerator(
 
     @Suppress("SpreadOperator")
     override fun generate(
+        metadata: List<GeneratedObject>,
+        typeSpecIsInterface: Boolean,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,

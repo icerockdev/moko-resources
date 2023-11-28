@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.apple.AppleFilesGenerator
 import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.js.JsFilesGenerator
 import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
+import dev.icerock.gradle.metadata.GeneratedObject
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -26,6 +27,8 @@ abstract class FilesGenerator(
     override val mrObjectName: String = "files"
 
     override fun generate(
+        metadata: List<GeneratedObject>,
+        typeSpecIsInterface: Boolean,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder

@@ -45,7 +45,7 @@ sealed interface LanguageType {
         override val jvmResourcesSuffix: String = "_${toLocaleString()}"
 
         /**
-         * Throw an error here so that we safeguard ourselves from implcitly calling `Local.toString`.
+         * Throw an error here so that we safeguard ourselves from implicitly calling `Local.toString`.
          * You should always use the more explicit methods defined above.
          */
         override fun toString(): String = TODO("Use toLocaleString or toBcpString instead!")
