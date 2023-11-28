@@ -11,6 +11,7 @@ plugins {
     id("publication-convention")
     id("com.gradle.plugin-publish") version ("1.2.0")
     id("java-gradle-plugin")
+    kotlin("plugin.serialization") version ("1.9.0")
 }
 
 group = "dev.icerock.moko"
