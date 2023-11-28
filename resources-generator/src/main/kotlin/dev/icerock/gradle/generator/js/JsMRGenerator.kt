@@ -98,6 +98,7 @@ class JsMRGenerator(
 //        )
     }
 
+    //TODO: Вынести на этап конфигурации
     private fun setupKLibResources(generationTask: Task) {
         val taskProvider = compilation.compileTaskProvider
         taskProvider.configure { compileTask ->

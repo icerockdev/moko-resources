@@ -93,6 +93,7 @@ class AppleMRGenerator(
         assetsGenerationDir.mkdirs()
     }
 
+    //TODO: Вынести на этап конфигурации
     private fun setupKLibResources(generationTask: GenerateMultiplatformResourcesTask) {
         val compileTask: TaskProvider<KotlinNativeCompile> = compilation.compileTaskProvider
 
