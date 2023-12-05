@@ -13,3 +13,10 @@ fun MutableList<GeneratedObject>.addActual(actualObject: GeneratedObject){
 
     add(actualObject)
 }
+
+fun List<GeneratedObject>.getExpectInterfaces(): List<GeneratedObject> {
+    return filter {
+        it.type == GeneratedObjectType.Interface
+                && it.modifier == GeneratedObjectModifier.Expect
+    }
+}

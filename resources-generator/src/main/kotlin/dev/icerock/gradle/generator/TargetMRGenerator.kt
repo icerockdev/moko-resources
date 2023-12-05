@@ -11,6 +11,7 @@ import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.Metadata.readInputMetadata
 import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.getExpectInterfaces
 import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
@@ -84,32 +85,23 @@ abstract class TargetMRGenerator(
             )
 
             // Generation of actual interfaces not realised on current level
-            expectInterfacesList.forEach { expectInterface ->
-                val hasInGeneratedActualInterfaces = inputMetadata.hasInActualInterfaces(
-                    interfaceName = expectInterface.name
-                )
+            val expectInterfaces = inputMetadata.getExpectInterfaces()
 
-                if (hasInGeneratedActualInterfaces) return@forEach
-
+            expectInterfaces.forEach { expectInterface ->
                 val resourcesInterface: TypeSpec =
                     TypeSpec.interfaceBuilder(expectInterface.name)
                         .addModifiers(visibilityModifier)
                         .addModifiers(KModifier.ACTUAL)
                         .build()
 
-                // TODO: add logic with add extract interface type
                 inputMetadata.addActual(
-                    GeneratedObject(
-                        generatorType = GeneratorType.Strings,
-                        modifier = GeneratedObjectModifier.Actual,
-                        type = GeneratedObjectType.Interface,
-                        name = expectInterface.name,
-                    )
+                    expectInterface.copy(modifier = GeneratedObjectModifier.Actual)
                 )
 
                 fileSpec.addType(resourcesInterface)
             }
         }
+
         val generatedActualObjects = mutableListOf<GeneratedObject>()
 
         generators.forEach { generator ->
@@ -130,6 +122,7 @@ abstract class TargetMRGenerator(
 
             mrClassSpec.addType(
                 generator.generate(
+                    project = project,
                     inputMetadata = inputMetadata,
                     generatedObjects = generatedActualObjects,
                     targetObject = GeneratedObject(
@@ -185,8 +178,8 @@ abstract class TargetMRGenerator(
     ) {
         if (settings.ownResourcesFileTree.files.isEmpty()) return
 
-        val targetName: String =
-            settings.ownResourcesFileTree.files.firstOrNull()?.targetName ?: return
+        val targetName: String = settings.ownResourcesFileTree.files
+            .firstOrNull()?.targetName ?: return
 
         generators.forEach { generator ->
             val interfaceName = getInterfaceName(
@@ -199,6 +192,7 @@ abstract class TargetMRGenerator(
                     .addModifiers(visibilityModifier)
 
             val generatedResources: TypeSpec = generator.generate(
+                project = project,
                 inputMetadata = inputMetadata,
                 generatedObjects = inputMetadata,
                 targetObject = GeneratedObject(
@@ -219,7 +213,7 @@ abstract class TargetMRGenerator(
     private fun getObjectInterfaces(
         generatorType: GeneratorType,
         objectName: String,
-        inputMetadata: List<GeneratedObject>
+        inputMetadata: List<GeneratedObject>,
     ): List<String> {
         val interfaces = mutableListOf<String>()
 
@@ -238,15 +232,5 @@ abstract class TargetMRGenerator(
         }
 
         return interfaces.distinct()
-    }
-
-    private fun List<GeneratedObject>.hasInActualInterfaces(
-        interfaceName: String
-    ): Boolean {
-        return this.firstOrNull {
-            it.name == interfaceName
-                    && it.type == GeneratedObjectType.Interface
-                    && it.modifier == GeneratedObjectModifier.Actual
-        } != null
     }
 }

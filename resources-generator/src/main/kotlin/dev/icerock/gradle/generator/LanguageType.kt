@@ -13,16 +13,22 @@ sealed interface LanguageType {
     val jsResourcesSuffix: String
     val jvmResourcesSuffix: String
 
+    fun language(): String
+
     object Base : LanguageType {
         override val androidResourcesDir: String = "values"
         override val appleResourcesDir: String = "Base.lproj"
         override val jsResourcesSuffix: String = ""
         override val jvmResourcesSuffix: String = ""
+
+        override fun language(): String = BASE
     }
 
-    class Locale(languageTag: String) : LanguageType {
+    class Locale(private val languageTag: String) : LanguageType {
 
         private val jvmLocale: JvmLocale = JvmLocale.forLanguageTag(languageTag)
+
+        override fun language(): String = languageTag
 
         fun toBcpString(): String = jvmLocale.toLanguageTag()
         private fun toLocaleString(): String = jvmLocale.toString()

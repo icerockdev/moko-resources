@@ -16,8 +16,9 @@ import dev.icerock.gradle.generator.js.JsAssetsGenerator
 import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
-import java.io.File
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+import java.io.File
 
 @Suppress("TooManyFunctions")
 abstract class AssetsGenerator(
@@ -90,6 +91,7 @@ abstract class AssetsGenerator(
     }
 
     override fun generate(
+        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,

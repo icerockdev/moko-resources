@@ -12,10 +12,10 @@ import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
-import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
+import java.io.File
 
 abstract class MRGenerator(
     protected val settings: Settings,
@@ -84,6 +84,7 @@ abstract class MRGenerator(
         val type: GeneratorType
 
         fun generate(
+            project: Project,
             inputMetadata: MutableList<GeneratedObject>,
             generatedObjects: MutableList<GeneratedObject>, //TODO: Remove emptyList() after complete realisation
             targetObject: GeneratedObject,

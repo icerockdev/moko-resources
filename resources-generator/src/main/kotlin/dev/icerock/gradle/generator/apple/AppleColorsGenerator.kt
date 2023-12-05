@@ -17,13 +17,15 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleColorsGenerator(
+    project: Project,
     ownColorsFileTree: FileTree,
     lowerColorsFileTree: FileTree,
-) : ColorsGenerator(ownColorsFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : ColorsGenerator(project, ownColorsFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
     override fun getImports(): List<ClassName> {
         return listOf(
             ClassName("dev.icerock.moko.graphics", "Color")

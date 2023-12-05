@@ -130,14 +130,6 @@ class CommonMRGenerator(
                 .addModifiers(visibilityModifier) // public/internal
 
 
-        var expectMRObject: GeneratedObject = GeneratedObject(
-            generatorType = None,
-            type = GeneratedObjectType.Object,
-            name = settings.className,
-            modifier = GeneratedObjectModifier.Expect,
-            properties = emptyList(),
-            objects = emptyList()
-        )
         val generatedExpectInterfaces = mutableListOf<GeneratedObject>()
         val generatedExpectObjects = mutableListOf<GeneratedObject>()
 
@@ -199,6 +191,7 @@ class CommonMRGenerator(
             }
 
             val generatedResourcesTypeSpec = generator.generate(
+                project = project,
                 inputMetadata = inputMetadata,
                 generatedObjects = generatedExpectObjects,
                 targetObject = GeneratedObject(
@@ -213,25 +206,17 @@ class CommonMRGenerator(
                 objectBuilder = builder
             )
 
-//            expectMRObject = expectMRObject.copy(
-//                objects = expectMRObject.objects + listOf(
-//                    GeneratedObject(
-//                        generatorType = generator.type,
-//                        name = generator.mrObjectName,
-//                        type = GeneratedObjectType.Object,
-//                        modifier = GeneratedObjectModifier.Expect,
-//                        interfaces = generatedInterfaces,
-//                        properties = generatedResources.propertySpecs.toGeneratedVariables(),
-//                    )
-//                )
-//            )
-
             mrClassSpec.addType(generatedResourcesTypeSpec)
         }
 
         //  Add generated objects in MR
         generatedObjects.add(
-            expectMRObject.copy(
+            GeneratedObject(
+                generatorType = None,
+                type = GeneratedObjectType.Object,
+                name = settings.className,
+                modifier = GeneratedObjectModifier.Expect,
+                properties = emptyList(),
                 objects = generatedExpectObjects
             )
         )
@@ -263,6 +248,7 @@ class CommonMRGenerator(
                     .addModifiers(KModifier.ACTUAL)
 
             val generatedResources: TypeSpec = generator.generate(
+                project = project,
                 targetObject = GeneratedObject(
                     generatorType = generator.type,
                     name = interfaceName,

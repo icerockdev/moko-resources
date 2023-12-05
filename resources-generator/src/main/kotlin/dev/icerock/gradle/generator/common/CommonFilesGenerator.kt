@@ -9,13 +9,14 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.metadata.GeneratorType
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 
 class CommonFilesGenerator(
+    project: Project,
     ownInputFileTree: FileTree,
     upperInputFileTree: FileTree,
-) : FilesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : FilesGenerator(project, ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = emptyArray()
 
     override fun getPropertyModifiers(): Array<KModifier> = emptyArray()

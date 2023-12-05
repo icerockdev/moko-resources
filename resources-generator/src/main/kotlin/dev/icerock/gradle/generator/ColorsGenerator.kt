@@ -16,13 +16,15 @@ import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
-import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class ColorsGenerator(
+    val project: Project,
     private val colorsFileTree: FileTree,
 ) : MRGenerator.Generator {
 
@@ -40,6 +42,7 @@ abstract class ColorsGenerator(
 
     @Suppress("SpreadOperator")
     override fun generate(
+        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,
@@ -142,32 +145,38 @@ abstract class ColorsGenerator(
     }
 
     class Feature(
+        val project: Project,
         private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<ColorsGenerator> {
         private val fileTree: FileTree = settings.ownResourcesFileTree
             .matching { it.include("**/colors*.xml") }
 
         override fun createCommonGenerator() = CommonColorsGenerator(
+            project = project,
             ownColorsFileTree = settings.ownResourcesFileTree,
             upperColorsFileTree = settings.upperResourcesFileTree
         )
 
         override fun createIosGenerator() = AppleColorsGenerator(
+            project = project,
             ownColorsFileTree = settings.ownResourcesFileTree,
             lowerColorsFileTree = settings.lowerResourcesFileTree
         )
 
         override fun createAndroidGenerator() = AndroidColorsGenerator(
+            project = project,
             ownColorsFileTree = settings.ownResourcesFileTree,
             lowerColorsFileTree = settings.lowerResourcesFileTree
         )
 
         override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(
+            project = project,
             ownColorsFileTree = settings.ownResourcesFileTree,
             lowerColorsFileTree = settings.lowerResourcesFileTree
         )
 
         override fun createJvmGenerator() = JvmColorsGenerator(
+            project = project,
             ownColorsFileTree = settings.ownResourcesFileTree,
             lowerColorsFileTree = settings.lowerResourcesFileTree, settings
         )

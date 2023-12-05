@@ -8,13 +8,15 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleFilesGenerator(
+    project: Project,
     ownInputFileTree: FileTree,
     lowerInputFileTree: FileTree,
-) : FilesGenerator(inputFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : FilesGenerator(project, inputFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

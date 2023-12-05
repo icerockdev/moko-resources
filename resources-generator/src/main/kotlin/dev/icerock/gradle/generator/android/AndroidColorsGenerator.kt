@@ -11,13 +11,15 @@ import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class AndroidColorsGenerator(
+    project: Project,
     ownColorsFileTree: FileTree,
     lowerColorsFileTree: FileTree,
-) : ColorsGenerator(ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : ColorsGenerator(project, ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")

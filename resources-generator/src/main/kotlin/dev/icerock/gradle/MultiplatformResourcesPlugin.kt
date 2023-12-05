@@ -23,7 +23,6 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
-import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -41,6 +40,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.tooling.core.extrasKeyOf
+import java.io.File
 
 open class MultiplatformResourcesPlugin : Plugin<Project> {
 
@@ -388,8 +388,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             PluralsGenerator.Feature(settings),
             ImagesGenerator.Feature(settings, target.project.logger),
             FontsGenerator.Feature(settings),
-            FilesGenerator.Feature(settings),
-            ColorsGenerator.Feature(settings),
+            FilesGenerator.Feature(target.project, settings),
+            ColorsGenerator.Feature(target.project, settings),
             AssetsGenerator.Feature(settings)
         )
 

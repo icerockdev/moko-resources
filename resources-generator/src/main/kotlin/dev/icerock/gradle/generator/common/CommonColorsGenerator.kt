@@ -10,13 +10,14 @@ import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import dev.icerock.gradle.metadata.GeneratorType
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 
 class CommonColorsGenerator(
+    project: Project,
     ownColorsFileTree: FileTree,
     upperColorsFileTree: FileTree,
-) : ColorsGenerator(ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : ColorsGenerator(project, ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getImports(): List<ClassName> {
         return emptyList()

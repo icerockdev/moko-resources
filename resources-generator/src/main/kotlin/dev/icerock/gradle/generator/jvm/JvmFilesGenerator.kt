@@ -9,14 +9,16 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmFilesGenerator(
+    project: Project,
     ownInputFileTree: FileTree,
     lowerInputFileTree: FileTree,
     settings: MRGenerator.Settings
-) : FilesGenerator(ownInputFileTree),
+) : FilesGenerator(project, ownInputFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -17,9 +17,10 @@ import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.utils.withoutScale
-import java.io.File
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
+import java.io.File
 
 abstract class ImagesGenerator(
     private val inputFileTree: FileTree
@@ -34,6 +35,7 @@ abstract class ImagesGenerator(
     override val type: GeneratorType = GeneratorType.Images
 
     override fun generate(
+        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,

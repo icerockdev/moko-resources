@@ -17,8 +17,9 @@ import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.utils.decapitalize
-import java.io.File
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+import java.io.File
 
 abstract class FontsGenerator(
     private val inputFileTree: FileTree
@@ -31,6 +32,7 @@ abstract class FontsGenerator(
     override val type: GeneratorType = GeneratorType.Fonts
 
     override fun generate(
+        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,

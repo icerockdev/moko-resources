@@ -16,10 +16,12 @@ import dev.icerock.gradle.generator.js.JsFilesGenerator
 import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
-import java.io.File
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+import java.io.File
 
 abstract class FilesGenerator(
+    project: Project,
     private val inputFileTree: FileTree
 ) : MRGenerator.Generator {
 
@@ -30,6 +32,7 @@ abstract class FilesGenerator(
     override val type: GeneratorType = GeneratorType.Files
 
     override fun generate(
+        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,
@@ -100,6 +103,7 @@ abstract class FilesGenerator(
     )
 
     class Feature(
+        val project: Project,
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<FilesGenerator> {
 
@@ -107,27 +111,32 @@ abstract class FilesGenerator(
 //            .matching { it.include("files/**") }
 
         override fun createCommonGenerator(): FilesGenerator = CommonFilesGenerator(
+            project = project,
             ownInputFileTree = settings.ownResourcesFileTree,
             upperInputFileTree = settings.upperResourcesFileTree
         )
 
         override fun createIosGenerator(): FilesGenerator = AppleFilesGenerator(
+            project = project,
             ownInputFileTree = settings.ownResourcesFileTree,
             lowerInputFileTree = settings.lowerResourcesFileTree
         )
 
         override fun createAndroidGenerator(): FilesGenerator = AndroidFilesGenerator(
+            project = project,
             ownInputFileTree = settings.ownResourcesFileTree,
             lowerInputFileTree = settings.lowerResourcesFileTree,
             androidRClassPackage = settings.androidRClassPackage,
         )
 
         override fun createJsGenerator(): FilesGenerator = JsFilesGenerator(
+            project = project,
             ownInputFileTree = settings.ownResourcesFileTree,
             lowerInputFileTree = settings.lowerResourcesFileTree
         )
 
         override fun createJvmGenerator(): FilesGenerator = JvmFilesGenerator(
+            project = project,
             ownInputFileTree = settings.ownResourcesFileTree,
             lowerInputFileTree = settings.lowerResourcesFileTree,
             settings = settings
