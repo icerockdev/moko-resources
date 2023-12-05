@@ -1,8 +1,9 @@
 package dev.icerock.gradle.metadata
 
 enum class GeneratedObjectModifier(val value: String) {
-    EXPECT("expect"),
-    ACTUAL("actual");
+    Expect("expect"),
+    Actual("actual"),
+    None("none");
 
     companion object {
         private val VALUES = values()

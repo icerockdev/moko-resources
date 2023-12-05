@@ -8,13 +8,12 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FileSpec.Builder
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratedObjectType
-import dev.icerock.gradle.metadata.GeneratedProperties
+import dev.icerock.gradle.metadata.GeneratorType.None
 import dev.icerock.gradle.metadata.Metadata
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.getInterfaceName
@@ -65,9 +64,7 @@ class CommonMRGenerator(
         if (settings.lowerResourcesFileTree.files.isNotEmpty()) {
             inputMetadata.addAll(
                 Metadata.readInputMetadata(
-                    inputMetadataFile = project.buildDir,
-                    sourceSetName = settings.lowerResourcesFileTree.files.firstOrNull()?.targetName
-                        ?: throw Exception("Lower resources is empty")
+                    inputMetadataFiles = settings.inputMetadataFiles
                 )
             )
         }
@@ -77,7 +74,7 @@ class CommonMRGenerator(
         }
 
         val visibilityModifier: KModifier = settings.visibility.toModifier()
-        val generatedObjectsList = mutableListOf<GeneratedObject>()
+        val generatedObjects = mutableListOf<GeneratedObject>()
 
         val fileSpec: Builder = FileSpec.builder(
             packageName = settings.packageName,
@@ -87,9 +84,10 @@ class CommonMRGenerator(
         if (settings.lowerResourcesFileTree.files.isEmpty()) {
             // When lower resources is empty, should generate expect MR object
             generateExpectMRObjectFileSpec(
+                inputMetadata = inputMetadata,
+                generatedObjects = generatedObjects,
                 resourcePackage = settings.packageName,
                 visibilityModifier = visibilityModifier,
-                generatedObjectsList = generatedObjectsList,
                 fileSpec = fileSpec
             )
         } else {
@@ -97,7 +95,7 @@ class CommonMRGenerator(
             // need to generate actual interface with fields
             generateActualInterfacesFileSpec(
                 visibilityModifier = visibilityModifier,
-                generatedObjects = generatedObjectsList,
+                generatedObjects = generatedObjects,
                 inputMetadata = inputMetadata,
                 fileSpec = fileSpec
             )
@@ -111,18 +109,18 @@ class CommonMRGenerator(
             }
 
         createOutputMetadata(
-            outputMetadataFile = project.buildDir,
-            sourceSetName = settings.ownResourcesFileTree.first().targetName,
-            generatedObjects = generatedObjectsList
+            outputMetadataFile = settings.outputMetadataFile,
+            generatedObjects = generatedObjects
         )
 
         return fileSpec.build()
     }
 
     private fun generateExpectMRObjectFileSpec(
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
         resourcePackage: String,
         visibilityModifier: KModifier,
-        generatedObjectsList: MutableList<GeneratedObject>,
         fileSpec: Builder,
     ) {
         // generated MR class structure:
@@ -131,16 +129,19 @@ class CommonMRGenerator(
                 .addModifiers(KModifier.EXPECT) // expect/actual
                 .addModifiers(visibilityModifier) // public/internal
 
-        generatedObjectsList.add(
-            GeneratedObject(
-                type = GeneratedObjectType.OBJECT,
-                name = settings.className,
-                modifier = GeneratedObjectModifier.EXPECT,
-                properties = emptyList()
-            )
-        )
 
-        generators.forEach { generator ->
+        var expectMRObject: GeneratedObject = GeneratedObject(
+            generatorType = None,
+            type = GeneratedObjectType.Object,
+            name = settings.className,
+            modifier = GeneratedObjectModifier.Expect,
+            properties = emptyList(),
+            objects = emptyList()
+        )
+        val generatedExpectInterfaces = mutableListOf<GeneratedObject>()
+        val generatedExpectObjects = mutableListOf<GeneratedObject>()
+
+        generators.forEach { generator: Generator ->
             val builder: TypeSpec.Builder = TypeSpec
                 .objectBuilder(generator.mrObjectName) // resource name: example strings
                 .addModifiers(visibilityModifier) // public/internal
@@ -187,33 +188,54 @@ class CommonMRGenerator(
                     )
                 )
 
-                generatedObjectsList.add(
+                generatedExpectInterfaces.add(
                     GeneratedObject(
+                        generatorType = generator.type,
                         name = interfaceName,
-                        type = GeneratedObjectType.INTERFACE,
-                        modifier = GeneratedObjectModifier.EXPECT,
-                        properties = emptyList()
+                        type = GeneratedObjectType.Interface,
+                        modifier = GeneratedObjectModifier.Expect,
                     )
                 )
             }
 
-            val generatedResources = generator.generate(
+            val generatedResourcesTypeSpec = generator.generate(
+                inputMetadata = inputMetadata,
+                generatedObjects = generatedExpectObjects,
+                targetObject = GeneratedObject(
+                    generatorType = generator.type,
+                    modifier = GeneratedObjectModifier.Expect,
+                    type = GeneratedObjectType.Object,
+                    name = generator.mrObjectName,
+                    interfaces = generatedInterfaces
+                ),
                 assetsGenerationDir = assetsGenerationDir,
                 resourcesGenerationDir = resourcesGenerationDir,
                 objectBuilder = builder
             )
 
-            generatedObjectsList.add(
-                GeneratedObject(
-                    name = generator.mrObjectName,
-                    type = GeneratedObjectType.OBJECT,
-                    modifier = GeneratedObjectModifier.EXPECT,
-                    properties = generatedResources.propertySpecs.toGeneratedVariables(),
-                )
-            )
+//            expectMRObject = expectMRObject.copy(
+//                objects = expectMRObject.objects + listOf(
+//                    GeneratedObject(
+//                        generatorType = generator.type,
+//                        name = generator.mrObjectName,
+//                        type = GeneratedObjectType.Object,
+//                        modifier = GeneratedObjectModifier.Expect,
+//                        interfaces = generatedInterfaces,
+//                        properties = generatedResources.propertySpecs.toGeneratedVariables(),
+//                    )
+//                )
+//            )
 
-            mrClassSpec.addType(generatedResources)
+            mrClassSpec.addType(generatedResourcesTypeSpec)
         }
+
+        //  Add generated objects in MR
+        generatedObjects.add(
+            expectMRObject.copy(
+                objects = generatedExpectObjects
+            )
+        )
+        generatedObjects.addAll(generatedExpectInterfaces)
 
         processMRClass(mrClassSpec)
 
@@ -222,9 +244,9 @@ class CommonMRGenerator(
     }
 
     private fun generateActualInterfacesFileSpec(
-        visibilityModifier: KModifier,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
+        visibilityModifier: KModifier,
         fileSpec: Builder,
     ) {
         val targetName = settings.ownResourcesFileTree.files.first().targetName
@@ -241,20 +263,17 @@ class CommonMRGenerator(
                     .addModifiers(KModifier.ACTUAL)
 
             val generatedResources: TypeSpec = generator.generate(
-                metadata = generatedObjects,
-                typeSpecIsInterface = true,
+                targetObject = GeneratedObject(
+                    generatorType = generator.type,
+                    name = interfaceName,
+                    type = GeneratedObjectType.Interface,
+                    modifier = GeneratedObjectModifier.Actual,
+                ),
+                inputMetadata = inputMetadata,
+                generatedObjects = generatedObjects,
                 assetsGenerationDir = assetsGenerationDir,
                 resourcesGenerationDir = resourcesGenerationDir,
                 objectBuilder = resourcesInterfaceBuilder,
-            )
-
-            generatedObjects.add(
-                GeneratedObject(
-                    name = interfaceName,
-                    type = GeneratedObjectType.INTERFACE,
-                    modifier = GeneratedObjectModifier.ACTUAL,
-                    properties = generatedResources.propertySpecs.toGeneratedVariables()
-                )
             )
 
             fileSpec.addType(generatedResources)
@@ -269,18 +288,5 @@ class CommonMRGenerator(
                 generatedObjects.add(metadata)
             }
         }
-    }
-}
-
-fun List<PropertySpec>.toGeneratedVariables(): List<GeneratedProperties> {
-    return map {
-        GeneratedProperties(
-            name = it.name,
-            modifier = if (it.modifiers.contains(KModifier.ACTUAL)) {
-                GeneratedObjectModifier.ACTUAL
-            } else {
-                GeneratedObjectModifier.EXPECT
-            }
-        )
     }
 }

@@ -23,7 +23,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
@@ -70,13 +69,12 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     abstract val resourcesVisibility: Property<MRVisibility>
 
     @get:OutputFile
-    @get:Optional
     abstract val outputMetadataFile: RegularFileProperty
 
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
-    @get:InputFile
     @get:Optional
-    abstract val inputMetadataFile: RegularFileProperty
+    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:InputFiles
+    abstract val inputMetadataFiles: ConfigurableFileCollection
 
     //TODO Realise
 //    @get:OutputFile
@@ -119,6 +117,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     private fun createGeneratorSettings(): MRGenerator.Settings {
         return MRGenerator.Settings(
+            inputMetadataFiles = inputMetadataFiles.asFileTree,
+            outputMetadataFile = outputMetadataFile.asFile.get(),
             packageName = resourcesPackageName.get(),
             className = resourcesClassName.get(),
             generatedDir = outputDirectory.get(),

@@ -15,9 +15,10 @@ import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.js.JsFontsGenerator
 import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.utils.decapitalize
-import org.gradle.api.file.FileTree
 import java.io.File
+import org.gradle.api.file.FileTree
 
 abstract class FontsGenerator(
     private val inputFileTree: FileTree
@@ -27,12 +28,15 @@ abstract class FontsGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
     override val mrObjectName: String = "fonts"
 
+    override val type: GeneratorType = GeneratorType.Fonts
+
     override fun generate(
-        metadata: List<GeneratedObject>,
-        typeSpecIsInterface: Boolean,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder
+        objectBuilder: TypeSpec.Builder,
     ): TypeSpec {
         val fontFiles = inputFileTree.map {
             FontFile(

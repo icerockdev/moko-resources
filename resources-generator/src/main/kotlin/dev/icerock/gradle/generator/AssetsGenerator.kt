@@ -15,8 +15,9 @@ import dev.icerock.gradle.generator.common.CommonAssetsGenerator
 import dev.icerock.gradle.generator.js.JsAssetsGenerator
 import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
-import org.gradle.api.file.FileTree
+import dev.icerock.gradle.metadata.GeneratorType
 import java.io.File
+import org.gradle.api.file.FileTree
 
 @Suppress("TooManyFunctions")
 abstract class AssetsGenerator(
@@ -26,6 +27,8 @@ abstract class AssetsGenerator(
         get() = fileTree.files
     override val mrObjectName: String = ASSETS_DIR_NAME
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "AssetResource")
+
+    override val type: GeneratorType = GeneratorType.Assets
 
     private fun getBaseDir(file: File): String {
         val relativePathToAssets = file.path.substringAfterLast(ASSETS_DIR_NAME)
@@ -87,11 +90,12 @@ abstract class AssetsGenerator(
     }
 
     override fun generate(
-        metadata: List<GeneratedObject>,
-        typeSpecIsInterface: Boolean,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder
+        objectBuilder: TypeSpec.Builder,
     ): TypeSpec {
         val rootContent = parseRootContent(fileTree.files)
 

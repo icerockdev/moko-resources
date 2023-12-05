@@ -10,10 +10,11 @@ import dev.icerock.gradle.generator.apple.AppleStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.js.JsStringsGenerator
 import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
+import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.utils.removeLineWraps
-import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
+import org.gradle.api.file.FileTree
 
 typealias KeyType = String
 
@@ -25,12 +26,14 @@ abstract class StringsGenerator(
 ) : BaseGenerator<String>() {
 
     override val inputFiles: Iterable<File>
-        get() = ownStringsFileTree.matching {
+        get() = (ownStringsFileTree).matching {
             it.include(STRINGS_MASK)
         }.files
 
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "StringResource")
     override val mrObjectName: String = "strings"
+
+    override val type: GeneratorType = GeneratorType.Strings
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, String>> {
         return inputFiles.map { file ->

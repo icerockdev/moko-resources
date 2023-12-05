@@ -10,11 +10,12 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
-import java.io.File
 
 abstract class MRGenerator(
     protected val settings: Settings,
@@ -80,9 +81,12 @@ abstract class MRGenerator(
         val resourceClassName: ClassName
         val inputFiles: Iterable<File>
 
+        val type: GeneratorType
+
         fun generate(
-            metadata: List<GeneratedObject> = emptyList(),
-            typeSpecIsInterface: Boolean = false,
+            inputMetadata: MutableList<GeneratedObject>,
+            generatedObjects: MutableList<GeneratedObject>, //TODO: Remove emptyList() after complete realisation
+            targetObject: GeneratedObject,
             assetsGenerationDir: File,
             resourcesGenerationDir: File,
             objectBuilder: TypeSpec.Builder,
@@ -100,6 +104,8 @@ abstract class MRGenerator(
     }
 
     data class Settings(
+        val inputMetadataFiles: FileTree,
+        val outputMetadataFile: File,
         val packageName: String,
         val className: String,
         val visibility: MRVisibility,

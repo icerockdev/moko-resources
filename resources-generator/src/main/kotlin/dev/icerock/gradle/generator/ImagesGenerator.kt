@@ -15,10 +15,11 @@ import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.utils.withoutScale
+import java.io.File
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.Logger
-import java.io.File
 
 abstract class ImagesGenerator(
     private val inputFileTree: FileTree
@@ -30,12 +31,15 @@ abstract class ImagesGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "ImageResource")
     override val mrObjectName: String = "images"
 
+    override val type: GeneratorType = GeneratorType.Images
+
     override fun generate(
-        metadata: List<GeneratedObject>,
-        typeSpecIsInterface: Boolean,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder
+        objectBuilder: TypeSpec.Builder,
     ): TypeSpec {
         val fileMap = inputFileTree.groupBy { file ->
             // SVGs do not have scale suffixes, so we need to remove the extension first

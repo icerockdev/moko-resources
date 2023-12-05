@@ -15,11 +15,12 @@ import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratorType
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
-import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class ColorsGenerator(
     private val colorsFileTree: FileTree,
@@ -33,12 +34,15 @@ abstract class ColorsGenerator(
     private val colorClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource")
 
+    override val type: GeneratorType = GeneratorType.Colors
+
     open fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) {}
 
     @Suppress("SpreadOperator")
     override fun generate(
-        metadata: List<GeneratedObject>,
-        typeSpecIsInterface: Boolean,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,

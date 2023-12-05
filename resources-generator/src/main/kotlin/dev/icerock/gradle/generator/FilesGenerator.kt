@@ -15,8 +15,9 @@ import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.js.JsFilesGenerator
 import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
-import org.gradle.api.file.FileTree
+import dev.icerock.gradle.metadata.GeneratorType
 import java.io.File
+import org.gradle.api.file.FileTree
 
 abstract class FilesGenerator(
     private val inputFileTree: FileTree
@@ -26,12 +27,15 @@ abstract class FilesGenerator(
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FileResource")
     override val mrObjectName: String = "files"
 
+    override val type: GeneratorType = GeneratorType.Files
+
     override fun generate(
-        metadata: List<GeneratedObject>,
-        typeSpecIsInterface: Boolean,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder
+        objectBuilder: TypeSpec.Builder,
     ): TypeSpec {
         val fileSpecs = inputFileTree.map { file ->
             FileSpec(

@@ -1,8 +1,8 @@
 package dev.icerock.gradle.metadata
 
 enum class GeneratedObjectType(val value: String) {
-    OBJECT("object"),
-    INTERFACE("interface");
+    Object("object"),
+    Interface("interface");
 
     companion object {
         private val VALUES = values()

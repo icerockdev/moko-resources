@@ -9,8 +9,8 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FontsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import org.gradle.api.file.FileTree
 import java.io.File
+import org.gradle.api.file.FileTree
 
 class CommonFontsGenerator(
     ownInputFileTree: FileTree,

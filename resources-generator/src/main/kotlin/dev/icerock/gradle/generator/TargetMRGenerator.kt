@@ -4,10 +4,10 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.common.toGeneratedVariables
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratedObjectType
+import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.Metadata.readInputMetadata
 import dev.icerock.gradle.metadata.getInterfaceName
@@ -26,69 +26,71 @@ abstract class TargetMRGenerator(
 ) {
     val logger = project.logger
 
+    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
+        val name = settings.ownResourcesFileTree.first().targetName
+        val genTaskName = "generateMR$name"
+
+        val genTask = runCatching {
+            project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
+        }.getOrNull() ?: project.tasks.create(
+            genTaskName,
+            GenerateMultiplatformResourcesTask::class.java
+        ) {
+            it.generate()
+        }
+
+        apply(generationTask = genTask, project = project)
+    }
+
+    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
+
     override fun generateFileSpec(): FileSpec? {
         val visibilityModifier: KModifier = settings.visibility.toModifier()
         val inputMetadata: MutableList<GeneratedObject> = mutableListOf()
 
         //Read list of generated resources on previous level
-        if (settings.lowerResourcesFileTree.files.isNotEmpty()) {
-            inputMetadata.addAll(
-                readInputMetadata(
-                    inputMetadataFile = project.buildDir,
-                    sourceSetName = settings.lowerResourcesFileTree.files.firstOrNull()?.targetName
-                        ?: throw Exception("Lower resources is empty")
-                )
+        inputMetadata.addAll(
+            readInputMetadata(
+                inputMetadataFiles = settings.inputMetadataFiles
             )
-        }
+        )
 
         inputMetadata.forEach {
             logger.warn("i prev: $it")
         }
-
-        // TODO: Check need of this for empty resources targets
-        // if (hasNoResourcesForGenerator(inputMetadata)) return null
 
         val fileSpec: FileSpec.Builder = FileSpec.builder(
             packageName = settings.packageName,
             fileName = settings.className
         )
 
-        val generatedObjects = mutableListOf<GeneratedObject>()
-
         @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(settings.className) // default: object MR
             .addModifiers(KModifier.ACTUAL)
             .addModifiers(visibilityModifier) // public/internal
 
-        generatedObjects.add(
-            GeneratedObject(
-                type = GeneratedObjectType.OBJECT,
-                name = settings.className,
-                modifier = GeneratedObjectModifier.ACTUAL,
-                properties = emptyList()
-            )
-        )
-
         val expectInterfacesList: List<GeneratedObject> = inputMetadata.filter {
-            it.type == GeneratedObjectType.INTERFACE &&
-                    it.modifier == GeneratedObjectModifier.EXPECT
+            it.type == GeneratedObjectType.Interface &&
+                    it.modifier == GeneratedObjectModifier.Expect
         }
 
         // Add actual implementation of expect interfaces from previous levels
         if (inputMetadata.isNotEmpty()) {
             generateActualInterface(
+                inputMetadata = inputMetadata,
                 visibilityModifier = settings.visibility.toModifier(),
-                generatedObjectsList = generatedObjects,
                 fileSpec = fileSpec
             )
 
             // Generation of actual interfaces not realised on current level
             expectInterfacesList.forEach { expectInterface ->
-                val hasInGeneratedActualObjects = generatedObjects.firstOrNull {
+                val hasInGeneratedActualInterfaces = inputMetadata.firstOrNull {
                     it.name == expectInterface.name
+                            && it.type == GeneratedObjectType.Interface
+                            && it.modifier == GeneratedObjectModifier.Actual
                 } != null
 
-                if (hasInGeneratedActualObjects) return@forEach
+                if (hasInGeneratedActualInterfaces) return@forEach
 
                 val resourcesInterface: TypeSpec =
                     TypeSpec.interfaceBuilder(expectInterface.name)
@@ -99,6 +101,7 @@ abstract class TargetMRGenerator(
                 fileSpec.addType(resourcesInterface)
             }
         }
+        val generatedActualObjects = mutableListOf<GeneratedObject>()
 
         generators.forEach { generator ->
             val builder: TypeSpec.Builder = TypeSpec
@@ -118,6 +121,19 @@ abstract class TargetMRGenerator(
 
             mrClassSpec.addType(
                 generator.generate(
+                    inputMetadata = inputMetadata,
+                    generatedObjects = generatedActualObjects,
+                    targetObject = GeneratedObject(
+                        generatorType = generator.type,
+                        modifier = GeneratedObjectModifier.Actual,
+                        type = GeneratedObjectType.Object,
+                        name = generator.mrObjectName,
+                        interfaces = getObjectInterfaces(
+                            generatorType = generator.type,
+                            objectName = generator.mrObjectName,
+                            inputMetadata = inputMetadata
+                        )
+                    ),
                     assetsGenerationDir = assetsGenerationDir,
                     resourcesGenerationDir = resourcesGenerationDir,
                     objectBuilder = builder,
@@ -125,16 +141,24 @@ abstract class TargetMRGenerator(
             )
         }
 
+        inputMetadata.add(
+            GeneratedObject(
+                generatorType = GeneratorType.None,
+                type = GeneratedObjectType.Object,
+                name = settings.className,
+                modifier = GeneratedObjectModifier.Actual,
+                objects = generatedActualObjects
+            )
+        )
+
         processMRClass(mrClassSpec)
 
         val mrClass = mrClassSpec.build()
         fileSpec.addType(mrClass)
 
         createOutputMetadata(
-            outputMetadataFile = project.buildDir,
-            sourceSetName = settings.ownResourcesFileTree.firstOrNull()?.targetName
-                ?: "unknownTarget",
-            generatedObjects = generatedObjects
+            outputMetadataFile = settings.outputMetadataFile,
+            generatedObjects = inputMetadata
         )
 
         generators
@@ -146,20 +170,10 @@ abstract class TargetMRGenerator(
     }
 
     private fun generateActualInterface(
+        inputMetadata: MutableList<GeneratedObject>,
         visibilityModifier: KModifier,
-        generatedObjectsList: MutableList<GeneratedObject>,
         fileSpec: FileSpec.Builder,
     ) {
-        settings.lowerResourcesFileTree.forEach {
-            logger.warn("i generateActualInterface lowerResourcesFileTree file: $it")
-        }
-        settings.upperResourcesFileTree.forEach {
-            logger.warn("i generateActualInterface upperResourcesFileTree file: $it")
-        }
-        settings.ownResourcesFileTree.forEach {
-            logger.warn("i generateActualInterface ownResourcesFileTree file: $it")
-        }
-
         if (settings.ownResourcesFileTree.files.isEmpty()) return
 
         val targetName: String =
@@ -176,44 +190,44 @@ abstract class TargetMRGenerator(
                     .addModifiers(visibilityModifier)
 
             val generatedResources: TypeSpec = generator.generate(
-                metadata = generatedObjectsList,
-                typeSpecIsInterface = true,
+                inputMetadata = inputMetadata,
+                generatedObjects = inputMetadata,
+                targetObject = GeneratedObject(
+                    generatorType = generator.type,
+                    modifier = GeneratedObjectModifier.Actual,
+                    type = GeneratedObjectType.Interface,
+                    name = interfaceName
+                ),
                 assetsGenerationDir = assetsGenerationDir,
                 resourcesGenerationDir = resourcesGenerationDir,
                 objectBuilder = resourcesInterfaceBuilder
-            )
-
-            generatedObjectsList.add(
-                GeneratedObject(
-                    name = interfaceName,
-                    type = GeneratedObjectType.INTERFACE,
-                    modifier = GeneratedObjectModifier.ACTUAL,
-                    properties = generatedResources.propertySpecs.toGeneratedVariables()
-                )
             )
 
             fileSpec.addType(generatedResources)
         }
     }
 
-    private fun hasNoResourcesForGenerator(inputMetadata: List<GeneratedObject>) =
-        inputMetadata.isEmpty() && settings.ownResourcesFileTree.isEmpty
+    private fun getObjectInterfaces(
+        generatorType: GeneratorType,
+        objectName: String,
+        inputMetadata: List<GeneratedObject>
+    ): List<String> {
+        val interfaces = mutableListOf<String>()
 
-    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
-        val name = settings.ownResourcesFileTree.first().targetName
-        val genTaskName = "generateMR$name"
-
-        val genTask = runCatching {
-            project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
-        }.getOrNull() ?: project.tasks.create(
-            genTaskName,
-            GenerateMultiplatformResourcesTask::class.java
-        ) {
-            it.generate()
+        val mrObjects: List<GeneratedObject> = inputMetadata.filter {
+            it.type == GeneratedObjectType.Object
+                    && it.generatorType == GeneratorType.None
+                    && it.modifier == GeneratedObjectModifier.Expect
         }
 
-        apply(generationTask = genTask, project = project)
-    }
+        mrObjects.forEach { mrObject ->
+            mrObject.objects.forEach {
+                if (it.generatorType == generatorType && it.name == objectName) {
+                    interfaces.addAll(it.interfaces)
+                }
+            }
+        }
 
-    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
+        return interfaces.distinct()
+    }
 }

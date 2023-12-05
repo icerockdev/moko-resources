@@ -10,12 +10,13 @@ import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.js.JsPluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
+import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.utils.removeLineWraps
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 
 typealias PluralMap = Map<String, String>
 
@@ -35,6 +36,8 @@ abstract class PluralsGenerator(
     override val inputFiles: Iterable<File> get() = pluralsFileTree.files
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "PluralsResource")
     override val mrObjectName: String = "plurals"
+
+    override val type: GeneratorType = GeneratorType.Plurals
 
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, PluralMap>> {
         return pluralsFileTree.map { file ->

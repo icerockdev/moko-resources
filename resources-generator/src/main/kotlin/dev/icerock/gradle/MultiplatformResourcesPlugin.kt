@@ -23,6 +23,7 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
+import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -40,7 +41,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.tooling.core.extrasKeyOf
-import java.io.File
 
 open class MultiplatformResourcesPlugin : Plugin<Project> {
 
@@ -196,25 +196,25 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         val androidSourceSet: com.android.build.gradle.api.AndroidSourceSet? =
             androidExtension?.sourceSets?.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
-        if (commonSourceSet != null) {
-            setupKotlinSourceSet(
-                project = project,
-                kotlinSourceSet = commonSourceSet,
-            )
-        }
-
-        if (androidSourceSet != null) {
-            setupAndroidSourceSet(
-                project = project,
-                androidSourceSet = androidSourceSet
-            )
-        }
-
-        kmpExtension.sourceSets.configureEach { kotlinSourceSet ->
-            setupKotlinSourceSet(
-                project = project,
-                kotlinSourceSet = kotlinSourceSet,
-            )
+        when {
+            commonSourceSet != null -> {
+                setupKotlinSourceSet(
+                    project = project,
+                    kotlinSourceSet = commonSourceSet,
+                )
+            }
+            androidSourceSet != null -> {
+                setupAndroidSourceSet(
+                    project = project,
+                    androidSourceSet = androidSourceSet
+                )
+            }
+            else -> kmpExtension.sourceSets.configureEach { kotlinSourceSet ->
+                setupKotlinSourceSet(
+                    project = project,
+                    kotlinSourceSet = kotlinSourceSet,
+                )
+            }
         }
     }
 
@@ -299,7 +299,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             generateTask.resourcesClassName.set(mrExtension.resourcesClassName)
             generateTask.resourcesPackageName.set(mrExtension.resourcesPackage)
             generateTask.resourcesVisibility.set(mrExtension.resourcesVisibility)
-
+            generateTask.outputMetadataFile.set(
+                File(
+                    File(project.buildDir, "generated/moko-resources/metadata"),
+                    "${kotlinSourceSet.name}-metadata.json"
+                )
+            )
             generateTask.outputDirectory.set(
                 File(File(project.buildDir, "generated/moko-resources"), kotlinSourceSet.name)
             )
@@ -364,7 +369,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             genTask.configure { resourceTask ->
                 resourceTask.dependsOn(dependsGenTask) //TODO: Убрать после реализации связи через метадату
 
-                resourceTask.inputMetadataFile.set(
+                // Заменить на список файлов
+                resourceTask.inputMetadataFiles.setFrom(
                     dependsGenTask.flatMap {
                         it.outputMetadataFile
                     }

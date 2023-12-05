@@ -10,13 +10,19 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.PropertySpec.Builder
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratedObjectModifier.Actual
+import dev.icerock.gradle.metadata.GeneratedObjectModifier.Expect
+import dev.icerock.gradle.metadata.GeneratedObjectModifier.None
+import dev.icerock.gradle.metadata.GeneratedObjectType
+import dev.icerock.gradle.metadata.GeneratedProperties
 import java.io.File
 
 abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     override fun generate(
-        metadata: List<GeneratedObject>,
-        typeSpecIsInterface: Boolean,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
@@ -25,11 +31,15 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         val languageMap: Map<LanguageType, Map<KeyType, T>> = loadLanguageMap()
         val languageKeyValues = languageMap[LanguageType.Base].orEmpty()
 
+        // Добавить входящие ресурсы из метаданных
+        // + чтение своих ресурсов отдельно, как было
+
         beforeGenerateResources(objectBuilder, languageMap)
 
         val stringsClass = createTypeSpec(
-            metadata = metadata,
-            typeSpecIsInterface = typeSpecIsInterface,
+            inputMetadata = inputMetadata,
+            generatedObjects = generatedObjects,
+            targetObject = targetObject,
             keys = languageKeyValues.keys.toList(),
             objectBuilder = objectBuilder
         )
@@ -43,8 +53,9 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
     @Suppress("SpreadOperator")
     private fun createTypeSpec(
-        metadata: List<GeneratedObject> = emptyList(),
-        typeSpecIsInterface: Boolean,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
         keys: List<KeyType>,
         objectBuilder: TypeSpec.Builder,
     ): TypeSpec {
@@ -52,37 +63,91 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         extendObjectBodyAtStart(objectBuilder)
 
+        val generatedProperties = mutableListOf<GeneratedProperties>()
+
         keys.forEach { key ->
             val name = key.replace(".", "_")
+
+            var generatedProperty = GeneratedProperties(
+                modifier = None,
+                name = name,
+                data = ""
+            )
+
             val property: Builder = PropertySpec.builder(name, resourceClassName)
 
-            if (!typeSpecIsInterface) {
-                property
-                    .addModifiers(*getPropertyModifiers())
+            if (targetObject.type == GeneratedObjectType.Object) {
+                generatedProperty = generatedProperty.copy(
+                    modifier = if (getPropertyModifiers().contains(KModifier.ACTUAL)) {
+                        Actual
+                    } else {
+                        Expect
+                    }
+                )
 
-                addOverrideModifier(property, metadata)
+                addActualOverrideModifier(
+                    propertyName = name,
+                    property = property,
+                    inputMetadata = inputMetadata,
+                    targetObject = targetObject
+                )
 
-                getPropertyInitializer(
-                    key
-                )?.let { property.initializer(it) }
+                getPropertyInitializer(key)?.let {
+                    property.initializer(it)
+                }
             }
 
             objectBuilder.addProperty(property.build())
+
+            generatedProperties.add(generatedProperty)
         }
 
         extendObjectBodyAtEnd(objectBuilder)
+
+        generatedObjects.add(
+            targetObject.copy(
+                properties = generatedProperties
+            )
+        )
+
         return objectBuilder.build()
     }
 
     private fun addActualOverrideModifier(
+        propertyName: String,
         property: PropertySpec.Builder,
-        metadata: List<GeneratedObject>,
+        inputMetadata: List<GeneratedObject>,
+        targetObject: GeneratedObject
     ) {
+        val actualInterfaces = (inputMetadata).filter {
+            it.type == GeneratedObjectType.Interface
+                    && it.modifier == Actual
+                    && it.generatorType == targetObject.generatorType
+        }
 
+        var containsInActualInterfaces = false
 
-        property
-            .addModifiers(KModifier.OVERRIDE)
+        actualInterfaces.forEach { genInterface ->
+            val hasInInterface = genInterface.properties.any {
+                it.name == propertyName
+            }
 
+            if (hasInInterface) {
+                containsInActualInterfaces = true
+            }
+        }
+
+        if (targetObject.type == GeneratedObjectType.Object) {
+            if (containsInActualInterfaces) {
+                property.addModifiers(KModifier.OVERRIDE)
+            } else {
+                when (targetObject.modifier) {
+                    Expect -> property.addModifiers(KModifier.EXPECT)
+                    Actual -> property.addModifiers(KModifier.ACTUAL)
+                    None -> Unit
+                }
+            }
+        }
     }
 
     protected abstract fun loadLanguageMap(): Map<LanguageType, Map<KeyType, T>>
