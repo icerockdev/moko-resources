@@ -15,6 +15,7 @@ import dev.icerock.gradle.metadata.GeneratedObjectModifier.Expect
 import dev.icerock.gradle.metadata.GeneratedObjectModifier.None
 import dev.icerock.gradle.metadata.GeneratedObjectType
 import dev.icerock.gradle.metadata.GeneratedProperties
+import dev.icerock.gradle.metadata.addActual
 import java.io.File
 
 abstract class BaseGenerator<T> : MRGenerator.Generator {
@@ -104,7 +105,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        generatedObjects.add(
+        generatedObjects.addActual(
             targetObject.copy(
                 properties = generatedProperties
             )

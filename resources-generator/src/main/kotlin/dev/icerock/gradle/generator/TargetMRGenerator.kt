@@ -10,6 +10,7 @@ import dev.icerock.gradle.metadata.GeneratedObjectType
 import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.Metadata.readInputMetadata
+import dev.icerock.gradle.metadata.addActual
 import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
@@ -84,11 +85,9 @@ abstract class TargetMRGenerator(
 
             // Generation of actual interfaces not realised on current level
             expectInterfacesList.forEach { expectInterface ->
-                val hasInGeneratedActualInterfaces = inputMetadata.firstOrNull {
-                    it.name == expectInterface.name
-                            && it.type == GeneratedObjectType.Interface
-                            && it.modifier == GeneratedObjectModifier.Actual
-                } != null
+                val hasInGeneratedActualInterfaces = inputMetadata.hasInActualInterfaces(
+                    interfaceName = expectInterface.name
+                )
 
                 if (hasInGeneratedActualInterfaces) return@forEach
 
@@ -97,6 +96,16 @@ abstract class TargetMRGenerator(
                         .addModifiers(visibilityModifier)
                         .addModifiers(KModifier.ACTUAL)
                         .build()
+
+                // TODO: add logic with add extract interface type
+                inputMetadata.addActual(
+                    GeneratedObject(
+                        generatorType = GeneratorType.Strings,
+                        modifier = GeneratedObjectModifier.Actual,
+                        type = GeneratedObjectType.Interface,
+                        name = expectInterface.name,
+                    )
+                )
 
                 fileSpec.addType(resourcesInterface)
             }
@@ -141,7 +150,7 @@ abstract class TargetMRGenerator(
             )
         }
 
-        inputMetadata.add(
+        inputMetadata.addActual(
             GeneratedObject(
                 generatorType = GeneratorType.None,
                 type = GeneratedObjectType.Object,
@@ -229,5 +238,15 @@ abstract class TargetMRGenerator(
         }
 
         return interfaces.distinct()
+    }
+
+    private fun List<GeneratedObject>.hasInActualInterfaces(
+        interfaceName: String
+    ): Boolean {
+        return this.firstOrNull {
+            it.name == interfaceName
+                    && it.type == GeneratedObjectType.Interface
+                    && it.modifier == GeneratedObjectModifier.Actual
+        } != null
     }
 }
