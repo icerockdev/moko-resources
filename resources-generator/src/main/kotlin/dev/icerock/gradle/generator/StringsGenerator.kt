@@ -16,11 +16,11 @@ import dev.icerock.gradle.generator.js.JsStringsGenerator
 import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratedObjectModifier.None
 import dev.icerock.gradle.metadata.GeneratedObjectType
 import dev.icerock.gradle.metadata.GeneratedProperties
 import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.getActualInterfaces
 import dev.icerock.gradle.metadata.objectsWithProperties
 import dev.icerock.gradle.utils.removeLineWraps
 import java.io.File
@@ -55,9 +55,7 @@ abstract class StringsGenerator(
         )
 
         // language - key - value
-        val languageMap: Map<LanguageType, Map<KeyType, String>> = if (
-            targetObject.type == GeneratedObjectType.Object && targetObject.modifier == GeneratedObjectModifier.Actual
-        ) {
+        val languageMap: Map<LanguageType, Map<KeyType, String>> = if (targetObject.isActualObject) {
             emptyMap()
         } else {
             loadLanguageMap()
@@ -109,9 +107,7 @@ abstract class StringsGenerator(
         inputMetadata: List<GeneratedObject>,
         targetObject: GeneratedObject,
     ): Map<LanguageType, Map<KeyType, String>> {
-        if (targetObject.type != GeneratedObjectType.Object
-            || targetObject.modifier != GeneratedObjectModifier.Actual
-        ) return emptyMap()
+        if (!targetObject.isObject || !targetObject.isActual) return emptyMap()
 
         val objectsWithProperties: List<GeneratedObject> = inputMetadata.objectsWithProperties(targetObject)
 
@@ -170,14 +166,14 @@ abstract class StringsGenerator(
             }
 
             var generatedProperty = GeneratedProperties(
-                modifier = None,
+                modifier = GeneratedObjectModifier.None,
                 name = name,
                 data = JsonObject(values)
             )
 
             val property: Builder = PropertySpec.builder(name, resourceClassName)
 
-            if (targetObject.type == GeneratedObjectType.Object) {
+            if (targetObject.isObject) {
                 // Add modifier for property and setup metadata
                 generatedProperty = generatedProperty.copy(
                     modifier = addActualOverrideModifier(
@@ -213,11 +209,9 @@ abstract class StringsGenerator(
         inputMetadata: List<GeneratedObject>,
         targetObject: GeneratedObject,
     ): GeneratedObjectModifier {
-        val actualInterfaces = (inputMetadata).filter {
-            it.type == GeneratedObjectType.Interface
-                    && it.modifier == GeneratedObjectModifier.Actual
-                    && it.generatorType == targetObject.generatorType
-        }
+        val actualInterfaces = inputMetadata.getActualInterfaces(
+            generatorType = targetObject.generatorType
+        )
 
         var containsInActualInterfaces = false
 
@@ -258,9 +252,7 @@ abstract class StringsGenerator(
     }
 
     override val inputFiles: Iterable<File>
-        get() = (ownStringsFileTree).matching {
-            it.include(STRINGS_MASK)
-        }.files
+        get() = (ownStringsFileTree).matching { it.include(STRINGS_MASK) }.files
 
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "StringResource")
     override val mrObjectName: String = "strings"

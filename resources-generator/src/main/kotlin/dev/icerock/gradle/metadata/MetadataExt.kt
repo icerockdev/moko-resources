@@ -15,9 +15,12 @@ fun MutableList<GeneratedObject>.addActual(actualObject: GeneratedObject){
 }
 
 fun List<GeneratedObject>.getExpectInterfaces(): List<GeneratedObject> {
+    return filter { it.isExpectInterface }
+}
+
+fun List<GeneratedObject>.getActualInterfaces(generatorType: GeneratorType): List<GeneratedObject> {
     return filter {
-        it.type == GeneratedObjectType.Interface
-                && it.modifier == GeneratedObjectModifier.Expect
+        it.isActualInterface && it.generatorType == generatorType
     }
 }
 

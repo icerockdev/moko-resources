@@ -216,7 +216,6 @@ class CommonMRGenerator(
                 type = GeneratedObjectType.Object,
                 name = settings.className,
                 modifier = GeneratedObjectModifier.Expect,
-                properties = emptyList(),
                 objects = generatedExpectObjects
             )
         )

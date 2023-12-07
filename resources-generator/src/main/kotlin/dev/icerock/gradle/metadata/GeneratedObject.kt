@@ -11,4 +11,28 @@ data class GeneratedObject(
     val interfaces: List<String> = emptyList(),
     val properties: List<GeneratedProperties> = emptyList(),
     val objects: List<GeneratedObject> = emptyList()
-)
+) {
+    val isExpect: Boolean
+        get() = modifier == GeneratedObjectModifier.Expect
+
+    val isActual: Boolean
+        get() = modifier == GeneratedObjectModifier.Actual
+
+    val isObject: Boolean
+        get() = type == GeneratedObjectType.Object
+
+    val isInterface: Boolean
+        get() = type == GeneratedObjectType.Interface
+
+    val isExpectObject
+        get() = isObject && isExpect
+
+    val isActualObject: Boolean
+        get() = isObject && isActual
+
+    val isExpectInterface
+        get() = isInterface && isExpect
+
+    val isActualInterface: Boolean
+        get() = isInterface && isActual
+}

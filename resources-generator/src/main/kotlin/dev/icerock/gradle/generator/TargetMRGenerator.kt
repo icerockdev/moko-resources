@@ -71,11 +71,6 @@ abstract class TargetMRGenerator(
             .addModifiers(KModifier.ACTUAL)
             .addModifiers(visibilityModifier) // public/internal
 
-        val expectInterfacesList: List<GeneratedObject> = inputMetadata.filter {
-            it.type == GeneratedObjectType.Interface &&
-                    it.modifier == GeneratedObjectModifier.Expect
-        }
-
         // Add actual implementation of expect interfaces from previous levels
         if (inputMetadata.isNotEmpty()) {
             generateActualInterface(
@@ -102,6 +97,7 @@ abstract class TargetMRGenerator(
             }
         }
 
+        val expectInterfacesList: List<GeneratedObject> = inputMetadata.getExpectInterfaces()
         val generatedActualObjects = mutableListOf<GeneratedObject>()
 
         generators.forEach { generator ->
@@ -218,9 +214,7 @@ abstract class TargetMRGenerator(
         val interfaces = mutableListOf<String>()
 
         val mrObjects: List<GeneratedObject> = inputMetadata.filter {
-            it.type == GeneratedObjectType.Object
-                    && it.generatorType == GeneratorType.None
-                    && it.modifier == GeneratedObjectModifier.Expect
+            it.isExpectObject && it.generatorType == GeneratorType.None
         }
 
         mrObjects.forEach { mrObject ->
