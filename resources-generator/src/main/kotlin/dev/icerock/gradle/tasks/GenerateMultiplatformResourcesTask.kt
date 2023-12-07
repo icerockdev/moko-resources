@@ -153,9 +153,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         return CommonMRGenerator(
             project = project,
             settings = settings,
-            generators = generators.map {
-                it.createCommonGenerator()
-            }
+            generators = generators.map { it.createCommonGenerator() }
         )
     }
 
@@ -166,9 +164,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         return AndroidMRGenerator(
             project = project,
             settings = settings,
-            generators = generators.map {
-                it.createAndroidGenerator()
-            }
+            generators = generators.map { it.createAndroidGenerator() }
         )
     }
 
@@ -179,9 +175,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         return JvmMRGenerator(
             project = project,
             settings = settings,
-            generators = generators.map {
-                it.createJvmGenerator()
-            }
+            generators = generators.map { it.createJvmGenerator() }
         )
     }
 

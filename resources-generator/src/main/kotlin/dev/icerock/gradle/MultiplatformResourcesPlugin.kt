@@ -23,6 +23,7 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
+import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -40,7 +41,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.tooling.core.extrasKeyOf
-import java.io.File
 
 open class MultiplatformResourcesPlugin : Plugin<Project> {
 
@@ -367,9 +367,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             )
 
             genTask.configure { resourceTask ->
-                resourceTask.dependsOn(dependsGenTask) //TODO: Убрать после реализации связи через метадату
-
-                // Заменить на список файлов
                 resourceTask.inputMetadataFiles.setFrom(
                     dependsGenTask.flatMap {
                         it.outputMetadataFile
