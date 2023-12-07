@@ -73,13 +73,13 @@ class CommonMRGenerator(
             logger.warn("i prev: $it")
         }
 
-        val visibilityModifier: KModifier = settings.visibility.toModifier()
-        val generatedObjects = mutableListOf<GeneratedObject>()
-
         val fileSpec: Builder = FileSpec.builder(
             packageName = settings.packageName,
             fileName = settings.className
         )
+
+        val visibilityModifier: KModifier = settings.visibility.toModifier()
+        val generatedObjects = mutableListOf<GeneratedObject>()
 
         if (settings.lowerResourcesFileTree.files.isEmpty()) {
             // When lower resources is empty, should generate expect MR object

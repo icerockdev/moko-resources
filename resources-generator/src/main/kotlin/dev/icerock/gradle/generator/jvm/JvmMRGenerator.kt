@@ -12,11 +12,11 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.TargetMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.flatName
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
 
 class JvmMRGenerator(
     project: Project,
@@ -30,8 +30,6 @@ class JvmMRGenerator(
     private val flattenClassName: String = settings.packageName.flatName
 
     override val resourcesGenerationDir: File = File(File(outputDir, flattenClassName), "res")
-
-    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         super.processMRClass(mrClass)

@@ -19,6 +19,8 @@ import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
+import java.io.File
+import kotlin.reflect.full.memberProperties
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -37,8 +39,6 @@ import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FrameworkDescriptor
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
-import java.io.File
-import kotlin.reflect.full.memberProperties
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
@@ -54,8 +54,6 @@ class AppleMRGenerator(
     private val bundleClassName =
         ClassName("platform.Foundation", "NSBundle")
     private val bundleIdentifier = "${settings.packageName}.MR"
-
-    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         super.processMRClass(mrClass)

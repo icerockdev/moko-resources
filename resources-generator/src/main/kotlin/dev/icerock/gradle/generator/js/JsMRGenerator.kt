@@ -14,6 +14,7 @@ import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
 import dev.icerock.gradle.utils.flatName
 import dev.icerock.gradle.utils.klibs
+import java.io.File
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -22,7 +23,6 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
-import java.io.File
 
 class JsMRGenerator(
     project: Project,
@@ -36,8 +36,6 @@ class JsMRGenerator(
 ) {
     private val flattenClassName: String = settings.packageName.flatName
     override val resourcesGenerationDir: File = File(File(outputDir, flattenClassName), "res")
-
-    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         mrClass.addProperty(

@@ -6,7 +6,6 @@ package dev.icerock.gradle.generator.android
 
 import com.android.build.gradle.tasks.GenerateResValues
 import com.android.build.gradle.tasks.MergeSourceSetFolders
-import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.TargetMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Project
@@ -21,8 +20,6 @@ class AndroidMRGenerator(
     settings = settings,
     generators = generators
 ) {
-    override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-
     override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
 
         project.tasks.withType<GenerateResValues>().configureEach {
