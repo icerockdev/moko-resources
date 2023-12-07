@@ -25,8 +25,10 @@ import dev.icerock.gradle.metadata.objectsWithProperties
 import dev.icerock.gradle.utils.removeLineWraps
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 
@@ -53,7 +55,14 @@ abstract class StringsGenerator(
         )
 
         // language - key - value
-        val languageMap: Map<LanguageType, Map<KeyType, String>> = loadLanguageMap()
+        val languageMap: Map<LanguageType, Map<KeyType, String>> = if (
+            targetObject.type == GeneratedObjectType.Object && targetObject.modifier == GeneratedObjectModifier.Actual
+        ) {
+            emptyMap()
+        } else {
+            loadLanguageMap()
+        }
+
         val languagesAllMaps = getLanguagesAllMaps(previousLanguagesMap, languageMap)
         val languageKeyValues = languagesAllMaps[LanguageType.Base].orEmpty()
 
@@ -110,7 +119,7 @@ abstract class StringsGenerator(
 
         objectsWithProperties.forEach { generatedObject ->
             generatedObject.properties.forEach { property ->
-                val data = Json.decodeFromString<List<Pair<String, String>>>(property.data)
+                val data = Json.decodeFromJsonElement<Map<String, JsonPrimitive>>(property.data)
 
                 data.forEach { (languageTag, value) ->
                     val languageType: LanguageType = if (languageTag == BASE_LANGUAGE) {
@@ -122,7 +131,7 @@ abstract class StringsGenerator(
                     val currentMap: MutableMap<KeyType, String> =
                         languagesMaps[languageType]?.toMutableMap() ?: mutableMapOf()
 
-                    currentMap[property.name] = value
+                    currentMap[property.name] = value.content
 
                     languagesMaps[languageType] = currentMap
                 }
@@ -150,12 +159,12 @@ abstract class StringsGenerator(
         keys.forEach { key ->
             val name = key.replace(".", "_")
 
-            val values = mutableMapOf<String, String>()
+            val values = mutableMapOf<String, JsonPrimitive>()
 
             languageMap.forEach { (languageType, strings) ->
                 strings.forEach { (stringKey, value) ->
                     if (stringKey == key) {
-                        values[languageType.language()] = value
+                        values[languageType.language()] = JsonPrimitive(value)
                     }
                 }
             }
@@ -163,7 +172,7 @@ abstract class StringsGenerator(
             var generatedProperty = GeneratedProperties(
                 modifier = None,
                 name = name,
-                data = Json.encodeToString(values.toList())
+                data = JsonObject(values)
             )
 
             val property: Builder = PropertySpec.builder(name, resourceClassName)
