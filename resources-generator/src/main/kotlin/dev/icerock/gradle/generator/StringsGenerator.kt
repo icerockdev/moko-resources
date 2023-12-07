@@ -5,25 +5,248 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.PropertySpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.android.AndroidStringsGenerator
 import dev.icerock.gradle.generator.apple.AppleStringsGenerator
 import dev.icerock.gradle.generator.common.CommonStringsGenerator
 import dev.icerock.gradle.generator.js.JsStringsGenerator
 import dev.icerock.gradle.generator.jvm.JvmStringsGenerator
+import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.GeneratedObjectModifier.None
+import dev.icerock.gradle.metadata.GeneratedObjectType
+import dev.icerock.gradle.metadata.GeneratedProperties
 import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.objectsWithProperties
 import dev.icerock.gradle.utils.removeLineWraps
-import org.gradle.api.file.FileTree
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.gradle.api.Project
+import org.gradle.api.file.FileTree
 
 typealias KeyType = String
 
 abstract class StringsGenerator(
-    private val lowerStringsFileTree: FileTree,
     private val ownStringsFileTree: FileTree,
-    private val upperStringsFileTree: FileTree? = null,
     private val strictLineBreaks: Boolean,
 ) : BaseGenerator<String>() {
+
+    override fun generate(
+        project: Project,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder,
+    ): TypeSpec {
+
+        val previousLanguagesMap: Map<LanguageType, Map<KeyType, String>> = getPreviousLanguagesMap(
+            inputMetadata = inputMetadata,
+            targetObject = targetObject
+        )
+
+        // language - key - value
+        val languageMap: Map<LanguageType, Map<KeyType, String>> = loadLanguageMap()
+        val languagesAllMaps = getLanguagesAllMaps(previousLanguagesMap, languageMap)
+        val languageKeyValues = languagesAllMaps[LanguageType.Base].orEmpty()
+
+        beforeGenerateResources(objectBuilder, languagesAllMaps)
+
+        val stringsClass = createTypeSpec(
+            inputMetadata = inputMetadata,
+            generatedObjects = generatedObjects,
+            targetObject = targetObject,
+            keys = languageKeyValues.keys.toList(),
+            languageMap = languagesAllMaps,
+            objectBuilder = objectBuilder
+        )
+
+        languagesAllMaps.forEach { (language: LanguageType, strings: Map<KeyType, String>) ->
+            generateResources(resourcesGenerationDir, language, strings)
+        }
+
+        return stringsClass
+    }
+
+    private fun getLanguagesAllMaps(
+        previousLanguageMaps: Map<LanguageType, Map<KeyType, String>>,
+        languageMap: Map<LanguageType, Map<KeyType, String>>
+    ): Map<LanguageType, Map<KeyType, String>> {
+        val resultLanguageMap: MutableMap<LanguageType, Map<KeyType, String>> = mutableMapOf()
+
+        resultLanguageMap.putAll(previousLanguageMaps)
+
+        languageMap.forEach { (languageType: LanguageType, value: Map<KeyType, String>) ->
+
+            val currentMap: MutableMap<KeyType, String> =
+                previousLanguageMaps[languageType]?.toMutableMap() ?: mutableMapOf()
+
+            value.forEach { (key, value) -> currentMap[key] = value }
+
+            resultLanguageMap[languageType] = currentMap
+        }
+
+        return resultLanguageMap
+    }
+
+    private fun getPreviousLanguagesMap(
+        inputMetadata: List<GeneratedObject>,
+        targetObject: GeneratedObject,
+    ): Map<LanguageType, Map<KeyType, String>> {
+        if (targetObject.type != GeneratedObjectType.Object
+            || targetObject.modifier != GeneratedObjectModifier.Actual
+        ) return emptyMap()
+
+        val objectsWithProperties: List<GeneratedObject> = inputMetadata.objectsWithProperties(targetObject)
+
+        val languagesMaps = mutableMapOf<LanguageType, Map<KeyType, String>>()
+
+        objectsWithProperties.forEach { generatedObject ->
+            generatedObject.properties.forEach { property ->
+                val data = Json.decodeFromString<List<Pair<String, String>>>(property.data)
+
+                data.forEach { (languageTag, value) ->
+                    val languageType: LanguageType = if (languageTag == BASE_LANGUAGE) {
+                        LanguageType.Base
+                    } else {
+                        LanguageType.Locale(languageTag)
+                    }
+
+                    val currentMap: MutableMap<KeyType, String> =
+                        languagesMaps[languageType]?.toMutableMap() ?: mutableMapOf()
+
+                    currentMap[property.name] = value
+
+                    languagesMaps[languageType] = currentMap
+                }
+            }
+        }
+
+        return languagesMaps
+    }
+
+    @Suppress("SpreadOperator")
+    private fun createTypeSpec(
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
+        keys: List<KeyType>,
+        languageMap: Map<LanguageType, Map<KeyType, String>>,
+        objectBuilder: TypeSpec.Builder,
+    ): TypeSpec {
+        objectBuilder.addModifiers(*getClassModifiers())
+
+        extendObjectBodyAtStart(objectBuilder)
+
+        val generatedProperties = mutableListOf<GeneratedProperties>()
+
+        keys.forEach { key ->
+            val name = key.replace(".", "_")
+
+            val values = mutableMapOf<String, String>()
+
+            languageMap.forEach { (languageType, strings) ->
+                strings.forEach { (stringKey, value) ->
+                    if (stringKey == key) {
+                        values[languageType.language()] = value
+                    }
+                }
+            }
+
+            var generatedProperty = GeneratedProperties(
+                modifier = None,
+                name = name,
+                data = Json.encodeToString(values.toList())
+            )
+
+            val property: Builder = PropertySpec.builder(name, resourceClassName)
+
+            if (targetObject.type == GeneratedObjectType.Object) {
+                // Add modifier for property and setup metadata
+                generatedProperty = generatedProperty.copy(
+                    modifier = addActualOverrideModifier(
+                        propertyName = name,
+                        property = property,
+                        inputMetadata = inputMetadata,
+                        targetObject = targetObject
+                    )
+                )
+
+                getPropertyInitializer(key)?.let {
+                    property.initializer(it)
+                }
+            }
+
+            objectBuilder.addProperty(property.build())
+
+            generatedProperties.add(generatedProperty)
+        }
+
+        extendObjectBodyAtEnd(objectBuilder)
+
+        generatedObjects.addActual(
+            targetObject.copy(properties = generatedProperties)
+        )
+
+        return objectBuilder.build()
+    }
+
+    private fun addActualOverrideModifier(
+        propertyName: String,
+        property: PropertySpec.Builder,
+        inputMetadata: List<GeneratedObject>,
+        targetObject: GeneratedObject,
+    ): GeneratedObjectModifier {
+        val actualInterfaces = (inputMetadata).filter {
+            it.type == GeneratedObjectType.Interface
+                    && it.modifier == GeneratedObjectModifier.Actual
+                    && it.generatorType == targetObject.generatorType
+        }
+
+        var containsInActualInterfaces = false
+
+        actualInterfaces.forEach { genInterface ->
+            val hasInInterface = genInterface.properties.any {
+                it.name == propertyName
+            }
+
+            if (hasInInterface) {
+                containsInActualInterfaces = true
+            }
+        }
+
+        return if (targetObject.type == GeneratedObjectType.Object) {
+            if (containsInActualInterfaces) {
+                property.addModifiers(KModifier.OVERRIDE)
+                GeneratedObjectModifier.Override
+            } else {
+                when (targetObject.modifier) {
+                    GeneratedObjectModifier.Expect -> {
+                        property.addModifiers(KModifier.EXPECT)
+                        GeneratedObjectModifier.Expect
+                    }
+
+                    GeneratedObjectModifier.Actual -> {
+                        property.addModifiers(KModifier.ACTUAL)
+                        GeneratedObjectModifier.Actual
+                    }
+
+                    else -> {
+                        GeneratedObjectModifier.None
+                    }
+                }
+            }
+        } else {
+            GeneratedObjectModifier.None
+        }
+    }
 
     override val inputFiles: Iterable<File>
         get() = (ownStringsFileTree).matching {
@@ -86,36 +309,30 @@ abstract class StringsGenerator(
         private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<StringsGenerator> {
         override fun createCommonGenerator(): StringsGenerator = CommonStringsGenerator(
-            lowerStringsFileTree = settings.lowerResourcesFileTree,
             ownStringsFileTree = settings.ownResourcesFileTree,
-            upperStringsFileTree = settings.upperResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
         override fun createIosGenerator(): StringsGenerator = AppleStringsGenerator(
             ownStringsFileTree = settings.ownResourcesFileTree,
-            lowerStringsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             baseLocalizationRegion = settings.iosLocalizationRegion
         )
 
         override fun createAndroidGenerator(): StringsGenerator = AndroidStringsGenerator(
             ownStringsFileTree = settings.ownResourcesFileTree,
-            lowerStringsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             androidRClassPackage = settings.androidRClassPackage
         )
 
         override fun createJsGenerator(): StringsGenerator = JsStringsGenerator(
             ownStringsFileTree = settings.ownResourcesFileTree,
-            lowerStringsFileTree = settings.lowerResourcesFileTree,
             mrClassPackage = settings.packageName,
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
         override fun createJvmGenerator(): StringsGenerator = JvmStringsGenerator(
             ownStringsFileTree = settings.ownResourcesFileTree,
-            lowerStringsFileTree = settings.lowerResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             settings = settings
         )

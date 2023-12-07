@@ -11,14 +11,10 @@ import dev.icerock.gradle.generator.StringsGenerator
 import org.gradle.api.file.FileTree
 
 class CommonStringsGenerator(
-    lowerStringsFileTree: FileTree,
     ownStringsFileTree: FileTree,
-    upperStringsFileTree: FileTree,
     strictLineBreaks: Boolean
 ) : StringsGenerator(
-    lowerStringsFileTree = lowerStringsFileTree,
     ownStringsFileTree = ownStringsFileTree,
-    upperStringsFileTree = upperStringsFileTree,
     strictLineBreaks = strictLineBreaks
 ), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getPropertyInitializer(key: String): CodeBlock? = null

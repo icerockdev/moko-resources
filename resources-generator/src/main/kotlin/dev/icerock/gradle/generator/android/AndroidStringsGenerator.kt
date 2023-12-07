@@ -12,17 +12,15 @@ import dev.icerock.gradle.generator.LanguageType
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
+import java.io.File
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import java.io.File
 
 class AndroidStringsGenerator(
-    private val lowerStringsFileTree: FileTree,
     private val ownStringsFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val androidRClassPackage: String,
 ) : StringsGenerator(
-    lowerStringsFileTree = lowerStringsFileTree,
     ownStringsFileTree = ownStringsFileTree,
     strictLineBreaks = strictLineBreaks
 ), ObjectBodyExtendable by NOPObjectBodyExtendable() {

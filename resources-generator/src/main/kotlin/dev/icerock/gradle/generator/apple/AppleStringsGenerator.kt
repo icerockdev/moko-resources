@@ -11,17 +11,15 @@ import dev.icerock.gradle.generator.LanguageType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
+import java.io.File
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
-import java.io.File
 
 class AppleStringsGenerator(
     ownStringsFileTree: FileTree,
-    lowerStringsFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val baseLocalizationRegion: String
 ) : StringsGenerator(
-    lowerStringsFileTree = lowerStringsFileTree,
     ownStringsFileTree = ownStringsFileTree,
     strictLineBreaks = strictLineBreaks
 ),

@@ -12,16 +12,14 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.utils.flatName
-import org.gradle.api.file.FileTree
 import java.io.File
+import org.gradle.api.file.FileTree
 
 class JvmStringsGenerator(
     ownStringsFileTree: FileTree,
-    lowerStringsFileTree: FileTree,
     strictLineBreaks: Boolean,
     settings: MRGenerator.Settings,
 ) : StringsGenerator(
-    lowerStringsFileTree = lowerStringsFileTree,
     ownStringsFileTree = ownStringsFileTree,
     strictLineBreaks = strictLineBreaks
 ),
