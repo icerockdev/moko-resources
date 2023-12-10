@@ -13,14 +13,16 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratedObjectType
+import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.GeneratorType.None
-import dev.icerock.gradle.metadata.Metadata
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
+import dev.icerock.gradle.metadata.Metadata.readInputMetadata
 import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.targetName
 import org.gradle.api.Project
+import org.gradle.api.file.FileTree
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
@@ -63,7 +65,7 @@ class CommonMRGenerator(
         //Read list of generated resources on previous level
         if (settings.lowerResourcesFileTree.files.isNotEmpty()) {
             inputMetadata.addAll(
-                Metadata.readInputMetadata(
+                readInputMetadata(
                     inputMetadataFiles = settings.inputMetadataFiles
                 )
             )
@@ -129,63 +131,30 @@ class CommonMRGenerator(
                 .addModifiers(KModifier.EXPECT) // expect/actual
                 .addModifiers(visibilityModifier) // public/internal
 
-
-        val generatedExpectInterfaces = mutableListOf<GeneratedObject>()
         val generatedExpectObjects = mutableListOf<GeneratedObject>()
+
+        generateExpectInterfaces(
+            visibilityModifier = visibilityModifier,
+            upperResourcesFileTree = settings.upperResourcesFileTree,
+            generatedObjects = generatedObjects,
+            fileSpec = fileSpec
+        )
 
         generators.forEach { generator: Generator ->
             val builder: TypeSpec.Builder = TypeSpec
                 .objectBuilder(generator.mrObjectName) // resource name: example strings
                 .addModifiers(visibilityModifier) // public/internal
 
-            // Check upper directories on files with resources
-            val targetsWithResources: List<String> = settings.upperResourcesFileTree.map {
-                it.targetName
-            }.distinct()
-            //                .filter { it.isDirectory }
-            //                .filter { file: File ->
-            //                    file.listFiles()?.isNotEmpty() ?: false
-            //                }
-
-            val generatedInterfaces: List<String> = if (targetsWithResources.isNotEmpty()) {
-                val expectInterfacesList = mutableListOf<String>()
-
-                // If upper directory has files of resources, need to generate
-                // expect interface for sourceSet
-                targetsWithResources.forEach { targetName ->
-                    val interfaceName = getInterfaceName(
-                        targetName = targetName,
-                        generator = generator
-                    )
-
-                    val resourcesInterface: TypeSpec =
-                        TypeSpec.interfaceBuilder(interfaceName)
-                            .addModifiers(visibilityModifier)
-                            .addModifiers(KModifier.EXPECT)
-                            .build()
-
-                    expectInterfacesList.add("${resourcesInterface.name}")
-                    fileSpec.addType(resourcesInterface)
-                }
-
-                expectInterfacesList
-            } else emptyList()
+            val expectInterfaces: List<GeneratedObject> = generatedObjects.filter {
+                it.generatorType == generator.type && it.isExpectInterface
+            }
 
             //Implement interfaces for generated expect object
-            generatedInterfaces.forEach { interfaceName ->
+            expectInterfaces.forEach { expectInterface ->
                 builder.addSuperinterface(
                     ClassName(
                         packageName = resourcePackage,
-                        interfaceName
-                    )
-                )
-
-                generatedExpectInterfaces.add(
-                    GeneratedObject(
-                        generatorType = generator.type,
-                        name = interfaceName,
-                        type = GeneratedObjectType.Interface,
-                        modifier = GeneratedObjectModifier.Expect,
+                        expectInterface.name
                     )
                 )
             }
@@ -199,7 +168,7 @@ class CommonMRGenerator(
                     modifier = GeneratedObjectModifier.Expect,
                     type = GeneratedObjectType.Object,
                     name = generator.mrObjectName,
-                    interfaces = generatedInterfaces
+                    interfaces = expectInterfaces.map { it.name }
                 ),
                 assetsGenerationDir = assetsGenerationDir,
                 resourcesGenerationDir = resourcesGenerationDir,
@@ -219,12 +188,83 @@ class CommonMRGenerator(
                 objects = generatedExpectObjects
             )
         )
-        generatedObjects.addAll(generatedExpectInterfaces)
 
         processMRClass(mrClassSpec)
 
         val mrClass: TypeSpec = mrClassSpec.build()
         fileSpec.addType(mrClass)
+    }
+
+    private fun generateExpectInterfaces(
+        visibilityModifier: KModifier,
+        upperResourcesFileTree: FileTree,
+        generatedObjects: MutableList<GeneratedObject>,
+        fileSpec: Builder,
+    ) {
+        val expectInterfaces = mutableListOf<GeneratedObject>()
+
+        upperResourcesFileTree.forEach {
+            logger.warn("parentFile 1 = ${it.parentFile.name}") // need for images,colors, files, fonts, assets
+
+            if (it.path.matches("^.*/strings.*.xml".toRegex())) {
+                val generatorType: GeneratorType = GeneratorType.Strings
+                val interfaceName: String = getInterfaceName(
+                    targetName = it.targetName,
+                    generatorType = generatorType
+                )
+
+                expectInterfaces.add(
+                    GeneratedObject(
+                        generatorType = generatorType,
+                        type = GeneratedObjectType.Interface,
+                        modifier = GeneratedObjectModifier.Expect,
+                        name = interfaceName
+                    )
+                )
+            } else if (it.path.matches("^.*/plurals.*.xml".toRegex())) {
+                val generatorType: GeneratorType = GeneratorType.Plurals
+                val interfaceName: String = getInterfaceName(
+                    targetName = it.targetName,
+                    generatorType = generatorType
+                )
+
+                expectInterfaces.add(
+                    GeneratedObject(
+                        generatorType = generatorType,
+                        type = GeneratedObjectType.Interface,
+                        modifier = GeneratedObjectModifier.Expect,
+                        name = interfaceName
+                    )
+                )
+            }
+        }
+
+        expectInterfaces.distinctBy {
+            it.name
+        }.forEach { expectInterface ->
+            val resourcesInterface: TypeSpec =
+                TypeSpec.interfaceBuilder(expectInterface.name)
+                    .addModifiers(visibilityModifier)
+                    .addModifiers(KModifier.EXPECT)
+                    .build()
+
+            fileSpec.addType(resourcesInterface)
+
+            generatedObjects.add(expectInterface)
+        }
+
+
+        logger.warn("i")
+        logger.warn("i")
+        logger.warn("i")
+
+        generatedObjects.forEach {
+            logger.warn("metadata : $it")
+        }
+
+        logger.warn("i")
+        logger.warn("i")
+        logger.warn("i")
     }
 
     private fun generateActualInterfacesFileSpec(

@@ -18,17 +18,17 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME
 import dev.icerock.gradle.generator.js.JsMRGenerator.Companion.SUPPORTED_LOCALES_PROPERTY_NAME
 import dev.icerock.gradle.utils.flatName
-import java.io.File
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.gradle.api.file.FileTree
+import java.io.File
 
 class JsStringsGenerator(
-    ownStringsFileTree: FileTree,
+    resourcesFileTree: FileTree,
     mrClassPackage: String,
     strictLineBreaks: Boolean
 ) : StringsGenerator(
-    ownStringsFileTree = ownStringsFileTree,
+    resourcesFileTree = resourcesFileTree,
     strictLineBreaks = strictLineBreaks
 ),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {

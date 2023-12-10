@@ -18,11 +18,10 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AndroidPluralsGenerator(
-    ownPluralsFileTree: FileTree,
-    lowerPluralsFileTree: FileTree,
+    ownResourcesFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val androidRClassPackage: String,
-) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
+) : PluralsGenerator(ownResourcesFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

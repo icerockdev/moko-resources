@@ -6,3 +6,7 @@ import dev.icerock.gradle.utils.capitalize
 internal fun getInterfaceName(targetName: String, generator: Generator): String {
     return targetName.capitalize() + generator.mrObjectName.capitalize()
 }
+
+internal fun getInterfaceName(targetName: String, generatorType: GeneratorType): String {
+    return targetName.capitalize() + generatorType.name.capitalize()
+}

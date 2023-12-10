@@ -86,7 +86,7 @@ abstract class MRGenerator(
         fun generate(
             project: Project,
             inputMetadata: MutableList<GeneratedObject>,
-            generatedObjects: MutableList<GeneratedObject>, //TODO: Remove emptyList() after complete realisation
+            generatedObjects: MutableList<GeneratedObject>,
             targetObject: GeneratedObject,
             assetsGenerationDir: File,
             resourcesGenerationDir: File,

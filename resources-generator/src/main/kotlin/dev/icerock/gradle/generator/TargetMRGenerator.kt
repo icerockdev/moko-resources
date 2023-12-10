@@ -11,6 +11,7 @@ import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.Metadata.readInputMetadata
 import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.getActualInterfaces
 import dev.icerock.gradle.metadata.getExpectInterfaces
 import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
@@ -97,7 +98,6 @@ abstract class TargetMRGenerator(
             }
         }
 
-        val expectInterfacesList: List<GeneratedObject> = inputMetadata.getExpectInterfaces()
         val generatedActualObjects = mutableListOf<GeneratedObject>()
 
         generators.forEach { generator ->
@@ -107,7 +107,7 @@ abstract class TargetMRGenerator(
 
             // Implement to object expect interfaces from previous
             // levels of resources
-            expectInterfacesList.forEach { generatedObject: GeneratedObject ->
+            inputMetadata.getActualInterfaces(generator.type).forEach { generatedObject: GeneratedObject ->
                 builder.addSuperinterface(
                     ClassName(
                         packageName = settings.packageName,

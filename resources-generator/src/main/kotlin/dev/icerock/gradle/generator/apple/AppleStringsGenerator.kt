@@ -16,11 +16,11 @@ import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
 
 class AppleStringsGenerator(
-    ownStringsFileTree: FileTree,
+    resourcesFileTree: FileTree,
     strictLineBreaks: Boolean,
     private val baseLocalizationRegion: String
 ) : StringsGenerator(
-    ownStringsFileTree = ownStringsFileTree,
+    resourcesFileTree = resourcesFileTree,
     strictLineBreaks = strictLineBreaks
 ),
     ObjectBodyExtendable by AppleGeneratorHelper() {

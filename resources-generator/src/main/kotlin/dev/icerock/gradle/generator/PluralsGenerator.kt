@@ -10,13 +10,20 @@ import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.js.JsPluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
+import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.objectsWithProperties
 import dev.icerock.gradle.utils.removeLineWraps
-import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Document
 import org.w3c.dom.Element
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
 
 typealias PluralMap = Map<String, String>
 
@@ -29,18 +36,93 @@ typealias PluralMap = Map<String, String>
 private val SOURCE_PLURAL_NODE_NAMES = listOf("plural", "plurals")
 
 abstract class PluralsGenerator(
-    private val pluralsFileTree: FileTree,
+    private val ownResourcesFileTree: FileTree,
     private val strictLineBreaks: Boolean
 ) : BaseGenerator<PluralMap>() {
 
-    override val inputFiles: Iterable<File> get() = pluralsFileTree.files
+    override val inputFiles: Iterable<File>
+        get() = ownResourcesFileTree.matching { it.include(PLURALS_MASK) }.files
+
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "PluralsResource")
     override val mrObjectName: String = "plurals"
 
     override val type: GeneratorType = GeneratorType.Plurals
 
+    override fun getLanguagesAllMaps(
+        previousLanguageMaps: Map<LanguageType, Map<KeyType, PluralMap>>,
+        languageMap: Map<LanguageType, Map<KeyType, PluralMap>>
+    ): Map<LanguageType, Map<KeyType, PluralMap>> {
+        val resultLanguageMap: MutableMap<LanguageType, Map<KeyType, PluralMap>> = mutableMapOf()
+
+        resultLanguageMap.putAll(previousLanguageMaps)
+
+        languageMap.forEach { (languageType: LanguageType, value: Map<KeyType, PluralMap>) ->
+
+            val currentMap: MutableMap<KeyType, PluralMap> =
+                previousLanguageMaps[languageType]?.toMutableMap() ?: mutableMapOf()
+
+            value.forEach { (key, value) -> currentMap[key] = value }
+
+            resultLanguageMap[languageType] = currentMap
+        }
+
+        return resultLanguageMap
+    }
+
+    override fun getPreviousLanguagesMap(
+        inputMetadata: List<GeneratedObject>,
+        targetObject: GeneratedObject,
+    ): Map<LanguageType, Map<KeyType, PluralMap>> {
+        if (!targetObject.isObject || !targetObject.isActual) return emptyMap()
+        val json = Json
+        val objectsWithProperties: List<GeneratedObject> = inputMetadata.objectsWithProperties(targetObject)
+
+        val languagesMaps = mutableMapOf<LanguageType, Map<KeyType, PluralMap>>()
+
+        objectsWithProperties.forEach { generatedObject ->
+            generatedObject.properties.forEach { property ->
+                val data = json.decodeFromJsonElement<Map<String, PluralMap>>(property.data)
+
+                data.forEach { (languageTag, value) ->
+                    val languageType: LanguageType = if (languageTag == BASE_LANGUAGE) {
+                        LanguageType.Base
+                    } else {
+                        LanguageType.Locale(languageTag)
+                    }
+
+                    val currentMap: MutableMap<KeyType, PluralMap> =
+                        languagesMaps[languageType]?.toMutableMap() ?: mutableMapOf()
+                    currentMap[property.name] = value
+
+                    languagesMaps[languageType] = currentMap
+                }
+            }
+        }
+
+        return languagesMaps
+    }
+
+    override fun getPropertyMetadata(
+        key: KeyType,
+        languageMap: Map<LanguageType, Map<KeyType, PluralMap>>
+    ): Map<String, JsonElement> {
+        val values = mutableMapOf<String, JsonElement>()
+
+        languageMap.forEach { (languageType, plurals) ->
+            plurals.forEach { (pluralKey: KeyType, value: Map<String, String>) ->
+                if (pluralKey == key) {
+                    values[languageType.language()] = JsonObject(content = value.mapValues {
+                        JsonPrimitive(it.value)
+                    })
+                }
+            }
+        }
+
+        return values
+    }
+
     override fun loadLanguageMap(): Map<LanguageType, Map<KeyType, PluralMap>> {
-        return pluralsFileTree.map { file ->
+        return inputFiles.map { file ->
             val language: LanguageType = LanguageType.fromFileName(file.parentFile.name)
             val strings: Map<KeyType, PluralMap> = loadLanguagePlurals(file)
             language to strings
@@ -98,41 +180,38 @@ abstract class PluralsGenerator(
     class Feature(
         private val settings: MRGenerator.Settings
     ) : ResourceGeneratorFeature<PluralsGenerator> {
-        private val fileTree: FileTree = settings.ownResourcesFileTree
-            .matching { it.include("**/plurals*.xml") }
-
         override fun createCommonGenerator(): PluralsGenerator = CommonPluralsGenerator(
-            ownPluralsFileTree = settings.ownResourcesFileTree,
-            upperPluralsFileTree = settings.upperResourcesFileTree,
+            ownResourcesFileTree = settings.ownResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
         override fun createIosGenerator(): PluralsGenerator = ApplePluralsGenerator(
-            ownPluralsFileTree = settings.ownResourcesFileTree,
-            lowerPluralsFileTree = settings.lowerResourcesFileTree,
+            ownResourcesFileTree = settings.ownResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             baseLocalizationRegion = settings.iosLocalizationRegion
         )
 
         override fun createAndroidGenerator(): PluralsGenerator = AndroidPluralsGenerator(
-            ownPluralsFileTree = settings.ownResourcesFileTree,
-            lowerPluralsFileTree = settings.lowerResourcesFileTree,
+            ownResourcesFileTree = settings.ownResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             androidRClassPackage = settings.androidRClassPackage,
         )
 
         override fun createJvmGenerator(): PluralsGenerator = JvmPluralsGenerator(
-            ownPluralsFileTree = settings.ownResourcesFileTree,
-            lowerPluralsFileTree = settings.lowerResourcesFileTree,
+            ownResourcesFileTree = settings.ownResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             settings = settings
         )
 
         override fun createJsGenerator(): PluralsGenerator = JsPluralsGenerator(
-            ownPluralsFileTree = settings.ownResourcesFileTree,
-            lowerPluralsFileTree = settings.lowerResourcesFileTree,
+            ownResourcesFileTree = settings.ownResourcesFileTree,
             mrClassPackage = settings.packageName,
             strictLineBreaks = settings.isStrictLineBreaks
         )
+    }
+
+
+    companion object {
+        const val PLURALS_MASK = "**/plurals*.xml"
     }
 }

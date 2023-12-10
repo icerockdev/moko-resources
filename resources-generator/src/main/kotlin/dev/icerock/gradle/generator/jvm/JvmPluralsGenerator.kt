@@ -17,11 +17,10 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JvmPluralsGenerator(
-    ownPluralsFileTree: FileTree,
-    lowerPluralsFileTree: FileTree,
+    ownResourcesFileTree: FileTree,
     strictLineBreaks: Boolean,
     settings: MRGenerator.Settings
-) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
+) : PluralsGenerator(ownResourcesFileTree, strictLineBreaks),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     private val flattenClassPackage: String = settings.packageName.remove('.')

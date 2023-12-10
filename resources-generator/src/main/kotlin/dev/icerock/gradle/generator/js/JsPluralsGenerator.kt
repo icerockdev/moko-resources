@@ -23,11 +23,10 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class JsPluralsGenerator(
-    ownPluralsFileTree: FileTree,
-    lowerPluralsFileTree: FileTree,
+    ownResourcesFileTree: FileTree,
     mrClassPackage: String,
     strictLineBreaks: Boolean
-) : PluralsGenerator(ownPluralsFileTree, strictLineBreaks),
+) : PluralsGenerator(ownResourcesFileTree, strictLineBreaks),
     ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     private val flattenClassPackage = mrClassPackage.flatName
