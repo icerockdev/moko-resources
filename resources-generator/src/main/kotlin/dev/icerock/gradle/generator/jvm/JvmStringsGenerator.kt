@@ -22,8 +22,7 @@ class JvmStringsGenerator(
 ) : StringsGenerator(
     resourcesFileTree = resourcesFileTree,
     strictLineBreaks = strictLineBreaks
-),
-    ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
+), ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
     private val flattenClassPackage = settings.packageName.flatName
 

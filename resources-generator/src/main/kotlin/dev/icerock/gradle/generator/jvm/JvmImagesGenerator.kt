@@ -15,7 +15,6 @@ import java.io.File
 
 class JvmImagesGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
     settings: MRGenerator.Settings
 ) : ImagesGenerator(ownInputFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {

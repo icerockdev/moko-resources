@@ -19,7 +19,6 @@ import java.io.File
 
 class JsImagesGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
 ) : ImagesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

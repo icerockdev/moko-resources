@@ -213,5 +213,6 @@ abstract class PluralsGenerator(
 
     companion object {
         const val PLURALS_MASK = "**/plurals*.xml"
+        val PLURALS_REGEX: Regex = "^.*/plurals.*.xml".toRegex()
     }
 }

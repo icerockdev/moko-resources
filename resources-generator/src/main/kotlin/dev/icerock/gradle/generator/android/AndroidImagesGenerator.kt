@@ -23,7 +23,6 @@ import kotlin.reflect.full.functions
 
 class AndroidImagesGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
     private val androidRClassPackageProvider: String,
     private val logger: Logger
 ) : ImagesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {

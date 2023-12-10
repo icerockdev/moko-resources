@@ -23,7 +23,6 @@ import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
-import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -41,6 +40,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.tooling.core.extrasKeyOf
+import java.io.File
 
 open class MultiplatformResourcesPlugin : Plugin<Project> {
 
@@ -391,19 +391,31 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         )
 
         when (target.platformType) {
-            KotlinPlatformType.common -> configureCommonTargetGenerator(target, settings, features)
-            KotlinPlatformType.jvm -> configureJvmTargetGenerator(target, settings, features)
-            KotlinPlatformType.js -> configureJsTargetGenerator(target, settings, features)
+            KotlinPlatformType.common -> configureCommonTargetGenerator(
+                target = target,
+                settings = settings,
+                features = features
+            )
+            KotlinPlatformType.jvm -> configureJvmTargetGenerator(
+                target = target,
+                settings = settings,
+                features = features
+            )
+            KotlinPlatformType.js -> configureJsTargetGenerator(
+                target = target,
+                settings = settings,
+                features = features
+            )
             KotlinPlatformType.androidJvm -> configureAndroidTargetGenerator(
-                target,
-                settings,
-                features
+                target = target,
+                settings = settings,
+                features = features
             )
 
             KotlinPlatformType.native -> configureNativeTargetGenerator(
-                target as KotlinNativeTarget,
-                settings,
-                features
+                target = target as KotlinNativeTarget,
+                settings = settings,
+                features = features
             )
 
             KotlinPlatformType.wasm -> {

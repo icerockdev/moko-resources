@@ -206,6 +206,8 @@ abstract class ColorsGenerator(
         internal const val XmlColorReferencePrefix = "@color/"
         internal const val RgbFormatLength = 6
         internal const val DefaultAlpha = "FF"
+
+        val COLORS_REGEX: Regex = "^.*/colors.*.xml".toRegex()
     }
 }
 

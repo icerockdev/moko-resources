@@ -192,5 +192,6 @@ abstract class StringsGenerator(
 
     companion object {
         const val STRINGS_MASK = "**/strings*.xml"
+        val STRINGS_REGEX: Regex = "^.*/strings.*.xml".toRegex()
     }
 }

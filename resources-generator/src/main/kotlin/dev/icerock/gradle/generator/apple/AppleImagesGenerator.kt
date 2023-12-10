@@ -21,7 +21,7 @@ import java.io.File
 class AppleImagesGenerator(
     ownInputFileTree: FileTree,
     lowerInputFileTree: FileTree,
-) : ImagesGenerator(inputFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : ImagesGenerator(resourcesFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

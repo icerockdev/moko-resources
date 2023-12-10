@@ -81,7 +81,9 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     ): TypeSpec {
         objectBuilder.addModifiers(*getClassModifiers())
 
-        extendObjectBodyAtStart(objectBuilder)
+        if (targetObject.isActualObject) {
+            extendObjectBodyAtStart(objectBuilder)
+        }
 
         val generatedProperties = mutableListOf<GeneratedProperties>()
 
