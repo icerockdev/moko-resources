@@ -24,11 +24,11 @@ import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 abstract class ColorsGenerator(
-    val project: Project,
-    private val colorsFileTree: FileTree,
+    private val resourcesFileTree: FileTree,
 ) : MRGenerator.Generator {
 
-    override val inputFiles: Iterable<File> get() = colorsFileTree.files
+    override val inputFiles: Iterable<File>
+        get() = resourcesFileTree.matching { it.include("**/colors*.xml") }
     override val resourceClassName: ClassName =
         ClassName("dev.icerock.moko.resources", "ColorResource")
     override val mrObjectName: String = "colors"
@@ -96,7 +96,7 @@ abstract class ColorsGenerator(
             }
         }
 
-        colorsFileTree.map { file ->
+        inputFiles.map { file ->
             val dbFactory = DocumentBuilderFactory.newInstance()
             val dBuilder = dbFactory.newDocumentBuilder()
             val doc = dBuilder.parse(file)
@@ -148,37 +148,30 @@ abstract class ColorsGenerator(
         val project: Project,
         private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<ColorsGenerator> {
-        private val fileTree: FileTree = settings.ownResourcesFileTree
-            .matching { it.include("**/colors*.xml") }
-
         override fun createCommonGenerator() = CommonColorsGenerator(
             project = project,
-            ownColorsFileTree = settings.ownResourcesFileTree,
-            upperColorsFileTree = settings.upperResourcesFileTree
+            resourcesFileTree = settings.ownResourcesFileTree,
         )
 
         override fun createIosGenerator() = AppleColorsGenerator(
             project = project,
-            ownColorsFileTree = settings.ownResourcesFileTree,
-            lowerColorsFileTree = settings.lowerResourcesFileTree
+            resourcesFileTree = settings.ownResourcesFileTree,
         )
 
         override fun createAndroidGenerator() = AndroidColorsGenerator(
             project = project,
-            ownColorsFileTree = settings.ownResourcesFileTree,
-            lowerColorsFileTree = settings.lowerResourcesFileTree
+            resourcesFileTree = settings.ownResourcesFileTree,
         )
 
         override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(
             project = project,
-            ownColorsFileTree = settings.ownResourcesFileTree,
-            lowerColorsFileTree = settings.lowerResourcesFileTree
+            resourcesFileTree = settings.ownResourcesFileTree,
         )
 
         override fun createJvmGenerator() = JvmColorsGenerator(
             project = project,
-            ownColorsFileTree = settings.ownResourcesFileTree,
-            lowerColorsFileTree = settings.lowerResourcesFileTree, settings
+            resourcesFileTree = settings.ownResourcesFileTree,
+            mrClassName = settings.className
         )
     }
 

@@ -15,9 +15,8 @@ import org.gradle.api.file.FileTree
 
 class CommonColorsGenerator(
     project: Project,
-    ownColorsFileTree: FileTree,
-    upperColorsFileTree: FileTree,
-) : ColorsGenerator(project, ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    resourcesFileTree: FileTree,
+) : ColorsGenerator(resourcesFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getImports(): List<ClassName> {
         return emptyList()

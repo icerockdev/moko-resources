@@ -23,9 +23,8 @@ import java.io.File
 
 class AppleColorsGenerator(
     project: Project,
-    ownColorsFileTree: FileTree,
-    lowerColorsFileTree: FileTree,
-) : ColorsGenerator(project, ownColorsFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+    resourcesFileTree: FileTree,
+) : ColorsGenerator(resourcesFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
     override fun getImports(): List<ClassName> {
         return listOf(
             ClassName("dev.icerock.moko.graphics", "Color")

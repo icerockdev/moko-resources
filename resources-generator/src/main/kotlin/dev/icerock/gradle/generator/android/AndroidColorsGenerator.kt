@@ -17,9 +17,8 @@ import java.io.File
 
 class AndroidColorsGenerator(
     project: Project,
-    ownColorsFileTree: FileTree,
-    lowerColorsFileTree: FileTree,
-) : ColorsGenerator(project, ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    resourcesFileTree: FileTree,
+) : ColorsGenerator(resourcesFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")

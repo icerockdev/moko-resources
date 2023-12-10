@@ -20,9 +20,8 @@ import org.gradle.api.file.FileTree
 
 class JsColorsGenerator(
     project: Project,
-    ownColorsFileTree: FileTree,
-    lowerColorsFileTree: FileTree,
-) : ColorsGenerator(project, ownColorsFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+    resourcesFileTree: FileTree,
+) : ColorsGenerator(resourcesFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
