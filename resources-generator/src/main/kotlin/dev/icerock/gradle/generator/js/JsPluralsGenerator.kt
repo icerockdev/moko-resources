@@ -46,11 +46,11 @@ class JsPluralsGenerator(
         objectBuilder.generateFallbackAndSupportedLanguageProperties(
             languages = languageMap.keys.toList(),
             folder = JsMRGenerator.LOCALIZATION_DIR,
-            fallbackFilePropertyName = JsMRGenerator.PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME,
-            fallbackFile = "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}.json",
+            fallbackFilePropertyName = PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME,
+            fallbackFile = "${flattenClassPackage}_${PLURALS_JSON_NAME}.json",
             supportedLocalesPropertyName = JsMRGenerator.SUPPORTED_LOCALES_PROPERTY_NAME,
             getFileNameForLanguage = { language ->
-                "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}${language.jsResourcesSuffix}.json"
+                "${flattenClassPackage}_${PLURALS_JSON_NAME}${language.jsResourcesSuffix}.json"
             }
         )
         val languageKeys = languageMap[LanguageType.Base].orEmpty().keys
@@ -74,7 +74,7 @@ class JsPluralsGenerator(
         strings: Map<KeyType, PluralMap>
     ) {
         val fileDirName =
-            "${flattenClassPackage}_${JsMRGenerator.PLURALS_JSON_NAME}${language.jsResourcesSuffix}"
+            "${flattenClassPackage}_${PLURALS_JSON_NAME}${language.jsResourcesSuffix}"
 
         val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {
             mkdirs()
@@ -109,5 +109,10 @@ class JsPluralsGenerator(
         }.toString()
 
         pluralsFile.writeText(content)
+    }
+
+    companion object {
+        const val PLURALS_JSON_NAME = "pluralsJson"
+        const val PLURALS_FALLBACK_FILE_URL_PROPERTY_NAME = "stringsFallbackFileUrl"
     }
 }
