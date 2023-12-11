@@ -13,22 +13,16 @@ import dev.icerock.gradle.generator.TargetMRGenerator
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
 import dev.icerock.gradle.utils.flatName
-import dev.icerock.gradle.utils.klibs
-import java.io.File
-import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
-import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
+import java.io.File
 
 class JsMRGenerator(
     project: Project,
     settings: Settings,
     generators: List<Generator>,
-    private val compilation: KotlinJsIrCompilation,
 ) : TargetMRGenerator(
     project = project,
     settings = settings,
@@ -81,8 +75,8 @@ class JsMRGenerator(
         project.tasks.withType<Kotlin2JsCompile>().configureEach {
             it.dependsOn(generationTask)
         }
-        setupKLibResources(generationTask)
-        setupResources()
+//        setupKLibResources(generationTask)
+//        setupResources()
 
         // Declare task ':web-app:generateMRcommonMain' as an input of ':web-app:jsSourcesJar'.
         project.tasks.withType<Jar>().configureEach {
@@ -95,26 +89,6 @@ class JsMRGenerator(
 //            task = generationTask,
 //        )
     }
-
-    //TODO: Вынести на этап конфигурации
-    private fun setupKLibResources(generationTask: Task) {
-        val taskProvider = compilation.compileTaskProvider
-        taskProvider.configure { compileTask ->
-            compileTask.dependsOn(generationTask)
-            val action = CopyResourcesToKLibAction(resourcesGenerationDir)
-            @Suppress("UNCHECKED_CAST")
-            compileTask.doLast(action as Action<in Task>)
-        }
-    }
-
-    private fun setupResources() {
-        compilation.compileTaskProvider.configure { compileTask ->
-            val action = CopyResourcesToExecutableAction(resourcesGenerationDir)
-            @Suppress("UNCHECKED_CAST")
-            compileTask.doLast(action as Action<in Task>)
-        }
-    }
-
 
     companion object {
         const val SUPPORTED_LOCALES_PROPERTY_NAME = "supportedLocales"

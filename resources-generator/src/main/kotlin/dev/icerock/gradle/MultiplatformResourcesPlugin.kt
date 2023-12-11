@@ -121,8 +121,23 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         it.platformType.set(target.platformType.name)
                     }
 
-                    compilation.compileTaskProvider.configure {
-                        it.dependsOn(genTask)
+                    compilation.compileTaskProvider.configure { compileTask: KotlinCompilationTask<*> ->
+                        compileTask.dependsOn(genTask)
+
+                        if (
+                            target.platformType == KotlinPlatformType.js
+                            && compilation as? KotlinJsIrCompilation != null
+                            && compileTask as? Kotlin2JsCompile != null
+                        ) {
+                            setupJsResources(
+                                compileTask = compileTask,
+                                resourcesGenerationDir = genTask.get().outputDirectory.asFile.get()
+                            )
+                            setupJsKLibResources(
+                                compileTask = compileTask,
+                                resourcesGenerationDir = genTask.get().outputDirectory.asFile.get()
+                            )
+                        }
                     }
                 }
             }

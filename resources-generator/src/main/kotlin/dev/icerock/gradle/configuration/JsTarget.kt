@@ -30,7 +30,6 @@ internal fun configureJsTargetGenerator(
             project = project,
             settings = settings,
             generators = features.map { it.createJsGenerator() },
-            compilation = compilation,
         ).apply(project = project)
 //            }
     }

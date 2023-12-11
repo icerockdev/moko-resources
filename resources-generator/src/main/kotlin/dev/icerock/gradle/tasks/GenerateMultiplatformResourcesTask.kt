@@ -184,15 +184,11 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         settings: MRGenerator.Settings,
         generators: List<ResourceGeneratorFeature<*>>,
     ): JsMRGenerator {
-        TODO()
-//        return JsMRGenerator(
-//            project = project,
-//            settings = settings,
-//            compilation = compilationJs.get(),
-//            generators = generators.map {
-//                it.createJsGenerator()
-//            }
-//        )
+        return JsMRGenerator(
+            project = project,
+            settings = settings,
+            generators = generators.map { it.createJsGenerator() }
+        )
     }
 
     private fun createNativeGenerator(
