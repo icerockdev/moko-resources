@@ -73,16 +73,13 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     abstract val outputMetadataFile: RegularFileProperty
 
     @get:Optional
-    @get:PathSensitive(PathSensitivity.NAME_ONLY)
+    @get:PathSensitive(PathSensitivity.ABSOLUTE)
     @get:InputFiles
     abstract val inputMetadataFiles: ConfigurableFileCollection
 
     //TODO Realise
 //    @get:OutputFile
 //    abstract val generationReport: RegularFileProperty
-
-    @get:OutputDirectory
-    abstract val outputGeneratedResourcesDir: DirectoryProperty
 
     @get:OutputDirectory
     abstract val outputResourcesDir: DirectoryProperty
@@ -92,7 +89,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     @get:OutputDirectory
     abstract val outputAssetsDir: DirectoryProperty
-
 
     init {
         group = "moko-resources"
@@ -109,7 +105,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         val mrGenerator: MRGenerator = resolveGenerator(settings, features)
 
         logger.warn("i ${platformType.get()} generator type: ${mrGenerator::class.java.simpleName}")
-        mrGenerator.generate(project)
+        mrGenerator.generate()
     }
 
     private fun resolveGenerator(
@@ -132,7 +128,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             outputMetadataFile = outputMetadataFile.asFile.get(),
             packageName = resourcesPackageName.get(),
             className = resourcesClassName.get(),
-            outputDirectory = outputGeneratedResourcesDir.get(),
             assetsDir = outputAssetsDir.get(),
             sourceSetDir = outputSourcesDir.get(),
             resourcesDir = outputResourcesDir.get(),

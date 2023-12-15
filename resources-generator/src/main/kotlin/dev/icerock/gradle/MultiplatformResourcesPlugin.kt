@@ -310,7 +310,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 )
             )
             val sourceSetResourceDir = File(generatedMokoResourcesDir, kotlinSourceSet.name)
-            generateTask.outputGeneratedResourcesDir.set(sourceSetResourceDir)
             generateTask.outputAssetsDir.set(File(sourceSetResourceDir, "assets"))
             generateTask.outputResourcesDir.set(File(sourceSetResourceDir, "res"))
             generateTask.outputSourcesDir.set(File(sourceSetResourceDir, "src"))

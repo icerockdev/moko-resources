@@ -203,7 +203,6 @@ abstract class AssetsGenerator(
 
         override fun createJvmGenerator(): AssetsGenerator = JvmAssetsGenerator(
             ownResourcesFileTree = settings.ownResourcesFileTree,
-            lowerResourcesFileTree = settings.lowerResourcesFileTree,
             settings = settings
         )
 

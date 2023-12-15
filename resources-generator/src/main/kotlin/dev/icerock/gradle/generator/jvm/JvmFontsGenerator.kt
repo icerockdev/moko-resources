@@ -14,7 +14,6 @@ import java.io.File
 
 class JvmFontsGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
     settings: MRGenerator.Settings
 ) : FontsGenerator(ownInputFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {

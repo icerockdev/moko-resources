@@ -160,7 +160,6 @@ abstract class FontsGenerator(
 
         override fun createJvmGenerator(): FontsGenerator = JvmFontsGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
-            lowerInputFileTree = settings.lowerResourcesFileTree,
             settings = settings
         )
     }

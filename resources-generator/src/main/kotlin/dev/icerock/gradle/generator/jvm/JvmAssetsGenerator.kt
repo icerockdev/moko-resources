@@ -14,7 +14,6 @@ import java.io.File
 
 class JvmAssetsGenerator(
     ownResourcesFileTree: FileTree,
-    lowerResourcesFileTree: FileTree,
     settings: MRGenerator.Settings
 ) : AssetsGenerator(ownResourcesFileTree),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {

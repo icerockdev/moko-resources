@@ -27,37 +27,10 @@ abstract class MRGenerator(
     protected open val assetsGenerationDir: File = settings.assetsDir.asFile
 
 
-    internal fun generate(project: Project) {
-
-        project.logger.warn("GENERATE: BEFORE DELETE")
-
-        sourcesGenerationDir.listFiles()?.forEach {file ->
-            project.logger.warn("GENERATE: sourcesGenerationDir $file")
-        }
-        resourcesGenerationDir.listFiles()?.forEach {file ->
-            project.logger.warn("GENERATE: resourcesGenerationDir$file")
-        }
-        assetsGenerationDir.listFiles()?.forEach {file ->
-            project.logger.warn("GENERATE: assetsGenerationDir $file")
-        }
-
-        // Не работает рекурсивное удаление
-        // лог директорий, что удалено
+    internal fun generate() {
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
         assetsGenerationDir.deleteRecursively()
-
-        project.logger.warn("GENERATE: AFTER DELETE")
-
-        sourcesGenerationDir.listFiles()?.forEach {file ->
-            project.logger.warn("GENERATE: sourcesGenerationDir $file")
-        }
-        resourcesGenerationDir.listFiles()?.forEach {file ->
-            project.logger.warn("GENERATE: resourcesGenerationDir$file")
-        }
-        assetsGenerationDir.listFiles()?.forEach {file ->
-            project.logger.warn("GENERATE: assetsGenerationDir $file")
-        }
 
         beforeMRGeneration()
 
@@ -139,7 +112,6 @@ abstract class MRGenerator(
         val packageName: String,
         val className: String,
         val visibility: MRVisibility,
-        val outputDirectory: Directory,
         val assetsDir: Directory,
         val sourceSetDir: Directory,
         val resourcesDir: Directory,
