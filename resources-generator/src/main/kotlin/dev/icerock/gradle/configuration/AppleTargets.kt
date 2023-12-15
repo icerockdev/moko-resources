@@ -36,8 +36,7 @@ internal fun configureAppleTargetGenerator(
     AppleMRGenerator(
         project = target.project,
         settings = settings,
-        generators = features.map { it.createIosGenerator() },
-        compilation = mainCompilation,
+        generators = features.map { it.createAppleGenerator() },
     ).apply(target.project)
 }
 

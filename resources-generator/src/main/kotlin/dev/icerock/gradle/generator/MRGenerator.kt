@@ -15,22 +15,49 @@ import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
 import java.io.File
 
 abstract class MRGenerator(
     protected val settings: Settings,
     internal val generators: List<Generator>,
 ) {
-    internal val outputDir: File = settings.generatedDir.asFile
-    protected open val sourcesGenerationDir: File = File(outputDir, "src")
-    protected open val resourcesGenerationDir: File = File(outputDir, "res")
-    protected open val assetsGenerationDir: File = File(outputDir, AssetsGenerator.ASSETS_DIR_NAME)
+    protected open val sourcesGenerationDir: File = settings.sourceSetDir.asFile
+    protected open val resourcesGenerationDir: File = settings.resourcesDir.asFile
+    protected open val assetsGenerationDir: File = settings.assetsDir.asFile
 
 
-    internal fun generate() {
+    internal fun generate(project: Project) {
+
+        project.logger.warn("GENERATE: BEFORE DELETE")
+
+        sourcesGenerationDir.listFiles()?.forEach {file ->
+            project.logger.warn("GENERATE: sourcesGenerationDir $file")
+        }
+        resourcesGenerationDir.listFiles()?.forEach {file ->
+            project.logger.warn("GENERATE: resourcesGenerationDir$file")
+        }
+        assetsGenerationDir.listFiles()?.forEach {file ->
+            project.logger.warn("GENERATE: assetsGenerationDir $file")
+        }
+
+        // Не работает рекурсивное удаление
+        // лог директорий, что удалено
         sourcesGenerationDir.deleteRecursively()
         resourcesGenerationDir.deleteRecursively()
         assetsGenerationDir.deleteRecursively()
+
+        project.logger.warn("GENERATE: AFTER DELETE")
+
+        sourcesGenerationDir.listFiles()?.forEach {file ->
+            project.logger.warn("GENERATE: sourcesGenerationDir $file")
+        }
+        resourcesGenerationDir.listFiles()?.forEach {file ->
+            project.logger.warn("GENERATE: resourcesGenerationDir$file")
+        }
+        assetsGenerationDir.listFiles()?.forEach {file ->
+            project.logger.warn("GENERATE: assetsGenerationDir $file")
+        }
 
         beforeMRGeneration()
 
@@ -78,6 +105,8 @@ abstract class MRGenerator(
 
     interface Generator : ObjectBodyExtendable {
         val mrObjectName: String
+        val resourceContainerClass: ClassName
+            get() = ClassName("dev.icerock.moko.resources", "ResourceContainer")
         val resourceClassName: ClassName
         val inputFiles: Iterable<File>
 
@@ -110,12 +139,15 @@ abstract class MRGenerator(
         val packageName: String,
         val className: String,
         val visibility: MRVisibility,
-        val generatedDir: Directory,
+        val outputDirectory: Directory,
+        val assetsDir: Directory,
+        val sourceSetDir: Directory,
+        val resourcesDir: Directory,
         val isStrictLineBreaks: Boolean,
-        val iosLocalizationRegion: String,
         val ownResourcesFileTree: FileTree,
         val lowerResourcesFileTree: FileTree,
         val upperResourcesFileTree: FileTree,
-        val androidRClassPackage: String,
+        val iosLocalizationRegion: Provider<String>,
+        val androidRClassPackage: Provider<String>,
     )
 }

@@ -6,7 +6,7 @@ package dev.icerock.gradle.generator
 
 interface ResourceGeneratorFeature<T : MRGenerator.Generator> {
     fun createCommonGenerator(): T
-    fun createIosGenerator(): T
+    fun createAppleGenerator(): T
     fun createAndroidGenerator(): T
     fun createJvmGenerator(): T
     fun createJsGenerator(): T

@@ -29,7 +29,7 @@ class JsMRGenerator(
     generators = generators
 ) {
     private val flattenClassName: String = settings.packageName.flatName
-    override val resourcesGenerationDir: File = File(File(outputDir, flattenClassName), "res")
+    override val resourcesGenerationDir: File = settings.resourcesDir.asFile
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
         mrClass.addProperty(

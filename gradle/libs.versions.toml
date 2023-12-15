@@ -4,7 +4,7 @@ androidGradleVersion = "7.4.2"
 androidSdkCommonVersion = "31.1.2"
 
 # kotlinx
-kotlinxSerializationVersion = "1.5.1"
+kotlinxSerializationVersion = "1.6.1"
 kotlinxCoroutinesVersion = "1.6.4"
 
 # android

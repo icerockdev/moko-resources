@@ -8,26 +8,27 @@ import dev.icerock.gradle.generator.apple.LoadableBundle
 import dev.icerock.gradle.utils.unzipTo
 import org.gradle.api.Action
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import java.io.File
 import java.util.Properties
 
 internal class PackResourcesToKLibAction(
-    private val baseLocalizationRegion: String,
-    private val bundleIdentifier: String,
-    private val assetsDirectory: File,
-    private val resourcesGenerationDir: File,
+    private val assetsDirectory: Provider<File>,
+    private val baseLocalizationRegion: Provider<String>,
+    private val resourcePackageName: Provider<String>,
+    private val resourcesGenerationDir: Provider<File>,
 ) : Action<Task> {
     override fun execute(task: Task) {
         task as KotlinNativeCompile
 
-        val klibFile = task.outputFile.get()
+        val klibFile: File = task.outputFile.get()
         val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
         val defaultDir = File(repackDir, "default")
         val resRepackDir = File(defaultDir, "resources")
-        val assetsDirectory: File = assetsDirectory
-        val resourcesGenerationDir: File = resourcesGenerationDir
+        val assetsDirectory: File = assetsDirectory.get()
+        val resourcesGenerationDir: File = resourcesGenerationDir.get()
 
         task.logger.info("Adding resources to klib file `{}`", klibFile)
         unzipTo(zipFile = klibFile, outputDirectory = repackDir)
@@ -41,8 +42,8 @@ internal class PackResourcesToKLibAction(
         val loadableBundle = LoadableBundle(
             directory = resRepackDir,
             bundleName = uniqueName,
-            developmentRegion = baseLocalizationRegion,
-            identifier = bundleIdentifier
+            developmentRegion = baseLocalizationRegion.get(),
+            identifier = "${resourcePackageName.get()}.MR"
         )
         loadableBundle.write()
 

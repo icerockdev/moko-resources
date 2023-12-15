@@ -3,25 +3,27 @@ package dev.icerock.gradle.generator.js.action
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 class CopyResourcesToExecutableAction(
-    private val resourcesGeneratedDir: File,
+    private val resourcesGeneratedDir: Provider<File>,
 ) : Action<Kotlin2JsCompile> {
     override fun execute(task: Kotlin2JsCompile) {
         val project: Project = task.project
+        val resourceDir = resourcesGeneratedDir.get()
 
         task.klibs.forEach { dependency ->
             copyResourcesFromLibraries(
                 inputFile = dependency,
                 project = project,
-                outputDir = resourcesGeneratedDir
+                outputDir = resourceDir
             )
         }
 
-        generateWebpackConfig(project, resourcesGeneratedDir)
+        generateWebpackConfig(project, resourceDir)
         generateKarmaConfig(project)
     }
 

@@ -191,7 +191,7 @@ abstract class AssetsGenerator(
             upperResourcesFileTree = settings.upperResourcesFileTree,
         )
 
-        override fun createIosGenerator(): AssetsGenerator = AppleAssetsGenerator(
+        override fun createAppleGenerator(): AssetsGenerator = AppleAssetsGenerator(
             ownResourcesFileTree = settings.ownResourcesFileTree,
             lowerResourcesFileTree = settings.lowerResourcesFileTree,
         )

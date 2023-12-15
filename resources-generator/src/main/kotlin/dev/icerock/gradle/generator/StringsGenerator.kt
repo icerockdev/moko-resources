@@ -165,7 +165,7 @@ abstract class StringsGenerator(
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
-        override fun createIosGenerator(): StringsGenerator = AppleStringsGenerator(
+        override fun createAppleGenerator(): StringsGenerator = AppleStringsGenerator(
             resourcesFileTree = settings.ownResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             baseLocalizationRegion = settings.iosLocalizationRegion

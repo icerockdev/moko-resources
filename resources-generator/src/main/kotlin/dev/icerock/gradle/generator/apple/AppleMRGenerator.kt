@@ -10,49 +10,21 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.TargetMRGenerator
-import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToExecutableAction
-import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToFrameworkAction
-import dev.icerock.gradle.generator.apple.action.PackResourcesToKLibAction
-import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
-import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
-import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.calculateResourcesHash
-import java.io.File
-import kotlin.reflect.full.memberProperties
-import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.findByType
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
-import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
-import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
-import org.jetbrains.kotlin.gradle.tasks.FrameworkDescriptor
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
     project: Project,
     settings: Settings,
     generators: List<Generator>,
-    private val compilation: AbstractKotlinNativeCompilation,
 ) : TargetMRGenerator(
     project = project,
     settings = settings,
     generators = generators
 ) {
-    private val bundleClassName =
-        ClassName("platform.Foundation", "NSBundle")
+    private val bundleClassName = ClassName("platform.Foundation", "NSBundle")
     private val bundleIdentifier = "${settings.packageName}.MR"
 
     override fun processMRClass(mrClass: TypeSpec.Builder) {
@@ -80,160 +52,8 @@ class AppleMRGenerator(
         ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
     )
 
-    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
-        setupKLibResources(generationTask)
-        setupFrameworkResources()
-        setupTestsResources()
-        setupFatFrameworkTasks()
-    }
-
     override fun beforeMRGeneration() {
         assetsGenerationDir.mkdirs()
-    }
-
-    //TODO: Вынести на этап конфигурации
-    private fun setupKLibResources(generationTask: GenerateMultiplatformResourcesTask) {
-        val compileTask: TaskProvider<KotlinNativeCompile> = compilation.compileTaskProvider
-
-        compileTask.configure { task ->
-            task.dependsOn(generationTask)
-
-            task.doLast {
-                PackResourcesToKLibAction(
-                    baseLocalizationRegion = settings.iosLocalizationRegion,
-                    bundleIdentifier = bundleIdentifier,
-                    assetsDirectory = assetsGenerationDir,
-                    resourcesGenerationDir = resourcesGenerationDir,
-                )
-            }
-        }
-
-        // tasks like compileIosMainKotlinMetadata when only one target enabled
-//        generationTask.project.tasks
-//            .withType<KotlinCommonCompile>()
-//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
-//            .configureEach { it.dependsOn(generationTask) }
-
-    //TODO fix usage of sourceSet
-//        dependsOnProcessResources(
-//            project = generationTask.project,
-//            sourceSet = sourceSet,
-//            task = generationTask,
-//        )
-    }
-
-    private fun setupFrameworkResources() {
-        val kotlinNativeTarget = compilation.target as KotlinNativeTarget
-        val project = kotlinNativeTarget.project
-
-        kotlinNativeTarget.binaries
-            .matching { it is Framework && it.compilation == compilation }
-            .configureEach { binary ->
-                val framework = binary as Framework
-
-                val linkTask = framework.linkTask
-
-                linkTask.doLast(CopyResourcesFromKLibsToFrameworkAction())
-
-                if (framework.isStatic) {
-                    val resourcesExtension: MultiplatformResourcesPluginExtension =
-                        project.extensions.getByType()
-                    if (resourcesExtension.staticFrameworkWarningEnabled.get()) {
-                        project.logger.warn(
-                            """
-$linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources
-"""
-                        )
-                    }
-                    createCopyFrameworkResourcesTask(linkTask)
-                }
-            }
-    }
-
-    private fun createCopyFrameworkResourcesTask(linkTask: KotlinNativeLink) {
-        val framework = linkTask.binary as Framework
-        val project = linkTask.project
-        val taskName = linkTask.name.replace("link", "copyResources")
-
-        val copyTask = project.tasks.create(taskName, CopyFrameworkResourcesToAppTask::class.java) {
-            it.framework = framework
-        }
-        copyTask.dependsOn(linkTask)
-
-        val xcodeTask = project.tasks.maybeCreate(
-            "copyFrameworkResourcesToApp",
-            CopyFrameworkResourcesToAppEntryPointTask::class.java
-        )
-        val multiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
-        xcodeTask.configurationMapper = (multiplatformExtension as? ExtensionAware)?.extensions
-            ?.findByType<CocoapodsExtension>()
-            ?.xcodeConfigurationToNativeBuildType
-            ?: emptyMap()
-
-        if (framework.target.konanTarget == xcodeTask.konanTarget &&
-            framework.buildType.getName() == xcodeTask.configuration?.lowercase()
-        ) {
-            xcodeTask.dependsOn(copyTask)
-        }
-    }
-
-    private fun setupTestsResources() {
-        val kotlinNativeTarget = compilation.target as KotlinNativeTarget
-
-        kotlinNativeTarget.binaries
-            .matching { it is TestExecutable && it.compilation.associateWith.contains(compilation) }
-            .configureEach { binary ->
-                val executable = binary as TestExecutable
-                executable.linkTaskProvider.configure { link ->
-                    link.doLast(CopyResourcesFromKLibsToExecutableAction())
-                }
-            }
-    }
-
-    private fun setupFatFrameworkTasks() {
-        val kotlinNativeTarget = compilation.target as KotlinNativeTarget
-        val project = kotlinNativeTarget.project
-
-        val fatAction: Action<Task> = object : Action<Task> {
-            override fun execute(task: Task) {
-                val fatTask: FatFrameworkTask = task as FatFrameworkTask
-
-                // compatibility of this api was changed
-                // from 1.6.10 to 1.6.20, so reflection was
-                // used here.
-                val fatFrameworkDir: File = FatFrameworkTask::class
-                    .memberProperties
-                    .run {
-                        find { it.name == "fatFrameworkDir" }
-                            ?: find { it.name == "fatFramework" }
-                    }?.invoke(fatTask) as File
-
-                val frameworkFile = when (val any: Any = fatTask.frameworks.first()) {
-                    is Framework -> any.outputFile
-                    is FrameworkDescriptor -> any.files.rootDir
-                    else -> error("Unsupported type of $any")
-                }
-
-                executeWithFramework(fatFrameworkDir, frameworkFile)
-            }
-
-            private fun executeWithFramework(
-                fatFrameworkDir: File,
-                frameworkFile: File,
-            ) = frameworkFile
-                .listFiles()
-                ?.asSequence()
-                ?.filter { it.name.contains(".bundle") }
-                ?.forEach { bundleFile ->
-                    project.copy {
-                        it.from(bundleFile)
-                        it.into(File(fatFrameworkDir, bundleFile.name))
-                    }
-                }
-        }
-
-        project.tasks.withType(FatFrameworkTask::class)
-            .configureEach { it.doLast(fatAction) }
     }
 
     companion object {

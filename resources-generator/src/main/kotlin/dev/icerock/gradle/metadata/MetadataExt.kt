@@ -7,7 +7,7 @@ fun MutableList<GeneratedObject>.addActual(actualObject: GeneratedObject){
                 && it.type == actualObject.type
     }
 
-    if (expect != null){
+    if (expect != null) {
         remove(expect)
     }
 

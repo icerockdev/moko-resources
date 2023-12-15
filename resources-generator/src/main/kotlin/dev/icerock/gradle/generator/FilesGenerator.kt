@@ -116,7 +116,7 @@ abstract class FilesGenerator(
             upperInputFileTree = settings.upperResourcesFileTree
         )
 
-        override fun createIosGenerator(): FilesGenerator = AppleFilesGenerator(
+        override fun createAppleGenerator(): FilesGenerator = AppleFilesGenerator(
             project = project,
             ownInputFileTree = settings.ownResourcesFileTree,
             lowerInputFileTree = settings.lowerResourcesFileTree

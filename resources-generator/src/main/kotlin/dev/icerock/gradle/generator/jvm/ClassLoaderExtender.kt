@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.jvm
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.ObjectBodyExtendable
@@ -16,6 +17,7 @@ class ClassLoaderExtender(private val mrClassName: String) : ObjectBodyExtendabl
             PropertySpec.builder(
                 "resourcesClassLoader",
                 ClassName("java.lang", "ClassLoader"),
+                KModifier.OVERRIDE
             )
                 .initializer(CodeBlock.of("${mrClassName}::class.java.classLoader"))
                 .build()

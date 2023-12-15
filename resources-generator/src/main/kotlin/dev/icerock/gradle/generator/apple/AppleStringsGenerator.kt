@@ -11,14 +11,15 @@ import dev.icerock.gradle.generator.LanguageType
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.StringsGenerator
 import dev.icerock.gradle.generator.apple.AppleMRGenerator.Companion.BUNDLE_PROPERTY_NAME
-import java.io.File
 import org.apache.commons.text.StringEscapeUtils
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.Provider
+import java.io.File
 
 class AppleStringsGenerator(
     resourcesFileTree: FileTree,
     strictLineBreaks: Boolean,
-    private val baseLocalizationRegion: String
+    private val baseLocalizationRegion: Provider<String>
 ) : StringsGenerator(
     resourcesFileTree = resourcesFileTree,
     strictLineBreaks = strictLineBreaks
@@ -49,7 +50,7 @@ class AppleStringsGenerator(
         localizableFile.writeText(content)
 
         if (language == LanguageType.Base) {
-            val regionDir = File(resourcesGenerationDir, "$baseLocalizationRegion.lproj")
+            val regionDir = File(resourcesGenerationDir, "${baseLocalizationRegion.get()}.lproj")
             regionDir.mkdirs()
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)

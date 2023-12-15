@@ -153,7 +153,7 @@ abstract class ColorsGenerator(
             resourcesFileTree = settings.ownResourcesFileTree,
         )
 
-        override fun createIosGenerator() = AppleColorsGenerator(
+        override fun createAppleGenerator() = AppleColorsGenerator(
             project = project,
             resourcesFileTree = settings.ownResourcesFileTree,
         )

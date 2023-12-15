@@ -119,14 +119,14 @@ abstract class ImagesGenerator(
             upperInputFileTree = settings.upperResourcesFileTree
         )
 
-        override fun createIosGenerator(): ImagesGenerator = AppleImagesGenerator(
+        override fun createAppleGenerator(): ImagesGenerator = AppleImagesGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
             lowerInputFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createAndroidGenerator(): ImagesGenerator = AndroidImagesGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
-            androidRClassPackageProvider = settings.androidRClassPackage,
+            androidRClassPackage = settings.androidRClassPackage,
             logger = logger
         )
 

@@ -22,10 +22,13 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 abstract class FontsGenerator(
-    private val inputFileTree: FileTree
+    private val inputFileTree: FileTree,
 ) : MRGenerator.Generator {
 
-    override val inputFiles: Iterable<File> get() = inputFileTree.files
+    override val inputFiles: Iterable<File>
+        get() = inputFileTree.matching {
+            it.include("fonts/**.ttf", "fonts/**.otf")
+        }
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FontResource")
     override val mrObjectName: String = "fonts"
 
@@ -74,7 +77,7 @@ abstract class FontsGenerator(
 
         familyGroups.forEach { group ->
             // TODO Make pairs: "style name" - "font file"
-            val stylePairs = group
+            val stylePairs: List<Pair<String, File>> = group
                 .value
                 .map { it.nameWithoutExtension.substringAfter("-") to it }
 
@@ -94,7 +97,7 @@ abstract class FontsGenerator(
     @Suppress("SpreadOperator")
     private fun generateFontFamilySpec(
         familyName: String,
-        fontStyleFiles: List<Pair<String, File>>
+        fontStyleFiles: List<Pair<String, File>>,
     ): TypeSpec {
         val spec = TypeSpec
             .objectBuilder(familyName)
@@ -114,7 +117,7 @@ abstract class FontsGenerator(
 
     protected open fun generateResources(
         resourcesGenerationDir: File,
-        files: List<FontFile>
+        files: List<FontFile>,
     ) {
     }
 
@@ -128,21 +131,18 @@ abstract class FontsGenerator(
 
     data class FontFile(
         val key: String,
-        val file: File
+        val file: File,
     )
 
     class Feature(
-        private val settings: MRGenerator.Settings
+        private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<FontsGenerator> {
-//        private val stringsFileTree: FileTree = settings.ownResourcesFileTree
-//            .matching { it.include("fonts/**.ttf", "fonts/**.otf") }
-
         override fun createCommonGenerator(): FontsGenerator = CommonFontsGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
             upperInputFileTree = settings.upperResourcesFileTree
         )
 
-        override fun createIosGenerator(): FontsGenerator = AppleFontsGenerator(
+        override fun createAppleGenerator(): FontsGenerator = AppleFontsGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
             lowerInputFileTree = settings.lowerResourcesFileTree
         )

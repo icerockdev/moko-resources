@@ -8,8 +8,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FileSpec.Builder
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.StringsGenerator
@@ -61,7 +61,7 @@ class CommonMRGenerator(
     }
 
     override fun generateFileSpec(): FileSpec? {
-        if (settings.ownResourcesFileTree.files.isEmpty()) return null
+//        if (settings.ownResourcesFileTree.files.isEmpty()) return null
 
         val inputMetadata: MutableList<GeneratedObject> = mutableListOf()
 
@@ -143,6 +143,7 @@ class CommonMRGenerator(
             val builder: TypeSpec.Builder = TypeSpec
                 .objectBuilder(generator.mrObjectName) // resource name: example strings
                 .addModifiers(visibilityModifier) // public/internal
+                .addSuperinterface(generator.resourceContainerClass.parameterizedBy(generator.resourceClassName))
 
             val expectInterfaces: List<GeneratedObject> = generatedObjects.filter {
                 it.generatorType == generator.type && it.isExpectInterface
@@ -204,19 +205,21 @@ class CommonMRGenerator(
                 GeneratorType.Strings
             } else if (it.path.matches(PluralsGenerator.PLURALS_REGEX)) {
                 GeneratorType.Plurals
-            } else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
-                GeneratorType.Colors
-            } else if (it.parentFile.name == "images") {
-                GeneratorType.Images
-            } else if (it.parentFile.name == "files") {
-                GeneratorType.Files
-            } else if (it.parentFile.name == "assets") {
-                GeneratorType.Assets
-            } else if (it.parentFile.name == "fonts") {
-                GeneratorType.Fonts
-            } else {
-                GeneratorType.None
-            }
+            }  else return@forEach
+            //TODO: Implement with generator
+//            else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
+//                GeneratorType.Colors
+//            } else if (it.parentFile.name == "images") {
+//                GeneratorType.Images
+//            } else if (it.parentFile.name == "files") {
+//                GeneratorType.Files
+//            } else if (it.parentFile.name == "assets") {
+//                GeneratorType.Assets
+//            } else if (it.parentFile.name == "fonts") {
+//                GeneratorType.Fonts
+//            } else {
+//                GeneratorType.None
+//            }
 
             expectInterfaces.add(
                 GeneratedObject(
@@ -278,7 +281,9 @@ class CommonMRGenerator(
                 objectBuilder = resourcesInterfaceBuilder,
             )
 
-            fileSpec.addType(generatedResources)
+            if (generatedResources.propertySpecs.isNotEmpty()){
+                fileSpec.addType(generatedResources)
+            }
         }
 
         inputMetadata.forEach { metadata ->

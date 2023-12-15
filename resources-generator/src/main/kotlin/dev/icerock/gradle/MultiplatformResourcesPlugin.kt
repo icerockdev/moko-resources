@@ -4,41 +4,36 @@
 
 package dev.icerock.gradle
 
-import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.BaseExtension
-import dev.icerock.gradle.configuration.configureAndroidTargetGenerator
-import dev.icerock.gradle.configuration.configureAppleTargetGenerator
-import dev.icerock.gradle.configuration.configureCommonTargetGenerator
-import dev.icerock.gradle.configuration.configureJsTargetGenerator
-import dev.icerock.gradle.configuration.configureJvmTargetGenerator
-import dev.icerock.gradle.generator.AssetsGenerator
-import dev.icerock.gradle.generator.ColorsGenerator
-import dev.icerock.gradle.generator.FilesGenerator
-import dev.icerock.gradle.generator.FontsGenerator
-import dev.icerock.gradle.generator.ImagesGenerator
-import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.ResourceGeneratorFeature
-import dev.icerock.gradle.generator.StringsGenerator
+import dev.icerock.gradle.generator.apple.setupAppleKLibResources
+import dev.icerock.gradle.generator.js.setupJsKLibResources
+import dev.icerock.gradle.generator.js.setupJsResources
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.androidJvm
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.common
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.js
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.jvm
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.native
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.wasm
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.konan.target.KonanTarget
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.tooling.core.extrasKeyOf
 import java.io.File
 
@@ -58,9 +53,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 mrExtension = mrExtension,
                 kmpExtension = kmpExtension
             )
-
-            //TODO add configuration for generated resources
-            setupResourcesSourceSet(project, kmpExtension)
         }
     }
 
@@ -102,41 +94,73 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         kmpExtension.targets.configureEach { target ->
-            project.logger.warn("i target ${target.targetName}")
-
             target.compilations.configureEach { compilation ->
+                compilation.kotlinSourceSetsObservable.forAll { sourceSet: KotlinSourceSet ->
+                    val genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask> =
+                        requireNotNull(
+                            sourceSet.extras[mokoResourcesGenTaskKey()]
+                        )
 
-                compilation.kotlinSourceSetsObservable.forAll { sourceSet ->
-                    project.logger.warn("i compilation kotlinSourceSets: $sourceSet")
-
-                    project.logger.warn(("i compilationSourceSet: $sourceSet"))
-
-                    val genTask: TaskProvider<GenerateMultiplatformResourcesTask> = requireNotNull(
-                        sourceSet.extras[mokoResourcesGenTaskKey()]
-                    )
-
-                    genTask.configure {
-                        project.logger.warn("i configure platformName ${target.platformType.name}")
-
+                    genTaskProvider.configure {
                         it.platformType.set(target.platformType.name)
+
+                        if (target.platformType == KotlinPlatformType.native) {
+                            it.konanTarget.set((target as KotlinNativeTarget).konanTarget.name)
+                        }
                     }
 
-                    compilation.compileTaskProvider.configure { compileTask: KotlinCompilationTask<*> ->
-                        compileTask.dependsOn(genTask)
+                    // Setup generated sourceSets, assets, resources as sourceSet of target
+                    setupSourceSets(
+                        project,
+                        target = target,
+                        sourceSet = sourceSet,
+                        genTaskProvider = genTaskProvider,
+                    )
 
-                        if (
-                            target.platformType == KotlinPlatformType.js
-                            && compilation as? KotlinJsIrCompilation != null
-                            && compileTask as? Kotlin2JsCompile != null
-                        ) {
+                    compilation.compileTaskProvider.configure { compileTask: KotlinCompilationTask<*> ->
+                        compileTask.dependsOn(genTaskProvider)
+
+                        if (target.platformType == KotlinPlatformType.js) {
+                            compileTask as Kotlin2JsCompile
+
                             setupJsResources(
                                 compileTask = compileTask,
-                                resourcesGenerationDir = genTask.get().outputDirectory.asFile.get()
+                                resourcesGenerationDir = genTaskProvider.flatMap {
+                                    it.outputResourcesDir.asFile
+                                }
                             )
                             setupJsKLibResources(
                                 compileTask = compileTask,
-                                resourcesGenerationDir = genTask.get().outputDirectory.asFile.get()
+                                resourcesGenerationDir = genTaskProvider.flatMap {
+                                    it.outputResourcesDir.asFile
+                                }
                             )
+                        }
+
+                        if (target.platformType == KotlinPlatformType.native) {
+                            target as KotlinNativeTarget
+                            compilation as KotlinNativeCompilation
+                            compileTask as KotlinNativeCompile
+
+                            setupAppleKLibResources(
+                                compileTask = compileTask,
+                                assetsDirectory = genTaskProvider.flatMap {
+                                    it.outputAssetsDir.asFile
+                                },
+                                resourcesGenerationDir = genTaskProvider.flatMap {
+                                    it.outputResourcesDir.asFile
+                                },
+                                iosLocalizationRegion = genTaskProvider.flatMap {
+                                    it.iosBaseLocalizationRegion
+                                },
+                                resourcePackageName = genTaskProvider.flatMap {
+                                    it.resourcesPackageName
+                                }
+                            )
+                            //TODO: Realize Apple setup: now crashed
+//                            setupFrameworkResources(compilation = compilation)
+//                            setupTestsResources(compilation = compilation)
+//                            setupFatFrameworkTasks(compilation = compilation)
                         }
                     }
                 }
@@ -196,85 +220,48 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 //        setupProjectForApple(project)
     }
 
-    private fun setupResourcesSourceSet(
+    private fun setupSourceSets(
         project: Project,
-        kmpExtension: KotlinMultiplatformExtension,
+        target: KotlinTarget,
+        sourceSet: KotlinSourceSet,
+        genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
     ) {
-        val kotlinExtension: KotlinProjectExtension = project.extensions.getByType(
-            KotlinProjectExtension::class.java
-        )
-        val commonSourceSet: KotlinSourceSet? = kotlinExtension.sourceSets.findByName(
-            KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME
-        )
-        val androidExtension: BaseExtension? =
-            project.extensions.findByName("android") as BaseExtension?
-        val androidSourceSet: com.android.build.gradle.api.AndroidSourceSet? =
-            androidExtension?.sourceSets?.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+        sourceSet.kotlin.srcDir(genTaskProvider.map { it.outputSourcesDir })
 
-        when {
-            commonSourceSet != null -> {
-                setupKotlinSourceSet(
-                    project = project,
-                    kotlinSourceSet = commonSourceSet,
-                )
+        when (target.platformType) {
+            jvm, js -> {
+                sourceSet.resources.srcDir(genTaskProvider.map { it.outputResourcesDir })
+                sourceSet.resources.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
-            androidSourceSet != null -> {
-                setupAndroidSourceSet(
-                    project = project,
-                    androidSourceSet = androidSourceSet
-                )
+
+            androidJvm -> {
+                val androidExtension: BaseExtension = target.project.extensions.getByType()
+
+                // Remove android name from kotlinSourceSet name, because androidSourceSet
+                // doesn't have prefix 'android'
+                val kotlinSourceSetName: String = sourceSet.name
+                    .replace("android", "")
+                    .lowercase()
+
+                //TODO: Need correction of filter for setup test sourceSets
+                // maybe should do logic implementation with
+                // https://kotlinlang.org/docs/multiplatform-android-layout.html#move-source-files
+
+                androidExtension.sourceSets.filter {
+                    it.name == kotlinSourceSetName
+                }.forEach { androidSourceSet ->
+                    project.logger.warn("SETUP ANDROID SOURCESETS: ${sourceSet.name} androidSS: ${androidSourceSet.name}")
+                    project.logger.warn("SETUP ANDROID SOURCESETS: genTaskProvider: $genTaskProvider")
+
+                    // Setup source for release/debug
+                    androidSourceSet.kotlin.srcDir(genTaskProvider.map { it.outputSourcesDir })
+                    androidSourceSet.res.srcDir(genTaskProvider.map { it.outputResourcesDir })
+                    androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
+                }
             }
-            else -> kmpExtension.sourceSets.configureEach { kotlinSourceSet ->
-                setupKotlinSourceSet(
-                    project = project,
-                    kotlinSourceSet = kotlinSourceSet,
-                )
-            }
+
+            common, native, wasm -> Unit
         }
-    }
-
-    private fun setupKotlinSourceSet(
-        project: Project,
-        kotlinSourceSet: KotlinSourceSet,
-    ) {
-        val mokoResourcesDir = getGeneratedResourcesDir(
-            project = project,
-            sourceSetName = kotlinSourceSet.name
-        )
-
-        val sourcesGenerationDir = File(mokoResourcesDir, "src")
-        val resourcesGenerationDir = File(mokoResourcesDir, "res")
-
-        kotlinSourceSet.kotlin.srcDir(sourcesGenerationDir)
-        kotlinSourceSet.resources.srcDir(resourcesGenerationDir)
-    }
-
-    private fun setupAndroidSourceSet(
-        project: Project,
-        androidSourceSet: AndroidSourceSet,
-    ) {
-        project.logger.warn("i android sourceSets: ${androidSourceSet.name}")
-
-        val mokoResourcesDir = getGeneratedResourcesDir(
-            project = project,
-            sourceSetName = androidSourceSet.name
-        )
-
-        val sourcesGenerationDir = File(mokoResourcesDir, "src")
-        val resourcesGenerationDir = File(mokoResourcesDir, "res")
-        val assetsGenerationDir = File(mokoResourcesDir, AssetsGenerator.ASSETS_DIR_NAME)
-
-        androidSourceSet.assets.srcDir(assetsGenerationDir)
-        androidSourceSet.java.srcDir(sourcesGenerationDir)
-        androidSourceSet.resources.srcDir(resourcesGenerationDir)
-    }
-
-    private fun getGeneratedResourcesDir(
-        project: Project,
-        sourceSetName: String,
-    ): File {
-        val generatedDir = File(project.buildDir, "generated/moko-resources")
-        return File(generatedDir, sourceSetName)
     }
 
     private fun createMokoResourcesSourceSet(
@@ -303,6 +290,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
     ): TaskProvider<GenerateMultiplatformResourcesTask> {
         val generateTaskName: String = "generateMR" + kotlinSourceSet.name
+        val generatedMokoResourcesDir = File(project.buildDir, "generated/moko-resources")
+
         val taskProvider: TaskProvider<GenerateMultiplatformResourcesTask> = project.tasks.register(
             generateTaskName,
             GenerateMultiplatformResourcesTask::class.java
@@ -316,13 +305,15 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             generateTask.resourcesVisibility.set(mrExtension.resourcesVisibility)
             generateTask.outputMetadataFile.set(
                 File(
-                    File(project.buildDir, "generated/moko-resources/metadata"),
+                    File(generatedMokoResourcesDir, "metadata"),
                     "${kotlinSourceSet.name}-metadata.json"
                 )
             )
-            generateTask.outputDirectory.set(
-                File(File(project.buildDir, "generated/moko-resources"), kotlinSourceSet.name)
-            )
+            val sourceSetResourceDir = File(generatedMokoResourcesDir, kotlinSourceSet.name)
+            generateTask.outputGeneratedResourcesDir.set(sourceSetResourceDir)
+            generateTask.outputAssetsDir.set(File(sourceSetResourceDir, "assets"))
+            generateTask.outputResourcesDir.set(File(sourceSetResourceDir, "res"))
+            generateTask.outputSourcesDir.set(File(sourceSetResourceDir, "src"))
         }
 
         kotlinSourceSet.extras[mokoResourcesGenTaskKey()] = taskProvider
@@ -387,90 +378,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         it.outputMetadataFile
                     }
                 )
-            }
-        }
-    }
-
-    private fun configureKotlinTargetGenerator(
-        target: KotlinTarget,
-        settings: MRGenerator.Settings,
-    ) {
-        val features = listOf(
-            StringsGenerator.Feature(settings),
-            PluralsGenerator.Feature(settings),
-            ImagesGenerator.Feature(settings, target.project.logger),
-            FontsGenerator.Feature(settings),
-            FilesGenerator.Feature(target.project, settings),
-            ColorsGenerator.Feature(target.project, settings),
-            AssetsGenerator.Feature(settings)
-        )
-
-        when (target.platformType) {
-            KotlinPlatformType.common -> configureCommonTargetGenerator(
-                target = target,
-                settings = settings,
-                features = features
-            )
-            KotlinPlatformType.jvm -> configureJvmTargetGenerator(
-                target = target,
-                settings = settings,
-                features = features
-            )
-            KotlinPlatformType.js -> configureJsTargetGenerator(
-                target = target,
-                settings = settings,
-                features = features
-            )
-            KotlinPlatformType.androidJvm -> configureAndroidTargetGenerator(
-                target = target,
-                settings = settings,
-                features = features
-            )
-
-            KotlinPlatformType.native -> configureNativeTargetGenerator(
-                target = target as KotlinNativeTarget,
-                settings = settings,
-                features = features
-            )
-
-            KotlinPlatformType.wasm -> {
-                target.project.logger.warn("wasm target not supported by MOKO Resources now")
-            }
-        }
-    }
-
-    private fun configureNativeTargetGenerator(
-        target: KotlinNativeTarget,
-        settings: MRGenerator.Settings,
-        features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-    ) {
-        when (target.konanTarget) {
-            KonanTarget.IOS_ARM32,
-            KonanTarget.IOS_ARM64,
-            KonanTarget.IOS_SIMULATOR_ARM64,
-            KonanTarget.IOS_X64,
-
-            KonanTarget.MACOS_ARM64,
-            KonanTarget.MACOS_X64,
-
-            KonanTarget.TVOS_ARM64,
-            KonanTarget.TVOS_SIMULATOR_ARM64,
-            KonanTarget.TVOS_X64,
-
-            KonanTarget.WATCHOS_ARM32,
-            KonanTarget.WATCHOS_ARM64,
-            KonanTarget.WATCHOS_DEVICE_ARM64,
-            KonanTarget.WATCHOS_SIMULATOR_ARM64,
-            KonanTarget.WATCHOS_X64,
-            KonanTarget.WATCHOS_X86,
-            -> configureAppleTargetGenerator(
-                target = target,
-                settings = settings,
-                features = features
-            )
-
-            else -> {
-                target.project.logger.warn("$target is not supported by MOKO Resources at now")
             }
         }
     }

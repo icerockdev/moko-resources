@@ -185,7 +185,7 @@ abstract class PluralsGenerator(
             strictLineBreaks = settings.isStrictLineBreaks
         )
 
-        override fun createIosGenerator(): PluralsGenerator = ApplePluralsGenerator(
+        override fun createAppleGenerator(): PluralsGenerator = ApplePluralsGenerator(
             ownResourcesFileTree = settings.ownResourcesFileTree,
             strictLineBreaks = settings.isStrictLineBreaks,
             baseLocalizationRegion = settings.iosLocalizationRegion

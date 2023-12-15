@@ -73,7 +73,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     abstract val outputMetadataFile: RegularFileProperty
 
     @get:Optional
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:PathSensitive(PathSensitivity.NAME_ONLY)
     @get:InputFiles
     abstract val inputMetadataFiles: ConfigurableFileCollection
 
@@ -82,7 +82,17 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 //    abstract val generationReport: RegularFileProperty
 
     @get:OutputDirectory
-    abstract val outputDirectory: DirectoryProperty
+    abstract val outputGeneratedResourcesDir: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputResourcesDir: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputSourcesDir: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputAssetsDir: DirectoryProperty
+
 
     init {
         group = "moko-resources"
@@ -99,7 +109,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         val mrGenerator: MRGenerator = resolveGenerator(settings, features)
 
         logger.warn("i ${platformType.get()} generator type: ${mrGenerator::class.java.simpleName}")
-        mrGenerator.generate()
+        mrGenerator.generate(project)
     }
 
     private fun resolveGenerator(
@@ -122,14 +132,17 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             outputMetadataFile = outputMetadataFile.asFile.get(),
             packageName = resourcesPackageName.get(),
             className = resourcesClassName.get(),
-            generatedDir = outputDirectory.get(),
+            outputDirectory = outputGeneratedResourcesDir.get(),
+            assetsDir = outputAssetsDir.get(),
+            sourceSetDir = outputSourcesDir.get(),
+            resourcesDir = outputResourcesDir.get(),
             ownResourcesFileTree = ownResources.asFileTree,
             lowerResourcesFileTree = lowerResources.asFileTree,
             upperResourcesFileTree = upperResources.asFileTree,
             isStrictLineBreaks = project.isStrictLineBreaks,
             visibility = resourcesVisibility.get(),
-            androidRClassPackage = project.getAndroidRClassPackage().get(),
-            iosLocalizationRegion = iosBaseLocalizationRegion.get(),
+            androidRClassPackage = project.getAndroidRClassPackage(),
+            iosLocalizationRegion = iosBaseLocalizationRegion,
         )
     }
 
@@ -228,14 +241,10 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         settings: MRGenerator.Settings,
         generators: List<ResourceGeneratorFeature<*>>,
     ): AppleMRGenerator {
-        TODO()
-//        return AppleMRGenerator(
-//            project = project,
-//            settings = settings,
-//            generators = generators.map {
-//                it.createIosGenerator()
-//            },
-//            compilation = compilationApple.get(),
-//        )
+        return AppleMRGenerator(
+            project = project,
+            settings = settings,
+            generators = generators.map { it.createAppleGenerator() },
+        )
     }
 }

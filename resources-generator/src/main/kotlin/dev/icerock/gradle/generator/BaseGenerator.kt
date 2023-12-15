@@ -56,6 +56,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         beforeGenerateResources(objectBuilder, languagesAllMaps)
 
         val stringsClass: TypeSpec = createTypeSpec(
+            project,
             inputMetadata = inputMetadata,
             generatedObjects = generatedObjects,
             targetObject = targetObject,
@@ -72,6 +73,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     }
 
     private fun createTypeSpec(
+        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,
@@ -126,10 +128,14 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        // Add object in metadata with remove expect realisation
-        generatedObjects.addActual(
-            targetObject.copy(properties = generatedProperties)
-        )
+        project.logger.warn("generatedObjects actual: $targetObject \n + $generatedProperties")
+
+        if (generatedProperties.isNotEmpty()) {
+            // Add object in metadata with remove expect realisation
+            generatedObjects.addActual(
+                targetObject.copy(properties = generatedProperties)
+            )
+        }
 
         return objectBuilder.build()
     }

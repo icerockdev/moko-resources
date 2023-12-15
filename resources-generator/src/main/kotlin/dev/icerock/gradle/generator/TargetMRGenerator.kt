@@ -3,6 +3,7 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
@@ -48,7 +49,6 @@ abstract class TargetMRGenerator(
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun generateFileSpec(): FileSpec? {
-        val visibilityModifier: KModifier = settings.visibility.toModifier()
         val inputMetadata: MutableList<GeneratedObject> = mutableListOf()
 
         //Read list of generated resources on previous level
@@ -57,6 +57,15 @@ abstract class TargetMRGenerator(
                 inputMetadataFiles = settings.inputMetadataFiles
             )
         )
+
+        if (
+            inputMetadata.isEmpty()
+            && settings.ownResourcesFileTree.files.none {
+                it.isFile
+            }
+        ) return null
+
+        val visibilityModifier: KModifier = settings.visibility.toModifier()
 
         inputMetadata.forEach {
             logger.warn("i prev: $it")
@@ -91,7 +100,7 @@ abstract class TargetMRGenerator(
                         .build()
 
                 inputMetadata.addActual(
-                    expectInterface.copy(modifier = GeneratedObjectModifier.Actual)
+                    actualObject = expectInterface.copy(modifier = GeneratedObjectModifier.Actual)
                 )
 
                 fileSpec.addType(resourcesInterface)
@@ -100,21 +109,23 @@ abstract class TargetMRGenerator(
 
         val generatedActualObjects = mutableListOf<GeneratedObject>()
 
-        generators.forEach { generator ->
+        generators.forEach { generator: Generator ->
             val builder: TypeSpec.Builder = TypeSpec
                 .objectBuilder(generator.mrObjectName)
                 .addModifiers(visibilityModifier)
+                .addSuperinterface(generator.resourceContainerClass.parameterizedBy(generator.resourceClassName))
 
             // Implement to object expect interfaces from previous
             // levels of resources
-            inputMetadata.getActualInterfaces(generator.type).forEach { generatedObject: GeneratedObject ->
-                builder.addSuperinterface(
-                    ClassName(
-                        packageName = settings.packageName,
-                        generatedObject.name
+            inputMetadata.getActualInterfaces(generator.type)
+                .forEach { generatedObject: GeneratedObject ->
+                    builder.addSuperinterface(
+                        ClassName(
+                            packageName = settings.packageName,
+                            generatedObject.name
+                        )
                     )
-                )
-            }
+                }
 
             mrClassSpec.addType(
                 generator.generate(
@@ -140,7 +151,7 @@ abstract class TargetMRGenerator(
         }
 
         inputMetadata.addActual(
-            GeneratedObject(
+            actualObject = GeneratedObject(
                 generatorType = GeneratorType.None,
                 type = GeneratedObjectType.Object,
                 name = settings.className,
@@ -202,7 +213,9 @@ abstract class TargetMRGenerator(
                 objectBuilder = resourcesInterfaceBuilder
             )
 
-            fileSpec.addType(generatedResources)
+            if (generatedResources.propertySpecs.isNotEmpty()) {
+                fileSpec.addType(generatedResources)
+            }
         }
     }
 
