@@ -164,7 +164,6 @@ abstract class ColorsGenerator(
         )
 
         override fun createJsGenerator(): ColorsGenerator = JsColorsGenerator(
-            project = project,
             resourcesFileTree = settings.ownResourcesFileTree,
         )
 

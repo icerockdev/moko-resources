@@ -21,7 +21,6 @@ import java.io.File
 
 class JsFontsGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
     mrClassPackage: String,
 ) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 

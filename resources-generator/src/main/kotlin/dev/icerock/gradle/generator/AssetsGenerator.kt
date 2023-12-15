@@ -209,7 +209,6 @@ abstract class AssetsGenerator(
 
         override fun createJsGenerator(): AssetsGenerator = JsAssetsGenerator(
             ownResourcesFileTree = settings.ownResourcesFileTree,
-            lowerResourcesFileTree = settings.lowerResourcesFileTree,
         )
     }
 

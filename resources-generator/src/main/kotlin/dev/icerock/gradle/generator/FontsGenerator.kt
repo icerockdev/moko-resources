@@ -155,7 +155,6 @@ abstract class FontsGenerator(
 
         override fun createJsGenerator(): FontsGenerator = JsFontsGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
-            lowerInputFileTree = settings.lowerResourcesFileTree,
             mrClassPackage = settings.packageName
         )
 

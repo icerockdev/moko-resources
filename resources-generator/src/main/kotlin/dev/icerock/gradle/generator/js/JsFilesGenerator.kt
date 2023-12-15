@@ -13,15 +13,14 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.FilesGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class JsFilesGenerator(
-    project: Project,
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
-) : FilesGenerator(project,ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
+) : FilesGenerator(
+    inputFileTree = ownInputFileTree
+), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

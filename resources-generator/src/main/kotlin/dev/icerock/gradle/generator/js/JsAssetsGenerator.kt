@@ -18,7 +18,6 @@ import java.io.File
 
 class JsAssetsGenerator(
     ownResourcesFileTree: FileTree,
-    lowerResourcesFileTree: FileTree,
 ) : AssetsGenerator(ownResourcesFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

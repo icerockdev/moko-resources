@@ -15,11 +15,9 @@ import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.jsJvmCommon.createColorResourceInitializer
-import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 
 class JsColorsGenerator(
-    project: Project,
     resourcesFileTree: FileTree,
 ) : ColorsGenerator(resourcesFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
