@@ -71,24 +71,25 @@ class JsMRGenerator(
         }
     }
 
-    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
-        project.tasks.withType<Kotlin2JsCompile>().configureEach {
-            it.dependsOn(generationTask)
-        }
-//        setupKLibResources(generationTask)
-//        setupResources()
-
-        // Declare task ':web-app:generateMRcommonMain' as an input of ':web-app:jsSourcesJar'.
-        project.tasks.withType<Jar>().configureEach {
-            it.dependsOn(generationTask)
-        }
-
-//        dependsOnProcessResources(
-//            project = project,
-//            sourceSet = sourceSet,
-//            task = generationTask,
-//        )
-    }
+    // TODO not used. remove after complete migration of task configuration to Plugin configuration time
+//    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
+//        project.tasks.withType<Kotlin2JsCompile>().configureEach {
+//            it.dependsOn(generationTask)
+//        }
+////        setupKLibResources(generationTask)
+////        setupResources()
+//
+//        // Declare task ':web-app:generateMRcommonMain' as an input of ':web-app:jsSourcesJar'.
+//        project.tasks.withType<Jar>().configureEach {
+//            it.dependsOn(generationTask)
+//        }
+//
+////        dependsOnProcessResources(
+////            project = project,
+////            sourceSet = sourceSet,
+////            task = generationTask,
+////        )
+//    }
 
     companion object {
         const val SUPPORTED_LOCALES_PROPERTY_NAME = "supportedLocales"

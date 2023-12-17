@@ -30,21 +30,22 @@ abstract class TargetMRGenerator(
 ) {
     val logger = project.logger
 
-    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
-        val name = settings.ownResourcesFileTree.first().targetName
-        val genTaskName = "generateMR$name"
-
-        val genTask = runCatching {
-            project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
-        }.getOrNull() ?: project.tasks.create(
-            genTaskName,
-            GenerateMultiplatformResourcesTask::class.java
-        ) {
-            it.generate()
-        }
-
-        apply(generationTask = genTask, project = project)
-    }
+    // TODO not used. remove after complete migration of task configuration to Plugin configuration time
+//    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
+//        val name = settings.ownResourcesFileTree.first().targetName
+//        val genTaskName = "generateMR$name"
+//
+//        val genTask = runCatching {
+//            project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask
+//        }.getOrNull() ?: project.tasks.create(
+//            genTaskName,
+//            GenerateMultiplatformResourcesTask::class.java
+//        ) {
+//            it.generate()
+//        }
+//
+//        apply(generationTask = genTask, project = project)
+//    }
 
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

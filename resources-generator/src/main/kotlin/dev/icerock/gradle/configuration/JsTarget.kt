@@ -11,26 +11,27 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 
-internal fun configureJsTargetGenerator(
-    target: KotlinTarget,
-    settings: MRGenerator.Settings,
-    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
-) {
-    val project: Project = target.project
-    val jsTarget: KotlinJsIrTarget? = target as? KotlinJsIrTarget
-    if (jsTarget == null) {
-        project.logger.warn("$target is not supported by MOKO Resources")
-        return
-    }
-
-    jsTarget.compilations.configureEach { compilation ->
-        // TODO rollback ifDepends
-//            compilation.defaultSourceSet.ifDependsOn(commonSourceSet) {
-        JsMRGenerator(
-            project = project,
-            settings = settings,
-            generators = features.map { it.createJsGenerator() },
-        ).apply(project = project)
-//            }
-    }
-}
+// TODO not used. remove after complete migration of task configuration to Plugin configuration time
+//internal fun configureJsTargetGenerator(
+//    target: KotlinTarget,
+//    settings: MRGenerator.Settings,
+//    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
+//) {
+//    val project: Project = target.project
+//    val jsTarget: KotlinJsIrTarget? = target as? KotlinJsIrTarget
+//    if (jsTarget == null) {
+//        project.logger.warn("$target is not supported by MOKO Resources")
+//        return
+//    }
+//
+//    jsTarget.compilations.configureEach { compilation ->
+//        // TODO rollback ifDepends
+////            compilation.defaultSourceSet.ifDependsOn(commonSourceSet) {
+//        JsMRGenerator(
+//            project = project,
+//            settings = settings,
+//            generators = features.map { it.createJsGenerator() },
+//        ).apply(project = project)
+////            }
+//    }
+//}

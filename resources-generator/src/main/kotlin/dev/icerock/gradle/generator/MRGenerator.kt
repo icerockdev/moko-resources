@@ -42,36 +42,38 @@ abstract class MRGenerator(
 
     abstract fun generateFileSpec(): FileSpec?
 
-    fun apply(project: Project): GenerateMultiplatformResourcesTask {
-        //TODO add sourceSetName
-        val name: String = project.displayName
-
-        val genTask = project.tasks.create(
-            "generateMR$name",
-            GenerateMultiplatformResourcesTask::class.java
-        ) {
-            it.inputs.property("mokoSettingsPackageName", settings.packageName)
-            it.inputs.property("mokoSettingsClassName", settings.className)
-            it.inputs.property("mokoSettingsVisibility", settings.visibility)
-            it.inputs.property(
-                "mokoSettingsIosLocalizationRegion",
-                settings.iosLocalizationRegion
-            )
-        }
-
-        apply(generationTask = genTask, project = project)
-
-        return genTask
-    }
+    // TODO not used. remove after complete migration of task configuration to Plugin configuration time
+//    fun apply(project: Project): GenerateMultiplatformResourcesTask {
+//        //TODO add sourceSetName
+//        val name: String = project.displayName
+//
+//        val genTask = project.tasks.create(
+//            "generateMR$name",
+//            GenerateMultiplatformResourcesTask::class.java
+//        ) {
+//            it.inputs.property("mokoSettingsPackageName", settings.packageName)
+//            it.inputs.property("mokoSettingsClassName", settings.className)
+//            it.inputs.property("mokoSettingsVisibility", settings.visibility)
+//            it.inputs.property(
+//                "mokoSettingsIosLocalizationRegion",
+//                settings.iosLocalizationRegion
+//            )
+//        }
+//
+//        apply(generationTask = genTask, project = project)
+//
+//        return genTask
+//    }
 
     protected open fun beforeMRGeneration() = Unit
     protected open fun afterMRGeneration() = Unit
 
     protected abstract fun getMRClassModifiers(): Array<KModifier>
-    protected abstract fun apply(
-        generationTask: GenerateMultiplatformResourcesTask,
-        project: Project,
-    )
+
+//    protected abstract fun apply(
+//        generationTask: GenerateMultiplatformResourcesTask,
+//        project: Project,
+//    )
 
     protected open fun processMRClass(mrClass: TypeSpec.Builder) {}
     protected open fun getImports(): List<ClassName> = emptyList()

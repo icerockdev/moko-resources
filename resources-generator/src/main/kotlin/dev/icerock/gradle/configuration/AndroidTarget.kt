@@ -24,26 +24,27 @@ import java.io.File
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 
-internal fun configureAndroidTargetGenerator(
-    target: KotlinTarget,
-    settings: MRGenerator.Settings,
-    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
-) {
-    val project: Project = target.project
-
-    listOf(
-        "com.android.library",
-        "com.android.application"
-    ).forEach { id ->
-        project.plugins.withId(id) {
-            setupAndroidGenerator(
-                settings = settings,
-                features = features,
-                project = project
-            )
-        }
-    }
-}
+// TODO not used. remove after complete migration of task configuration to Plugin configuration time
+//internal fun configureAndroidTargetGenerator(
+//    target: KotlinTarget,
+//    settings: MRGenerator.Settings,
+//    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
+//) {
+//    val project: Project = target.project
+//
+//    listOf(
+//        "com.android.library",
+//        "com.android.application"
+//    ).forEach { id ->
+//        project.plugins.withId(id) {
+//            setupAndroidGenerator(
+//                settings = settings,
+//                features = features,
+//                project = project
+//            )
+//        }
+//    }
+//}
 
 internal fun Project.getAndroidRClassPackage(): Provider<String> {
     return provider {
@@ -52,37 +53,37 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
     }
 }
 
-@Suppress("LongParameterList")
-private fun setupAndroidGenerator(
-    project: Project,
-    settings: MRGenerator.Settings,
-    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
-) {
-    setAssetsDirsRefresh(project)
+//@Suppress("LongParameterList")
+//private fun setupAndroidGenerator(
+//    project: Project,
+//    settings: MRGenerator.Settings,
+//    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
+//) {
+//    setAssetsDirsRefresh(project)
+//
+//    AndroidMRGenerator(
+//        project = project,
+//        settings = settings,
+//        generators = features.map { it.createAndroidGenerator() },
+//    ).apply(project)
+//}
 
-    AndroidMRGenerator(
-        project = project,
-        settings = settings,
-        generators = features.map { it.createAndroidGenerator() },
-    ).apply(project)
-}
-
-private fun setAssetsDirsRefresh(project: Project) {
-    // without this code Android Gradle Plugin not copy assets to aar
-    project.tasks
-        .matching { it.name.startsWith("package") && it.name.endsWith("Assets") }
-        .configureEach { task ->
-            // for gradle optimizations we should use anonymous object
-            @Suppress("ObjectLiteralToLambda")
-            task.doFirst(object : Action<Task> {
-                override fun execute(t: Task) {
-                    val android: BaseExtension = project.extensions.getByType()
-                    val assets: AndroidSourceDirectorySet = android.mainSourceSet.assets
-                    assets.setSrcDirs(assets.srcDirs)
-                }
-            })
-        }
-}
+//private fun setAssetsDirsRefresh(project: Project) {
+//    // without this code Android Gradle Plugin not copy assets to aar
+//    project.tasks
+//        .matching { it.name.startsWith("package") && it.name.endsWith("Assets") }
+//        .configureEach { task ->
+//            // for gradle optimizations we should use anonymous object
+//            @Suppress("ObjectLiteralToLambda")
+//            task.doFirst(object : Action<Task> {
+//                override fun execute(t: Task) {
+//                    val android: BaseExtension = project.extensions.getByType()
+//                    val assets: AndroidSourceDirectorySet = android.mainSourceSet.assets
+//                    assets.setSrcDirs(assets.srcDirs)
+//                }
+//            })
+//        }
+//}
 
 private fun getAndroidPackage(manifestFile: File): String {
     val dbFactory: DocumentBuilderFactory = DocumentBuilderFactory.newInstance()
