@@ -63,6 +63,10 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Input
     abstract val resourcesClassName: Property<String>
 
+    @get:Optional
+    @get:Input
+    abstract val androidSourceSetName: Property<String>
+
     @get:Input
     abstract val iosBaseLocalizationRegion: Property<String>
 
@@ -92,6 +96,14 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     init {
         group = "moko-resources"
+
+        onlyIf("generation on Android supported only for main flavor") {
+            val platform: String = platformType.get()
+            if (platform != KotlinPlatformType.androidJvm.name) return@onlyIf true
+
+            val flavor: String = androidSourceSetName.get()
+            flavor in listOf("main", "test", "androidTest")
+        }
     }
 
     @TaskAction
