@@ -7,10 +7,13 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.getActualInterfaces
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
@@ -97,12 +100,51 @@ abstract class MRGenerator(
         ): TypeSpec?
 
         fun getImports(): List<ClassName>
-    }
 
-    data class GenerationResult(
-        val typeSpec: TypeSpec,
-        val hasResourceProperty: Boolean = false
-    )
+        fun addActualOverrideModifier(
+            propertyName: String,
+            property: PropertySpec.Builder,
+            inputMetadata: List<GeneratedObject>,
+            targetObject: GeneratedObject,
+        ): GeneratedObjectModifier {
+            // Read actual interfaces of target object generator type
+            val actualInterfaces: List<GeneratedObject> = inputMetadata.getActualInterfaces(
+                generatorType = targetObject.generatorType
+            )
+
+            var containsInActualInterfaces = false
+
+            // Search property in actual interfaces
+            actualInterfaces.forEach { genInterface ->
+                val hasInInterface = genInterface.properties.any {
+                    it.name == propertyName
+                }
+
+                if (hasInInterface) {
+                    containsInActualInterfaces = true
+                }
+            }
+
+            return if (targetObject.isObject) {
+                if (containsInActualInterfaces) {
+                    property.addModifiers(KModifier.OVERRIDE)
+                    GeneratedObjectModifier.Override
+                } else {
+                    when (targetObject.modifier) {
+                        GeneratedObjectModifier.Actual -> {
+                            property.addModifiers(KModifier.ACTUAL)
+                            GeneratedObjectModifier.Actual
+                        }
+                        else -> {
+                            GeneratedObjectModifier.None
+                        }
+                    }
+                }
+            } else {
+                GeneratedObjectModifier.None
+            }
+        }
+    }
 
     interface SourceSet {
         val name: String

@@ -23,8 +23,6 @@ class JsColorsGenerator(
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-
     override fun getImports() = listOf(
         ClassName("dev.icerock.moko.graphics", "Color")
     )

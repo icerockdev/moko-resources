@@ -10,6 +10,7 @@ import com.squareup.kotlinpoet.FileSpec.Builder
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.StringsGenerator
@@ -221,11 +222,12 @@ class CommonMRGenerator(
                     GeneratorType.Strings
                 } else if (it.path.matches(PluralsGenerator.PLURALS_REGEX)) {
                     GeneratorType.Plurals
-                } else return@forEach
+                } else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
+                GeneratorType.Colors
+            } else return@forEach
+
             //TODO: Implement with generator
-//            else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
-//                GeneratorType.Colors
-//            } else if (it.parentFile.name == "images") {
+//        else if (it.parentFile.name == "images") {
 //                GeneratorType.Images
 //            } else if (it.parentFile.name == "files") {
 //                GeneratorType.Files

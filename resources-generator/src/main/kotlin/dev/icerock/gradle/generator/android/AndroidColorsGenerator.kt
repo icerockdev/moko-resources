@@ -16,7 +16,6 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AndroidColorsGenerator(
-    project: Project,
     resourcesFileTree: FileTree,
 ) : ColorsGenerator(resourcesFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
@@ -26,9 +25,11 @@ class AndroidColorsGenerator(
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-
-    override fun generateResources(resourcesGenerationDir: File, colors: List<ColorNode>) {
+    override fun generateResources(
+        project: Project,
+        resourcesGenerationDir: File,
+        colors: List<ColorNode>
+    ) {
         val valuesDir = File(resourcesGenerationDir, "values")
         val defaultStringsFile = File(valuesDir, COLORS_XML_FILE_NAME)
         valuesDir.mkdirs()
@@ -47,6 +48,12 @@ class AndroidColorsGenerator(
             """
             </resources>
             """.trimIndent()
+
+        project.logger.warn("ANDROID COLORS GENERATOR")
+
+        colors.forEach {
+            project.logger.warn("ANDROID COLORS: value: $it")
+        }
 
         val defaultContent = colors.joinToString("\n") { colorNode ->
             if (colorNode.isThemed()) {

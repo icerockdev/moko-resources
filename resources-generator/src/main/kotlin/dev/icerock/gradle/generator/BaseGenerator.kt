@@ -13,7 +13,6 @@ import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.GeneratedProperties
 import dev.icerock.gradle.metadata.addActual
-import dev.icerock.gradle.metadata.getActualInterfaces
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import org.gradle.api.Project
@@ -134,10 +133,6 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        project.logger.warn("generatedObjects actual: $targetObject \n + $generatedProperties")
-
-
-
         return if (generatedProperties.isNotEmpty()) {
             // Add object in metadata with remove expect realisation
             generatedObjects.addActual(
@@ -154,56 +149,6 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         key: KeyType,
         languageMap: Map<LanguageType, Map<KeyType, T>>,
     ): Map<String, JsonElement>
-
-    private fun addActualOverrideModifier(
-        propertyName: String,
-        property: PropertySpec.Builder,
-        inputMetadata: List<GeneratedObject>,
-        targetObject: GeneratedObject,
-    ): GeneratedObjectModifier {
-        // Read actual interfaces of target object generator type
-        val actualInterfaces: List<GeneratedObject> = inputMetadata.getActualInterfaces(
-            generatorType = targetObject.generatorType
-        )
-
-        var containsInActualInterfaces = false
-
-        // Search property in actual interfaces
-        actualInterfaces.forEach { genInterface ->
-            val hasInInterface = genInterface.properties.any {
-                it.name == propertyName
-            }
-
-            if (hasInInterface) {
-                containsInActualInterfaces = true
-            }
-        }
-
-        return if (targetObject.isObject) {
-            if (containsInActualInterfaces) {
-                property.addModifiers(KModifier.OVERRIDE)
-                GeneratedObjectModifier.Override
-            } else {
-                when (targetObject.modifier) {
-//                    GeneratedObjectModifier.Expect -> {
-//                        property.addModifiers(KModifier.EXPECT)
-//                        GeneratedObjectModifier.Expect
-//                    }
-
-                    GeneratedObjectModifier.Actual -> {
-                        property.addModifiers(KModifier.ACTUAL)
-                        GeneratedObjectModifier.Actual
-                    }
-
-                    else -> {
-                        GeneratedObjectModifier.None
-                    }
-                }
-            }
-        } else {
-            GeneratedObjectModifier.None
-        }
-    }
 
     abstract fun getLanguagesAllMaps(
         previousLanguageMaps: Map<LanguageType, Map<KeyType, T>>,

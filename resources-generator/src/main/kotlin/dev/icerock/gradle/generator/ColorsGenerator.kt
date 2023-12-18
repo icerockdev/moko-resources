@@ -15,7 +15,16 @@ import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.GeneratedProperties
 import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.objectsWithProperties
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.encodeToJsonElement
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import org.w3c.dom.Node
@@ -33,9 +42,6 @@ abstract class ColorsGenerator(
         ClassName("dev.icerock.moko.resources", "ColorResource")
     override val mrObjectName: String = "colors"
 
-    private val colorClassName =
-        ClassName("dev.icerock.moko.resources", "ColorResource")
-
     override val type: GeneratorType = GeneratorType.Colors
 
     open fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) {}
@@ -50,33 +56,104 @@ abstract class ColorsGenerator(
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
     ): TypeSpec? {
-        objectBuilder.addModifiers(*getClassModifiers())
-        extendObjectBodyAtStart(objectBuilder)
-
-        val colors = parseColors()
-
-        beforeGenerate(objectBuilder, colors.map { it.name })
-
-        colors.forEach { colorNode ->
-            val property = PropertySpec.builder(colorNode.name, colorClassName)
-            property.addModifiers(*getPropertyModifiers())
-            getPropertyInitializer(colorNode)?.let { property.initializer(it) }
-            objectBuilder.addProperty(property.build())
+        if (targetObject.isActual) {
+            objectBuilder.addModifiers(KModifier.ACTUAL)
         }
 
-        generateResources(resourcesGenerationDir, colors)
+        if (targetObject.isActualObject || targetObject.isTargetObject) {
+            extendObjectBodyAtStart(objectBuilder)
+        }
 
+        // Read colors from previous levels, if target interface or expect
+        // return emptyList()
+        val previousColors: List<ColorNode> = getPreviousColors(
+            inputMetadata = inputMetadata,
+            targetObject = targetObject
+        )
+
+        // Read target colors
+        val targetColors: List<ColorNode> = parseColors()
+        val allColors: List<ColorNode> = (previousColors + targetColors).distinct()
+        val generatedProperties: MutableList<GeneratedProperties> = mutableListOf()
+
+        beforeGenerate(objectBuilder, allColors.map { it.name })
+
+        val json = Json
+
+        allColors.forEach { colorNode ->
+            val property = PropertySpec.builder(colorNode.name, resourceClassName)
+
+            // Create metadata property
+            var generatedProperty = GeneratedProperties(
+                modifier = GeneratedObjectModifier.None,
+                name = colorNode.name,
+                data = json.encodeToJsonElement(colorNode)
+            )
+
+            if (targetObject.isObject) {
+                // Setup property modifier and correction metadata info
+                generatedProperty = generatedProperty.copy(
+                    modifier = addActualOverrideModifier(
+                        propertyName = colorNode.name,
+                        property = property,
+                        inputMetadata = inputMetadata,
+                        targetObject = targetObject
+                    )
+                )
+
+                getPropertyInitializer(colorNode)?.let {
+                    property.initializer(it)
+                }
+            }
+
+            objectBuilder.addProperty(property.build())
+            generatedProperties.add(generatedProperty)
+        }
+
+        generateResources(project, resourcesGenerationDir, allColors)
         extendObjectBodyAtEnd(objectBuilder)
 
-        return objectBuilder.build()
+        return if (generatedProperties.isNotEmpty()) {
+            generatedObjects.addActual(
+                targetObject.copy(properties = generatedProperties)
+            )
+
+            objectBuilder.build()
+        } else {
+            null
+        }
+    }
+
+    private fun getPreviousColors(
+        inputMetadata: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
+    ): List<ColorNode> {
+        if (!targetObject.isObject || !targetObject.isActual) return emptyList()
+
+        val json = Json
+        val objectsWithProperties: List<GeneratedObject> = inputMetadata.objectsWithProperties(
+            targetObject = targetObject
+        )
+
+        val colors = mutableListOf<ColorNode>()
+
+        objectsWithProperties.forEach { generatedObject ->
+            generatedObject.properties.forEach { property ->
+                val colorNode = json.decodeFromJsonElement<ColorNode>(property.data)
+
+                colors.add(colorNode)
+            }
+        }
+
+        return colors
     }
 
     protected open fun getClassModifiers(): Array<KModifier> = emptyArray()
-    protected open fun getPropertyModifiers(): Array<KModifier> = emptyArray()
 
     abstract fun getPropertyInitializer(color: ColorNode): CodeBlock?
 
     protected open fun generateResources(
+        project: Project,
         resourcesGenerationDir: File,
         colors: List<ColorNode>,
     ) = Unit
@@ -145,21 +222,17 @@ abstract class ColorsGenerator(
     }
 
     class Feature(
-        val project: Project,
         private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<ColorsGenerator> {
         override fun createCommonGenerator() = CommonColorsGenerator(
-            project = project,
             resourcesFileTree = settings.ownResourcesFileTree,
         )
 
         override fun createAppleGenerator() = AppleColorsGenerator(
-            project = project,
             resourcesFileTree = settings.ownResourcesFileTree,
         )
 
         override fun createAndroidGenerator() = AndroidColorsGenerator(
-            project = project,
             resourcesFileTree = settings.ownResourcesFileTree,
         )
 
@@ -168,7 +241,6 @@ abstract class ColorsGenerator(
         )
 
         override fun createJvmGenerator() = JvmColorsGenerator(
-            project = project,
             resourcesFileTree = settings.ownResourcesFileTree,
             mrClassName = settings.className
         )
@@ -203,10 +275,15 @@ abstract class ColorsGenerator(
     }
 }
 
+@Serializable
 data class ColorNode(
+    @SerialName("name")
     val name: String,
+    @SerialName("lightColor")
     val lightColor: String?, // as rgba
+    @SerialName("darkColor")
     val darkColor: String?, // as rgba
+    @SerialName("singleColor")
     val singleColor: String?, // as rgba
 ) {
     fun isThemed(): Boolean = lightColor != null && darkColor != null

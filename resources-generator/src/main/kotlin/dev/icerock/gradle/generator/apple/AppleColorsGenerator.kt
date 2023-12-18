@@ -22,7 +22,6 @@ import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleColorsGenerator(
-    project: Project,
     resourcesFileTree: FileTree,
 ) : ColorsGenerator(resourcesFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
     override fun getImports(): List<ClassName> {
@@ -32,9 +31,12 @@ class AppleColorsGenerator(
     }
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
-    override fun generateResources(resourcesGenerationDir: File, colors: List<ColorNode>) {
+    override fun generateResources(
+        project: Project,
+        resourcesGenerationDir: File,
+        colors: List<ColorNode>
+    ) {
         val assetsDirectory = File(resourcesGenerationDir, ASSETS_DIR_NAME)
 
         colors.forEach { colorNode ->

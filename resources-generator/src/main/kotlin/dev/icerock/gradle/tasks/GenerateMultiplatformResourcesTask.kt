@@ -6,6 +6,7 @@ package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.configuration.getAndroidRClassPackage
+import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.ResourceGeneratorFeature
@@ -159,10 +160,10 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         return listOf(
             StringsGenerator.Feature(settings),
             PluralsGenerator.Feature(settings),
+            ColorsGenerator.Feature(settings),
 //            ImagesGenerator.Feature(settings, logger),
 //            FontsGenerator.Feature(settings),
 //            FilesGenerator.Feature(settings),
-//            ColorsGenerator.Feature(settings),
 //            AssetsGenerator.Feature(settings)
         )
     }

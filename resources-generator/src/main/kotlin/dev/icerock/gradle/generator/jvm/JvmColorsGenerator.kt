@@ -11,11 +11,9 @@ import dev.icerock.gradle.generator.ColorNode
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.jsJvmCommon.createColorResourceInitializer
-import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 
 class JvmColorsGenerator(
-    project: Project,
     resourcesFileTree: FileTree,
     mrClassName: String,
 ) : ColorsGenerator(resourcesFileTree),
@@ -26,8 +24,6 @@ class JvmColorsGenerator(
     )
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-
-    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 
     override fun getPropertyInitializer(color: ColorNode): CodeBlock {
         return createColorResourceInitializer(color)
