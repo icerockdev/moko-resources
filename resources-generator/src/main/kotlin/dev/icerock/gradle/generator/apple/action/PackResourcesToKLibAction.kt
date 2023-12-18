@@ -30,6 +30,13 @@ internal class PackResourcesToKLibAction(
         val assetsDirectory: File = assetsDirectory.get()
         val resourcesGenerationDir: File = resourcesGenerationDir.get()
 
+        if (resourcesGenerationDir.exists().not()
+            || resourcesGenerationDir.listFiles()?.isEmpty() != false
+        ) {
+            task.logger.info("Resources not found. Skip klib repack action.")
+            return
+        }
+
         task.logger.info("Adding resources to klib file `{}`", klibFile)
         unzipTo(zipFile = klibFile, outputDirectory = repackDir)
 
@@ -45,6 +52,7 @@ internal class PackResourcesToKLibAction(
             developmentRegion = baseLocalizationRegion.get(),
             identifier = "${resourcePackageName.get()}.MR"
         )
+
         loadableBundle.write()
 
         val process: Process = Runtime.getRuntime().exec(

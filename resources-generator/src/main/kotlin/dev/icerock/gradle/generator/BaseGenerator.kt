@@ -66,7 +66,11 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         )
 
         languagesAllMaps.forEach { (language: LanguageType, strings: Map<KeyType, T>) ->
-            generateResources(resourcesGenerationDir, language, strings)
+            generateResources(
+                resourcesGenerationDir = resourcesGenerationDir,
+                language = language,
+                strings = strings
+            )
         }
 
         return stringsClass

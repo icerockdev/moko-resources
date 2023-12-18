@@ -97,20 +97,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             )
         }
 
-        // If use configureEach, we get exception of task context in project, on configuration step
-        kmpExtension.targets.matching {
-            it.platformType == KotlinPlatformType.native
-        }.configureEach { target ->
-            target.compilations.configureEach { compilation ->
-
-                compilation as KotlinNativeCompilation
-
-                setupFrameworkResources(compilation = compilation)
-                setupTestsResources(compilation = compilation)
-                setupFatFrameworkTasks(compilation = compilation)
-            }
-        }
-
         kmpExtension.targets.configureEach { target ->
             target.compilations.configureEach { compilation ->
                 compilation.kotlinSourceSetsObservable.forAll { sourceSet: KotlinSourceSet ->
@@ -141,6 +127,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         compilation = compilation
                     )
 
+                    // Setup apple specific tasks
+                    setupAppleTasks(
+                        target = target,
+                        compilation = compilation
+                    )
+
                     compilation.compileTaskProvider.configure { compileTask: KotlinCompilationTask<*> ->
                         compileTask.dependsOn(genTaskProvider)
 
@@ -160,7 +152,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         }
 
                         if (target is KotlinNativeTarget) {
-                            compilation as KotlinNativeCompilation
                             compileTask as KotlinNativeCompile
 
                             setupAppleKLibResources(
@@ -278,7 +269,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         target: KotlinTarget,
         sourceSet: KotlinSourceSet,
         genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
-        compilation: KotlinCompilation<*>
+        compilation: KotlinCompilation<*>,
     ) {
         if (target !is KotlinAndroidTarget) return
 
@@ -297,6 +288,19 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         @Suppress("DEPRECATION")
         val androidVariant: BaseVariant = compilation.androidVariant
         androidVariant.preBuildProvider.configure { it.dependsOn(genTaskProvider) }
+    }
+
+    private fun setupAppleTasks(
+        target: KotlinTarget,
+        compilation: KotlinCompilation<*>,
+    ) {
+        if (target !is KotlinNativeTarget) return
+
+        compilation as KotlinNativeCompilation
+
+        setupFrameworkResources(compilation = compilation)
+        setupTestsResources(compilation = compilation)
+        setupFatFrameworkTasks(compilation = compilation)
     }
 
     private fun createMokoResourcesSourceSet(

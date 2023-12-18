@@ -33,14 +33,14 @@ fun setupAppleKLibResources(
     iosLocalizationRegion: Provider<String>,
     resourcePackageName: Provider<String>,
 ) {
-    compileTask.doLast {
+    compileTask.doLast (
         PackResourcesToKLibAction(
             baseLocalizationRegion = iosLocalizationRegion,
             resourcePackageName = resourcePackageName,
             assetsDirectory = assetsDirectory,
             resourcesGenerationDir = resourcesGenerationDir,
         )
-    }
+    )
 
     // tasks like compileIosMainKotlinMetadata when only one target enabled
 //        generationTask.project.tasks
