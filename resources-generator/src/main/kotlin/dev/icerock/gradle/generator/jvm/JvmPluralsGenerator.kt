@@ -12,7 +12,7 @@ import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import dev.icerock.gradle.generator.PluralMap
 import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.utils.remove
+import dev.icerock.gradle.utils.flatName
 import org.gradle.api.file.FileTree
 import java.io.File
 
@@ -23,7 +23,7 @@ class JvmPluralsGenerator(
 ) : PluralsGenerator(ownResourcesFileTree, strictLineBreaks),
     ObjectBodyExtendable by ClassLoaderExtender(settings.className) {
 
-    private val flattenClassPackage: String = settings.packageName.remove('.')
+    private val flattenClassPackage: String = settings.packageName.flatName
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

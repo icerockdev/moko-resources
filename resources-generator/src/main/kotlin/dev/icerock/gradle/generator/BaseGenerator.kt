@@ -28,7 +28,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec {
+    ): TypeSpec? {
         // Read previous languages map from metadata
         // if target object is expect object or interface return emptyMap()
         val previousLanguagesMap: Map<LanguageType, Map<KeyType, T>> = getPreviousLanguagesMap(
@@ -55,7 +55,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         beforeGenerateResources(objectBuilder, languagesAllMaps)
 
-        val stringsClass: TypeSpec = createTypeSpec(
+        val stringsClass = createTypeSpec(
             project,
             inputMetadata = inputMetadata,
             generatedObjects = generatedObjects,
@@ -80,10 +80,12 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         keys: List<KeyType>,
         languageMap: Map<LanguageType, Map<KeyType, T>>,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec {
-        objectBuilder.addModifiers(*getClassModifiers())
+    ): TypeSpec? {
+        if (targetObject.isActual) {
+            objectBuilder.addModifiers(*getClassModifiers())
+        }
 
-        if (targetObject.isActualObject) {
+        if (targetObject.isActualObject || targetObject.isTargetObject) {
             extendObjectBodyAtStart(objectBuilder)
         }
 
@@ -130,14 +132,18 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         project.logger.warn("generatedObjects actual: $targetObject \n + $generatedProperties")
 
-        if (generatedProperties.isNotEmpty()) {
+
+
+        return if (generatedProperties.isNotEmpty()) {
             // Add object in metadata with remove expect realisation
             generatedObjects.addActual(
                 targetObject.copy(properties = generatedProperties)
             )
-        }
 
-        return objectBuilder.build()
+            objectBuilder.build()
+        } else {
+            null
+        }
     }
 
     abstract fun getPropertyMetadata(

@@ -98,7 +98,7 @@ abstract class AssetsGenerator(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec {
+    ): TypeSpec? {
         val rootContent = parseRootContent(fileTree.files)
 
         beforeGenerate(objectBuilder, rootContent)

@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.TargetMRGenerator
 import dev.icerock.gradle.utils.calculateResourcesHash
 import org.gradle.api.Project
+import java.io.File
 
 @Suppress("TooManyFunctions")
 class AppleMRGenerator(
@@ -24,6 +25,8 @@ class AppleMRGenerator(
     settings = settings,
     generators = generators
 ) {
+    override val resourcesGenerationDir: File = settings.resourcesDir.asFile
+
     private val bundleClassName = ClassName("platform.Foundation", "NSBundle")
     private val bundleIdentifier = "${settings.packageName}.MR"
 

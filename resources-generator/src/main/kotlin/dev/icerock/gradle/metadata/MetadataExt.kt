@@ -1,6 +1,6 @@
 package dev.icerock.gradle.metadata
 
-fun MutableList<GeneratedObject>.addActual(actualObject: GeneratedObject){
+fun MutableList<GeneratedObject>.addActual(actualObject: GeneratedObject) {
     val expect: GeneratedObject? = firstOrNull {
         it.name == actualObject.name
                 && it.generatorType == actualObject.generatorType
@@ -20,7 +20,29 @@ fun List<GeneratedObject>.getExpectInterfaces(): List<GeneratedObject> {
 
 fun List<GeneratedObject>.getActualInterfaces(generatorType: GeneratorType): List<GeneratedObject> {
     return filter {
-        it.isActualInterface && it.generatorType == generatorType
+        (it.isActualInterface || it.isTargetInterface) && it.generatorType == generatorType
+    }
+}
+
+fun List<GeneratedObject>.getGeneratorInterfaces(generatorType: GeneratorType): List<GeneratedObject> {
+    return filter {
+        it.isInterface && it.generatorType == generatorType
+    }
+}
+
+fun List<GeneratedObject>.isEmptyMetadata(): Boolean {
+    if (this.isEmpty()) return true
+
+    return this.none { it.isObject }
+}
+
+fun List<GeneratedObject>.isNotEmptyMetadata(): Boolean {
+    return !this.isEmptyMetadata()
+}
+
+fun List<GeneratedObject>.hasActualInterfacesOrExpectObject(): Boolean {
+    return this.any {
+        it.isActualInterface || it.isExpectObject
     }
 }
 

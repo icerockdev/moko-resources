@@ -44,7 +44,7 @@ abstract class ImagesGenerator(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec {
+    ): TypeSpec? {
         val fileMap: Map<String, List<File>> = inputFiles.groupBy { file ->
             // SVGs do not have scale suffixes, so we need to remove the extension first
             val key = file

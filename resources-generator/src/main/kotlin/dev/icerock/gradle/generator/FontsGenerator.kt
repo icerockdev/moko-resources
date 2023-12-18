@@ -42,7 +42,7 @@ abstract class FontsGenerator(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec {
+    ): TypeSpec? {
         val fontFiles = inputFileTree.map {
             FontFile(
                 key = it.nameWithoutExtension,
@@ -53,6 +53,7 @@ abstract class FontsGenerator(
         beforeGenerateResources(objectBuilder, fontFiles)
         val typeSpec = createTypeSpec(inputFileTree.sortedBy { it.name }, objectBuilder)
         generateResources(resourcesGenerationDir, fontFiles)
+
         return typeSpec
     }
 

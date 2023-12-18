@@ -39,7 +39,7 @@ abstract class FilesGenerator(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec {
+    ): TypeSpec? {
         val fileSpecs = inputFileTree.map { file ->
             FileSpec(
                 key = processKey(file.nameWithoutExtension),

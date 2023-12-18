@@ -12,10 +12,11 @@ import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.Metadata.readInputMetadata
 import dev.icerock.gradle.metadata.addActual
-import dev.icerock.gradle.metadata.getActualInterfaces
 import dev.icerock.gradle.metadata.getExpectInterfaces
+import dev.icerock.gradle.metadata.getGeneratorInterfaces
 import dev.icerock.gradle.metadata.getInterfaceName
-import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
+import dev.icerock.gradle.metadata.isNotEmptyMetadata
+import dev.icerock.gradle.metadata.resourcesIsEmpty
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.targetName
 import org.gradle.api.Project
@@ -52,19 +53,24 @@ abstract class TargetMRGenerator(
     override fun generateFileSpec(): FileSpec? {
         val inputMetadata: MutableList<GeneratedObject> = mutableListOf()
 
-        //Read list of generated resources on previous level
+        //Read list of generated resources on previous level's
         inputMetadata.addAll(
             readInputMetadata(
                 inputMetadataFiles = settings.inputMetadataFiles
             )
         )
 
-        if (
-            inputMetadata.isEmpty()
-            && settings.ownResourcesFileTree.files.none {
-                it.isFile
-            }
-        ) return null
+        // Check resources for generation: if lower resources is empty
+        // and own resources has no files - skip step
+        if (resourcesIsEmpty(inputMetadata, settings)) return null
+
+        //TODO: Добавить обработку кейса, когда данные есть только в таргете, т.е. генерация MR объекта
+        // Если есть свои ресурсы, но нет нижестоящих - просто MR
+        // Если есть нижестоящие - actual MR
+        // [checked] Нет своих и нет нижестоящих - ничего не генерировать
+
+        // If previous levels has resources, need generate actual objects
+        val needGenerateActual: Boolean = inputMetadata.isNotEmptyMetadata()
 
         val visibilityModifier: KModifier = settings.visibility.toModifier()
 
@@ -79,14 +85,18 @@ abstract class TargetMRGenerator(
 
         @Suppress("SpreadOperator")
         val mrClassSpec = TypeSpec.objectBuilder(settings.className) // default: object MR
-            .addModifiers(KModifier.ACTUAL)
             .addModifiers(visibilityModifier) // public/internal
+
+        if (needGenerateActual) {
+            mrClassSpec.addModifiers(KModifier.ACTUAL)
+        }
 
         // Add actual implementation of expect interfaces from previous levels
         if (inputMetadata.isNotEmpty()) {
-            generateActualInterface(
+            generateTargetInterfaces(
                 inputMetadata = inputMetadata,
                 visibilityModifier = settings.visibility.toModifier(),
+                generateActualObject = needGenerateActual,
                 fileSpec = fileSpec
             )
 
@@ -94,33 +104,36 @@ abstract class TargetMRGenerator(
             val expectInterfaces = inputMetadata.getExpectInterfaces()
 
             expectInterfaces.forEach { expectInterface ->
-                val resourcesInterface: TypeSpec =
+                val actualInterfaceTypeSpec: TypeSpec =
                     TypeSpec.interfaceBuilder(expectInterface.name)
                         .addModifiers(visibilityModifier)
                         .addModifiers(KModifier.ACTUAL)
                         .build()
 
+                fileSpec.addType(actualInterfaceTypeSpec)
                 inputMetadata.addActual(
                     actualObject = expectInterface.copy(modifier = GeneratedObjectModifier.Actual)
                 )
-
-                fileSpec.addType(resourcesInterface)
             }
         }
 
         val generatedActualObjects = mutableListOf<GeneratedObject>()
 
         generators.forEach { generator: Generator ->
-            val builder: TypeSpec.Builder = TypeSpec
+            val objectBuilder: TypeSpec.Builder = TypeSpec
                 .objectBuilder(generator.mrObjectName)
                 .addModifiers(visibilityModifier)
-                .addSuperinterface(generator.resourceContainerClass.parameterizedBy(generator.resourceClassName))
+                .addSuperinterface(
+                    superinterface = generator.resourceContainerClass.parameterizedBy(
+                        generator.resourceClassName
+                    )
+                )
 
             // Implement to object expect interfaces from previous
             // levels of resources
-            inputMetadata.getActualInterfaces(generator.type)
+            inputMetadata.getGeneratorInterfaces(generator.type)
                 .forEach { generatedObject: GeneratedObject ->
-                    builder.addSuperinterface(
+                    objectBuilder.addSuperinterface(
                         ClassName(
                             packageName = settings.packageName,
                             generatedObject.name
@@ -128,60 +141,69 @@ abstract class TargetMRGenerator(
                     )
                 }
 
-            mrClassSpec.addType(
-                generator.generate(
-                    project = project,
-                    inputMetadata = inputMetadata,
-                    generatedObjects = generatedActualObjects,
-                    targetObject = GeneratedObject(
+            val generatedResourceObjectTypeSpec: TypeSpec? = generator.generate(
+                project = project,
+                inputMetadata = inputMetadata,
+                generatedObjects = generatedActualObjects,
+                targetObject = GeneratedObject(
+                    generatorType = generator.type,
+                    modifier = if (needGenerateActual) {
+                        GeneratedObjectModifier.Actual
+                    } else {
+                        GeneratedObjectModifier.None
+                    },
+                    type = GeneratedObjectType.Object,
+                    name = generator.mrObjectName,
+                    interfaces = getObjectInterfaces(
                         generatorType = generator.type,
-                        modifier = GeneratedObjectModifier.Actual,
-                        type = GeneratedObjectType.Object,
-                        name = generator.mrObjectName,
-                        interfaces = getObjectInterfaces(
-                            generatorType = generator.type,
-                            objectName = generator.mrObjectName,
-                            inputMetadata = inputMetadata
-                        )
-                    ),
-                    assetsGenerationDir = assetsGenerationDir,
-                    resourcesGenerationDir = resourcesGenerationDir,
-                    objectBuilder = builder,
-                )
+                        objectName = generator.mrObjectName,
+                        inputMetadata = inputMetadata
+                    )
+                ),
+                assetsGenerationDir = assetsGenerationDir,
+                resourcesGenerationDir = resourcesGenerationDir,
+                objectBuilder = objectBuilder,
             )
-        }
 
-        inputMetadata.addActual(
-            actualObject = GeneratedObject(
-                generatorType = GeneratorType.None,
-                type = GeneratedObjectType.Object,
-                name = settings.className,
-                modifier = GeneratedObjectModifier.Actual,
-                objects = generatedActualObjects
-            )
-        )
+            if (generatedResourceObjectTypeSpec != null) {
+                mrClassSpec.addType(generatedResourceObjectTypeSpec)
+            }
+        }
 
         processMRClass(mrClassSpec)
 
-        val mrClass = mrClassSpec.build()
-        fileSpec.addType(mrClass)
+        if (generatedActualObjects.isNotEmpty()){
+            val mrClass = mrClassSpec.build()
+            fileSpec.addType(mrClass)
 
-        createOutputMetadata(
-            outputMetadataFile = settings.outputMetadataFile,
-            generatedObjects = inputMetadata
-        )
+            inputMetadata.addActual(
+                actualObject = GeneratedObject(
+                    generatorType = GeneratorType.None,
+                    type = GeneratedObjectType.Object,
+                    name = settings.className,
+                    modifier = GeneratedObjectModifier.Actual,
+                    objects = generatedActualObjects
+                )
+            )
+        }
 
         generators
             .flatMap { it.getImports() }
             .plus(getImports())
             .forEach { fileSpec.addImport(it.packageName, it.simpleName) }
 
+        createOutputMetadata(
+            outputMetadataFile = settings.outputMetadataFile,
+            generatedObjects = inputMetadata
+        )
+
         return fileSpec.build()
     }
 
-    private fun generateActualInterface(
+    private fun generateTargetInterfaces(
         inputMetadata: MutableList<GeneratedObject>,
         visibilityModifier: KModifier,
+        generateActualObject: Boolean,
         fileSpec: FileSpec.Builder,
     ) {
         if (settings.ownResourcesFileTree.files.isEmpty()) return
@@ -192,20 +214,24 @@ abstract class TargetMRGenerator(
         generators.forEach { generator ->
             val interfaceName = getInterfaceName(
                 targetName = targetName,
-                generator = generator
+                generatorType = generator.type
             )
 
             val resourcesInterfaceBuilder: TypeSpec.Builder =
                 TypeSpec.interfaceBuilder(interfaceName)
                     .addModifiers(visibilityModifier)
 
-            val generatedResources: TypeSpec = generator.generate(
+            val generatedResourcesTypeSpec: TypeSpec? = generator.generate(
                 project = project,
                 inputMetadata = inputMetadata,
                 generatedObjects = inputMetadata,
                 targetObject = GeneratedObject(
                     generatorType = generator.type,
-                    modifier = GeneratedObjectModifier.Actual,
+                    modifier = if (generateActualObject) {
+                        GeneratedObjectModifier.Actual
+                    } else {
+                        GeneratedObjectModifier.None
+                    },
                     type = GeneratedObjectType.Interface,
                     name = interfaceName
                 ),
@@ -214,8 +240,8 @@ abstract class TargetMRGenerator(
                 objectBuilder = resourcesInterfaceBuilder
             )
 
-            if (generatedResources.propertySpecs.isNotEmpty()) {
-                fileSpec.addType(generatedResources)
+            if (generatedResourcesTypeSpec != null) {
+                fileSpec.addType(generatedResourcesTypeSpec)
             }
         }
     }

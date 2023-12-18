@@ -35,4 +35,10 @@ data class GeneratedObject(
 
     val isActualInterface: Boolean
         get() = isInterface && isActual
+
+    val isTargetObject: Boolean
+        get() = isObject && modifier == GeneratedObjectModifier.None
+
+    val isTargetInterface: Boolean
+        get() = isInterface && modifier == GeneratedObjectModifier.None
 }

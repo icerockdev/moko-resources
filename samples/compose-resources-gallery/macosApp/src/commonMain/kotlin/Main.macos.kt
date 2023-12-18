@@ -8,8 +8,9 @@ import platform.AppKit.NSApplicationActivationPolicy
 import platform.AppKit.NSApplicationDelegateProtocol
 import platform.darwin.NSObject
 import platform.objc.objc_setUncaughtExceptionHandler
+import kotlin.experimental.ExperimentalNativeApi
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @Suppress("UNUSED_PARAMETER")
 fun main(args: Array<String>) {
     setUnhandledExceptionHook {

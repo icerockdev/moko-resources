@@ -49,7 +49,7 @@ abstract class ColorsGenerator(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec {
+    ): TypeSpec? {
         objectBuilder.addModifiers(*getClassModifiers())
         extendObjectBodyAtStart(objectBuilder)
 

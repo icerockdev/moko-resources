@@ -11,7 +11,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratorType
-import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
@@ -95,10 +94,15 @@ abstract class MRGenerator(
             assetsGenerationDir: File,
             resourcesGenerationDir: File,
             objectBuilder: TypeSpec.Builder,
-        ): TypeSpec
+        ): TypeSpec?
 
         fun getImports(): List<ClassName>
     }
+
+    data class GenerationResult(
+        val typeSpec: TypeSpec,
+        val hasResourceProperty: Boolean = false
+    )
 
     interface SourceSet {
         val name: String

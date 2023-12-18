@@ -7,6 +7,9 @@ package dev.icerock.gradle
 import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import dev.icerock.gradle.generator.apple.setupAppleKLibResources
+import dev.icerock.gradle.generator.apple.setupFatFrameworkTasks
+import dev.icerock.gradle.generator.apple.setupFrameworkResources
+import dev.icerock.gradle.generator.apple.setupTestsResources
 import dev.icerock.gradle.generator.js.setupJsKLibResources
 import dev.icerock.gradle.generator.js.setupJsResources
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
@@ -94,6 +97,20 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             )
         }
 
+        // If use configureEach, we get exception of task context in project, on configuration step
+        kmpExtension.targets.matching {
+            it.platformType == KotlinPlatformType.native
+        }.configureEach { target ->
+            target.compilations.configureEach { compilation ->
+
+                compilation as KotlinNativeCompilation
+
+                setupFrameworkResources(compilation = compilation)
+                setupTestsResources(compilation = compilation)
+                setupFatFrameworkTasks(compilation = compilation)
+            }
+        }
+
         kmpExtension.targets.configureEach { target ->
             target.compilations.configureEach { compilation ->
                 compilation.kotlinSourceSetsObservable.forAll { sourceSet: KotlinSourceSet ->
@@ -161,10 +178,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                     it.resourcesPackageName
                                 }
                             )
-                            //TODO: Realize Apple setup: now crashed
-//                            setupFrameworkResources(compilation = compilation)
-//                            setupTestsResources(compilation = compilation)
-//                            setupFatFrameworkTasks(compilation = compilation)
                         }
                     }
                 }

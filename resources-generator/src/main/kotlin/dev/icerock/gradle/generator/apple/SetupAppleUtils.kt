@@ -1,5 +1,6 @@
 package dev.icerock.gradle.generator.apple
 
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.generator.apple.action.CopyResourcesFromKLibsToFrameworkAction
@@ -22,7 +23,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FrameworkDescriptor
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 import kotlin.reflect.full.memberProperties
 
@@ -61,33 +61,34 @@ fun setupFrameworkResources(compilation: KotlinNativeCompilation) {
         framework.linkTaskProvider.configure { linkTask ->
             linkTask.doLast(CopyResourcesFromKLibsToFrameworkAction())
 
-            if (framework.isStatic) {
-                val project: Project = linkTask.project
-                val resourcesExtension: MultiplatformResourcesPluginExtension =
-                    project.extensions.getByType()
-                if (resourcesExtension.staticFrameworkWarningEnabled.get()) {
-                    project.logger.warn(
-                        """
-$linkTask produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources
+        }
+
+        if (framework.isStatic) {
+            val project: Project = framework.project
+            val resourcesExtension: MultiplatformResourcesPluginExtension =
+                project.extensions.getByType()
+            if (resourcesExtension.staticFrameworkWarningEnabled.get()) {
+                project.logger.warn(
+                    """
+${framework.linkTaskName} produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources
 """
-                    )
-                }
-                createCopyFrameworkResourcesTask(linkTask)
+                )
             }
+            createCopyFrameworkResourcesTask(framework)
         }
     }
 }
 
-fun createCopyFrameworkResourcesTask(linkTask: KotlinNativeLink) {
-    val framework = linkTask.binary as Framework
-    val project = linkTask.project
-    val taskName = linkTask.name.replace("link", "copyResources")
+fun createCopyFrameworkResourcesTask(framework: Framework) {
+    val project = framework.project
+    val taskName = framework.linkTaskName.replace("link", "copyResources")
 
-    val copyTask = project.tasks.create(taskName, CopyFrameworkResourcesToAppTask::class.java) {
+    val copyTask = project.tasks.register(taskName, CopyFrameworkResourcesToAppTask::class.java) {
         it.framework = framework
     }
-    copyTask.dependsOn(linkTask)
+    copyTask.dependsOn(framework.linkTaskProvider)
 
+    //TODO: Вынести в отдельную таску, должно создаваться один раз
     val xcodeTask = project.tasks.maybeCreate(
         "copyFrameworkResourcesToApp",
         CopyFrameworkResourcesToAppEntryPointTask::class.java
@@ -106,7 +107,7 @@ fun createCopyFrameworkResourcesTask(linkTask: KotlinNativeLink) {
 }
 
 fun setupTestsResources(compilation: KotlinNativeCompilation) {
-    compilation.target.binaries.withType<TestExecutable>().configureEach {executable ->
+    compilation.target.binaries.withType<TestExecutable>().configureEach { executable ->
         executable.linkTaskProvider.configure { link ->
             link.doLast(CopyResourcesFromKLibsToExecutableAction())
         }
