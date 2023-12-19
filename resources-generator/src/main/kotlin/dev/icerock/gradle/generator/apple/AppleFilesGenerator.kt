@@ -13,7 +13,7 @@ import java.io.File
 
 class AppleFilesGenerator(
     ownInputFileTree: FileTree,
-) : FilesGenerator(inputFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
+) : FilesGenerator(resourceFiles = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
 

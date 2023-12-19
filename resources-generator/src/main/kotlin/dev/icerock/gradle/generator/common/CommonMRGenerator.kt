@@ -220,21 +220,19 @@ class CommonMRGenerator(
             val generatorType: GeneratorType =
                 if (it.path.matches(StringsGenerator.STRINGS_REGEX)) {
                     GeneratorType.Strings
-                }
-                else if (it.path.matches(PluralsGenerator.PLURALS_REGEX)) {
+                } else if (it.path.matches(PluralsGenerator.PLURALS_REGEX)) {
                     GeneratorType.Plurals
-                }
-                else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
+                } else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
                     GeneratorType.Colors
-                }
-                else if (it.parentFile.name == "images") {
+                } else if (it.parentFile.name == "images") {
                     GeneratorType.Images
+                } else if (it.parentFile.name == "files") {
+                    GeneratorType.Files
                 } else return@forEach
 
             //TODO: Implement with generator
-// else if (it.parentFile.name == "files") {
-//                GeneratorType.Files
-//            } else if (it.parentFile.name == "assets") {
+
+//            else if (it.parentFile.name == "assets") {
 //                GeneratorType.Assets
 //            } else if (it.parentFile.name == "fonts") {
 //                GeneratorType.Fonts

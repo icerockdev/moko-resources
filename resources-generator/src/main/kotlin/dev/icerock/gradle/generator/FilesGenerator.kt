@@ -15,17 +15,24 @@ import dev.icerock.gradle.generator.common.CommonFilesGenerator
 import dev.icerock.gradle.generator.js.JsFilesGenerator
 import dev.icerock.gradle.generator.jvm.JvmFilesGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
+import dev.icerock.gradle.metadata.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.GeneratedProperty
 import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.objectsWithProperties
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import java.io.File
 
 abstract class FilesGenerator(
-    private val inputFileTree: FileTree,
+    private val resourceFiles: FileTree,
 ) : MRGenerator.Generator {
 
     override val inputFiles: Iterable<File>
-        get() = inputFileTree.matching { it.include("files/**") }
+        get() = resourceFiles.matching { it.include("files/**") }
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "FileResource")
     override val mrObjectName: String = "files"
 
@@ -40,42 +47,134 @@ abstract class FilesGenerator(
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
     ): TypeSpec? {
-        val fileSpecs = inputFileTree.map { file ->
+        val previousFilesSpec: List<FileSpec> = getPreviousFiles(
+            inputMetadata = inputMetadata,
+            targetObject = targetObject
+        )
+
+        val targetFilesSpecs: List<FileSpec> = if (
+            targetObject.isActualObject || targetObject.isTargetObject
+        ) {
+            emptyList()
+        } else {
+            inputFiles.getFileSpecList()
+        }
+
+        val allFilesSpecs = (previousFilesSpec + targetFilesSpecs).distinctBy { it.key }
+
+        beforeGenerate(objectBuilder, allFilesSpecs)
+
+        val typeSpec: TypeSpec? = createTypeSpec(
+            inputMetadata = inputMetadata,
+            generatedObjects = generatedObjects,
+            targetObject = targetObject,
+            keys = allFilesSpecs,
+            objectBuilder = objectBuilder
+        )
+
+        generateResources(
+            resourcesGenerationDir = resourcesGenerationDir,
+            files = allFilesSpecs
+        )
+
+        return typeSpec
+    }
+
+    private fun Iterable<File>.getFileSpecList(): List<FileSpec> {
+        return this.map { file ->
             FileSpec(
                 key = processKey(file.nameWithoutExtension),
                 file = file
             )
         }.sortedBy { it.key }
-        beforeGenerate(objectBuilder, fileSpecs)
-        val typeSpec = createTypeSpec(fileSpecs, objectBuilder)
-        generateResources(resourcesGenerationDir, fileSpecs)
-        return typeSpec
     }
 
-    private fun createTypeSpec(keys: List<FileSpec>, objectBuilder: TypeSpec.Builder): TypeSpec {
-        @Suppress("SpreadOperator")
-        objectBuilder.addModifiers(*getClassModifiers())
+    private fun getPreviousFiles(
+        inputMetadata: List<GeneratedObject>,
+        targetObject: GeneratedObject,
+    ): List<FileSpec> {
+        if (!targetObject.isObject || !targetObject.isActual) return emptyList()
 
-        extendObjectBodyAtStart(objectBuilder)
+        val json = Json
+        val objectsWithProperties: List<GeneratedObject> = inputMetadata.objectsWithProperties(
+            targetObject = targetObject
+        )
 
-        keys.forEach { objectBuilder.addProperty(generateFileProperty(it)) }
+        val files = mutableListOf<File>()
+
+        objectsWithProperties.forEach { generatedObject ->
+            generatedObject.properties.forEach { property ->
+                val data = json.decodeFromJsonElement<JsonPrimitive>(property.data)
+                files.add(
+                    File(data.content)
+                )
+            }
+        }
+
+        return files.getFileSpecList()
+    }
+
+    private fun createTypeSpec(
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
+        keys: List<FileSpec>,
+        objectBuilder: TypeSpec.Builder,
+    ): TypeSpec? {
+        if (targetObject.isActual) {
+            objectBuilder.addModifiers(KModifier.ACTUAL)
+        }
+
+        if (targetObject.isActualObject || targetObject.isTargetObject) {
+            extendObjectBodyAtStart(objectBuilder)
+        }
+
+        val generatedProperties = mutableListOf<GeneratedProperty>()
+
+        keys.forEach { fileSpec ->
+            val property = PropertySpec.builder(fileSpec.key, resourceClassName)
+
+            var generatedProperty = GeneratedProperty(
+                modifier = GeneratedObjectModifier.None,
+                name = fileSpec.key,
+                data = JsonPrimitive(fileSpec.file.path)
+            )
+
+            if (targetObject.isActualObject || targetObject.isTargetObject) {
+                // Add modifier for property and setup metadata
+                generatedProperty = generatedProperty.copy(
+                    modifier = addActualOverrideModifier(
+                        propertyName = fileSpec.key,
+                        property = property,
+                        inputMetadata = inputMetadata,
+                        targetObject = targetObject
+                    )
+                )
+
+                getPropertyInitializer(fileSpec)?.let {
+                    property.initializer(it)
+                }
+            }
+
+            objectBuilder.addProperty(property.build())
+            generatedProperties.add(generatedProperty)
+        }
+
         extendObjectBodyAtEnd(objectBuilder)
-        return objectBuilder.build()
+
+        return if (generatedProperties.isNotEmpty()) {
+            // Add object in metadata with remove expect realisation
+            generatedObjects.addActual(
+                targetObject.copy(properties = generatedProperties)
+            )
+
+            objectBuilder.build()
+        } else {
+            null
+        }
     }
 
     override fun getImports(): List<ClassName> = emptyList()
-
-    private fun generateFileProperty(
-        fileSpec: FileSpec,
-    ): PropertySpec {
-        @Suppress("SpreadOperator")
-        return PropertySpec.builder(fileSpec.key, resourceClassName)
-            .addModifiers(*getPropertyModifiers())
-            .apply {
-                getPropertyInitializer(fileSpec)?.let { initializer(it) }
-            }
-            .build()
-    }
 
     protected open fun beforeGenerate(
         objectBuilder: TypeSpec.Builder,
@@ -103,7 +202,6 @@ abstract class FilesGenerator(
     )
 
     class Feature(
-        val project: Project,
         private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<FilesGenerator> {
 

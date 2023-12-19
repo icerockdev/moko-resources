@@ -19,7 +19,7 @@ import java.io.File
 class JsFilesGenerator(
     ownInputFileTree: FileTree,
 ) : FilesGenerator(
-    inputFileTree = ownInputFileTree
+    resourceFiles = ownInputFileTree
 ), ObjectBodyExtendable by NOPObjectBodyExtendable() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
