@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.PropertySpec.Builder
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratedProperties
+import dev.icerock.gradle.metadata.GeneratedProperty
 import dev.icerock.gradle.metadata.addActual
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -39,7 +39,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         // If target object is actual object: skip read files again
         //
         // Structure: language - key - value
-        val languageMap: Map<LanguageType, Map<KeyType, T>> = if (targetObject.isActualObject) {
+        val languageMap: Map<LanguageType, Map<KeyType, T>> = if (targetObject.isActualObject || targetObject.isTargetObject) {
             emptyMap()
         } else {
             loadLanguageMap()
@@ -55,7 +55,6 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         beforeGenerateResources(objectBuilder, languagesAllMaps)
 
         val stringsClass = createTypeSpec(
-            project,
             inputMetadata = inputMetadata,
             generatedObjects = generatedObjects,
             targetObject = targetObject,
@@ -76,7 +75,6 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
     }
 
     private fun createTypeSpec(
-        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,
@@ -85,20 +83,20 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
         objectBuilder: TypeSpec.Builder,
     ): TypeSpec? {
         if (targetObject.isActual) {
-            objectBuilder.addModifiers(*getClassModifiers())
+            objectBuilder.addModifiers(KModifier.ACTUAL)
         }
 
         if (targetObject.isActualObject || targetObject.isTargetObject) {
             extendObjectBodyAtStart(objectBuilder)
         }
 
-        val generatedProperties = mutableListOf<GeneratedProperties>()
+        val generatedProperties = mutableListOf<GeneratedProperty>()
 
         keys.forEach { key ->
             val name = key.replace(".", "_")
 
             //Create metadata property
-            var generatedProperty = GeneratedProperties(
+            var generatedProperty = GeneratedProperty(
                 modifier = GeneratedObjectModifier.None,
                 name = name,
                 data = JsonObject(
@@ -111,7 +109,7 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
             val property: Builder = PropertySpec.builder(name, resourceClassName)
 
-            if (targetObject.isObject) {
+            if (targetObject.isActualObject || targetObject.isTargetObject) {
                 // Add modifier for property and setup metadata
                 generatedProperty = generatedProperty.copy(
                     modifier = addActualOverrideModifier(

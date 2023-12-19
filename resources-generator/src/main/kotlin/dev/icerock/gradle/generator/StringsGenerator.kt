@@ -63,6 +63,7 @@ abstract class StringsGenerator(
         targetObject: GeneratedObject,
     ): Map<LanguageType, Map<KeyType, String>> {
         if (!targetObject.isObject || !targetObject.isActual) return emptyMap()
+
         val json = Json
         val objectsWithProperties: List<GeneratedObject> = inputMetadata.objectsWithProperties(targetObject)
 

@@ -16,7 +16,7 @@ import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
 import dev.icerock.gradle.metadata.GeneratedObject
 import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratedProperties
+import dev.icerock.gradle.metadata.GeneratedProperty
 import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.addActual
 import dev.icerock.gradle.metadata.objectsWithProperties
@@ -44,7 +44,7 @@ abstract class ColorsGenerator(
 
     override val type: GeneratorType = GeneratorType.Colors
 
-    open fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) {}
+    open fun beforeGenerate(objectBuilder: TypeSpec.Builder, keys: List<String>) = Unit
 
     @Suppress("SpreadOperator")
     override fun generate(
@@ -74,7 +74,7 @@ abstract class ColorsGenerator(
         // Read target colors
         val targetColors: List<ColorNode> = parseColors()
         val allColors: List<ColorNode> = (previousColors + targetColors).distinct()
-        val generatedProperties: MutableList<GeneratedProperties> = mutableListOf()
+        val generatedProperties: MutableList<GeneratedProperty> = mutableListOf()
 
         beforeGenerate(objectBuilder, allColors.map { it.name })
 
@@ -84,13 +84,13 @@ abstract class ColorsGenerator(
             val property = PropertySpec.builder(colorNode.name, resourceClassName)
 
             // Create metadata property
-            var generatedProperty = GeneratedProperties(
+            var generatedProperty = GeneratedProperty(
                 modifier = GeneratedObjectModifier.None,
                 name = colorNode.name,
                 data = json.encodeToJsonElement(colorNode)
             )
 
-            if (targetObject.isObject) {
+            if (targetObject.isActualObject || targetObject.isTargetObject) {
                 // Setup property modifier and correction metadata info
                 generatedProperty = generatedProperty.copy(
                     modifier = addActualOverrideModifier(

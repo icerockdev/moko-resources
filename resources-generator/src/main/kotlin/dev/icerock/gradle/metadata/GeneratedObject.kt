@@ -9,7 +9,7 @@ data class GeneratedObject(
     val type: GeneratedObjectType,
     val name: String,
     val interfaces: List<String> = emptyList(),
-    val properties: List<GeneratedProperties> = emptyList(),
+    val properties: List<GeneratedProperty> = emptyList(),
     val objects: List<GeneratedObject> = emptyList()
 ) {
     val isExpect: Boolean

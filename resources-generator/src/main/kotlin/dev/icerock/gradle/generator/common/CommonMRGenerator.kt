@@ -191,7 +191,7 @@ class CommonMRGenerator(
         processMRClass(mrClassSpec)
 
         //Create file only if generated expect objects has expect MR object
-        if (generatedExpectObjects.isNotEmpty()){
+        if (generatedExpectObjects.isNotEmpty()) {
             val mrClass: TypeSpec = mrClassSpec.build()
             fileSpec.addType(mrClass)
 
@@ -220,16 +220,19 @@ class CommonMRGenerator(
             val generatorType: GeneratorType =
                 if (it.path.matches(StringsGenerator.STRINGS_REGEX)) {
                     GeneratorType.Strings
-                } else if (it.path.matches(PluralsGenerator.PLURALS_REGEX)) {
+                }
+                else if (it.path.matches(PluralsGenerator.PLURALS_REGEX)) {
                     GeneratorType.Plurals
-                } else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
-                GeneratorType.Colors
-            } else return@forEach
+                }
+                else if (it.path.matches(ColorsGenerator.COLORS_REGEX)) {
+                    GeneratorType.Colors
+                }
+                else if (it.parentFile.name == "images") {
+                    GeneratorType.Images
+                } else return@forEach
 
             //TODO: Implement with generator
-//        else if (it.parentFile.name == "images") {
-//                GeneratorType.Images
-//            } else if (it.parentFile.name == "files") {
+// else if (it.parentFile.name == "files") {
 //                GeneratorType.Files
 //            } else if (it.parentFile.name == "assets") {
 //                GeneratorType.Assets
