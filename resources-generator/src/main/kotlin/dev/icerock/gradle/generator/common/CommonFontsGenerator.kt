@@ -9,12 +9,11 @@ import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.FontsGenerator
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
-import java.io.File
 import org.gradle.api.file.FileTree
+import java.io.File
 
 class CommonFontsGenerator(
     ownInputFileTree: FileTree,
-    upperInputFileTree: FileTree,
 ) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = emptyArray()
 

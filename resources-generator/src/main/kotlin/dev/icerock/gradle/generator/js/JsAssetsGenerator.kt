@@ -11,6 +11,8 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.AssetsGenerator
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecDirectory
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecFile
 import dev.icerock.gradle.generator.NOPObjectBodyExtendable
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
@@ -86,11 +88,13 @@ class JsAssetsGenerator(
     private fun generateResourcesInner(files: List<AssetSpec>, fileResDir: File) {
         files.forEach { assetSpec ->
             when (assetSpec) {
-                is AssetSpecDirectory ->
+                is AssetSpecDirectory -> {
                     generateResourcesInner(assetSpec.assets, fileResDir)
+                }
 
-                is AssetSpecFile ->
+                is AssetSpecFile -> {
                     assetSpec.file.copyTo(File(fileResDir, assetSpec.pathRelativeToBase))
+                }
             }
         }
     }

@@ -29,7 +29,6 @@ abstract class TargetMRGenerator(
     settings = settings,
     generators = generators
 ) {
-    val logger = project.logger
 
     // TODO not used. remove after complete migration of task configuration to Plugin configuration time
 //    override fun apply(generationTask: GenerateMultiplatformResourcesTask, project: Project) {
@@ -64,19 +63,10 @@ abstract class TargetMRGenerator(
         // and own resources has no files - skip step
         if (resourcesIsEmpty(inputMetadata, settings)) return null
 
-        //TODO: Добавить обработку кейса, когда данные есть только в таргете, т.е. генерация MR объекта
-        // Если есть свои ресурсы, но нет нижестоящих - просто MR
-        // Если есть нижестоящие - actual MR
-        // [checked] Нет своих и нет нижестоящих - ничего не генерировать
-
         // If previous levels has resources, need generate actual objects
         val needGenerateActual: Boolean = inputMetadata.isNotEmptyMetadata()
 
         val visibilityModifier: KModifier = settings.visibility.toModifier()
-
-        inputMetadata.forEach {
-            logger.warn("i prev: $it")
-        }
 
         val fileSpec: FileSpec.Builder = FileSpec.builder(
             packageName = settings.packageName,

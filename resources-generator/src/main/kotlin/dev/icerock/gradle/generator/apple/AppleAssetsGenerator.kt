@@ -7,13 +7,14 @@ package dev.icerock.gradle.generator.apple
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.AssetsGenerator
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecDirectory
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecFile
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree
 import java.io.File
 
 class AppleAssetsGenerator(
     ownResourcesFileTree: FileTree,
-    lowerResourcesFileTree: FileTree,
 ) : AssetsGenerator(ownResourcesFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

@@ -13,7 +13,6 @@ import java.io.File
 
 class AppleFontsGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
 ) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)

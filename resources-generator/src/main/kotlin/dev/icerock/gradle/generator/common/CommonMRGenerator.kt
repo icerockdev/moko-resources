@@ -228,15 +228,15 @@ class CommonMRGenerator(
                     GeneratorType.Images
                 } else if (it.parentFile.name == "files") {
                     GeneratorType.Files
+                } else if (it.parentFile.name == "fonts") {
+                    GeneratorType.Fonts
                 } else return@forEach
 
             //TODO: Implement with generator
 
 //            else if (it.parentFile.name == "assets") {
 //                GeneratorType.Assets
-//            } else if (it.parentFile.name == "fonts") {
-//                GeneratorType.Fonts
-//            } else {
+//            }  else {
 //                GeneratorType.None
 //            }
 

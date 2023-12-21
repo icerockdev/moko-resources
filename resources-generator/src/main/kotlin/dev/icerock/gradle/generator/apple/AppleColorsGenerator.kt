@@ -41,7 +41,7 @@ class AppleColorsGenerator(
 
         colors.forEach { colorNode ->
             val assetDir = File(assetsDirectory, "${colorNode.name}.colorset")
-            assetDir.mkdir()
+            assetDir.mkdirs()
             val contentsFile = File(assetDir, "Contents.json")
             contentsFile.createNewFile()
 

@@ -7,6 +7,8 @@ package dev.icerock.gradle.generator.jvm
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import dev.icerock.gradle.generator.AssetsGenerator
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecDirectory
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecFile
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.ObjectBodyExtendable
 import org.gradle.api.file.FileTree

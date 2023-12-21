@@ -9,6 +9,8 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecDirectory
+import dev.icerock.gradle.generator.AssetsGenerator.AssetSpec.AssetSpecFile
 import dev.icerock.gradle.generator.android.AndroidAssetsGenerator
 import dev.icerock.gradle.generator.apple.AppleAssetsGenerator
 import dev.icerock.gradle.generator.common.CommonAssetsGenerator
@@ -22,14 +24,49 @@ import java.io.File
 
 @Suppress("TooManyFunctions")
 abstract class AssetsGenerator(
-    private val fileTree: FileTree
+    private val resourcesFileTree: FileTree
 ) : MRGenerator.Generator {
     override val inputFiles: Iterable<File>
-        get() = fileTree.files
+        get() = resourcesFileTree.matching {
+            it.include("assets/**")
+        }
     override val mrObjectName: String = ASSETS_DIR_NAME
     override val resourceClassName = ClassName("dev.icerock.moko.resources", "AssetResource")
 
     override val type: GeneratorType = GeneratorType.Assets
+
+    override fun generate(
+        project: Project,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
+        assetsGenerationDir: File,
+        resourcesGenerationDir: File,
+        objectBuilder: TypeSpec.Builder,
+    ): TypeSpec? {
+        val rootContent: List<AssetSpec> = parseRootContent(inputFiles)
+
+        beforeGenerate(objectBuilder, rootContent)
+
+        val typeSpec = createTypeSpec(rootContent, objectBuilder)
+
+        generateResources(assetsGenerationDir, resourcesGenerationDir, rootContent)
+
+        return typeSpec
+    }
+
+    private fun createTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder): TypeSpec {
+        @Suppress("SpreadOperator")
+        objectBuilder.addModifiers(*getClassModifiers())
+
+        extendObjectBodyAtStart(objectBuilder)
+
+        createInnerTypeSpec(keys, objectBuilder)
+
+        extendObjectBodyAtEnd(objectBuilder)
+
+        return objectBuilder.build()
+    }
 
     private fun getBaseDir(file: File): String {
         val relativePathToAssets = file.path.substringAfterLast(ASSETS_DIR_NAME)
@@ -76,7 +113,7 @@ abstract class AssetsGenerator(
     }
 
     private fun parseRootContent(
-        resFolders: Set<File>
+        resFolders: Iterable<File>
     ): List<AssetSpec> {
         val contentOfRootDir = mutableListOf<File>()
         resFolders.forEach {
@@ -88,39 +125,6 @@ abstract class AssetsGenerator(
             }
         }
         return parseRootContentInner(contentOfRootDir.toTypedArray())
-    }
-
-    override fun generate(
-        project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
-        assetsGenerationDir: File,
-        resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
-        val rootContent = parseRootContent(fileTree.files)
-
-        beforeGenerate(objectBuilder, rootContent)
-
-        val typeSpec = createTypeSpec(rootContent, objectBuilder)
-
-        generateResources(assetsGenerationDir, resourcesGenerationDir, rootContent)
-
-        return typeSpec
-    }
-
-    private fun createTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder): TypeSpec {
-        @Suppress("SpreadOperator")
-        objectBuilder.addModifiers(*getClassModifiers())
-
-        extendObjectBodyAtStart(objectBuilder)
-
-        createInnerTypeSpec(keys, objectBuilder)
-
-        extendObjectBodyAtEnd(objectBuilder)
-
-        return objectBuilder.build()
     }
 
     @Suppress("SpreadOperator")
@@ -169,18 +173,21 @@ abstract class AssetsGenerator(
     abstract fun getPropertyInitializer(fileSpec: AssetSpecFile): CodeBlock?
 
 
-    sealed class AssetSpec
+    sealed class AssetSpec {
+        class AssetSpecDirectory(
+            val name: String,
+            val assets: List<AssetSpec>,
+        ) : AssetSpec()
 
-    class AssetSpecDirectory(val name: String, val assets: List<AssetSpec>) : AssetSpec()
-
-    /**
-     * @param pathRelativeToBase used to copy necessary resources in AssetsGenerator
-     * @param file is a new name a of copied resource for systems which do not support path with / symbol
-     */
-    class AssetSpecFile(
-        val pathRelativeToBase: String,
-        val file: File
-    ) : AssetSpec()
+        /**
+         * @param pathRelativeToBase used to copy necessary resources in AssetsGenerator
+         * @param file is a new name a of copied resource for systems which do not support path with / symbol
+         */
+        class AssetSpecFile(
+            val pathRelativeToBase: String,
+            val file: File
+        ) : AssetSpec()
+    }
 
     class Feature(
         private val settings: MRGenerator.Settings
@@ -188,17 +195,14 @@ abstract class AssetsGenerator(
 
         override fun createCommonGenerator(): AssetsGenerator = CommonAssetsGenerator(
             ownResourcesFileTree = settings.ownResourcesFileTree,
-            upperResourcesFileTree = settings.upperResourcesFileTree,
         )
 
         override fun createAppleGenerator(): AssetsGenerator = AppleAssetsGenerator(
             ownResourcesFileTree = settings.ownResourcesFileTree,
-            lowerResourcesFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createAndroidGenerator(): AssetsGenerator = AndroidAssetsGenerator(
             ownResourcesFileTree = settings.ownResourcesFileTree,
-            lowerResourcesFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createJvmGenerator(): AssetsGenerator = JvmAssetsGenerator(

@@ -174,58 +174,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 }
             }
         }
-
-
-//        val resourcesSourceDirectory: SourceDirectorySet = project.objects.sourceDirectorySet(
-//            "moko-resources",
-//            "moko-resources"
-//        )
-//
-//        val ss = mrExtension.resourcesSourceSet
-//        project.logger.warn("source set $ss")
-//
-//        kmpExtension.sourceSets
-//            .matching { it.name == mrExtension.resourcesSourceSet }
-//            .configureEach { kotlinSourceSet ->
-//                val sources = File(project.projectDir, "src")
-//                val resourceSourceSetDir = File(sources, kotlinSourceSet.name)
-//                val mokoResourcesDir = File(resourceSourceSetDir, "moko-resources")
-//
-//                resourcesSourceDirectory.srcDirs(mokoResourcesDir)
-//            }
-//
-//        val generatedDir = File(project.buildDir, "generated/moko-resources")
-//
-//        val settings = MRGenerator.Settings(
-//            packageName = mrExtension.resourcesPackage,
-//            className = mrExtension.resourcesClassName,
-//            visibility = mrExtension.resourcesVisibility,
-//            generatedDir = generatedDir,
-//            isStrictLineBreaks = project.isStrictLineBreaks,
-//            iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
-//            resourcesSourceDirectory = resourcesSourceDirectory,
-//            androidRClassPackage = project.getAndroidRClassPackage()
-//        )
-//
-//        kmpExtension.targets.configureEach { kotlinTarget ->
-//            var found = false
-//
-//            kotlinTarget.compilations.configureEach { compilation ->
-//                compilation.kotlinSourceSetsObservable.forAll { kotlinSourceSet ->
-//                    kotlinSourceSet.whenDependsOn(mrExtension.resourcesSourceSet) {
-//                        if(found) return@whenDependsOn
-//
-//                        found = true
-//                        configureKotlinTargetGenerator(
-//                            target = kotlinTarget,
-//                            settings = settings
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//
-//        setupProjectForApple(project)
     }
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)

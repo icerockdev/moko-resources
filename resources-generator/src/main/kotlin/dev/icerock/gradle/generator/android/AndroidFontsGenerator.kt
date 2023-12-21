@@ -17,7 +17,6 @@ import java.util.Locale
 
 class AndroidFontsGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
     private val androidRClassPackage: Provider<String>,
 ) : FontsGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
