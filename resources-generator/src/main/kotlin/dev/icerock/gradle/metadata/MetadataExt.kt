@@ -1,5 +1,8 @@
 package dev.icerock.gradle.metadata
 
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratorType
+
 fun MutableList<GeneratedObject>.addActual(actualObject: GeneratedObject) {
     val expect: GeneratedObject? = firstOrNull {
         it.name == actualObject.name

@@ -16,15 +16,22 @@ import dev.icerock.gradle.generator.apple.AppleAssetsGenerator
 import dev.icerock.gradle.generator.common.CommonAssetsGenerator
 import dev.icerock.gradle.generator.js.JsAssetsGenerator
 import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
-import dev.icerock.gradle.metadata.GeneratedObject
-import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.model.GeneratedProperty
+import dev.icerock.gradle.metadata.model.GeneratorType
+import dev.icerock.gradle.metadata.objectsWithProperties
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
 import java.io.File
 
 @Suppress("TooManyFunctions")
 abstract class AssetsGenerator(
-    private val resourcesFileTree: FileTree
+    private val resourcesFileTree: FileTree,
 ) : MRGenerator.Generator {
     override val inputFiles: Iterable<File>
         get() = resourcesFileTree.matching {
@@ -44,28 +51,70 @@ abstract class AssetsGenerator(
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
     ): TypeSpec? {
-        val rootContent: List<AssetSpec> = parseRootContent(inputFiles)
 
-        beforeGenerate(objectBuilder, rootContent)
+        val previousAssetsFiles: List<File> = getPreviousAssets(
+            inputMetadata = inputMetadata,
+            targetObject = targetObject
+        )
 
-        val typeSpec = createTypeSpec(rootContent, objectBuilder)
+        val previousAssets: List<AssetSpec> = parseRootContentInner(previousAssetsFiles)
+        val targetAssets: List<AssetSpec> = parseRootContentInner(inputFiles)
+        val allAssets: List<AssetSpec> = (previousAssets + targetAssets)
 
-        generateResources(assetsGenerationDir, resourcesGenerationDir, rootContent)
+        beforeGenerate(objectBuilder, allAssets)
+
+        val typeSpec: TypeSpec? = createTypeSpec(
+            project,
+            inputMetadata = inputMetadata,
+            generatedObjects = generatedObjects,
+            targetObject = targetObject,
+            keys = allAssets,
+            objectBuilder = objectBuilder
+        )
+
+        generateResources(assetsGenerationDir, resourcesGenerationDir, allAssets)
 
         return typeSpec
     }
 
-    private fun createTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder): TypeSpec {
-        @Suppress("SpreadOperator")
-        objectBuilder.addModifiers(*getClassModifiers())
+    private fun createTypeSpec(
+        project: Project,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedObjects: MutableList<GeneratedObject>,
+        targetObject: GeneratedObject,
+        keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder,
+    ): TypeSpec? {
+        if (targetObject.isActual) {
+            objectBuilder.addModifiers(KModifier.ACTUAL)
+        }
 
-        extendObjectBodyAtStart(objectBuilder)
+        if (targetObject.isActualObject || targetObject.isTargetObject) {
+            extendObjectBodyAtStart(objectBuilder)
+        }
 
-        createInnerTypeSpec(keys, objectBuilder)
+        val generatedProperties = mutableListOf<GeneratedProperty>()
+
+        createInnerTypeSpec(
+            project,
+            inputMetadata = inputMetadata,
+            generatedProperties = generatedProperties,
+            targetObject = targetObject,
+            keys = keys,
+            objectBuilder = objectBuilder
+        )
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        return objectBuilder.build()
+        return if (generatedProperties.isNotEmpty()) {
+            // Add object in metadata with remove expect realisation
+            generatedObjects.addActual(
+                targetObject.copy(properties = generatedProperties)
+            )
+
+            objectBuilder.build()
+        } else {
+            null
+        }
     }
 
     private fun getBaseDir(file: File): String {
@@ -81,13 +130,20 @@ abstract class AssetsGenerator(
         return if (File.separatorChar == '/') result else result.replace(File.separatorChar, '/')
     }
 
-    private fun parseRootContentInner(folders: Array<File>): List<AssetSpec> {
+    private fun parseRootContentInner(folders: Iterable<File>): List<AssetSpec> {
         val res = mutableListOf<AssetSpec>()
+
         for (it in folders) {
             if (it.isDirectory) {
                 val files = it.listFiles()
+
                 if (!files.isNullOrEmpty()) {
-                    res.add(AssetSpecDirectory(it.name, parseRootContentInner(files)))
+                    res.add(
+                        AssetSpecDirectory(
+                            name = it.name,
+                            assets = parseRootContentInner(files.toList())
+                        )
+                    )
                 }
             } else {
                 // skip empty files, like .DS_Store
@@ -109,62 +165,107 @@ abstract class AssetsGenerator(
                 )
             }
         }
+
         return res
     }
 
-    private fun parseRootContent(
-        resFolders: Iterable<File>
-    ): List<AssetSpec> {
-        val contentOfRootDir = mutableListOf<File>()
-        resFolders.forEach {
-            val assets = File(it, ASSETS_DIR_NAME)
-
-            val content = assets.listFiles()
-            if (content != null) {
-                contentOfRootDir.addAll(content)
-            }
-        }
-        return parseRootContentInner(contentOfRootDir.toTypedArray())
-    }
-
     @Suppress("SpreadOperator")
-    private fun createInnerTypeSpec(keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder) {
-        for (specs in keys) {
-            if (specs is AssetSpecFile) {
-                val styleProperty = PropertySpec
-                    .builder(specs.file.nameWithoutExtension.replace('-', '_'), resourceClassName)
-                    .addModifiers(*getPropertyModifiers())
+    private fun createInnerTypeSpec(
+        project: Project,
+        inputMetadata: MutableList<GeneratedObject>,
+        generatedProperties: MutableList<GeneratedProperty>,
+        targetObject: GeneratedObject,
+        keys: List<AssetSpec>,
+        objectBuilder: TypeSpec.Builder,
+    ) {
+        for (specs: AssetSpec in keys) {
+            if (specs is AssetSpecDirectory) {
+                val spec = TypeSpec.objectBuilder(specs.name.replace('-', '_'))
 
-                getPropertyInitializer(specs)?.let { codeBlock ->
-                    styleProperty.initializer(codeBlock)
+                if (targetObject.isActualObject) {
+                    spec.addModifiers(KModifier.ACTUAL)
                 }
-                objectBuilder.addProperty(styleProperty.build())
-            } else if (specs is AssetSpecDirectory) {
-                val spec = TypeSpec
-                    .objectBuilder(specs.name.replace('-', '_'))
-                    .addModifiers(*getClassModifiers())
 
-                createInnerTypeSpec(specs.assets, spec)
+                createInnerTypeSpec(
+                    project,
+                    inputMetadata = inputMetadata,
+                    generatedProperties = generatedProperties,
+                    targetObject = targetObject,
+                    keys = specs.assets,
+                    objectBuilder = spec
+                )
 
                 objectBuilder.addType(spec.build())
+            } else if (specs is AssetSpecFile) {
+                val fileName = specs.file.nameWithoutExtension.replace('-', '_')
+                val styleProperty = PropertySpec.builder(fileName, resourceClassName)
+
+                var generatedProperty = GeneratedProperty(
+                    modifier = GeneratedObjectModifier.None,
+                    name = fileName,
+                    data = JsonPrimitive(specs.file.path)
+                )
+
+                if (targetObject.isActualObject || targetObject.isTargetObject) {
+                    // Add modifier for property and setup metadata
+                    generatedProperty = generatedProperty.copy(
+                        modifier = addActualOverrideModifier(
+                            propertyName = fileName,
+                            property = styleProperty,
+                            inputMetadata = inputMetadata,
+                            targetObject = targetObject
+                        )
+                    )
+
+                    getPropertyInitializer(specs)?.let { codeBlock ->
+                        styleProperty.initializer(codeBlock)
+                    }
+                }
+
+                generatedProperties.add(generatedProperty)
+                objectBuilder.addProperty(styleProperty.build())
             }
         }
+    }
+
+    private fun getPreviousAssets(
+        inputMetadata: List<GeneratedObject>,
+        targetObject: GeneratedObject,
+    ): List<File> {
+        if (!targetObject.isObject || !targetObject.isActual) return emptyList()
+
+        val json = Json
+        val objectsWithProperties: List<GeneratedObject> = inputMetadata.objectsWithProperties(
+            targetObject = targetObject
+        )
+
+        val files = mutableListOf<File>()
+
+        objectsWithProperties.forEach { generatedObject ->
+            generatedObject.properties.forEach { property ->
+                val data = json.decodeFromJsonElement<JsonPrimitive>(property.data)
+                files.add(
+                    File(data.content)
+                )
+            }
+        }
+
+        return files
     }
 
     override fun getImports(): List<ClassName> = emptyList()
 
     protected open fun beforeGenerate(
         objectBuilder: TypeSpec.Builder,
-        files: List<AssetSpec>
+        files: List<AssetSpec>,
     ) {
     }
 
     protected open fun generateResources(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        files: List<AssetSpec>
-    ) {
-    }
+        files: List<AssetSpec>,
+    ) = Unit
 
     abstract fun getClassModifiers(): Array<KModifier>
 
@@ -185,12 +286,12 @@ abstract class AssetsGenerator(
          */
         class AssetSpecFile(
             val pathRelativeToBase: String,
-            val file: File
+            val file: File,
         ) : AssetSpec()
     }
 
     class Feature(
-        private val settings: MRGenerator.Settings
+        private val settings: MRGenerator.Settings,
     ) : ResourceGeneratorFeature<AssetsGenerator> {
 
         override fun createCommonGenerator(): AssetsGenerator = CommonAssetsGenerator(
@@ -223,5 +324,7 @@ abstract class AssetsGenerator(
         don't support it like apple.
         */
         const val PATH_DELIMITER = '+'
+
+        val ASSETS_REGEX: Regex = "^.*/assets/.*".toRegex()
     }
 }

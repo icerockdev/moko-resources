@@ -5,10 +5,9 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.metadata.GeneratedObject
-import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratedObjectType
-import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.model.GeneratorType
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.Metadata.readInputMetadata
 import dev.icerock.gradle.metadata.addActual
@@ -16,6 +15,10 @@ import dev.icerock.gradle.metadata.getExpectInterfaces
 import dev.icerock.gradle.metadata.getGeneratorInterfaces
 import dev.icerock.gradle.metadata.getInterfaceName
 import dev.icerock.gradle.metadata.isNotEmptyMetadata
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.Actual
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.None
+import dev.icerock.gradle.metadata.model.GeneratedObjectType.Interface
+import dev.icerock.gradle.metadata.model.GeneratedObjectType.Object
 import dev.icerock.gradle.metadata.resourcesIsEmpty
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.targetName
@@ -138,11 +141,11 @@ abstract class TargetMRGenerator(
                 targetObject = GeneratedObject(
                     generatorType = generator.type,
                     modifier = if (needGenerateActual) {
-                        GeneratedObjectModifier.Actual
+                        Actual
                     } else {
-                        GeneratedObjectModifier.None
+                        None
                     },
-                    type = GeneratedObjectType.Object,
+                    type = Object,
                     name = generator.mrObjectName,
                     interfaces = getObjectInterfaces(
                         generatorType = generator.type,
@@ -169,9 +172,9 @@ abstract class TargetMRGenerator(
             inputMetadata.addActual(
                 actualObject = GeneratedObject(
                     generatorType = GeneratorType.None,
-                    type = GeneratedObjectType.Object,
+                    type = Object,
                     name = settings.className,
-                    modifier = GeneratedObjectModifier.Actual,
+                    modifier = Actual,
                     objects = generatedActualObjects
                 )
             )
@@ -218,11 +221,11 @@ abstract class TargetMRGenerator(
                 targetObject = GeneratedObject(
                     generatorType = generator.type,
                     modifier = if (generateActualObject) {
-                        GeneratedObjectModifier.Actual
+                        Actual
                     } else {
-                        GeneratedObjectModifier.None
+                        None
                     },
-                    type = GeneratedObjectType.Interface,
+                    type = Interface,
                     name = interfaceName
                 ),
                 assetsGenerationDir = assetsGenerationDir,

@@ -10,9 +10,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MRVisibility
-import dev.icerock.gradle.metadata.GeneratedObject
-import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.model.GeneratorType
 import dev.icerock.gradle.metadata.getActualInterfaces
 import org.gradle.api.Project
 import org.gradle.api.file.Directory

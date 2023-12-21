@@ -10,18 +10,22 @@ import com.squareup.kotlinpoet.FileSpec.Builder
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import dev.icerock.gradle.generator.AssetsGenerator
 import dev.icerock.gradle.generator.ColorsGenerator
 import dev.icerock.gradle.generator.MRGenerator
 import dev.icerock.gradle.generator.PluralsGenerator
 import dev.icerock.gradle.generator.StringsGenerator
-import dev.icerock.gradle.metadata.GeneratedObject
-import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratedObjectType
-import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.Metadata.createOutputMetadata
 import dev.icerock.gradle.metadata.Metadata.readInputMetadata
 import dev.icerock.gradle.metadata.addActual
 import dev.icerock.gradle.metadata.getInterfaceName
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.Actual
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.Expect
+import dev.icerock.gradle.metadata.model.GeneratedObjectType.Interface
+import dev.icerock.gradle.metadata.model.GeneratedObjectType.Object
+import dev.icerock.gradle.metadata.model.GeneratorType
+import dev.icerock.gradle.metadata.model.GeneratorType.None
 import dev.icerock.gradle.metadata.resourcesIsEmpty
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.targetName
@@ -36,8 +40,6 @@ class CommonMRGenerator(
     settings = settings,
     generators = generators
 ) {
-    val logger = project.logger
-
     override fun getMRClassModifiers(): Array<KModifier> = arrayOf(KModifier.EXPECT)
 
     // TODO not used. remove after complete migration of task configuration to Plugin configuration time
@@ -123,7 +125,6 @@ class CommonMRGenerator(
             outputMetadataFile = settings.outputMetadataFile,
             generatedObjects = generatedObjects
         )
-        project.logger.warn("OUTPUT METADATA: ${settings.outputMetadataFile}")
 
         return fileSpec.build()
     }
@@ -138,7 +139,7 @@ class CommonMRGenerator(
         // generated MR class structure:
         val mrClassSpec: TypeSpec.Builder =
             TypeSpec.objectBuilder(settings.className) // default: object MR
-                .addModifiers(KModifier.EXPECT) // expect/actual
+                .addModifiers(KModifier.EXPECT)
                 .addModifiers(visibilityModifier) // public/internal
 
         val generatedExpectObjects = mutableListOf<GeneratedObject>()
@@ -173,8 +174,8 @@ class CommonMRGenerator(
                 generatedObjects = generatedExpectObjects,
                 targetObject = GeneratedObject(
                     generatorType = generator.type,
-                    modifier = GeneratedObjectModifier.Expect,
-                    type = GeneratedObjectType.Object,
+                    modifier = Expect,
+                    type = Object,
                     name = generator.mrObjectName,
                     interfaces = expectInterfaces.map { it.name }
                 ),
@@ -198,10 +199,10 @@ class CommonMRGenerator(
             //  Metadata: Add generated objects in MR
             generatedObjects.add(
                 GeneratedObject(
-                    generatorType = GeneratorType.None,
-                    type = GeneratedObjectType.Object,
+                    generatorType = None,
+                    type = Object,
                     name = settings.className,
-                    modifier = GeneratedObjectModifier.Expect,
+                    modifier = Expect,
                     objects = generatedExpectObjects
                 )
             )
@@ -230,21 +231,15 @@ class CommonMRGenerator(
                     GeneratorType.Files
                 } else if (it.parentFile.name == "fonts") {
                     GeneratorType.Fonts
+                } else if (it.path.matches(AssetsGenerator.ASSETS_REGEX)) {
+                    GeneratorType.Assets
                 } else return@forEach
-
-            //TODO: Implement with generator
-
-//            else if (it.parentFile.name == "assets") {
-//                GeneratorType.Assets
-//            }  else {
-//                GeneratorType.None
-//            }
 
             expectInterfaces.add(
                 GeneratedObject(
                     generatorType = generatorType,
-                    type = GeneratedObjectType.Interface,
-                    modifier = GeneratedObjectModifier.Expect,
+                    type = Interface,
+                    modifier = Expect,
                     name = getInterfaceName(
                         targetName = it.targetName,
                         generatorType = generatorType
@@ -291,8 +286,8 @@ class CommonMRGenerator(
                 targetObject = GeneratedObject(
                     generatorType = generator.type,
                     name = interfaceName,
-                    type = GeneratedObjectType.Interface,
-                    modifier = GeneratedObjectModifier.Actual,
+                    type = Interface,
+                    modifier = Actual,
                 ),
                 inputMetadata = inputMetadata,
                 generatedObjects = generatedObjects,

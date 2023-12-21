@@ -1,10 +1,11 @@
 package dev.icerock.gradle.metadata
 
-import java.io.BufferedReader
-import java.io.File
+import dev.icerock.gradle.metadata.model.GeneratedObject
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.gradle.api.file.FileTree
+import java.io.BufferedReader
+import java.io.File
 
 object Metadata {
     fun createOutputMetadata(

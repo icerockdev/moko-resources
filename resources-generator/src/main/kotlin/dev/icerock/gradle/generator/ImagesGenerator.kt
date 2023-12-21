@@ -14,11 +14,11 @@ import dev.icerock.gradle.generator.apple.AppleImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
-import dev.icerock.gradle.metadata.GeneratedObject
-import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratedProperty
-import dev.icerock.gradle.metadata.GeneratorType
 import dev.icerock.gradle.metadata.addActual
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.model.GeneratedProperty
+import dev.icerock.gradle.metadata.model.GeneratorType
 import dev.icerock.gradle.metadata.objectsWithProperties
 import dev.icerock.gradle.utils.withoutScale
 import kotlinx.serialization.json.Json

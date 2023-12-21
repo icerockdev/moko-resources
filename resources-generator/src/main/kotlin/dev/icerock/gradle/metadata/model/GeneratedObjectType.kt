@@ -1,4 +1,4 @@
-package dev.icerock.gradle.metadata
+package dev.icerock.gradle.metadata.model
 
 enum class GeneratedObjectType(val value: String) {
     Object("object"),

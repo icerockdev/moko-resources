@@ -1,6 +1,6 @@
-package dev.icerock.gradle.metadata
+package dev.icerock.gradle.metadata.model
 
-import dev.icerock.gradle.metadata.GeneratedObjectModifier.Actual
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.Actual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 

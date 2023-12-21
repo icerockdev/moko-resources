@@ -50,12 +50,6 @@ class AndroidColorsGenerator(
             </resources>
             """.trimIndent()
 
-        project.logger.warn("ANDROID COLORS GENERATOR")
-
-        colors.forEach {
-            project.logger.warn("ANDROID COLORS: value: $it")
-        }
-
         val defaultContent = colors.joinToString("\n") { colorNode ->
             if (colorNode.isThemed()) {
                 buildColorString(colorNode.name, replaceColorAlpha(colorNode.lightColor))

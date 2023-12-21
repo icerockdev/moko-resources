@@ -1,5 +1,10 @@
-package dev.icerock.gradle.metadata
+package dev.icerock.gradle.metadata.model
 
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.Actual
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.Expect
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier.None
+import dev.icerock.gradle.metadata.model.GeneratedObjectType.Interface
+import dev.icerock.gradle.metadata.model.GeneratedObjectType.Object
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,16 +18,16 @@ data class GeneratedObject(
     val objects: List<GeneratedObject> = emptyList()
 ) {
     val isExpect: Boolean
-        get() = modifier == GeneratedObjectModifier.Expect
+        get() = modifier == Expect
 
     val isActual: Boolean
-        get() = modifier == GeneratedObjectModifier.Actual
+        get() = modifier == Actual
 
     val isObject: Boolean
-        get() = type == GeneratedObjectType.Object
+        get() = type == Object
 
     val isInterface: Boolean
-        get() = type == GeneratedObjectType.Interface
+        get() = type == Interface
 
     val isExpectObject
         get() = isObject && isExpect
@@ -37,8 +42,8 @@ data class GeneratedObject(
         get() = isInterface && isActual
 
     val isTargetObject: Boolean
-        get() = isObject && modifier == GeneratedObjectModifier.None
+        get() = isObject && modifier == None
 
     val isTargetInterface: Boolean
-        get() = isInterface && modifier == GeneratedObjectModifier.None
+        get() = isInterface && modifier == None
 }

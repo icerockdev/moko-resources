@@ -9,9 +9,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.PropertySpec.Builder
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.metadata.GeneratedObject
-import dev.icerock.gradle.metadata.GeneratedObjectModifier
-import dev.icerock.gradle.metadata.GeneratedProperty
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
+import dev.icerock.gradle.metadata.model.GeneratedProperty
 import dev.icerock.gradle.metadata.addActual
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

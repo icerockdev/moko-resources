@@ -10,8 +10,8 @@ import dev.icerock.gradle.generator.apple.ApplePluralsGenerator
 import dev.icerock.gradle.generator.common.CommonPluralsGenerator
 import dev.icerock.gradle.generator.js.JsPluralsGenerator
 import dev.icerock.gradle.generator.jvm.JvmPluralsGenerator
-import dev.icerock.gradle.metadata.GeneratedObject
-import dev.icerock.gradle.metadata.GeneratorType
+import dev.icerock.gradle.metadata.model.GeneratedObject
+import dev.icerock.gradle.metadata.model.GeneratorType
 import dev.icerock.gradle.metadata.objectsWithProperties
 import dev.icerock.gradle.utils.removeLineWraps
 import kotlinx.serialization.json.Json
