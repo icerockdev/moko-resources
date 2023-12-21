@@ -13,7 +13,6 @@ import org.gradle.api.file.FileTree
 
 class CommonImagesGenerator(
     ownInputFileTree: FileTree,
-    upperInputFileTree: FileTree,
 ) : ImagesGenerator(ownInputFileTree), ObjectBodyExtendable by NOPObjectBodyExtendable() {
     override fun getClassModifiers(): Array<KModifier> = emptyArray()
 

@@ -110,7 +110,13 @@ abstract class ColorsGenerator(
             generatedProperties.add(generatedProperty)
         }
 
-        generateResources(project, resourcesGenerationDir, allColors)
+        generateResources(
+            project = project,
+            assetsGenerationDir = assetsGenerationDir,
+            resourcesGenerationDir = resourcesGenerationDir,
+            colors = allColors
+        )
+
         extendObjectBodyAtEnd(objectBuilder)
 
         return if (generatedProperties.isNotEmpty()) {
@@ -154,6 +160,7 @@ abstract class ColorsGenerator(
 
     protected open fun generateResources(
         project: Project,
+        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         colors: List<ColorNode>,
     ) = Unit

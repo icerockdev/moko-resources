@@ -34,10 +34,11 @@ class AppleColorsGenerator(
 
     override fun generateResources(
         project: Project,
+        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         colors: List<ColorNode>
     ) {
-        val assetsDirectory = File(resourcesGenerationDir, ASSETS_DIR_NAME)
+        val assetsDirectory = File(assetsGenerationDir, ASSETS_DIR_NAME)
 
         colors.forEach { colorNode ->
             val assetDir = File(assetsDirectory, "${colorNode.name}.colorset")

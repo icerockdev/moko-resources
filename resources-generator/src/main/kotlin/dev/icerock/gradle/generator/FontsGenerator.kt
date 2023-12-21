@@ -71,7 +71,6 @@ abstract class FontsGenerator(
         beforeGenerateResources(objectBuilder, allFontFiles)
 
         val typeSpec = createTypeSpec(
-            project = project,
             inputMetadata = inputMetadata,
             generatedObjects = generatedObjects,
             targetObject = targetObject,
@@ -123,7 +122,6 @@ abstract class FontsGenerator(
     @param keys: names of files like anastasia-regular.ttf
      */
     private fun createTypeSpec(
-        project: Project,
         inputMetadata: MutableList<GeneratedObject>,
         generatedObjects: MutableList<GeneratedObject>,
         targetObject: GeneratedObject,
@@ -161,7 +159,6 @@ abstract class FontsGenerator(
 
             var generatedProperty = GeneratedProperty(
                 modifier = addObjectActualOverrideModifier(
-                    project = project,
                     propertyName = propertyName,
                     property = property,
                     inputMetadata = inputMetadata,
@@ -216,7 +213,6 @@ abstract class FontsGenerator(
     }
 
     private fun addObjectActualOverrideModifier(
-        project: Project,
         propertyName: String,
         property: TypeSpec.Builder,
         inputMetadata: List<GeneratedObject>,

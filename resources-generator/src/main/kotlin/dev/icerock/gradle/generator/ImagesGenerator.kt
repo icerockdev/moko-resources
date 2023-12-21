@@ -82,6 +82,7 @@ abstract class ImagesGenerator(
         )
 
         generateResources(
+            assetsGenerationDir = assetsGenerationDir,
             resourcesGenerationDir = resourcesGenerationDir,
             keyFileMap = allImagesMap.mapKeys { (key, _) ->
                 key.substringBeforeLast(".") // Remove file extension from keys
@@ -233,14 +234,13 @@ abstract class ImagesGenerator(
     protected open fun beforeGenerateResources(
         objectBuilder: TypeSpec.Builder,
         keys: List<String>,
-    ) {
-    }
+    ) = Unit
 
     protected open fun generateResources(
+        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         keyFileMap: Map<String, List<File>>,
-    ) {
-    }
+    ) = Unit
 
     abstract fun getClassModifiers(): Array<KModifier>
 
@@ -254,12 +254,10 @@ abstract class ImagesGenerator(
     ) : ResourceGeneratorFeature<ImagesGenerator> {
         override fun createCommonGenerator(): ImagesGenerator = CommonImagesGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
-            upperInputFileTree = settings.upperResourcesFileTree
         )
 
         override fun createAppleGenerator(): ImagesGenerator = AppleImagesGenerator(
             ownInputFileTree = settings.ownResourcesFileTree,
-            lowerInputFileTree = settings.lowerResourcesFileTree,
         )
 
         override fun createAndroidGenerator(): ImagesGenerator = AndroidImagesGenerator(

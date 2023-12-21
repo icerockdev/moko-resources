@@ -27,6 +27,7 @@ class AndroidColorsGenerator(
 
     override fun generateResources(
         project: Project,
+        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         colors: List<ColorNode>
     ) {

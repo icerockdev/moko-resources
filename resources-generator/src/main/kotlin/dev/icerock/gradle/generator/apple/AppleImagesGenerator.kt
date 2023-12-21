@@ -20,7 +20,6 @@ import java.io.File
 
 class AppleImagesGenerator(
     ownInputFileTree: FileTree,
-    lowerInputFileTree: FileTree,
 ) : ImagesGenerator(resourcesFileTree = ownInputFileTree), ObjectBodyExtendable by AppleGeneratorHelper() {
 
     override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
@@ -35,10 +34,11 @@ class AppleImagesGenerator(
     }
 
     override fun generateResources(
+        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         keyFileMap: Map<String, List<File>>
     ) {
-        val assetsDirectory = File(resourcesGenerationDir, ASSETS_DIR_NAME)
+        val assetsDirectory = File(assetsGenerationDir, ASSETS_DIR_NAME)
 
         keyFileMap.forEach { (key, files) ->
             val assetDir = File(assetsDirectory, "$key.imageset")

@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.apple.action
 import dev.icerock.gradle.generator.apple.LoadableBundle
 import dev.icerock.gradle.utils.unzipTo
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
@@ -67,6 +68,7 @@ internal class PackResourcesToKLibAction(
             task.logger.error("can't compile assets - $result")
             task.logger.info(input)
             task.logger.error(errors)
+            throw GradleException("Assets compilation failed: $errors")
         } else {
             task.logger.info("assets compiled")
             assetsDirectory.deleteRecursively()

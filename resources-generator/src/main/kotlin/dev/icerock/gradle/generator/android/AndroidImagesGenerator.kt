@@ -41,6 +41,7 @@ class AndroidImagesGenerator(
     )
 
     override fun generateResources(
+        assetsGenerationDir: File,
         resourcesGenerationDir: File,
         keyFileMap: Map<String, List<File>>
     ) {
