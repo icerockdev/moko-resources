@@ -19,7 +19,7 @@ import java.io.File
 
 @Suppress("TooManyFunctions")
 abstract class AssetsGenerator(
-    private val sourceDirectorySet: SourceDirectorySet
+    sourceDirectorySet: SourceDirectorySet
 ) : MRGenerator.Generator {
     override val inputFiles: Iterable<File> = sourceDirectorySet.files
     override val mrObjectName: String = ASSETS_DIR_NAME
@@ -84,12 +84,13 @@ abstract class AssetsGenerator(
         return parseRootContentInner(contentOfRootDir.toTypedArray())
     }
 
+    private val rootContent = parseRootContent(sourceDirectorySet.sourceDirectories.files)
+
     override fun generate(
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder
     ): TypeSpec {
-        val rootContent = parseRootContent(sourceDirectorySet.sourceDirectories.files)
 
         beforeGenerate(objectBuilder, rootContent)
 

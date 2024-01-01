@@ -192,27 +192,25 @@ class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         val androidExtension = target.extensions.getByType(BaseExtension::class)
 
-        val androidLogic = AndroidPluginLogic(
+        val androidMainSourceSet = androidExtension.sourceSets
+            .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+
+        val namespace: String? = androidExtension.namespace
+        val manifestFile = androidMainSourceSet.manifest.srcFile
+
+        sourceInfo.getAndroidRClassPackage = lambda@{
+            if (namespace != null) return@lambda namespace
+
+            getAndroidPackage(manifestFile)
+        }
+        AndroidPluginLogic(
             commonSourceSet = commonSourceSet,
             targets = targets,
             generatedDir = generatedDir,
             mrSettings = mrSettings,
             features = features,
             project = target
-        )
-
-        val androidMainSourceSet = androidExtension.sourceSets
-            .getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-
-        sourceInfo.getAndroidRClassPackage = lambda@{
-            val namespace: String? = androidExtension.namespace
-            if (namespace != null) return@lambda namespace
-
-            val manifestFile = androidMainSourceSet.manifest.srcFile
-            getAndroidPackage(manifestFile)
-        }
-
-        androidLogic.setup(androidMainSourceSet)
+        ).setup(androidMainSourceSet)
     }
 
     private fun setupCommonGenerator(

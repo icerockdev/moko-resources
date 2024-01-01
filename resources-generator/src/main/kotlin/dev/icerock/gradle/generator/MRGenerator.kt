@@ -18,7 +18,7 @@ import java.io.File
 
 abstract class MRGenerator(
     generatedDir: File,
-    protected val sourceSet: SourceSet,
+    sourceSet: SourceSet,
     protected val mrSettings: MRSettings,
     internal val generators: List<Generator>
 ) {
@@ -28,15 +28,16 @@ abstract class MRGenerator(
         get() = File(outputDir, "src")
     protected open val resourcesGenerationDir
         get() = File(outputDir, "res")
+    protected val sourceSetName = sourceSet.name
 
     protected open val assetsGenerationDir: File
         get() = File(outputDir, AssetsGenerator.ASSETS_DIR_NAME)
 
     init {
-        setupGenerationDirs()
+        setupGenerationDirs(sourceSet)
     }
 
-    private fun setupGenerationDirs() {
+    private fun setupGenerationDirs(sourceSet: SourceSet) {
         sourcesGenerationDir.mkdirs()
         sourceSet.addSourceDir(sourcesGenerationDir)
 
@@ -95,7 +96,7 @@ abstract class MRGenerator(
     }
 
     fun apply(project: Project): GenerateMultiplatformResourcesTask {
-        val name = sourceSet.name
+        val name = sourceSetName
         val genTaskName = "generateMR$name"
         val genTask = runCatching {
             project.tasks.getByName(genTaskName) as GenerateMultiplatformResourcesTask

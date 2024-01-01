@@ -99,9 +99,9 @@ class AppleMRGenerator(
 
         dependsOnProcessResources(
             project = project,
-            sourceSet = sourceSet,
             task = generationTask,
-            shouldExcludeGenerated = true
+            shouldExcludeGenerated = true,
+            resourceSetName = sourceSetName
         )
     }
 
@@ -116,7 +116,7 @@ class AppleMRGenerator(
         // tasks like compileIosMainKotlinMetadata when only one target enabled
         generationTask.project.tasks
             .withType<KotlinCommonCompile>()
-            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
+            .matching { it.name.contains(sourceSetName, ignoreCase = true) }
             .configureEach { it.dependsOn(generationTask) }
 
         compileTask.doLast(
@@ -216,7 +216,6 @@ $linkTask produces static framework, Xcode should have Build Phase with copyFram
         val kotlinNativeTarget = compilation.target as KotlinNativeTarget
         val project = kotlinNativeTarget.project
 
-        @Suppress("ObjectLiteralToLambda")
         val fatAction: Action<Task> = object : Action<Task> {
             override fun execute(task: Task) {
                 val fatTask: FatFrameworkTask = task as FatFrameworkTask

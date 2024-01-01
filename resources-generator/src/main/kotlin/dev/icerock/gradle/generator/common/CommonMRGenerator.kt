@@ -29,7 +29,7 @@ class CommonMRGenerator(
     override fun apply(generationTask: Task, project: Project) {
         project.tasks
             .withType<KotlinCompile<*>>()
-            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
+            .matching { it.name.contains(sourceSetName, ignoreCase = true) }
             .configureEach { it.dependsOn(generationTask) }
 
         project.rootProject.tasks.matching {

@@ -81,9 +81,9 @@ class JvmMRGenerator(
         }
         dependsOnProcessResources(
             project = project,
-            sourceSet = sourceSet,
             task = generationTask,
-            shouldExcludeGenerated = false
+            shouldExcludeGenerated = false,
+            resourceSetName = sourceSetName
         )
     }
 

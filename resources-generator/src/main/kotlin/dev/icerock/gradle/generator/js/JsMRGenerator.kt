@@ -97,9 +97,9 @@ class JsMRGenerator(
 
         dependsOnProcessResources(
             project = project,
-            sourceSet = sourceSet,
             task = generationTask,
-            shouldExcludeGenerated = true
+            shouldExcludeGenerated = true,
+            resourceSetName = sourceSetName
         )
     }
 

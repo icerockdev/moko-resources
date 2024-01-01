@@ -20,22 +20,24 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import java.io.File
 
 internal class AndroidPluginLogic(
-    private val commonSourceSet: KotlinSourceSet,
-    private val targets: List<KotlinTarget>,
+    commonSourceSet: KotlinSourceSet,
+    targets: List<KotlinTarget>,
     private val generatedDir: File,
     private val mrSettings: MRGenerator.MRSettings,
-    private val features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
+    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>,
     private val project: Project
 ) {
-    fun setup(androidMainSourceSet: AndroidSourceSet) {
-        val kotlinSourceSets: List<KotlinSourceSet> = targets
-            .filterIsInstance<KotlinAndroidTarget>()
-            .flatMap { it.compilations }
-            .filter { compilation ->
-                compilation.kotlinSourceSets.any { it.isDependsOn(commonSourceSet) }
-            }
-            .map { it.defaultSourceSet }
+    private val kotlinSourceSets: List<KotlinSourceSet> = targets
+        .filterIsInstance<KotlinAndroidTarget>()
+        .flatMap { it.compilations }
+        .filter { compilation ->
+            compilation.kotlinSourceSets.any { it.isDependsOn(commonSourceSet) }
+        }
+        .map { it.defaultSourceSet }
 
+    private val generators = features.map { it.createAndroidGenerator() }
+
+    fun setup(androidMainSourceSet: AndroidSourceSet) {
         val androidSourceSet: MRGenerator.SourceSet =
             createSourceSet(androidMainSourceSet, kotlinSourceSets)
 
@@ -45,7 +47,7 @@ internal class AndroidPluginLogic(
             generatedDir = generatedDir,
             sourceSet = androidSourceSet,
             mrSettings = mrSettings,
-            generators = features.map { it.createAndroidGenerator() }
+            generators = generators
         ).apply(project)
     }
 
@@ -55,14 +57,9 @@ internal class AndroidPluginLogic(
             .matching { it.name.startsWith("package") && it.name.endsWith("Assets") }
             .configureEach { task ->
                 // for gradle optimizations we should use anonymous object
-                @Suppress("ObjectLiteralToLambda")
-                task.doFirst(object : Action<Task> {
-                    override fun execute(t: Task) {
-                        val android = project.extensions.getByType<BaseExtension>()
-                        val assets = android.sourceSets.getByName("main").assets
-                        assets.setSrcDirs(assets.srcDirs)
-                    }
-                })
+                val android = project.extensions.getByType<BaseExtension>()
+                val assets = android.sourceSets.getByName("main").assets
+                assets.setSrcDirs(assets.srcDirs)
             }
     }
 
