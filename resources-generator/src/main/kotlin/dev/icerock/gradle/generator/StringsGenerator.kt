@@ -27,7 +27,7 @@ typealias KeyType = String
 abstract class StringsGenerator(
     private val resourcesFileTree: FileTree,
     private val strictLineBreaks: Boolean,
-) : BaseGenerator<String>() {
+) : LocalizationGenerator<String>() {
 
     override val inputFiles: Iterable<File>
         get() = resourcesFileTree.matching { it.include(STRINGS_MASK) }.files

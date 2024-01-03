@@ -38,7 +38,7 @@ private val SOURCE_PLURAL_NODE_NAMES = listOf("plural", "plurals")
 abstract class PluralsGenerator(
     private val ownResourcesFileTree: FileTree,
     private val strictLineBreaks: Boolean
-) : BaseGenerator<PluralMap>() {
+) : LocalizationGenerator<PluralMap>() {
 
     override val inputFiles: Iterable<File>
         get() = ownResourcesFileTree.matching { it.include(PLURALS_MASK) }.files

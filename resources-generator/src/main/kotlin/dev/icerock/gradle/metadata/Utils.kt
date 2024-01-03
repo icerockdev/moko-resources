@@ -5,12 +5,12 @@ import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratorType
 import dev.icerock.gradle.utils.capitalize
 
-internal fun getInterfaceName(targetName: String, generatorType: GeneratorType): String {
-    return targetName.capitalize() + generatorType.name.capitalize()
+internal fun getInterfaceName(sourceSetName: String, generatorType: GeneratorType): String {
+    return sourceSetName.capitalize() + generatorType.name.capitalize()
 }
 
 internal fun resourcesIsEmpty(
-    inputMetadata: MutableList<GeneratedObject>,
+    inputMetadata: List<GeneratedObject>,
     settings: Settings,
 ): Boolean {
     return inputMetadata.isEmptyMetadata()

@@ -14,7 +14,6 @@ import dev.icerock.gradle.generator.apple.AppleColorsGenerator
 import dev.icerock.gradle.generator.common.CommonColorsGenerator
 import dev.icerock.gradle.generator.js.JsColorsGenerator
 import dev.icerock.gradle.generator.jvm.JvmColorsGenerator
-import dev.icerock.gradle.metadata.addActual
 import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.model.GeneratedProperty
@@ -49,18 +48,17 @@ abstract class ColorsGenerator(
     @Suppress("SpreadOperator")
     override fun generate(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
+        inputMetadata: List<GeneratedObject>,
+        outputMetadata: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
-        if (targetObject.isActual) {
+    ): MRGenerator.GenerationResult? {
+        if (outputMetadata.isActual) {
             objectBuilder.addModifiers(KModifier.ACTUAL)
         }
 
-        if (targetObject.isActualObject || targetObject.isTargetObject) {
+        if (outputMetadata.isActualObject || outputMetadata.isTargetObject) {
             extendObjectBodyAtStart(objectBuilder)
         }
 
@@ -68,7 +66,7 @@ abstract class ColorsGenerator(
         // return emptyList()
         val previousColors: List<ColorNode> = getPreviousColors(
             inputMetadata = inputMetadata,
-            targetObject = targetObject
+            targetObject = outputMetadata
         )
 
         // Read target colors
@@ -90,14 +88,14 @@ abstract class ColorsGenerator(
                 data = json.encodeToJsonElement(colorNode)
             )
 
-            if (targetObject.isActualObject || targetObject.isTargetObject) {
+            if (outputMetadata.isActualObject || outputMetadata.isTargetObject) {
                 // Setup property modifier and correction metadata info
                 generatedProperty = generatedProperty.copy(
                     modifier = addActualOverrideModifier(
                         propertyName = colorNode.name,
                         property = property,
                         inputMetadata = inputMetadata,
-                        targetObject = targetObject
+                        targetObject = outputMetadata
                     )
                 )
 
@@ -119,19 +117,16 @@ abstract class ColorsGenerator(
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        return if (generatedProperties.isNotEmpty()) {
-            generatedObjects.addActual(
-                targetObject.copy(properties = generatedProperties)
-            )
+        if (generatedProperties.isEmpty()) return null
 
-            objectBuilder.build()
-        } else {
-            null
-        }
+        return MRGenerator.GenerationResult(
+            typeSpec = objectBuilder.build(),
+            metadata = outputMetadata.copy(properties = generatedProperties)
+        )
     }
 
     private fun getPreviousColors(
-        inputMetadata: MutableList<GeneratedObject>,
+        inputMetadata: List<GeneratedObject>,
         targetObject: GeneratedObject,
     ): List<ColorNode> {
         if (!targetObject.isObject || !targetObject.isActual) return emptyList()

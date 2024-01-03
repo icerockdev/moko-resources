@@ -12,38 +12,37 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.model.GeneratedProperty
-import dev.icerock.gradle.metadata.addActual
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import org.gradle.api.Project
 import java.io.File
 
-abstract class BaseGenerator<T> : MRGenerator.Generator {
+abstract class LocalizationGenerator<T> : MRGenerator.Generator {
     override fun generate(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
+        inputMetadata: List<GeneratedObject>,
+        outputMetadata: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+    ): MRGenerator.GenerationResult? {
         // Read previous languages map from metadata
         // if target object is expect object or interface return emptyMap()
         val previousLanguagesMap: Map<LanguageType, Map<KeyType, T>> = getPreviousLanguagesMap(
             inputMetadata = inputMetadata,
-            targetObject = targetObject
+            targetObject = outputMetadata
         )
 
         // Read actual resources of target
         // If target object is actual object: skip read files again
         //
         // Structure: language - key - value
-        val languageMap: Map<LanguageType, Map<KeyType, T>> = if (targetObject.isActualObject || targetObject.isTargetObject) {
-            emptyMap()
-        } else {
-            loadLanguageMap()
-        }
+        val languageMap: Map<LanguageType, Map<KeyType, T>> =
+            if (outputMetadata.isActualObject || outputMetadata.isTargetObject) {
+                emptyMap()
+            } else {
+                loadLanguageMap()
+            }
 
         // Sum of previous and target language fields
         val languagesAllMaps: Map<LanguageType, Map<KeyType, T>> = getLanguagesAllMaps(
@@ -54,14 +53,13 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         beforeGenerateResources(objectBuilder, languagesAllMaps)
 
-        val stringsClass = createTypeSpec(
+        val result: MRGenerator.GenerationResult = createTypeSpec(
             inputMetadata = inputMetadata,
-            generatedObjects = generatedObjects,
-            targetObject = targetObject,
+            targetObject = outputMetadata,
             keys = languageKeyValues.keys.toList(),
             languageMap = languagesAllMaps,
             objectBuilder = objectBuilder
-        )
+        ) ?: return null
 
         languagesAllMaps.forEach { (language: LanguageType, strings: Map<KeyType, T>) ->
             generateResources(
@@ -71,17 +69,16 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
             )
         }
 
-        return stringsClass
+        return result
     }
 
     private fun createTypeSpec(
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
+        inputMetadata: List<GeneratedObject>,
         targetObject: GeneratedObject,
         keys: List<KeyType>,
         languageMap: Map<LanguageType, Map<KeyType, T>>,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+    ): MRGenerator.GenerationResult? {
         if (targetObject.isActual) {
             objectBuilder.addModifiers(KModifier.ACTUAL)
         }
@@ -131,16 +128,13 @@ abstract class BaseGenerator<T> : MRGenerator.Generator {
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        return if (generatedProperties.isNotEmpty()) {
-            // Add object in metadata with remove expect realisation
-            generatedObjects.addActual(
-                targetObject.copy(properties = generatedProperties)
-            )
+        if (generatedProperties.isEmpty()) return null
 
-            objectBuilder.build()
-        } else {
-            null
-        }
+        // Add object in metadata with remove expect realisation
+        return MRGenerator.GenerationResult(
+            typeSpec = objectBuilder.build(),
+            metadata = targetObject.copy(properties = generatedProperties)
+        )
     }
 
     abstract fun getPropertyMetadata(

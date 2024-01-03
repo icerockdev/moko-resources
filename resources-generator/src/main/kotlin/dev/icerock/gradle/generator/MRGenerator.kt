@@ -10,10 +10,10 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.MRVisibility
+import dev.icerock.gradle.metadata.getActualInterfaces
 import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.model.GeneratorType
-import dev.icerock.gradle.metadata.getActualInterfaces
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileTree
@@ -27,7 +27,6 @@ abstract class MRGenerator(
     protected open val sourcesGenerationDir: File = settings.sourceSetDir.asFile
     protected open val resourcesGenerationDir: File = settings.resourcesDir.asFile
     protected open val assetsGenerationDir: File = settings.assetsDir.asFile
-
 
     internal fun generate() {
         sourcesGenerationDir.deleteRecursively()
@@ -44,38 +43,10 @@ abstract class MRGenerator(
 
     abstract fun generateFileSpec(): FileSpec?
 
-    // TODO not used. remove after complete migration of task configuration to Plugin configuration time
-//    fun apply(project: Project): GenerateMultiplatformResourcesTask {
-//        //TODO add sourceSetName
-//        val name: String = project.displayName
-//
-//        val genTask = project.tasks.create(
-//            "generateMR$name",
-//            GenerateMultiplatformResourcesTask::class.java
-//        ) {
-//            it.inputs.property("mokoSettingsPackageName", settings.packageName)
-//            it.inputs.property("mokoSettingsClassName", settings.className)
-//            it.inputs.property("mokoSettingsVisibility", settings.visibility)
-//            it.inputs.property(
-//                "mokoSettingsIosLocalizationRegion",
-//                settings.iosLocalizationRegion
-//            )
-//        }
-//
-//        apply(generationTask = genTask, project = project)
-//
-//        return genTask
-//    }
-
     protected open fun beforeMRGeneration() = Unit
     protected open fun afterMRGeneration() = Unit
 
     protected abstract fun getMRClassModifiers(): Array<KModifier>
-
-//    protected abstract fun apply(
-//        generationTask: GenerateMultiplatformResourcesTask,
-//        project: Project,
-//    )
 
     protected open fun processMRClass(mrClass: TypeSpec.Builder) {}
     protected open fun getImports(): List<ClassName> = emptyList()
@@ -91,13 +62,12 @@ abstract class MRGenerator(
 
         fun generate(
             project: Project,
-            inputMetadata: MutableList<GeneratedObject>,
-            generatedObjects: MutableList<GeneratedObject>,
-            targetObject: GeneratedObject,
+            inputMetadata: List<GeneratedObject>,
+            outputMetadata: GeneratedObject,
             assetsGenerationDir: File,
             resourcesGenerationDir: File,
             objectBuilder: TypeSpec.Builder,
-        ): TypeSpec?
+        ): GenerationResult?
 
         fun getImports(): List<ClassName>
 
@@ -135,6 +105,7 @@ abstract class MRGenerator(
                             property.addModifiers(KModifier.ACTUAL)
                             GeneratedObjectModifier.Actual
                         }
+
                         else -> {
                             GeneratedObjectModifier.None
                         }
@@ -145,6 +116,11 @@ abstract class MRGenerator(
             }
         }
     }
+
+    data class GenerationResult(
+        val typeSpec: TypeSpec,
+        val metadata: GeneratedObject
+    )
 
     interface SourceSet {
         val name: String

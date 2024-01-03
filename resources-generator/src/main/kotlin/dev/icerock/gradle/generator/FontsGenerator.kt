@@ -14,12 +14,11 @@ import dev.icerock.gradle.generator.apple.AppleFontsGenerator
 import dev.icerock.gradle.generator.common.CommonFontsGenerator
 import dev.icerock.gradle.generator.js.JsFontsGenerator
 import dev.icerock.gradle.generator.jvm.JvmFontsGenerator
+import dev.icerock.gradle.metadata.getActualInterfaces
 import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.model.GeneratedProperty
 import dev.icerock.gradle.metadata.model.GeneratorType
-import dev.icerock.gradle.metadata.addActual
-import dev.icerock.gradle.metadata.getActualInterfaces
 import dev.icerock.gradle.metadata.objectsWithProperties
 import dev.icerock.gradle.utils.decapitalize
 import kotlinx.serialization.json.Json
@@ -45,20 +44,19 @@ abstract class FontsGenerator(
 
     override fun generate(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
+        inputMetadata: List<GeneratedObject>,
+        outputMetadata: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+        objectBuilder: TypeSpec.Builder
+    ): MRGenerator.GenerationResult? {
         val previousFontFiles: List<FontFile> = getPreviousFontFiles(
             inputMetadata = inputMetadata,
-            targetObject = targetObject
+            targetObject = outputMetadata
         )
 
         val fontFiles: List<FontFile> = if (
-            targetObject.isActualObject || targetObject.isTargetObject
+            outputMetadata.isActualObject || outputMetadata.isTargetObject
         ) {
             emptyList()
         } else {
@@ -70,13 +68,12 @@ abstract class FontsGenerator(
 
         beforeGenerateResources(objectBuilder, allFontFiles)
 
-        val typeSpec = createTypeSpec(
+        val typeSpec: MRGenerator.GenerationResult = createTypeSpec(
             inputMetadata = inputMetadata,
-            generatedObjects = generatedObjects,
-            targetObject = targetObject,
+            outputMetadata = outputMetadata,
             filesSpec = allFontFiles.sortedBy { it.key },
             objectBuilder = objectBuilder
-        )
+        ) ?: return null
 
         generateResources(resourcesGenerationDir, allFontFiles)
 
@@ -122,17 +119,16 @@ abstract class FontsGenerator(
     @param keys: names of files like anastasia-regular.ttf
      */
     private fun createTypeSpec(
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
+        inputMetadata: List<GeneratedObject>,
+        outputMetadata: GeneratedObject,
         filesSpec: List<FontFile>,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
-        if (targetObject.isActual) {
+    ): MRGenerator.GenerationResult? {
+        if (outputMetadata.isActual) {
             objectBuilder.addModifiers(KModifier.ACTUAL)
         }
 
-        if (targetObject.isActualObject || targetObject.isTargetObject) {
+        if (outputMetadata.isActualObject || outputMetadata.isTargetObject) {
             extendObjectBodyAtStart(objectBuilder)
         }
 
@@ -162,7 +158,7 @@ abstract class FontsGenerator(
                     propertyName = propertyName,
                     property = property,
                     inputMetadata = inputMetadata,
-                    targetObject = targetObject
+                    targetObject = outputMetadata
                 ),
                 name = propertyName,
                 data = JsonPrimitive("")
@@ -176,11 +172,11 @@ abstract class FontsGenerator(
                 val styleProperty: PropertySpec.Builder = PropertySpec
                     .builder(styleName.decapitalize(), resourceClassName)
 
-                if (generatedProperty.isActualProperty){
+                if (generatedProperty.isActualProperty) {
                     styleProperty.addModifiers(KModifier.ACTUAL)
                 }
 
-                if (targetObject.isActualObject || targetObject.isTargetObject) {
+                if (outputMetadata.isActualObject || outputMetadata.isTargetObject) {
                     getPropertyInitializer(file)?.let { codeBlock ->
                         styleProperty.initializer(codeBlock)
                     }
@@ -200,16 +196,12 @@ abstract class FontsGenerator(
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        return if (generatedProperties.isNotEmpty()) {
-            // Add object in metadata with remove expect realisation
-            generatedObjects.addActual(
-                targetObject.copy(properties = generatedProperties)
-            )
+        if (generatedProperties.isEmpty()) return null
 
-            objectBuilder.build()
-        } else {
-            null
-        }
+        return MRGenerator.GenerationResult(
+            typeSpec = objectBuilder.build(),
+            metadata = outputMetadata.copy(properties = generatedProperties)
+        )
     }
 
     private fun addObjectActualOverrideModifier(
@@ -246,6 +238,7 @@ abstract class FontsGenerator(
                         property.addModifiers(KModifier.ACTUAL)
                         GeneratedObjectModifier.Actual
                     }
+
                     else -> {
                         GeneratedObjectModifier.None
                     }

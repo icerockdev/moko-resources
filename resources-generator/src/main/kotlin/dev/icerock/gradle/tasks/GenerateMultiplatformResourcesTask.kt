@@ -22,6 +22,7 @@ import dev.icerock.gradle.generator.js.JsMRGenerator
 import dev.icerock.gradle.generator.jvm.JvmMRGenerator
 import dev.icerock.gradle.utils.isStrictLineBreaks
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
@@ -41,6 +42,9 @@ import org.jetbrains.kotlin.konan.target.KonanTarget
 
 @CacheableTask
 abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
+
+    @get:Input
+    abstract val sourceSetName: Property<String>
 
     @get:InputFiles
     @get:Classpath
@@ -101,27 +105,13 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     init {
         group = "moko-resources"
-
-        onlyIf("generation on Android supported only for main flavor") {
-            val platform: String = platformType.get()
-            if (platform != KotlinPlatformType.androidJvm.name) return@onlyIf true
-
-            val flavor: String = androidSourceSetName.get()
-            flavor in listOf("main", "test", "androidTest")
-        }
     }
 
     @TaskAction
     fun generate() {
-        logger.warn("i $name have ownResources ${ownResources.from}")
-        logger.warn("i $name have lowerResources ${lowerResources.from}")
-        logger.warn("i $name have upperResources ${upperResources.from}")
-
         val settings: MRGenerator.Settings = createGeneratorSettings()
         val features: List<ResourceGeneratorFeature<*>> = createGeneratorFeatures(settings)
         val mrGenerator: MRGenerator = resolveGenerator(settings, features)
-
-        logger.warn("i ${platformType.get()} generator type: ${mrGenerator::class.java.simpleName}")
         mrGenerator.generate()
     }
 
@@ -135,7 +125,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             KotlinPlatformType.js -> createJsGenerator(settings, generators)
             KotlinPlatformType.androidJvm -> createAndroidJvmGenerator(settings, generators)
             KotlinPlatformType.native -> createNativeGenerator(settings, generators)
-            KotlinPlatformType.wasm -> error("moko-resources not support wasm target now")
+            KotlinPlatformType.wasm -> throw GradleException("moko-resources not support wasm target now")
         }
     }
 
@@ -178,6 +168,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     ): CommonMRGenerator {
         return CommonMRGenerator(
             project = project,
+            sourceSetName = sourceSetName.get(),
             settings = settings,
             generators = generators.map { it.createCommonGenerator() }
         )

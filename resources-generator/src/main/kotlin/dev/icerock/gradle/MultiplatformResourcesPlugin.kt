@@ -65,10 +65,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
         kmpExtension: KotlinMultiplatformExtension,
     ) {
-
         kmpExtension.sourceSets.configureEach { kotlinSourceSet: KotlinSourceSet ->
-            project.logger.warn("i kmpExtension.sourceSets: ${kotlinSourceSet.name}")
-
             val resourcesSourceDirectory: SourceDirectorySet = createMokoResourcesSourceSet(
                 project = project,
                 kotlinSourceSet = kotlinSourceSet
@@ -283,6 +280,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             generateTaskName,
             GenerateMultiplatformResourcesTask::class.java
         ) { generateTask ->
+            generateTask.sourceSetName.set(kotlinSourceSet.name)
+
             val files: Set<File> = resourcesSourceDirectory.srcDirs
             generateTask.ownResources.setFrom(files)
 
@@ -300,6 +299,19 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             generateTask.outputAssetsDir.set(File(sourceSetResourceDir, "assets"))
             generateTask.outputResourcesDir.set(File(sourceSetResourceDir, "res"))
             generateTask.outputSourcesDir.set(File(sourceSetResourceDir, "src"))
+
+            // by default source set will be common
+            generateTask.platformType.set(KotlinPlatformType.common.name)
+
+            generateTask.onlyIf("generation on Android supported only for main flavor") { task ->
+                task as GenerateMultiplatformResourcesTask
+
+                val platform: String = task.platformType.get()
+                if (platform != KotlinPlatformType.androidJvm.name) return@onlyIf true
+
+                val flavor: String = task.androidSourceSetName.get()
+                flavor in listOf("main", "test", "androidTest")
+            }
         }
 
         kotlinSourceSet.extras[mokoResourcesGenTaskKey()] = taskProvider

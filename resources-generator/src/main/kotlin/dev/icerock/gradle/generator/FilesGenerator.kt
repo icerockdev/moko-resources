@@ -18,7 +18,6 @@ import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.model.GeneratedProperty
 import dev.icerock.gradle.metadata.model.GeneratorType
-import dev.icerock.gradle.metadata.addActual
 import dev.icerock.gradle.metadata.objectsWithProperties
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
@@ -40,20 +39,19 @@ abstract class FilesGenerator(
 
     override fun generate(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
+        inputMetadata: List<GeneratedObject>,
+        outputMetadata: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+        objectBuilder: TypeSpec.Builder
+    ): MRGenerator.GenerationResult? {
         val previousFilesSpec: List<FileSpec> = getPreviousFiles(
             inputMetadata = inputMetadata,
-            targetObject = targetObject
+            targetObject = outputMetadata
         )
 
         val targetFilesSpecs: List<FileSpec> = if (
-            targetObject.isActualObject || targetObject.isTargetObject
+            outputMetadata.isActualObject || outputMetadata.isTargetObject
         ) {
             emptyList()
         } else {
@@ -64,20 +62,19 @@ abstract class FilesGenerator(
 
         beforeGenerate(objectBuilder, allFilesSpecs)
 
-        val typeSpec: TypeSpec? = createTypeSpec(
+        val result: MRGenerator.GenerationResult = createTypeSpec(
             inputMetadata = inputMetadata,
-            generatedObjects = generatedObjects,
-            targetObject = targetObject,
+            targetObject = outputMetadata,
             keys = allFilesSpecs,
             objectBuilder = objectBuilder
-        )
+        ) ?: return null
 
         generateResources(
             resourcesGenerationDir = resourcesGenerationDir,
             files = allFilesSpecs
         )
 
-        return typeSpec
+        return result
     }
 
     private fun Iterable<File>.getFileSpecList(): List<FileSpec> {
@@ -115,12 +112,11 @@ abstract class FilesGenerator(
     }
 
     private fun createTypeSpec(
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
+        inputMetadata: List<GeneratedObject>,
         targetObject: GeneratedObject,
         keys: List<FileSpec>,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+    ): MRGenerator.GenerationResult? {
         if (targetObject.isActual) {
             objectBuilder.addModifiers(KModifier.ACTUAL)
         }
@@ -162,16 +158,12 @@ abstract class FilesGenerator(
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        return if (generatedProperties.isNotEmpty()) {
-            // Add object in metadata with remove expect realisation
-            generatedObjects.addActual(
-                targetObject.copy(properties = generatedProperties)
-            )
+        if (generatedProperties.isEmpty()) return null
 
-            objectBuilder.build()
-        } else {
-            null
-        }
+        return MRGenerator.GenerationResult(
+            typeSpec = objectBuilder.build(),
+            metadata = targetObject.copy(properties = generatedProperties)
+        )
     }
 
     override fun getImports(): List<ClassName> = emptyList()

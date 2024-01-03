@@ -14,7 +14,6 @@ import dev.icerock.gradle.generator.apple.AppleImagesGenerator
 import dev.icerock.gradle.generator.common.CommonImagesGenerator
 import dev.icerock.gradle.generator.js.JsImagesGenerator
 import dev.icerock.gradle.generator.jvm.JvmImagesGenerator
-import dev.icerock.gradle.metadata.addActual
 import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.model.GeneratedProperty
@@ -47,20 +46,19 @@ abstract class ImagesGenerator(
 
     override fun generate(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
+        inputMetadata: List<GeneratedObject>,
+        outputMetadata: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+        objectBuilder: TypeSpec.Builder
+    ): MRGenerator.GenerationResult? {
         val previousFilesMap: Map<String, List<File>> = getPreviousImageFilesMap(
             inputMetadata = inputMetadata,
-            targetObject = targetObject
+            targetObject = outputMetadata
         )
 
         val imageFileMap: Map<String, List<File>> = if (
-            targetObject.isActualObject || targetObject.isTargetObject
+            outputMetadata.isActualObject || outputMetadata.isTargetObject
         ) {
             emptyMap()
         } else {
@@ -72,14 +70,13 @@ abstract class ImagesGenerator(
 
         beforeGenerateResources(objectBuilder, allImagesMap.keys.sorted())
 
-        val typeSpec: TypeSpec? = createTypeSpec(
+        val result: MRGenerator.GenerationResult = createTypeSpec(
             inputMetadata = inputMetadata,
-            generatedObjects = generatedObjects,
-            targetObject = targetObject,
+            targetObject = outputMetadata,
             fileNames = allImagesMap.keys.sorted(),
             allImagesMap = allImagesMap,
             objectBuilder = objectBuilder
-        )
+        ) ?: return null
 
         generateResources(
             assetsGenerationDir = assetsGenerationDir,
@@ -89,17 +86,16 @@ abstract class ImagesGenerator(
             }
         )
 
-        return typeSpec
+        return result
     }
 
     private fun createTypeSpec(
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
+        inputMetadata: List<GeneratedObject>,
         targetObject: GeneratedObject,
         fileNames: List<String>,
         allImagesMap: Map<String, List<File>>,
         objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+    ): MRGenerator.GenerationResult? {
         if (targetObject.isActual) {
             objectBuilder.addModifiers(KModifier.ACTUAL)
         }
@@ -149,16 +145,12 @@ abstract class ImagesGenerator(
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        return if (generatedProperties.isNotEmpty()) {
-            // Add object in metadata with remove expect realisation
-            generatedObjects.addActual(
-                targetObject.copy(properties = generatedProperties)
-            )
+        if (generatedProperties.isEmpty()) return null
 
-            objectBuilder.build()
-        } else {
-            null
-        }
+        return MRGenerator.GenerationResult(
+            typeSpec = objectBuilder.build(),
+            metadata = targetObject.copy(properties = generatedProperties)
+        )
     }
 
     private fun getPropertyMetadata(

@@ -1,10 +1,9 @@
 package dev.icerock.gradle.metadata
 
 import dev.icerock.gradle.metadata.model.GeneratedObject
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.gradle.api.file.FileTree
-import java.io.BufferedReader
 import java.io.File
 
 object Metadata {
@@ -16,7 +15,10 @@ object Metadata {
 
         outputMetadataFile.createNewFile()
 
-        val generatedJson: String = Json.encodeToString(generatedObjects)
+        val generatedJson: String = Json.encodeToString(
+            serializer = ListSerializer(GeneratedObject.serializer()),
+            value = generatedObjects
+        )
 
         outputMetadataFile.writeText(generatedJson)
     }
@@ -24,17 +26,12 @@ object Metadata {
     fun readInputMetadata(
         inputMetadataFiles: FileTree,
     ): List<GeneratedObject> {
-        val generatedObjects = mutableListOf<GeneratedObject>()
-
-        inputMetadataFiles.forEach { inputFile ->
-            if(inputFile.isDirectory) return@forEach
-
-            val bufferedReader: BufferedReader = File(inputFile.toURI()).bufferedReader()
-            val inputString: String = bufferedReader.use { it.readText() }
-            val inputMetadata: List<GeneratedObject> = Json.decodeFromString(inputString)
-            generatedObjects.addAll(inputMetadata)
+        return inputMetadataFiles.filter { it.isFile }.flatMap { inputFile ->
+            val inputString: String = inputFile.readText()
+            Json.decodeFromString(
+                deserializer = ListSerializer(GeneratedObject.serializer()),
+                string = inputString
+            )
         }
-
-        return generatedObjects
     }
 }

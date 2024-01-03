@@ -16,7 +16,6 @@ import dev.icerock.gradle.generator.apple.AppleAssetsGenerator
 import dev.icerock.gradle.generator.common.CommonAssetsGenerator
 import dev.icerock.gradle.generator.js.JsAssetsGenerator
 import dev.icerock.gradle.generator.jvm.JvmAssetsGenerator
-import dev.icerock.gradle.metadata.addActual
 import dev.icerock.gradle.metadata.model.GeneratedObject
 import dev.icerock.gradle.metadata.model.GeneratedObjectModifier
 import dev.icerock.gradle.metadata.model.GeneratedProperty
@@ -44,17 +43,15 @@ abstract class AssetsGenerator(
 
     override fun generate(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
-        targetObject: GeneratedObject,
+        inputMetadata: List<GeneratedObject>,
+        outputMetadata: GeneratedObject,
         assetsGenerationDir: File,
         resourcesGenerationDir: File,
-        objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
-
+        objectBuilder: TypeSpec.Builder
+    ): MRGenerator.GenerationResult? {
         val previousAssetsFiles: List<File> = getPreviousAssets(
             inputMetadata = inputMetadata,
-            targetObject = targetObject
+            targetObject = outputMetadata
         )
 
         val previousAssets: List<AssetSpec> = parseRootContentInner(previousAssetsFiles)
@@ -63,27 +60,26 @@ abstract class AssetsGenerator(
 
         beforeGenerate(objectBuilder, allAssets)
 
-        val typeSpec: TypeSpec? = createTypeSpec(
-            project,
+        val result: MRGenerator.GenerationResult = createTypeSpec(
+            project = project,
             inputMetadata = inputMetadata,
-            generatedObjects = generatedObjects,
-            targetObject = targetObject,
+            targetObject = outputMetadata,
             keys = allAssets,
             objectBuilder = objectBuilder
-        )
+        ) ?: return null
 
         generateResources(assetsGenerationDir, resourcesGenerationDir, allAssets)
 
-        return typeSpec
+        return result
     }
 
     private fun createTypeSpec(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
-        generatedObjects: MutableList<GeneratedObject>,
+        inputMetadata: List<GeneratedObject>,
         targetObject: GeneratedObject,
-        keys: List<AssetSpec>, objectBuilder: TypeSpec.Builder,
-    ): TypeSpec? {
+        keys: List<AssetSpec>,
+        objectBuilder: TypeSpec.Builder,
+    ): MRGenerator.GenerationResult? {
         if (targetObject.isActual) {
             objectBuilder.addModifiers(KModifier.ACTUAL)
         }
@@ -105,16 +101,12 @@ abstract class AssetsGenerator(
 
         extendObjectBodyAtEnd(objectBuilder)
 
-        return if (generatedProperties.isNotEmpty()) {
-            // Add object in metadata with remove expect realisation
-            generatedObjects.addActual(
-                targetObject.copy(properties = generatedProperties)
-            )
+        if (generatedProperties.isEmpty()) return null
 
-            objectBuilder.build()
-        } else {
-            null
-        }
+        return MRGenerator.GenerationResult(
+            typeSpec = objectBuilder.build(),
+            metadata = targetObject.copy(properties = generatedProperties)
+        )
     }
 
     private fun getBaseDir(file: File): String {
@@ -172,7 +164,7 @@ abstract class AssetsGenerator(
     @Suppress("SpreadOperator")
     private fun createInnerTypeSpec(
         project: Project,
-        inputMetadata: MutableList<GeneratedObject>,
+        inputMetadata: List<GeneratedObject>,
         generatedProperties: MutableList<GeneratedProperty>,
         targetObject: GeneratedObject,
         keys: List<AssetSpec>,
