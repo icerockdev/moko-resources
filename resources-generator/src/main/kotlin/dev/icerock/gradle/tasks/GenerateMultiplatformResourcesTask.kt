@@ -6,26 +6,32 @@ package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.configuration.getAndroidRClassPackage
-import dev.icerock.gradle.generator.AssetsGenerator
-import dev.icerock.gradle.generator.ColorsGenerator
-import dev.icerock.gradle.generator.FilesGenerator
-import dev.icerock.gradle.generator.FontsGenerator
-import dev.icerock.gradle.generator.ImagesGenerator
-import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.PluralsGenerator
-import dev.icerock.gradle.generator.ResourceGeneratorFeature
-import dev.icerock.gradle.generator.StringsGenerator
-import dev.icerock.gradle.generator.android.AndroidMRGenerator
-import dev.icerock.gradle.generator.apple.AppleMRGenerator
-import dev.icerock.gradle.generator.common.CommonMRGenerator
-import dev.icerock.gradle.generator.js.JsMRGenerator
-import dev.icerock.gradle.generator.jvm.JvmMRGenerator
+import dev.icerock.gradle.rework.PlatformGenerator
+import dev.icerock.gradle.rework.ResourceTypeGenerator
+import dev.icerock.gradle.rework.ResourcesFiles
+import dev.icerock.gradle.rework.ResourcesGenerator
+import dev.icerock.gradle.rework.metadata.container.ContainerMetadata
+import dev.icerock.gradle.rework.metadata.container.ObjectMetadata
+import dev.icerock.gradle.rework.metadata.container.ResourceType
+import dev.icerock.gradle.rework.metadata.resource.StringMetadata
+import dev.icerock.gradle.rework.string.AndroidStringResourceGenerator
+import dev.icerock.gradle.rework.string.AppleStringResourceGenerator
+import dev.icerock.gradle.rework.string.JsStringResourceGenerator
+import dev.icerock.gradle.rework.string.JvmStringResourceGenerator
+import dev.icerock.gradle.rework.string.NOPStringResourceGenerator
+import dev.icerock.gradle.rework.string.StringResourceGenerator
+import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.isStrictLineBreaks
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
@@ -39,6 +45,7 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.konan.target.KonanTarget
+import java.io.File
 
 @CacheableTask
 abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
@@ -50,13 +57,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Classpath
     abstract val ownResources: ConfigurableFileCollection
 
-    @get:InputFiles
-    @get:Classpath
-    abstract val lowerResources: ConfigurableFileCollection
-
-    @get:InputFiles
-    @get:Classpath
-    abstract val upperResources: ConfigurableFileCollection
+    @get:Input
+    abstract val upperSourceSets: MapProperty<String, FileCollection>
 
     @get:Optional
     @get:Input
@@ -103,151 +105,169 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:OutputDirectory
     abstract val outputAssetsDir: DirectoryProperty
 
+    private val kotlinPlatformType: KotlinPlatformType
+        get() = KotlinPlatformType.valueOf(platformType.get())
+
+    private val kotlinKonanTarget: KonanTarget
+        get() {
+            val name: String = konanTarget.get()
+            return KonanTarget.predefinedTargets[name] ?: error("can't find $name in KonanTarget")
+        }
+
     init {
         group = "moko-resources"
     }
 
+    @OptIn(InternalSerializationApi::class)
     @TaskAction
     fun generate() {
-        val settings: MRGenerator.Settings = createGeneratorSettings()
-        val features: List<ResourceGeneratorFeature<*>> = createGeneratorFeatures(settings)
-        val mrGenerator: MRGenerator = resolveGenerator(settings, features)
-        mrGenerator.generate()
-    }
-
-    private fun resolveGenerator(
-        settings: MRGenerator.Settings,
-        generators: List<ResourceGeneratorFeature<*>>,
-    ): MRGenerator {
-        return when (KotlinPlatformType.valueOf(platformType.get())) {
-            KotlinPlatformType.common -> createCommonGenerator(settings, generators)
-            KotlinPlatformType.jvm -> createJvmGenerator(settings, generators)
-            KotlinPlatformType.js -> createJsGenerator(settings, generators)
-            KotlinPlatformType.androidJvm -> createAndroidJvmGenerator(settings, generators)
-            KotlinPlatformType.native -> createNativeGenerator(settings, generators)
-            KotlinPlatformType.wasm -> throw GradleException("moko-resources not support wasm target now")
+        val json = Json {
+            prettyPrint = true
         }
-    }
+        val generator: ResourcesGenerator = createGenerator()
 
-    private fun createGeneratorSettings(): MRGenerator.Settings {
-        return MRGenerator.Settings(
-            inputMetadataFiles = inputMetadataFiles.asFileTree,
-            outputMetadataFile = outputMetadataFile.asFile.get(),
-            packageName = resourcesPackageName.get(),
-            className = resourcesClassName.get(),
-            assetsDir = outputAssetsDir.get(),
-            sourceSetDir = outputSourcesDir.get(),
-            resourcesDir = outputResourcesDir.get(),
-            ownResourcesFileTree = ownResources.asFileTree,
-            lowerResourcesFileTree = lowerResources.asFileTree,
-            upperResourcesFileTree = upperResources.asFileTree,
-            isStrictLineBreaks = project.isStrictLineBreaks,
-            visibility = resourcesVisibility.get(),
-            androidRClassPackage = project.getAndroidRClassPackage(),
-            iosLocalizationRegion = iosBaseLocalizationRegion,
+        val files = ResourcesFiles(
+            ownSourceSet = ResourcesFiles.SourceSetResources(
+                sourceSetName = sourceSetName.get(),
+                fileTree = ownResources.asFileTree
+            ),
+            upperSourceSets = upperSourceSets.get().map { item ->
+                ResourcesFiles.SourceSetResources(
+                    sourceSetName = item.key,
+                    fileTree = item.value.asFileTree
+                )
+            }
         )
+        val serializer: KSerializer<List<ContainerMetadata>> =
+            ListSerializer(ContainerMetadata.serializer())
+        val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files.flatMap { file ->
+            json.decodeFromString(serializer, file.readText())
+        }
+
+        val outputMetadata: List<ContainerMetadata> =
+            if (kotlinPlatformType == KotlinPlatformType.common) {
+                generator.generateCommonKotlin(files, inputMetadata)
+            } else {
+                generator.generateTargetKotlin(files, inputMetadata).also { containers ->
+                    generator.generateResources(containers.mapNotNull { it as? ObjectMetadata })
+                }
+            }
+
+        outputMetadataFile.get().asFile.writeText(json.encodeToString(serializer, outputMetadata))
     }
 
-    private fun createGeneratorFeatures(
-        settings: MRGenerator.Settings,
-    ): List<ResourceGeneratorFeature<*>> {
-        return listOf(
-            StringsGenerator.Feature(settings),
-            PluralsGenerator.Feature(settings),
-            ColorsGenerator.Feature(settings),
-            ImagesGenerator.Feature(settings, logger),
-            FontsGenerator.Feature(settings),
-            FilesGenerator.Feature(settings),
-            AssetsGenerator.Feature(settings)
-        )
-    }
-
-    private fun createCommonGenerator(
-        settings: MRGenerator.Settings,
-        generators: List<ResourceGeneratorFeature<*>>,
-    ): CommonMRGenerator {
-        return CommonMRGenerator(
-            project = project,
+    private fun createGenerator(): ResourcesGenerator {
+        return ResourcesGenerator(
+            typesGenerators = listOf(
+                createStringGenerator()
+            ),
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
             sourceSetName = sourceSetName.get(),
-            settings = settings,
-            generators = generators.map { it.createCommonGenerator() }
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            sourcesGenerationDir = outputSourcesDir.get().asFile
         )
     }
 
-    private fun createAndroidJvmGenerator(
-        settings: MRGenerator.Settings,
-        generators: List<ResourceGeneratorFeature<*>>,
-    ): AndroidMRGenerator {
-        return AndroidMRGenerator(
-            project = project,
-            settings = settings,
-            generators = generators.map { it.createAndroidGenerator() }
+    private fun createStringGenerator(): ResourceTypeGenerator<StringMetadata> {
+        return ResourceTypeGenerator(
+            generationPackage = resourcesPackageName.get(),
+            resourceClass = StringResourceGenerator.className,
+            resourceType = ResourceType.STRINGS,
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            generator = StringResourceGenerator(
+                strictLineBreaks = project.isStrictLineBreaks
+            ),
+            platformGenerator = createPlatformStringGenerator(),
+            filter = { include("**/strings*.xml") }
         )
     }
 
-    private fun createJvmGenerator(
-        settings: MRGenerator.Settings,
-        generators: List<ResourceGeneratorFeature<*>>,
-    ): JvmMRGenerator {
-        return JvmMRGenerator(
-            project = project,
-            settings = settings,
-            generators = generators.map { it.createJvmGenerator() }
+    private fun getAndroidR(): String = project.getAndroidRClassPackage().get()
+
+    private fun createPlatformStringGenerator(): PlatformGenerator<StringMetadata> {
+        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
+        return createByPlatform(
+            createCommon = { NOPStringResourceGenerator() },
+            createAndroid = {
+                AndroidStringResourceGenerator(
+                    androidRClassPackage = getAndroidR(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createApple = {
+                AppleStringResourceGenerator(
+                    baseLocalizationRegion = iosBaseLocalizationRegion.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJvm = {
+                JvmStringResourceGenerator(
+                    resourcesPackageName = resourcesPackageName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJs = {
+                JsStringResourceGenerator(
+                    resourcesPackageName = resourcesPackageName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            }
         )
     }
 
-    private fun createJsGenerator(
-        settings: MRGenerator.Settings,
-        generators: List<ResourceGeneratorFeature<*>>,
-    ): JsMRGenerator {
-        return JsMRGenerator(
-            project = project,
-            settings = settings,
-            generators = generators.map { it.createJsGenerator() }
-        )
-    }
+    private fun <T> createByPlatform(
+        createCommon: () -> T,
+        createAndroid: () -> T,
+        createApple: () -> T,
+        createJvm: () -> T,
+        createJs: () -> T,
+    ): T {
+        return when (kotlinPlatformType) {
+            KotlinPlatformType.common -> createCommon()
+            KotlinPlatformType.jvm -> createJvm()
+            KotlinPlatformType.androidJvm -> createAndroid()
+            KotlinPlatformType.js -> createJs()
+            KotlinPlatformType.native -> when (kotlinKonanTarget) {
+                KonanTarget.IOS_ARM32,
+                KonanTarget.IOS_ARM64,
+                KonanTarget.IOS_SIMULATOR_ARM64,
+                KonanTarget.IOS_X64,
 
-    private fun createNativeGenerator(
-        settings: MRGenerator.Settings,
-        generators: List<ResourceGeneratorFeature<*>>,
-    ): MRGenerator {
-        val konanTargetName: String = konanTarget.get()
-        val konanTarget: KonanTarget = KonanTarget.predefinedTargets[konanTargetName]
-            ?: error("can't find $konanTargetName in KonanTarget")
+                KonanTarget.MACOS_ARM64,
+                KonanTarget.MACOS_X64,
 
-        return when (konanTarget) {
-            KonanTarget.IOS_ARM32,
-            KonanTarget.IOS_ARM64,
-            KonanTarget.IOS_SIMULATOR_ARM64,
-            KonanTarget.IOS_X64,
+                KonanTarget.TVOS_ARM64,
+                KonanTarget.TVOS_SIMULATOR_ARM64,
+                KonanTarget.TVOS_X64,
 
-            KonanTarget.MACOS_ARM64,
-            KonanTarget.MACOS_X64,
+                KonanTarget.WATCHOS_ARM32,
+                KonanTarget.WATCHOS_ARM64,
+                KonanTarget.WATCHOS_DEVICE_ARM64,
+                KonanTarget.WATCHOS_SIMULATOR_ARM64,
+                KonanTarget.WATCHOS_X64,
+                KonanTarget.WATCHOS_X86 -> createApple()
 
-            KonanTarget.TVOS_ARM64,
-            KonanTarget.TVOS_SIMULATOR_ARM64,
-            KonanTarget.TVOS_X64,
+                KonanTarget.ANDROID_ARM32,
+                KonanTarget.ANDROID_ARM64,
+                KonanTarget.ANDROID_X64,
+                KonanTarget.ANDROID_X86,
 
-            KonanTarget.WATCHOS_ARM32,
-            KonanTarget.WATCHOS_ARM64,
-            KonanTarget.WATCHOS_DEVICE_ARM64,
-            KonanTarget.WATCHOS_SIMULATOR_ARM64,
-            KonanTarget.WATCHOS_X64,
-            KonanTarget.WATCHOS_X86,
-            -> createAppleGenerator(settings, generators)
+                KonanTarget.LINUX_ARM32_HFP,
+                KonanTarget.LINUX_ARM64,
+                KonanTarget.LINUX_MIPS32,
+                KonanTarget.LINUX_MIPSEL32,
+                KonanTarget.LINUX_X64,
 
-            else -> error("$konanTarget is not supported by moko-resources now!")
+                KonanTarget.MINGW_X64,
+                KonanTarget.MINGW_X86,
+
+                KonanTarget.WASM32,
+
+                is KonanTarget.ZEPHYR -> error("$kotlinKonanTarget not supported by moko-resources now")
+            }
+
+            KotlinPlatformType.wasm -> error("$kotlinPlatformType not supported by moko-resources now")
         }
-    }
-
-    private fun createAppleGenerator(
-        settings: MRGenerator.Settings,
-        generators: List<ResourceGeneratorFeature<*>>,
-    ): AppleMRGenerator {
-        return AppleMRGenerator(
-            project = project,
-            settings = settings,
-            generators = generators.map { it.createAppleGenerator() },
-        )
     }
 }

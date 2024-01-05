@@ -86,5 +86,10 @@ sealed interface LanguageType {
             BASE -> Base
             else -> Locale(fileName.replace("-r", "-"))
         }
+
+        fun fromLanguage(language: String): LanguageType = when (language) {
+            Base.language() -> Base
+            else -> Locale(language)
+        }
     }
 }

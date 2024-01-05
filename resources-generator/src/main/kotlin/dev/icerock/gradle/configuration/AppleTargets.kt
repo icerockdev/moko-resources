@@ -4,21 +4,21 @@
 
 package dev.icerock.gradle.configuration
 
-import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.ResourceGeneratorFeature
-import dev.icerock.gradle.generator.apple.AppleMRGenerator
-import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
-import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
-import org.jetbrains.kotlin.konan.target.HostManager
+//import dev.icerock.gradle.generator.MRGenerator
+//import dev.icerock.gradle.generator.ResourceGeneratorFeature
+//import dev.icerock.gradle.generator.apple.AppleMRGenerator
+//import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
+//import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
+//import org.gradle.api.Project
+//import org.gradle.kotlin.dsl.register
+//import org.gradle.kotlin.dsl.withType
+//import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+//import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
+//import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
+//import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+//import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
+//import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+//import org.jetbrains.kotlin.konan.target.HostManager
 
 // TODO not used. remove after complete migration of task configuration to Plugin configuration time
 //internal fun configureAppleTargetGenerator(

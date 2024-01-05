@@ -78,13 +78,9 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 mrExtension = mrExtension
             )
 
-            configureLowerDependencies(
-                kotlinSourceSet = kotlinSourceSet,
-                genTask = genTask
-            )
-
             configureUpperDependencies(
                 kotlinSourceSet = kotlinSourceSet,
+                resourcesSourceSetName = kotlinSourceSet.name,
                 resourcesSourceDirectory = resourcesSourceDirectory
             )
 
@@ -170,6 +166,11 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                     }
                 }
             }
+        }
+
+        project.tasks.register("generateMR") {
+            it.group = "moko-resources"
+            it.dependsOn(project.tasks.withType<GenerateMultiplatformResourcesTask>())
         }
     }
 
@@ -274,7 +275,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
     ): TaskProvider<GenerateMultiplatformResourcesTask> {
         val generateTaskName: String = "generateMR" + kotlinSourceSet.name
-        val generatedMokoResourcesDir = File(project.buildDir, "generated/moko-resources")
+        val generatedMokoResourcesDir = File(
+            project.layout.buildDirectory.get().asFile,
+            "generated/moko-resources"
+        )
 
         val taskProvider: TaskProvider<GenerateMultiplatformResourcesTask> = project.tasks.register(
             generateTaskName,
@@ -319,29 +323,9 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         return taskProvider
     }
 
-    private fun configureLowerDependencies(
-        kotlinSourceSet: KotlinSourceSet,
-        genTask: TaskProvider<GenerateMultiplatformResourcesTask>,
-    ) {
-        kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
-            val resourcesDir: SourceDirectorySet = requireNotNull(
-                dependsSourceSet.extras[mokoResourcesSourceDirectoryKey()]
-            )
-
-            genTask.configure {
-                val files: Set<File> = resourcesDir.srcDirs
-                it.lowerResources.from(files)
-            }
-
-            configureLowerDependencies(
-                kotlinSourceSet = dependsSourceSet,
-                genTask = genTask
-            )
-        }
-    }
-
     private fun configureUpperDependencies(
         kotlinSourceSet: KotlinSourceSet,
+        resourcesSourceSetName: String,
         resourcesSourceDirectory: SourceDirectorySet,
     ) {
         kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
@@ -351,11 +335,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 
             dependsGenTask.configure {
                 val files: Set<File> = resourcesSourceDirectory.srcDirs
-                it.upperResources.from(files)
+                it.upperSourceSets.put(resourcesSourceSetName, kotlinSourceSet.project.files(files))
             }
 
             configureUpperDependencies(
                 kotlinSourceSet = dependsSourceSet,
+                resourcesSourceSetName = resourcesSourceSetName,
                 resourcesSourceDirectory = resourcesSourceDirectory
             )
         }
@@ -371,11 +356,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             )
 
             genTask.configure { resourceTask ->
-                resourceTask.inputMetadataFiles.setFrom(
-                    dependsGenTask.flatMap {
-                        it.outputMetadataFile
-                    }
-                )
+                resourceTask.inputMetadataFiles.from(dependsGenTask.flatMap { it.outputMetadataFile })
             }
         }
     }

@@ -7,9 +7,9 @@ package dev.icerock.gradle.configuration
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidSourceDirectorySet
 import com.android.build.gradle.api.AndroidSourceSet
-import dev.icerock.gradle.generator.MRGenerator
-import dev.icerock.gradle.generator.ResourceGeneratorFeature
-import dev.icerock.gradle.generator.android.AndroidMRGenerator
+//import dev.icerock.gradle.generator.MRGenerator
+//import dev.icerock.gradle.generator.ResourceGeneratorFeature
+//import dev.icerock.gradle.generator.android.AndroidMRGenerator
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task

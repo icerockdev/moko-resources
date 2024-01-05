@@ -101,21 +101,21 @@ multiplatformResources {
 }
 
 // TODO move to gradle plugin
-tasks.withType<DummyFrameworkTask>().configureEach {
-    @Suppress("ObjectLiteralToLambda")
-    doLast(object : Action<Task> {
-        override fun execute(task: Task) {
-            task as DummyFrameworkTask
-
-            val frameworkDir = File(task.destinationDir, task.frameworkName.get() + ".framework")
-
-            listOf(
-                "compose-resources-gallery:shared.bundle"
-            ).forEach { bundleName ->
-                val bundleDir = File(frameworkDir, bundleName)
-                bundleDir.mkdir()
-                File(bundleDir, "dummyFile").writeText("dummy")
-            }
-        }
-    })
-}
+//tasks.withType<DummyFrameworkTask>().configureEach {
+//    @Suppress("ObjectLiteralToLambda")
+//    doLast(object : Action<Task> {
+//        override fun execute(task: Task) {
+//            task as DummyFrameworkTask
+//
+//            val frameworkDir = File(task.destinationDir, task.frameworkName.get() + ".framework")
+//
+//            listOf(
+//                "compose-resources-gallery:shared.bundle"
+//            ).forEach { bundleName ->
+//                val bundleDir = File(frameworkDir, bundleName)
+//                bundleDir.mkdir()
+//                File(bundleDir, "dummyFile").writeText("dummy")
+//            }
+//        }
+//    })
+//}
