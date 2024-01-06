@@ -166,11 +166,49 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
         )
     }
 
+    fun generateObject(
+        metadata: List<ResourceMetadata>
+    ): GenerationResult? {
+        val typeResources: List<T> = metadata.mapNotNull { it as? T }
+        if (typeResources.isEmpty()) return null
+
+        val objectName: String = resourceType.name.lowercase()
+
+        val objectBuilder: TypeSpec.Builder = TypeSpec
+            .objectBuilder(objectName)
+            .addModifiers(visibilityModifier)
+            // implement ResourceType<**Resource> for extensions
+            .addSuperinterface(CodeConst.resourceContainerName.parameterizedBy(resourceClass))
+            // implement interfaces for generated expect object
+            .also { builder ->
+                platformResourceGenerator.generateBeforeProperties(builder, typeResources)
+            }
+            // add all properties of object
+            .addProperties(typeResources.map(::createSimpleProperty))
+            .also { builder ->
+                platformResourceGenerator.generateAfterProperties(builder, typeResources)
+            }
+
+        return GenerationResult(
+            typeSpec = objectBuilder.build(),
+            metadata = ObjectMetadata(
+                name = objectName,
+                resourceType = resourceType,
+                interfaces = emptyList(),
+                resources = typeResources
+            )
+        )
+    }
+
     fun generateFiles(resources: List<ResourceMetadata>) {
         @Suppress("UNCHECKED_CAST")
         val typeMetadata: List<T> = resources.mapNotNull { it as? T }
 
         platformResourceGenerator.generateResourceFiles(typeMetadata)
+    }
+
+    private fun createSimpleProperty(resource: ResourceMetadata): PropertySpec {
+        return createProperty(resource)
     }
 
     private fun createActualProperty(resource: ResourceMetadata): PropertySpec {
@@ -181,12 +219,17 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
         return createProperty(resource, KModifier.OVERRIDE)
     }
 
-    private fun createProperty(resource: ResourceMetadata, modifier: KModifier): PropertySpec {
+    private fun createProperty(
+        resource: ResourceMetadata,
+        modifier: KModifier? = null
+    ): PropertySpec {
         @Suppress("UNCHECKED_CAST")
         resource as T
 
         return generator.generateProperty(resource)
-            .addModifiers(modifier)
+            .apply {
+                if (modifier != null) addModifiers(modifier)
+            }
             .initializer(platformResourceGenerator.generateInitializer(resource))
             .build()
     }
