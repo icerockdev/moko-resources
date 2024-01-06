@@ -19,6 +19,7 @@ import java.io.File
 
 class JvmStringResourceGenerator(
     private val flattenClassPackage: String,
+    private val className: String,
     private val resourcesGenerationDir: File
 ) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = emptyList()
@@ -41,7 +42,20 @@ class JvmStringResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(builder: TypeSpec.Builder) {
+    override fun generateBeforeProperties(
+        builder: TypeSpec.Builder,
+        metadata: List<StringMetadata>
+    ) {
+        val classLoaderProperty: PropertySpec = PropertySpec.builder(
+            CodeConst.Jvm.resourcesClassLoaderPropertyName,
+            CodeConst.Jvm.classLoaderName,
+            KModifier.OVERRIDE
+        )
+            .initializer(CodeBlock.of(className + "." + CodeConst.Jvm.resourcesClassLoaderPropertyName))
+            .build()
+
+        builder.addProperty(classLoaderProperty)
+
         val property: PropertySpec = PropertySpec.builder(
             stringsBundlePropertyName,
             STRING,

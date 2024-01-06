@@ -58,7 +58,10 @@ class AppleStringResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(builder: TypeSpec.Builder) {
+    override fun generateBeforeProperties(
+        builder: TypeSpec.Builder,
+        metadata: List<StringMetadata>
+    ) {
         builder.addAppleContainerBundleProperty()
     }
 

@@ -11,11 +11,10 @@ import dev.icerock.gradle.rework.PlatformContainerGenerator
 import dev.icerock.gradle.rework.addJvmClassLoaderProperty
 
 class JvmContainerGenerator(
-    private val resourcesClassName: String,
-    private val flattenClassPackage: String
+    private val resourcesClassName: String
 ) : PlatformContainerGenerator {
     override fun getImports(): List<ClassName> {
-        return listOf(CodeConst.Jvm.classLoaderClass)
+        return listOf(CodeConst.Jvm.classLoaderName)
     }
 
     override fun generateBeforeTypes(builder: TypeSpec.Builder) {

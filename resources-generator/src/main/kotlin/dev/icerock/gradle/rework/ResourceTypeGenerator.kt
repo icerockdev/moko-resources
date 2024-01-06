@@ -72,7 +72,7 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
             // implement ResourceType<**Resource> for extensions
-            .addSuperinterface(CodeConst.resourceContainerClass.parameterizedBy(resourceClass))
+            .addSuperinterface(CodeConst.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .addSuperinterfaces(typeInterfaces.map {
                 ClassName(packageName = generationPackage, it.name)
@@ -133,17 +133,27 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
             .addModifiers(visibilityModifier)
             .addModifiers(KModifier.ACTUAL)
             // implement ResourceType<**Resource> for extensions
-            .addSuperinterface(CodeConst.resourceContainerClass.parameterizedBy(resourceClass))
+            .addSuperinterface(CodeConst.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .addSuperinterfaces(typeInterfaces.map {
                 ClassName(packageName = generationPackage, it.name)
             })
-            .also(platformResourceGenerator::generateBeforeProperties)
+            .also { builder ->
+                platformResourceGenerator.generateBeforeProperties(
+                    builder,
+                    (interfaceResources + typeObject.resources).mapNotNull { it as? T }
+                )
+            }
             // add all properties of interfaces
             .addProperties(interfaceResources.map(::createOverrideProperty))
             // add all properties of object
             .addProperties(typeObject.resources.map(::createActualProperty))
-            .also(platformResourceGenerator::generateAfterProperties)
+            .also { builder ->
+                platformResourceGenerator.generateAfterProperties(
+                    builder,
+                    (interfaceResources + typeObject.resources).mapNotNull { it as? T }
+                )
+            }
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),

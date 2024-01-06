@@ -6,19 +6,35 @@ package dev.icerock.gradle.rework
 
 import com.squareup.kotlinpoet.ClassName
 
-object CodeConst {
-    val resourceContainerClass = ClassName("dev.icerock.moko.resources", "ResourceContainer")
+internal object CodeConst {
+    val resourceContainerName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
+    val stringResourceName = ClassName("dev.icerock.moko.resources", "StringResource")
 
     object Apple {
-        val nsBundleClass = ClassName("platform.Foundation", "NSBundle")
-        val loadableBundleClass = ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
+        val nsBundleName = ClassName("platform.Foundation", "NSBundle")
+        val loadableBundleName = ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
         const val resourcesBundlePropertyName = "bundle"
         const val containerBundlePropertyName = "nsBundle"
     }
 
     object Jvm {
-        val classLoaderClass = ClassName("java.lang", "ClassLoader")
+        val classLoaderName = ClassName("java.lang", "ClassLoader")
         const val resourcesClassLoaderPropertyName = "resourcesClassLoader"
         const val localizationDir = "localization"
+    }
+
+    object Js {
+        private const val internalPackage = "dev.icerock.moko.resources.internal"
+        val supportedLocalesName = ClassName(internalPackage, "SupportedLocales")
+        val supportedLocaleName = ClassName(internalPackage, "SupportedLocale")
+        val loaderHolderName = ClassName(internalPackage, "RemoteJsStringLoaderHolder")
+
+        val stringLoaderName = ClassName(
+            "dev.icerock.moko.resources.provider", "RemoteJsStringLoader"
+        )
+        const val stringsLoaderPropertyName = "stringsLoader"
+
+        const val fallbackFilePropertyName = "fallbackFileUrl"
+        const val supportedLocalesPropertyName = "supportedLocales"
     }
 }

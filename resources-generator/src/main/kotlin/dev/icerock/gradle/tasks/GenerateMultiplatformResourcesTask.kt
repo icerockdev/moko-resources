@@ -6,6 +6,7 @@ package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.configuration.getAndroidRClassPackage
+import dev.icerock.gradle.rework.CodeConst
 import dev.icerock.gradle.rework.PlatformContainerGenerator
 import dev.icerock.gradle.rework.PlatformResourceGenerator
 import dev.icerock.gradle.rework.ResourceTypeGenerator
@@ -97,10 +98,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:InputFiles
     abstract val inputMetadataFiles: ConfigurableFileCollection
 
-    //TODO Realise
-//    @get:OutputFile
-//    abstract val generationReport: RegularFileProperty
-
     @get:OutputDirectory
     abstract val outputResourcesDir: DirectoryProperty
 
@@ -187,8 +184,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             },
             createJvm = {
                 JvmContainerGenerator(
-                    resourcesClassName = resourcesClassName.get(),
-                    flattenClassPackage = resourcesPackageName.get().flatName
+                    resourcesClassName = resourcesClassName.get()
                 )
             }
         )
@@ -197,7 +193,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createStringGenerator(): ResourceTypeGenerator<StringMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = StringResourceGenerator.className,
+            resourceClass = CodeConst.stringResourceName,
             resourceType = ResourceType.STRINGS,
             visibilityModifier = resourcesVisibility.get().toModifier(),
             generator = StringResourceGenerator(
@@ -230,6 +226,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             createJvm = {
                 JvmStringResourceGenerator(
                     flattenClassPackage = resourcesPackageName.get().flatName,
+                    className = resourcesClassName.get(),
                     resourcesGenerationDir = resourcesGenerationDir
                 )
             },

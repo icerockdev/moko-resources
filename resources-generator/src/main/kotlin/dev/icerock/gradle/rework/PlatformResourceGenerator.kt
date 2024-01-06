@@ -12,8 +12,8 @@ import dev.icerock.gradle.rework.metadata.resource.ResourceMetadata
 interface PlatformResourceGenerator<T : ResourceMetadata> {
     fun imports(): List<ClassName>
 
-    fun generateBeforeProperties(builder: TypeSpec.Builder) = Unit
-    fun generateAfterProperties(builder: TypeSpec.Builder) = Unit
+    fun generateBeforeProperties(builder: TypeSpec.Builder, metadata: List<T>) = Unit
+    fun generateAfterProperties(builder: TypeSpec.Builder, metadata: List<T>) = Unit
 
     fun generateInitializer(metadata: T): CodeBlock
     fun generateResourceFiles(data: List<T>)

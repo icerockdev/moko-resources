@@ -4,10 +4,10 @@
 
 package dev.icerock.gradle.rework.string
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.PropertySpec
 import dev.icerock.gradle.generator.EqualStringKeysException
 import dev.icerock.gradle.generator.LanguageType
+import dev.icerock.gradle.rework.CodeConst
 import dev.icerock.gradle.rework.ResourceGenerator
 import dev.icerock.gradle.rework.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.removeLineWraps
@@ -81,10 +81,6 @@ class StringResourceGenerator(
     }
 
     override fun generateProperty(metadata: StringMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, className)
-    }
-
-    companion object {
-        val className = ClassName("dev.icerock.moko.resources", "StringResource")
+        return PropertySpec.builder(metadata.key, CodeConst.stringResourceName)
     }
 }

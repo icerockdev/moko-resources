@@ -15,8 +15,8 @@ class AppleContainerGenerator(
 ) : PlatformContainerGenerator {
     override fun getImports(): List<ClassName> {
         return listOf(
-            CodeConst.Apple.nsBundleClass,
-            CodeConst.Apple.loadableBundleClass
+            CodeConst.Apple.nsBundleName,
+            CodeConst.Apple.loadableBundleName
         )
     }
 
