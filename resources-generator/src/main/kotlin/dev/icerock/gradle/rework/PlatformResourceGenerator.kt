@@ -6,10 +6,14 @@ package dev.icerock.gradle.rework
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.rework.metadata.resource.ResourceMetadata
 
-interface PlatformGenerator<T : ResourceMetadata> {
+interface PlatformResourceGenerator<T : ResourceMetadata> {
     fun imports(): List<ClassName>
+
+    fun generateBeforeProperties(builder: TypeSpec.Builder) = Unit
+    fun generateAfterProperties(builder: TypeSpec.Builder) = Unit
 
     fun generateInitializer(metadata: T): CodeBlock
     fun generateResourceFiles(data: List<T>)

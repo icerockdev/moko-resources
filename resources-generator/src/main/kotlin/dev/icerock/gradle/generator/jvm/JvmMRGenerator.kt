@@ -33,21 +33,7 @@
 //
 //    override fun processMRClass(mrClass: TypeSpec.Builder) {
 //        super.processMRClass(mrClass)
-//
-//        mrClass.addProperty(
-//            PropertySpec.builder(
-//                STRINGS_BUNDLE_PROPERTY_NAME,
-//                STRING,
-//                KModifier.PRIVATE
-//            ).initializer(
-//                CodeBlock.of(
-//                    "\"%L/%L\"",
-//                    LOCALIZATION_DIR,
-//                    "${flattenClassName}_$STRINGS_BUNDLE_NAME"
-//                )
-//            ).build()
-//        )
-//
+
 //        mrClass.addProperty(
 //            PropertySpec.builder(
 //                PLURALS_BUNDLE_PROPERTY_NAME,
@@ -79,10 +65,7 @@
 ////    }
 //
 //    companion object {
-//        const val STRINGS_BUNDLE_PROPERTY_NAME = "stringsBundle"
 //        const val PLURALS_BUNDLE_PROPERTY_NAME = "pluralsBundle"
-//        const val STRINGS_BUNDLE_NAME = "mokoBundle"
 //        const val PLURALS_BUNDLE_NAME = "mokoPluralsBundle"
-//        const val LOCALIZATION_DIR = "localization"
 //    }
 //}

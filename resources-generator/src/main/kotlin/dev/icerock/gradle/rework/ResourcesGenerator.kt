@@ -12,9 +12,11 @@ import dev.icerock.gradle.rework.metadata.container.ContainerMetadata
 import dev.icerock.gradle.rework.metadata.container.ExpectInterfaceMetadata
 import dev.icerock.gradle.rework.metadata.container.ObjectMetadata
 import dev.icerock.gradle.rework.metadata.resource.ResourceMetadata
+import dev.icerock.gradle.utils.calculateHash
 import java.io.File
 
 class ResourcesGenerator(
+    private val containerGenerator: PlatformContainerGenerator,
     private val typesGenerators: List<ResourceTypeGenerator<*>>,
     private val resourcesPackageName: String,
     private val resourcesClassName: String,
@@ -96,17 +98,26 @@ class ResourcesGenerator(
                         (actualInterfaces + dummyInterfaces).map { it.metadata as ActualInterfaceMetadata }
             )
         }
+        objects.forEach { outputMetadata.add(it.metadata) }
 
         val objectSpec: TypeSpec.Builder =
             TypeSpec.objectBuilder(resourcesClassName) // default: object MR
                 .addModifiers(KModifier.ACTUAL)
                 .addModifiers(visibilityModifier)
-        // TODO here should be added extra properties for platforms
 
-        objects.forEach { result ->
-            objectSpec.addType(result.typeSpec)
-            outputMetadata.add(result.metadata)
-        }
+        containerGenerator.getImports()
+            .plus(typesGenerators.flatMap { it.getImports() })
+            .forEach { fileSpec.addImport(it.packageName, it.simpleNames) }
+
+        val contentHash: String = (inputMetadata + outputMetadata).mapNotNull { it.contentHash() }
+            .calculateHash()
+        objectSpec.addContentHashProperty(contentHash)
+
+        objectSpec.also(containerGenerator::generateBeforeTypes)
+
+        objects.forEach { objectSpec.addType(it.typeSpec) }
+
+        objectSpec.also(containerGenerator::generateAfterTypes)
 
         fileSpec.addType(objectSpec.build())
 

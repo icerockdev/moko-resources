@@ -6,8 +6,11 @@ package dev.icerock.gradle.rework.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.LanguageType
-import dev.icerock.gradle.rework.PlatformGenerator
+import dev.icerock.gradle.rework.CodeConst
+import dev.icerock.gradle.rework.PlatformResourceGenerator
+import dev.icerock.gradle.rework.addAppleContainerBundleProperty
 import dev.icerock.gradle.rework.metadata.resource.StringMetadata
 import org.apache.commons.text.StringEscapeUtils
 import java.io.File
@@ -15,15 +18,14 @@ import java.io.File
 class AppleStringResourceGenerator(
     private val baseLocalizationRegion: String,
     private val resourcesGenerationDir: File
-) : PlatformGenerator<StringMetadata> {
+) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: StringMetadata): CodeBlock {
         return CodeBlock.of(
             "StringResource(resourceId = %S, bundle = %L)",
             metadata.key,
-            // TODO change to const
-            "nsBundle"
+            CodeConst.Apple.containerBundlePropertyName
         )
     }
 
@@ -54,6 +56,10 @@ class AppleStringResourceGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
+    }
+
+    override fun generateBeforeProperties(builder: TypeSpec.Builder) {
+        builder.addAppleContainerBundleProperty()
     }
 
     // TODO should we do that?

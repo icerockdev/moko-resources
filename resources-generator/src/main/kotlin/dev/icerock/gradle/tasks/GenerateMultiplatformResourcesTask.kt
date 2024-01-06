@@ -6,10 +6,14 @@ package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.configuration.getAndroidRClassPackage
-import dev.icerock.gradle.rework.PlatformGenerator
+import dev.icerock.gradle.rework.PlatformContainerGenerator
+import dev.icerock.gradle.rework.PlatformResourceGenerator
 import dev.icerock.gradle.rework.ResourceTypeGenerator
 import dev.icerock.gradle.rework.ResourcesFiles
 import dev.icerock.gradle.rework.ResourcesGenerator
+import dev.icerock.gradle.rework.container.AppleContainerGenerator
+import dev.icerock.gradle.rework.container.JvmContainerGenerator
+import dev.icerock.gradle.rework.container.NOPContainerGenerator
 import dev.icerock.gradle.rework.metadata.container.ContainerMetadata
 import dev.icerock.gradle.rework.metadata.container.ObjectMetadata
 import dev.icerock.gradle.rework.metadata.container.ResourceType
@@ -21,6 +25,7 @@ import dev.icerock.gradle.rework.string.JvmStringResourceGenerator
 import dev.icerock.gradle.rework.string.NOPStringResourceGenerator
 import dev.icerock.gradle.rework.string.StringResourceGenerator
 import dev.icerock.gradle.toModifier
+import dev.icerock.gradle.utils.flatName
 import dev.icerock.gradle.utils.isStrictLineBreaks
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -158,6 +163,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     private fun createGenerator(): ResourcesGenerator {
         return ResourcesGenerator(
+            containerGenerator = createPlatformContainerGenerator(),
             typesGenerators = listOf(
                 createStringGenerator()
             ),
@@ -166,6 +172,25 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             sourceSetName = sourceSetName.get(),
             visibilityModifier = resourcesVisibility.get().toModifier(),
             sourcesGenerationDir = outputSourcesDir.get().asFile
+        )
+    }
+
+    private fun createPlatformContainerGenerator(): PlatformContainerGenerator {
+        return createByPlatform(
+            createCommon = { NOPContainerGenerator() },
+            createAndroid = { NOPContainerGenerator() },
+            createJs = { NOPContainerGenerator() },
+            createApple = {
+                AppleContainerGenerator(
+                    bundleIdentifier = "${resourcesPackageName.get()}.MR"
+                )
+            },
+            createJvm = {
+                JvmContainerGenerator(
+                    resourcesClassName = resourcesClassName.get(),
+                    flattenClassPackage = resourcesPackageName.get().flatName
+                )
+            }
         )
     }
 
@@ -178,16 +203,17 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             generator = StringResourceGenerator(
                 strictLineBreaks = project.isStrictLineBreaks
             ),
-            platformGenerator = createPlatformStringGenerator(),
+            platformResourceGenerator = createPlatformStringGenerator(),
             filter = { include("**/strings*.xml") }
         )
     }
 
     private fun getAndroidR(): String = project.getAndroidRClassPackage().get()
 
-    private fun createPlatformStringGenerator(): PlatformGenerator<StringMetadata> {
+    private fun createPlatformStringGenerator(): PlatformResourceGenerator<StringMetadata> {
         val resourcesGenerationDir: File = outputResourcesDir.get().asFile
         return createByPlatform(
+            // TODO find way to remove this NOP
             createCommon = { NOPStringResourceGenerator() },
             createAndroid = {
                 AndroidStringResourceGenerator(
@@ -203,7 +229,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             },
             createJvm = {
                 JvmStringResourceGenerator(
-                    resourcesPackageName = resourcesPackageName.get(),
+                    flattenClassPackage = resourcesPackageName.get().flatName,
                     resourcesGenerationDir = resourcesGenerationDir
                 )
             },

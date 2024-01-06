@@ -23,12 +23,14 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
     private val resourceType: ResourceType,
     private val visibilityModifier: KModifier,
     private val generator: ResourceGenerator<T>,
-    private val platformGenerator: PlatformGenerator<T>,
+    private val platformResourceGenerator: PlatformResourceGenerator<T>,
     private val filter: PatternFilterable.() -> Unit
 ) {
     fun generateMetadata(files: ResourcesFiles): List<T> {
         return generator.generateMetadata(files.matching(filter).ownSourceSet.fileTree.files)
     }
+
+    fun getImports(): List<ClassName> = platformResourceGenerator.imports()
 
     fun generateExpectInterfaces(files: ResourcesFiles): List<GenerationResult> {
         // we should generate expect interface only if we have resources of our type upper
@@ -70,7 +72,7 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
             // implement ResourceType<**Resource> for extensions
-            .addSuperinterface(resourceContainerClass.parameterizedBy(resourceClass))
+            .addSuperinterface(CodeConst.resourceContainerClass.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .addSuperinterfaces(typeInterfaces.map {
                 ClassName(packageName = generationPackage, it.name)
@@ -131,15 +133,17 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
             .addModifiers(visibilityModifier)
             .addModifiers(KModifier.ACTUAL)
             // implement ResourceType<**Resource> for extensions
-            .addSuperinterface(resourceContainerClass.parameterizedBy(resourceClass))
+            .addSuperinterface(CodeConst.resourceContainerClass.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .addSuperinterfaces(typeInterfaces.map {
                 ClassName(packageName = generationPackage, it.name)
             })
-            // add all properties of object
-            .addProperties(typeObject.resources.map(::createActualProperty))
+            .also(platformResourceGenerator::generateBeforeProperties)
             // add all properties of interfaces
             .addProperties(interfaceResources.map(::createOverrideProperty))
+            // add all properties of object
+            .addProperties(typeObject.resources.map(::createActualProperty))
+            .also(platformResourceGenerator::generateAfterProperties)
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
@@ -156,7 +160,7 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
         @Suppress("UNCHECKED_CAST")
         val typeMetadata: List<T> = resources.mapNotNull { it as? T }
 
-        platformGenerator.generateResourceFiles(typeMetadata)
+        platformResourceGenerator.generateResourceFiles(typeMetadata)
     }
 
     private fun createActualProperty(resource: ResourceMetadata): PropertySpec {
@@ -173,11 +177,7 @@ class ResourceTypeGenerator<T : ResourceMetadata>(
 
         return generator.generateProperty(resource)
             .addModifiers(modifier)
-            .initializer(platformGenerator.generateInitializer(resource))
+            .initializer(platformResourceGenerator.generateInitializer(resource))
             .build()
-    }
-
-    private companion object {
-        val resourceContainerClass = ClassName("dev.icerock.moko.resources", "ResourceContainer")
     }
 }

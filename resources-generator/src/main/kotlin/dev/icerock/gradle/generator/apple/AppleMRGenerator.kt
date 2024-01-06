@@ -24,33 +24,6 @@
 //    settings = settings,
 //    generators = generators
 //) {
-//    private val bundleClassName = ClassName("platform.Foundation", "NSBundle")
-//    private val bundleIdentifier = "${settings.packageName}.MR"
-//
-//    override fun processMRClass(mrClass: TypeSpec.Builder) {
-//        super.processMRClass(mrClass)
-//
-//        mrClass.addProperty(
-//            PropertySpec.builder(
-//                BUNDLE_PROPERTY_NAME,
-//                bundleClassName,
-//                KModifier.PRIVATE
-//            )
-//                .delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(\"${bundleIdentifier}\") }"))
-//                .build()
-//        )
-//
-//        mrClass.addProperty(
-//            PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
-//                .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
-//                .build()
-//        )
-//    }
-//
-//    override fun getImports(): List<ClassName> = listOf(
-//        bundleClassName,
-//        ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
-//    )
 //
 //    override fun beforeMRGeneration() {
 //        assetsGenerationDir.mkdirs()

@@ -6,28 +6,28 @@ package dev.icerock.gradle.rework.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.LanguageType
-import dev.icerock.gradle.rework.PlatformGenerator
+import dev.icerock.gradle.rework.CodeConst
+import dev.icerock.gradle.rework.PlatformResourceGenerator
 import dev.icerock.gradle.rework.metadata.resource.StringMetadata
-import dev.icerock.gradle.utils.flatName
 import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 
 class JvmStringResourceGenerator(
-    resourcesPackageName: String,
+    private val flattenClassPackage: String,
     private val resourcesGenerationDir: File
-) : PlatformGenerator<StringMetadata> {
-    private val flattenClassPackage: String = resourcesPackageName.flatName
-
+) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
-    // TODO we should add resourcesClassLoader to MR object
-    // TODO we should add stringsBundle to MR object
     override fun generateInitializer(metadata: StringMetadata): CodeBlock {
         return CodeBlock.of(
             "StringResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
-            "resourcesClassLoader",
-            STRINGS_BUNDLE_PROPERTY_NAME,
+            CodeConst.Jvm.resourcesClassLoaderPropertyName,
+            stringsBundlePropertyName,
             metadata.key
         )
     }
@@ -41,11 +41,21 @@ class JvmStringResourceGenerator(
         }
     }
 
-    private fun generateLanguageFile(language: LanguageType, strings: Map<String, String>) {
-        val fileDirName =
-            "${flattenClassPackage}_${STRINGS_BUNDLE_NAME}${language.jvmResourcesSuffix}"
+    override fun generateBeforeProperties(builder: TypeSpec.Builder) {
+        val property: PropertySpec = PropertySpec.builder(
+            stringsBundlePropertyName,
+            STRING,
+            KModifier.PRIVATE
+        ).initializer(CodeBlock.of("\"%L/%L\"", CodeConst.Jvm.localizationDir, getBundlePath()))
+            .build()
 
-        val localizationDir = File(resourcesGenerationDir, LOCALIZATION_DIR)
+        builder.addProperty(property)
+    }
+
+    private fun generateLanguageFile(language: LanguageType, strings: Map<String, String>) {
+        val fileDirName = "${getBundlePath()}${language.jvmResourcesSuffix}"
+
+        val localizationDir = File(resourcesGenerationDir, CodeConst.Jvm.localizationDir)
         localizationDir.mkdirs()
 
         val stringsFile = File(localizationDir, "$fileDirName.properties")
@@ -57,6 +67,8 @@ class JvmStringResourceGenerator(
         stringsFile.writeText(content)
     }
 
+    private fun getBundlePath(): String = "${flattenClassPackage}_${stringsBundleName}"
+
     // TODO should we do that?
     private fun convertXmlStringToJvmLocalization(input: String): String {
         return StringEscapeUtils.unescapeXml(input)
@@ -64,10 +76,8 @@ class JvmStringResourceGenerator(
             .replace("\"", "\\\"")
     }
 
-    // TODO share const
     private companion object {
-        const val STRINGS_BUNDLE_PROPERTY_NAME = "stringsBundle"
-        const val STRINGS_BUNDLE_NAME = "mokoBundle"
-        const val LOCALIZATION_DIR = "localization"
+        const val stringsBundlePropertyName = "stringsBundle"
+        const val stringsBundleName = "mokoBundle"
     }
 }

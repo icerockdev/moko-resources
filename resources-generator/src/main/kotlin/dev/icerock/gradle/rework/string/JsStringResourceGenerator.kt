@@ -6,9 +6,10 @@ package dev.icerock.gradle.rework.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.LanguageType
 import dev.icerock.gradle.generator.js.convertToMessageFormat
-import dev.icerock.gradle.rework.PlatformGenerator
+import dev.icerock.gradle.rework.PlatformResourceGenerator
 import dev.icerock.gradle.rework.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.flatName
 import kotlinx.serialization.json.buildJsonObject
@@ -22,7 +23,7 @@ import java.io.File
 class JsStringResourceGenerator(
     resourcesPackageName: String,
     private val resourcesGenerationDir: File
-) : PlatformGenerator<StringMetadata> {
+) : PlatformResourceGenerator<StringMetadata> {
     private val flattenClassPackage: String = resourcesPackageName.flatName
 
     override fun imports(): List<ClassName> = emptyList()
@@ -62,6 +63,14 @@ class JsStringResourceGenerator(
         }.toString()
 
         stringsFile.writeText(content)
+    }
+
+    override fun generateBeforeProperties(builder: TypeSpec.Builder) {
+        super.generateBeforeProperties(builder)
+    }
+
+    override fun generateAfterProperties(builder: TypeSpec.Builder) {
+        super.generateAfterProperties(builder)
     }
 
     // TODO share const

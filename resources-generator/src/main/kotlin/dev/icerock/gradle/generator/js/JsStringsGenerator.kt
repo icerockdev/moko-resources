@@ -30,18 +30,7 @@
 //    resourcesFileTree = resourcesFileTree,
 //    strictLineBreaks = strictLineBreaks
 //),
-//    ObjectBodyExtendable by NOPObjectBodyExtendable() {
-//
-//    private val flattenClassPackage = mrClassPackage.flatName
-//
-//    override fun getClassModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-//
-//    override fun getPropertyModifiers(): Array<KModifier> = arrayOf(KModifier.ACTUAL)
-//
-//    override fun getPropertyInitializer(key: String): CodeBlock {
-//        return CodeBlock.of("StringResource(key = %S, loader = stringsLoader)", key)
-//    }
-//
+
 //    override fun beforeGenerateResources(
 //        objectBuilder: TypeSpec.Builder,
 //        languageMap: Map<LanguageType, Map<KeyType, String>>
@@ -70,30 +59,7 @@
 //                .build()
 //        )
 //    }
-//
-//    override fun generateResources(
-//        resourcesGenerationDir: File,
-//        language: LanguageType,
-//        strings: Map<KeyType, String>
-//    ) {
-//        val fileDirName =
-//            "${flattenClassPackage}_${STRINGS_JSON_NAME}${language.jsResourcesSuffix}"
-//
-//        val localizationDir = File(resourcesGenerationDir, JsMRGenerator.LOCALIZATION_DIR).apply {
-//            mkdirs()
-//        }
-//
-//        val stringsFile = File(localizationDir, "$fileDirName.json")
-//
-//        val content = buildJsonObject {
-//            strings.forEach { (key, value) ->
-//                put(key, value.convertToMessageFormat())
-//            }
-//        }.toString()
-//
-//        stringsFile.writeText(content)
-//    }
-//
+
 //    companion object {
 //        const val STRINGS_JSON_NAME = "stringsJson"
 //        const val STRINGS_FALLBACK_FILE_URL_PROPERTY_NAME = "stringsFallbackFileUrl"

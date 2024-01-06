@@ -6,10 +6,10 @@ package dev.icerock.gradle.rework.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import dev.icerock.gradle.rework.PlatformGenerator
+import dev.icerock.gradle.rework.PlatformResourceGenerator
 import dev.icerock.gradle.rework.metadata.resource.StringMetadata
 
-class NOPStringResourceGenerator : PlatformGenerator<StringMetadata> {
+class NOPStringResourceGenerator : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> {
         TODO("Not yet implemented")
     }

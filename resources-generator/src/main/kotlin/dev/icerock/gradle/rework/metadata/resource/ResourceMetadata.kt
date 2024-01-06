@@ -7,6 +7,8 @@
 package dev.icerock.gradle.rework.metadata.resource
 
 import dev.icerock.gradle.rework.serialization.FileSerializer
+import dev.icerock.gradle.utils.calculateHash
+import dev.icerock.gradle.utils.calculateResourcesHash
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import java.io.File
@@ -14,6 +16,8 @@ import java.io.File
 @Serializable
 sealed interface ResourceMetadata {
     val key: String
+
+    fun contentHash(): String?
 }
 
 @Serializable
@@ -26,6 +30,8 @@ data class StringMetadata(
         val locale: String,
         val value: String
     )
+
+    override fun contentHash(): String = values.hashCode().toString(16)
 }
 
 @Serializable
@@ -48,6 +54,8 @@ data class PluralMetadata(
             ZERO, ONE, TWO, FEW, MANY, OTHER;
         }
     }
+
+    override fun contentHash(): String = values.hashCode().toString(16)
 }
 
 @Serializable
@@ -60,6 +68,9 @@ data class ImageMetadata(
         val quality: Int,
         val filePath: File
     )
+
+    override fun contentHash(): String = values.map { it.filePath.calculateResourcesHash() }
+        .calculateHash()
 }
 
 @Serializable
@@ -72,13 +83,19 @@ data class FontMetadata(
         val family: String,
         val filePath: File
     )
+
+    override fun contentHash(): String = values.map { it.filePath.calculateResourcesHash() }
+        .calculateHash()
 }
 
 @Serializable
 data class FileMetadata(
     override val key: String,
     val filePath: File
-) : ResourceMetadata
+) : ResourceMetadata {
+
+    override fun contentHash(): String = filePath.calculateResourcesHash()
+}
 
 @Serializable
 data class ColorMetadata(
@@ -104,6 +121,8 @@ data class ColorMetadata(
         val blue: Int,
         val alpha: Int
     )
+
+    override fun contentHash(): String = value.hashCode().toString(16)
 }
 
 @Serializable
@@ -111,4 +130,6 @@ data class AssetsMetadata(
     override val key: String,
     val relativePath: File,
     val filePath: File
-) : ResourceMetadata
+) : ResourceMetadata {
+    override fun contentHash(): String = filePath.calculateResourcesHash()
+}

@@ -32,12 +32,6 @@
 //    override val resourcesGenerationDir: File = settings.resourcesDir.asFile
 //
 //    override fun processMRClass(mrClass: TypeSpec.Builder) {
-//        mrClass.addProperty(
-//            PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
-//                .initializer("%S", resourcesGenerationDir.calculateResourcesHash())
-//                .build()
-//        )
-//
 //        val stringsLoaderInitializer = buildList {
 //            val stringsObjectLoader = mrClass
 //                .typeSpecs

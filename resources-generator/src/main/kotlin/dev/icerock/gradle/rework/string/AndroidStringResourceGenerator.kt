@@ -7,7 +7,7 @@ package dev.icerock.gradle.rework.string
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import dev.icerock.gradle.generator.LanguageType
-import dev.icerock.gradle.rework.PlatformGenerator
+import dev.icerock.gradle.rework.PlatformResourceGenerator
 import dev.icerock.gradle.rework.metadata.resource.StringMetadata
 import org.apache.commons.text.StringEscapeUtils
 import java.io.File
@@ -15,7 +15,7 @@ import java.io.File
 class AndroidStringResourceGenerator(
     private val androidRClassPackage: String,
     private val resourcesGenerationDir: File
-) : PlatformGenerator<StringMetadata> {
+) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
     )
