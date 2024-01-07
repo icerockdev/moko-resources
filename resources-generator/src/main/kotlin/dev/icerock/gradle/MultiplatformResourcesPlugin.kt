@@ -6,6 +6,7 @@ package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import dev.icerock.gradle.generator.apple.setupAppleKLibResources
 import dev.icerock.gradle.generator.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.apple.setupFrameworkResources
@@ -234,6 +235,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         @Suppress("DEPRECATION")
         val androidVariant: BaseVariant = compilation.androidVariant
         androidVariant.preBuildProvider.configure { it.dependsOn(genTaskProvider) }
+
+        // TODO this way do more than required - we trigger generate all android related resources at all
+        project.tasks.withType<AndroidLintAnalysisTask>().configureEach {
+            it.logger.warn("${it.name} depends on $genTaskProvider")
+            it.dependsOn(genTaskProvider)
+        }
     }
 
     private fun setupAppleTasks(
@@ -359,17 +366,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 resourceTask.inputMetadataFiles.from(dependsGenTask.flatMap { it.outputMetadataFile })
             }
         }
-    }
-}
-
-private fun KotlinSourceSet.whenDependsOn(sourceSetName: String, action: () -> Unit) {
-    if (this.name == sourceSetName) {
-        action()
-    }
-
-    dependsOnObservable.forAll { dependencySourceSet ->
-        if (dependencySourceSet.name == sourceSetName) action()
-        else dependencySourceSet.whenDependsOn(sourceSetName, action)
     }
 }
 

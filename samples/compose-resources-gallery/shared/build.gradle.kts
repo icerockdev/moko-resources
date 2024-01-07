@@ -93,6 +93,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    lint {
+        disable.add("MissingTranslation")
+    }
+
     namespace = "com.myapplication.common"
 }
 
