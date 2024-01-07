@@ -238,7 +238,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 
         // TODO this way do more than required - we trigger generate all android related resources at all
         project.tasks.withType<AndroidLintAnalysisTask>().configureEach {
-            it.logger.warn("${it.name} depends on $genTaskProvider")
             it.dependsOn(genTaskProvider)
         }
     }
