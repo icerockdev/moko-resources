@@ -14,6 +14,12 @@ import dev.icerock.gradle.generator.ResourcesGenerator
 import dev.icerock.gradle.generator.container.AppleContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
+import dev.icerock.gradle.generator.plural.AndroidPluralResourceGenerator
+import dev.icerock.gradle.generator.plural.ApplePluralResourceGenerator
+import dev.icerock.gradle.generator.plural.JsPluralResourceGenerator
+import dev.icerock.gradle.generator.plural.JvmPluralResourceGenerator
+import dev.icerock.gradle.generator.plural.NOPPluralResourceGenerator
+import dev.icerock.gradle.generator.plural.PluralResourceGenerator
 import dev.icerock.gradle.generator.string.AndroidStringResourceGenerator
 import dev.icerock.gradle.generator.string.AppleStringResourceGenerator
 import dev.icerock.gradle.generator.string.JsStringResourceGenerator
@@ -23,6 +29,7 @@ import dev.icerock.gradle.generator.string.StringResourceGenerator
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
+import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.flatName
@@ -160,7 +167,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         return ResourcesGenerator(
             containerGenerator = createPlatformContainerGenerator(),
             typesGenerators = listOf(
-                createStringGenerator()
+                createStringGenerator(),
+                createPluralsGenerator()
             ),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
@@ -193,12 +201,61 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             generationPackage = resourcesPackageName.get(),
             resourceClass = CodeConst.stringResourceName,
             resourceType = ResourceType.STRINGS,
+            metadataClass = StringMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
             generator = StringResourceGenerator(
                 strictLineBreaks = project.isStrictLineBreaks
             ),
             platformResourceGenerator = createPlatformStringGenerator(),
             filter = { include("**/strings*.xml") }
+        )
+    }
+
+    private fun createPluralsGenerator(): ResourceTypeGenerator<PluralMetadata> {
+        return ResourceTypeGenerator(
+            generationPackage = resourcesPackageName.get(),
+            resourceClass = CodeConst.pluralsResourceName,
+            resourceType = ResourceType.PLURALS,
+            metadataClass = PluralMetadata::class,
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            generator = PluralResourceGenerator(
+                strictLineBreaks = project.isStrictLineBreaks
+            ),
+            platformResourceGenerator = createPlatformPluralGenerator(),
+            filter = { include("**/plurals*.xml") }
+        )
+    }
+
+    private fun createPlatformPluralGenerator(): PlatformResourceGenerator<PluralMetadata> {
+        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
+        return createByPlatform(
+            // TODO find way to remove this NOP
+            createCommon = { NOPPluralResourceGenerator() },
+            createAndroid = {
+                AndroidPluralResourceGenerator(
+                    androidRClassPackage = getAndroidR(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createApple = {
+                ApplePluralResourceGenerator(
+                    baseLocalizationRegion = iosBaseLocalizationRegion.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJvm = {
+                JvmPluralResourceGenerator(
+                    flattenClassPackage = resourcesPackageName.get().flatName,
+                    className = resourcesClassName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJs = {
+                JsPluralResourceGenerator(
+                    resourcesPackageName = resourcesPackageName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            }
         )
     }
 

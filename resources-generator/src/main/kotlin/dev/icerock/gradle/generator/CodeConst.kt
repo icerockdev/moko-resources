@@ -9,6 +9,7 @@ import com.squareup.kotlinpoet.ClassName
 internal object CodeConst {
     val resourceContainerName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
     val stringResourceName = ClassName("dev.icerock.moko.resources", "StringResource")
+    val pluralsResourceName = ClassName("dev.icerock.moko.resources", "PluralsResource")
 
     object Apple {
         val nsBundleName = ClassName("platform.Foundation", "NSBundle")

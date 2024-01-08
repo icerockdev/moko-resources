@@ -15,6 +15,7 @@ import java.io.File
 
 @Serializable
 internal sealed interface ResourceMetadata {
+    // TODO validate key at create
     val key: String
 
     fun contentHash(): String?
@@ -52,6 +53,7 @@ internal data class PluralMetadata(
     ) {
         enum class Quantity {
             ZERO, ONE, TWO, FEW, MANY, OTHER;
+
         }
     }
 

@@ -38,6 +38,13 @@ internal class AppleStringResourceGenerator(
         }
     }
 
+    override fun generateBeforeProperties(
+        builder: TypeSpec.Builder,
+        metadata: List<StringMetadata>
+    ) {
+        builder.addAppleContainerBundleProperty()
+    }
+
     private fun generateLanguageFile(language: LanguageType, strings: Map<String, String>) {
         val resDir = File(resourcesGenerationDir, language.appleResourcesDir)
         val localizableFile = File(resDir, "Localizable.strings")
@@ -56,13 +63,6 @@ internal class AppleStringResourceGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
-    }
-
-    override fun generateBeforeProperties(
-        builder: TypeSpec.Builder,
-        metadata: List<StringMetadata>
-    ) {
-        builder.addAppleContainerBundleProperty()
     }
 
     // TODO should we do that?

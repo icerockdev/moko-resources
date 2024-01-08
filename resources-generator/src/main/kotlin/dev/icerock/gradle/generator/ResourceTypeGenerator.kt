@@ -15,12 +15,15 @@ import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.capitalize
+import dev.icerock.gradle.utils.filterClass
 import org.gradle.api.tasks.util.PatternFilterable
+import kotlin.reflect.KClass
 
 internal class ResourceTypeGenerator<T : ResourceMetadata>(
     private val generationPackage: String,
     private val resourceClass: ClassName,
     private val resourceType: ResourceType,
+    private val metadataClass: KClass<T>,
     private val visibilityModifier: KModifier,
     private val generator: ResourceGenerator<T>,
     private val platformResourceGenerator: PlatformResourceGenerator<T>,
@@ -58,8 +61,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         metadata: List<ResourceMetadata>,
         interfaces: List<ExpectInterfaceMetadata>
     ): GenerationResult? {
-        @Suppress("UNCHECKED_CAST")
-        val typeMetadata: List<T> = metadata.mapNotNull { it as? T }
+        val typeMetadata: List<T> = metadata.filterClass(typeClass = metadataClass)
         val typeInterfaces: List<ExpectInterfaceMetadata> = interfaces
             .filter { it.resourceType == resourceType }
 
@@ -96,8 +98,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         metadata: List<ResourceMetadata>,
         sourceSet: String
     ): GenerationResult? {
-        @Suppress("UNCHECKED_CAST")
-        val typeMetadata: List<T> = metadata.mapNotNull { it as? T }
+        val typeMetadata: List<T> = metadata.filterClass(typeClass = metadataClass)
         val typeInterface: ExpectInterfaceMetadata = interfaces
             .filter { it.resourceType == resourceType }
             .singleOrNull { it.sourceSet == sourceSet }
@@ -126,7 +127,12 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         val typeInterfaces: List<ActualInterfaceMetadata> = interfaces
             .filter { typeObject.interfaces.contains(it.name) }
 
-        val interfaceResources: List<ResourceMetadata> = typeInterfaces.flatMap { it.resources }
+        val interfaceResources: List<T> = typeInterfaces
+            .flatMap { it.resources }
+            .filterClass(metadataClass)
+
+        val typeResources: List<T> = typeObject.resources.filterClass(metadataClass)
+        val resources: List<T> = (interfaceResources + typeResources)
 
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(typeObject.name)
@@ -139,20 +145,14 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 ClassName(packageName = generationPackage, it.name)
             })
             .also { builder ->
-                platformResourceGenerator.generateBeforeProperties(
-                    builder,
-                    (interfaceResources + typeObject.resources).mapNotNull { it as? T }
-                )
+                platformResourceGenerator.generateBeforeProperties(builder, resources)
             }
             // add all properties of interfaces
             .addProperties(interfaceResources.map(::createOverrideProperty))
             // add all properties of object
-            .addProperties(typeObject.resources.map(::createActualProperty))
+            .addProperties(typeResources.map(::createActualProperty))
             .also { builder ->
-                platformResourceGenerator.generateAfterProperties(
-                    builder,
-                    (interfaceResources + typeObject.resources).mapNotNull { it as? T }
-                )
+                platformResourceGenerator.generateAfterProperties(builder, resources)
             }
 
         return GenerationResult(
@@ -169,7 +169,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     fun generateObject(
         metadata: List<ResourceMetadata>
     ): GenerationResult? {
-        val typeResources: List<T> = metadata.mapNotNull { it as? T }
+        val typeResources: List<T> = metadata.filterClass(metadataClass)
         if (typeResources.isEmpty()) return null
 
         val objectName: String = resourceType.name.lowercase()
@@ -201,31 +201,27 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     }
 
     fun generateFiles(resources: List<ResourceMetadata>) {
-        @Suppress("UNCHECKED_CAST")
-        val typeMetadata: List<T> = resources.mapNotNull { it as? T }
+        val typeMetadata: List<T> = resources.filterClass(metadataClass)
 
         platformResourceGenerator.generateResourceFiles(typeMetadata)
     }
 
-    private fun createSimpleProperty(resource: ResourceMetadata): PropertySpec {
+    private fun createSimpleProperty(resource: T): PropertySpec {
         return createProperty(resource)
     }
 
-    private fun createActualProperty(resource: ResourceMetadata): PropertySpec {
+    private fun createActualProperty(resource: T): PropertySpec {
         return createProperty(resource, KModifier.ACTUAL)
     }
 
-    private fun createOverrideProperty(resource: ResourceMetadata): PropertySpec {
+    private fun createOverrideProperty(resource: T): PropertySpec {
         return createProperty(resource, KModifier.OVERRIDE)
     }
 
     private fun createProperty(
-        resource: ResourceMetadata,
+        resource: T,
         modifier: KModifier? = null
     ): PropertySpec {
-        @Suppress("UNCHECKED_CAST")
-        resource as T
-
         return generator.generateProperty(resource)
             .apply {
                 if (modifier != null) addModifiers(modifier)

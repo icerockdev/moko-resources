@@ -18,20 +18,3 @@
 ////                it.dependsOn(generationTask)
 ////            }
 ////    }
-
-//            val generatorType: GeneratorType =
-//                if (file.path.matches(StringsGenerator.STRINGS_REGEX)) {
-//                    GeneratorType.Strings
-//                } else if (file.path.matches(PluralsGenerator.PLURALS_REGEX)) {
-//                    GeneratorType.Plurals
-//                } else if (file.path.matches(ColorsGenerator.COLORS_REGEX)) {
-//                    GeneratorType.Colors
-//                } else if (file.parentFile.name == "images") {
-//                    GeneratorType.Images
-//                } else if (file.parentFile.name == "files") {
-//                    GeneratorType.Files
-//                } else if (file.parentFile.name == "fonts") {
-//                    GeneratorType.Fonts
-//                } else if (file.path.matches(AssetsGenerator.ASSETS_REGEX)) {
-//                    GeneratorType.Assets
-//                } else return@mapNotNull null

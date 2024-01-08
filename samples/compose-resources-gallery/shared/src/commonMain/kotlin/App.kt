@@ -64,14 +64,14 @@ internal fun App() {
                 onValueChange = { text = it }
             )
 
-//            val counter: Int = text.length
-//            Text(
-//                modifier = Modifier.fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                text = stringResource(MR.plurals.chars_count, counter, counter),
+            val counter: Int = text.length
+            Text(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                text = stringResource(MR.plurals.chars_count, counter, counter),
 //                color = colorResource(MR.colors.textColor),
 //                fontFamily = fontFamilyResource(MR.fonts.cormorant.italic)
-//            )
+            )
 
             Button(onClick = { text = "Hello, ${getPlatformName()}" }) {
                 Text(text = stringResource(MR.strings.hello_world))

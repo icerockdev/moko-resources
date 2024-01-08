@@ -41,9 +41,7 @@ internal class ResourcesGenerator(
 
         val outputMetadata: MutableList<ContainerMetadata> = mutableListOf()
 
-        val inputObject: ObjectMetadata? = inputMetadata.mapNotNull { it as? ObjectMetadata }
-            .singleOrNull()
-        if (inputObject == null) {
+        if (inputMetadata.isEmpty()) {
             // we not have expect - we should generate simple object
             val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
                 typeGenerator.generateObject(ownMetadata)
@@ -58,7 +56,8 @@ internal class ResourcesGenerator(
                 .plus(typesGenerators.flatMap { it.getImports() })
                 .forEach { fileSpec.addImport(it.packageName, it.simpleNames) }
 
-            val contentHash: String = (inputMetadata + outputMetadata).mapNotNull { it.contentHash() }
+            val contentHash: String = (inputMetadata + outputMetadata)
+                .mapNotNull { it.contentHash() }
                 .calculateHash()
             objectSpec.addContentHashProperty(contentHash)
 
@@ -84,13 +83,18 @@ internal class ResourcesGenerator(
                 .map { it.name }
 
             // then we should generate actual interfaces with resources at our level
-            val actualInterfaces: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
-                typeGenerator.generateActualInterface(
-                    interfaces = expectInterfaces.filterNot { alreadyActualInterfaces.contains(it.name) },
-                    metadata = ownMetadata,
-                    sourceSet = sourceSetName
-                )
-            }
+            val actualInterfaces: List<GenerationResult> =
+                typesGenerators.mapNotNull { typeGenerator ->
+                    typeGenerator.generateActualInterface(
+                        interfaces = expectInterfaces.filterNot {
+                            alreadyActualInterfaces.contains(
+                                it.name
+                            )
+                        },
+                        metadata = ownMetadata,
+                        sourceSet = sourceSetName
+                    )
+                }
 
             actualInterfaces.forEach { result ->
                 fileSpec.addType(result.typeSpec)
@@ -99,7 +103,8 @@ internal class ResourcesGenerator(
 
             // then we should generate dummy actual interfaces
             val dummyInterfaces: List<GenerationResult> = expectInterfaces.map { it.name }
-                .minus(actualInterfaces.map { (it.metadata as ActualInterfaceMetadata).name }.toSet())
+                .minus(actualInterfaces.map { (it.metadata as ActualInterfaceMetadata).name }
+                    .toSet())
                 .map { dummyInterfaceName ->
                     GenerationResult(
                         typeSpec = TypeSpec.interfaceBuilder(dummyInterfaceName)
@@ -138,8 +143,9 @@ internal class ResourcesGenerator(
                 .plus(typesGenerators.flatMap { it.getImports() })
                 .forEach { fileSpec.addImport(it.packageName, it.simpleNames) }
 
-            val contentHash: String = (inputMetadata + outputMetadata).mapNotNull { it.contentHash() }
-                .calculateHash()
+            val contentHash: String =
+                (inputMetadata + outputMetadata).mapNotNull { it.contentHash() }
+                    .calculateHash()
             objectSpec.addContentHashProperty(contentHash)
 
             objectSpec.also(containerGenerator::generateBeforeTypes)

@@ -2,7 +2,7 @@
  * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.string
+package dev.icerock.gradle.generator.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -13,27 +13,27 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.CodeConst
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.localization.LanguageType
-import dev.icerock.gradle.metadata.resource.StringMetadata
+import dev.icerock.gradle.metadata.resource.PluralMetadata
 import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 
-internal class JvmStringResourceGenerator(
+internal class JvmPluralResourceGenerator(
     private val flattenClassPackage: String,
     private val className: String,
     private val resourcesGenerationDir: File
-) : PlatformResourceGenerator<StringMetadata> {
+) : PlatformResourceGenerator<PluralMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
-    override fun generateInitializer(metadata: StringMetadata): CodeBlock {
+    override fun generateInitializer(metadata: PluralMetadata): CodeBlock {
         return CodeBlock.of(
-            "StringResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
+            "PluralsResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
             CodeConst.Jvm.resourcesClassLoaderPropertyName,
-            stringsBundlePropertyName,
+            pluralsBundlePropertyName,
             metadata.key
         )
     }
 
-    override fun generateResourceFiles(data: List<StringMetadata>) {
+    override fun generateResourceFiles(data: List<PluralMetadata>) {
         data.processLanguages().forEach { (lang, strings) ->
             generateLanguageFile(
                 language = LanguageType.fromLanguage(lang),
@@ -44,7 +44,7 @@ internal class JvmStringResourceGenerator(
 
     override fun generateBeforeProperties(
         builder: TypeSpec.Builder,
-        metadata: List<StringMetadata>
+        metadata: List<PluralMetadata>
     ) {
         // FIXME duplication
         val classLoaderProperty: PropertySpec = PropertySpec.builder(
@@ -59,7 +59,7 @@ internal class JvmStringResourceGenerator(
 
         // FIXME duplication
         val property: PropertySpec = PropertySpec.builder(
-            stringsBundlePropertyName,
+            pluralsBundlePropertyName,
             STRING,
             KModifier.PRIVATE
         ).initializer(CodeBlock.of("\"%L/%L\"", CodeConst.Jvm.localizationDir, getBundlePath()))
@@ -68,7 +68,10 @@ internal class JvmStringResourceGenerator(
         builder.addProperty(property)
     }
 
-    private fun generateLanguageFile(language: LanguageType, strings: Map<String, String>) {
+    private fun generateLanguageFile(
+        language: LanguageType,
+        strings: Map<String, Map<String, String>>
+    ) {
         val fileDirName = "${getBundlePath()}${language.jvmResourcesSuffix}"
 
         val localizationDir = File(resourcesGenerationDir, CodeConst.Jvm.localizationDir)
@@ -76,14 +79,19 @@ internal class JvmStringResourceGenerator(
 
         val stringsFile = File(localizationDir, "$fileDirName.properties")
 
-        val content: String = strings.map { (key, value) ->
-            "$key = ${convertXmlStringToJvmLocalization(value)}"
+        val content: String = strings.map { (key, pluralMap) ->
+            val keysWithPlurals = pluralMap.map { (quantity, value) ->
+                "$key.$quantity" to value
+            }
+            keysWithPlurals.joinToString("\n") { (key, value) ->
+                "$key = ${convertXmlStringToJvmLocalization(value)}"
+            }
         }.joinToString("\n")
 
         stringsFile.writeText(content)
     }
 
-    private fun getBundlePath(): String = "${flattenClassPackage}_${stringsBundleName}"
+    private fun getBundlePath(): String = "${flattenClassPackage}_${pluralsBundleName}"
 
     // FIXME duplication
     // TODO should we do that?
@@ -94,7 +102,7 @@ internal class JvmStringResourceGenerator(
     }
 
     private companion object {
-        const val stringsBundlePropertyName = "stringsBundle"
-        const val stringsBundleName = "mokoBundle"
+        const val pluralsBundlePropertyName = "pluralsBundle"
+        const val pluralsBundleName = "mokoPluralsBundle"
     }
 }

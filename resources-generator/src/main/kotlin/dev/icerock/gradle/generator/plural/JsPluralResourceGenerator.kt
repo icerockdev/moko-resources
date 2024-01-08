@@ -2,7 +2,7 @@
  * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package dev.icerock.gradle.generator.string
+package dev.icerock.gradle.generator.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -10,36 +10,36 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.platform.js.convertToMessageFormat
 import dev.icerock.gradle.generator.CodeConst
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
 import dev.icerock.gradle.generator.addJsSupportedLocalesProperty
 import dev.icerock.gradle.generator.localization.LanguageType
-import dev.icerock.gradle.metadata.resource.StringMetadata
+import dev.icerock.gradle.generator.platform.js.convertToMessageFormat
+import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.flatName
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.io.File
 
-internal class JsStringResourceGenerator(
+internal class JsPluralResourceGenerator(
     resourcesPackageName: String,
     private val resourcesGenerationDir: File
-) : PlatformResourceGenerator<StringMetadata> {
+) : PlatformResourceGenerator<PluralMetadata> {
     private val flattenClassPackage: String = resourcesPackageName.flatName
 
     override fun imports(): List<ClassName> = emptyList()
 
-    override fun generateInitializer(metadata: StringMetadata): CodeBlock {
+    override fun generateInitializer(metadata: PluralMetadata): CodeBlock {
         return CodeBlock.of(
-            "StringResource(key = %S, loader = %L)",
+            "PluralsResource(key = %S, loader = %L)",
             metadata.key,
             CodeConst.Js.stringsLoaderPropertyName
         )
     }
 
-    override fun generateResourceFiles(data: List<StringMetadata>) {
+    override fun generateResourceFiles(data: List<PluralMetadata>) {
         data.processLanguages().forEach { (lang, strings) ->
             generateLanguageFile(
                 language = LanguageType.fromLanguage(lang),
@@ -50,7 +50,7 @@ internal class JsStringResourceGenerator(
 
     override fun generateBeforeProperties(
         builder: TypeSpec.Builder,
-        metadata: List<StringMetadata>
+        metadata: List<PluralMetadata>
     ) {
         builder.addSuperinterface(CodeConst.Js.loaderHolderName)
 
@@ -73,7 +73,7 @@ internal class JsStringResourceGenerator(
 
     override fun generateAfterProperties(
         builder: TypeSpec.Builder,
-        metadata: List<StringMetadata>
+        metadata: List<PluralMetadata>
     ) {
         val languageKeysList: String = metadata.joinToString { it.key }
 
@@ -82,34 +82,57 @@ internal class JsStringResourceGenerator(
             .addStatement("return listOf($languageKeysList)")
             .returns(
                 ClassName("kotlin.collections", "List")
-                    .parameterizedBy(CodeConst.stringResourceName)
+                    .parameterizedBy(CodeConst.pluralsResourceName)
             )
             .build()
 
         builder.addFunction(valuesFun)
     }
 
-    private fun generateLanguageFile(language: LanguageType, strings: Map<String, String>) {
+    private fun generateLanguageFile(
+        language: LanguageType,
+        strings: Map<String, Map<String, String>>
+    ) {
         val localizationDir = File(resourcesGenerationDir, LOCALIZATION_DIR)
         localizationDir.mkdirs()
 
-        val stringsFile = File(localizationDir, getFileNameForLanguage(language))
+        val pluralsFile = File(localizationDir, getFileNameForLanguage(language))
 
         val content: String = buildJsonObject {
-            strings.forEach { (key: String, value: String) ->
-                put(key, value.convertToMessageFormat())
+            strings.forEach { (key: String, pluralMap: Map<String, String>) ->
+                val messageFormatString = StringBuilder().apply {
+                    append("{ PLURAL, plural, ")
+                    pluralMap.forEach { (pluralKey, pluralString) ->
+                        // Zero isn't allowed in english (which is default for base), but we support it through =0
+                        val actPluralKey: String = when (pluralKey) {
+                            "zero" -> "=0"
+                            "two" -> "=2"
+                            else -> pluralKey
+                        }
+
+                        append(actPluralKey)
+                        append(" ")
+                        append("{")
+                        append(pluralString.convertToMessageFormat())
+                        append("} ")
+                    }
+
+                    append("}")
+                }.toString()
+
+                put(key, messageFormatString)
             }
         }.toString()
 
-        stringsFile.writeText(content)
+        pluralsFile.writeText(content)
     }
 
     private fun getFileNameForLanguage(language: LanguageType): String {
-        return "${flattenClassPackage}_${STRINGS_JSON_NAME}${language.jsResourcesSuffix}.json"
+        return "${flattenClassPackage}_${PLURALS_JSON_NAME}${language.jsResourcesSuffix}.json"
     }
 
     private companion object {
-        const val STRINGS_JSON_NAME = "stringsJson"
+        const val PLURALS_JSON_NAME = "pluralsJson"
         const val LOCALIZATION_DIR = "localization"
     }
 }

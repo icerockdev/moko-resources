@@ -49,6 +49,10 @@ internal class StringResourceGenerator(
         }
     }
 
+    override fun generateProperty(metadata: StringMetadata): PropertySpec.Builder {
+        return PropertySpec.builder(metadata.key, CodeConst.stringResourceName)
+    }
+
     private fun loadLanguageStrings(stringsFile: File): Map<KeyType, String> {
         val dbFactory: DocumentBuilderFactory = DocumentBuilderFactory.newInstance()
         val dBuilder: DocumentBuilder = dbFactory.newDocumentBuilder()
@@ -78,9 +82,5 @@ internal class StringResourceGenerator(
         }
 
         return resultMap
-    }
-
-    override fun generateProperty(metadata: StringMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, CodeConst.stringResourceName)
     }
 }
