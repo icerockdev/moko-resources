@@ -20,41 +20,6 @@ package dev.icerock.gradle.configuration
 //import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 //import org.jetbrains.kotlin.konan.target.HostManager
 
-// TODO not used. remove after complete migration of task configuration to Plugin configuration time
-//internal fun configureAppleTargetGenerator(
-//    target: KotlinNativeTarget,
-//    settings: MRGenerator.Settings,
-//    features: List<ResourceGeneratorFeature<out MRGenerator.Generator>>
-//) {
-//    if (HostManager.hostIsMac.not()) {
-//        target.project.logger.warn("MR file generation for Apple is not supported on your system!")
-//        return
-//    }
-//
-//    val mainCompilation: KotlinNativeCompilation = target.compilations
-//        .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
-//
-//    AppleMRGenerator(
-//        project = target.project,
-//        settings = settings,
-//        generators = features.map { it.createAppleGenerator() },
-//    ).apply(target.project)
-//}
-
-//internal fun setupProjectForApple(project: Project) {
-//    if (HostManager.hostIsMac.not()) {
-//        project.logger.warn("MR file generation for Apple is not supported on your system!")
-//        return
-//    }
-//
-//    // without this afterEvaluate in ios-static-xcframework sample we got
-//    // configuration iosArm64DebugFrameworkExport not found error
-//    project.afterEvaluate {
-//        setupCopyXCFrameworkResourcesTask(project)
-//        createCopyResourcesToAppTask(project)
-//    }
-//}
-
 //private fun setupCopyXCFrameworkResourcesTask(project: Project) {
 //    // Seems that there were problem with this block in the past with mystic task adding. Need more info
 //    // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled

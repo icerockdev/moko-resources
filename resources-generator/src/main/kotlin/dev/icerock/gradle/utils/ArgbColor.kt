@@ -4,7 +4,7 @@
 
 package dev.icerock.gradle.utils
 
-data class ArgbColor(val a: Float, val r: Float, val g: Float, val b: Float)
+internal data class ArgbColor(val a: Float, val r: Float, val g: Float, val b: Float)
 
 @Suppress("MagicNumber")
 internal fun parseArgbColor(argbColor: Long): ArgbColor {

@@ -5,30 +5,29 @@
 package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
-import dev.icerock.gradle.configuration.getAndroidRClassPackage
-import dev.icerock.gradle.rework.CodeConst
-import dev.icerock.gradle.rework.PlatformContainerGenerator
-import dev.icerock.gradle.rework.PlatformResourceGenerator
-import dev.icerock.gradle.rework.ResourceTypeGenerator
-import dev.icerock.gradle.rework.ResourcesFiles
-import dev.icerock.gradle.rework.ResourcesGenerator
-import dev.icerock.gradle.rework.container.AppleContainerGenerator
-import dev.icerock.gradle.rework.container.JvmContainerGenerator
-import dev.icerock.gradle.rework.container.NOPContainerGenerator
-import dev.icerock.gradle.rework.metadata.container.ContainerMetadata
-import dev.icerock.gradle.rework.metadata.container.ObjectMetadata
-import dev.icerock.gradle.rework.metadata.container.ResourceType
-import dev.icerock.gradle.rework.metadata.resource.StringMetadata
-import dev.icerock.gradle.rework.string.AndroidStringResourceGenerator
-import dev.icerock.gradle.rework.string.AppleStringResourceGenerator
-import dev.icerock.gradle.rework.string.JsStringResourceGenerator
-import dev.icerock.gradle.rework.string.JvmStringResourceGenerator
-import dev.icerock.gradle.rework.string.NOPStringResourceGenerator
-import dev.icerock.gradle.rework.string.StringResourceGenerator
+import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.PlatformContainerGenerator
+import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceTypeGenerator
+import dev.icerock.gradle.generator.ResourcesFiles
+import dev.icerock.gradle.generator.ResourcesGenerator
+import dev.icerock.gradle.generator.container.AppleContainerGenerator
+import dev.icerock.gradle.generator.container.JvmContainerGenerator
+import dev.icerock.gradle.generator.container.NOPContainerGenerator
+import dev.icerock.gradle.generator.string.AndroidStringResourceGenerator
+import dev.icerock.gradle.generator.string.AppleStringResourceGenerator
+import dev.icerock.gradle.generator.string.JsStringResourceGenerator
+import dev.icerock.gradle.generator.string.JvmStringResourceGenerator
+import dev.icerock.gradle.generator.string.NOPStringResourceGenerator
+import dev.icerock.gradle.generator.string.StringResourceGenerator
+import dev.icerock.gradle.metadata.container.ContainerMetadata
+import dev.icerock.gradle.metadata.container.ObjectMetadata
+import dev.icerock.gradle.metadata.container.ResourceType
+import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.flatName
+import dev.icerock.gradle.utils.getAndroidRClassPackage
 import dev.icerock.gradle.utils.isStrictLineBreaks
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -120,7 +119,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         group = "moko-resources"
     }
 
-    @OptIn(InternalSerializationApi::class)
     @TaskAction
     fun generate() {
         val json = Json {

@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.FileFilter
 
+// TODO register tasks
 abstract class CopyExecutableResourcesToApp : DefaultTask() {
     @get:Internal
     abstract var linkTask: KotlinNativeLink
