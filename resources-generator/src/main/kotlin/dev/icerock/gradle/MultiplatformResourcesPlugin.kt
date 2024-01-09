@@ -15,6 +15,8 @@ import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
 import dev.icerock.gradle.generator.platform.js.setupJsResources
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
+import dev.icerock.gradle.utils.getAndroidRClassPackage
+import dev.icerock.gradle.utils.isStrictLineBreaks
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -296,6 +298,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             generateTask.resourcesClassName.set(mrExtension.resourcesClassName)
             generateTask.resourcesPackageName.set(mrExtension.resourcesPackage)
             generateTask.resourcesVisibility.set(mrExtension.resourcesVisibility)
+            generateTask.androidRClassPackage.set(project.getAndroidRClassPackage())
+            generateTask.strictLineBreaks.set(project.provider { project.isStrictLineBreaks })
             generateTask.outputMetadataFile.set(
                 File(
                     File(generatedMokoResourcesDir, "metadata"),

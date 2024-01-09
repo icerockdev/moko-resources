@@ -48,8 +48,6 @@ import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
 import dev.icerock.gradle.utils.flatName
-import dev.icerock.gradle.utils.getAndroidRClassPackage
-import dev.icerock.gradle.utils.isStrictLineBreaks
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -110,6 +108,12 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     @get:Input
     abstract val resourcesVisibility: Property<MRVisibility>
+
+    @get:Input
+    abstract val androidRClassPackage: Property<String>
+
+    @get:Input
+    abstract val strictLineBreaks: Property<Boolean>
 
     @get:OutputFile
     abstract val outputMetadataFile: RegularFileProperty
@@ -228,7 +232,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             metadataClass = StringMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
             generator = StringResourceGenerator(
-                strictLineBreaks = project.isStrictLineBreaks
+                strictLineBreaks = strictLineBreaks.get()
             ),
             platformResourceGenerator = createPlatformStringGenerator(),
             filter = { include("**/strings*.xml") }
@@ -243,7 +247,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             metadataClass = PluralMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
             generator = PluralResourceGenerator(
-                strictLineBreaks = project.isStrictLineBreaks
+                strictLineBreaks = strictLineBreaks.get()
             ),
             platformResourceGenerator = createPlatformPluralGenerator(),
             filter = { include("**/plurals*.xml") }
@@ -288,7 +292,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             createCommon = { NOPColorResourceGenerator() },
             createAndroid = {
                 AndroidColorResourceGenerator(
-                    androidRClassPackage = getAndroidR(),
+                    androidRClassPackage = androidRClassPackage.get(),
                     resourcesGenerationDir = resourcesGenerationDir
                 )
             },
@@ -318,7 +322,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             createCommon = { NOPImageResourceGenerator() },
             createAndroid = {
                 AndroidImageResourceGenerator(
-                    androidRClassPackage = getAndroidR(),
+                    androidRClassPackage = androidRClassPackage.get(),
                     resourcesGenerationDir = resourcesGenerationDir,
                     logger = this.logger
                 )
@@ -351,7 +355,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             createCommon = { NOPPluralResourceGenerator() },
             createAndroid = {
                 AndroidPluralResourceGenerator(
-                    androidRClassPackage = getAndroidR(),
+                    androidRClassPackage = androidRClassPackage.get(),
                     resourcesGenerationDir = resourcesGenerationDir
                 )
             },
@@ -377,8 +381,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         )
     }
 
-    private fun getAndroidR(): String = project.getAndroidRClassPackage().get()
-
     private fun createPlatformStringGenerator(): PlatformResourceGenerator<StringMetadata> {
         val resourcesGenerationDir: File = outputResourcesDir.get().asFile
         return createByPlatform(
@@ -388,7 +390,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             createCommon = { NOPStringResourceGenerator() },
             createAndroid = {
                 AndroidStringResourceGenerator(
-                    androidRClassPackage = getAndroidR(),
+                    androidRClassPackage = androidRClassPackage.get(),
                     resourcesGenerationDir = resourcesGenerationDir
                 )
             },
