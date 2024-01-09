@@ -36,6 +36,7 @@ internal class AppleImageResourceGenerator(
 
         data.forEach { imageMetadata ->
             val assetDir = File(assetsDirectory, "${imageMetadata.key}.imageset")
+            assetDir.mkdirs()
             val contentsFile = File(assetDir, "Contents.json")
 
             val validItems: List<ImageMetadata.ImageQualityItem> =

@@ -111,9 +111,6 @@ internal data class ColorMetadata(
 
         @Serializable
         data class Themed(val light: Color, val dark: Color) : ColorItem
-
-        @Serializable
-        data class Reference(val key: String) : ColorItem
     }
 
     @Serializable
@@ -122,7 +119,17 @@ internal data class ColorMetadata(
         val green: Int,
         val blue: Int,
         val alpha: Int
-    )
+    ) {
+        fun toArgbHex(): String {
+            return listOf(alpha, red, green, blue)
+                .joinToString(separator = "") { it.toString(16).padStart(2, '0') }
+        }
+
+        fun toRgbaHex(): String {
+            return listOf(red, green, blue, alpha)
+                .joinToString(separator = "") { it.toString(16).padStart(2, '0') }
+        }
+    }
 
     override fun contentHash(): String = value.hashCode().toString(16)
 }

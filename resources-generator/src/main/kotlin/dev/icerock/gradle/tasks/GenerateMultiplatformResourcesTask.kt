@@ -11,6 +11,12 @@ import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.ResourcesFiles
 import dev.icerock.gradle.generator.ResourcesGenerator
+import dev.icerock.gradle.generator.color.AndroidColorResourceGenerator
+import dev.icerock.gradle.generator.color.AppleColorResourceGenerator
+import dev.icerock.gradle.generator.color.ColorResourceGenerator
+import dev.icerock.gradle.generator.color.JsColorResourceGenerator
+import dev.icerock.gradle.generator.color.JvmColorResourceGenerator
+import dev.icerock.gradle.generator.color.NOPColorResourceGenerator
 import dev.icerock.gradle.generator.container.AppleContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
@@ -35,6 +41,7 @@ import dev.icerock.gradle.generator.string.StringResourceGenerator
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
+import dev.icerock.gradle.metadata.resource.ColorMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.metadata.resource.StringMetadata
@@ -182,7 +189,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             typesGenerators = listOf(
                 createStringGenerator(),
                 createPluralsGenerator(),
-                createImagesGenerator()
+                createImagesGenerator(),
+                createColorsGenerator()
             ),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
@@ -253,6 +261,49 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             platformResourceGenerator = createPlatformImageGenerator(),
             filter = {
                 include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
+            }
+        )
+    }
+
+    private fun createColorsGenerator(): ResourceTypeGenerator<ColorMetadata> {
+        return ResourceTypeGenerator(
+            generationPackage = resourcesPackageName.get(),
+            resourceClass = CodeConst.colorResourceName,
+            resourceType = ResourceType.COLORS,
+            metadataClass = ColorMetadata::class,
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            generator = ColorResourceGenerator(),
+            platformResourceGenerator = createPlatformColorGenerator(),
+            filter = { include("**/colors*.xml") }
+        )
+    }
+
+    private fun createPlatformColorGenerator(): PlatformResourceGenerator<ColorMetadata> {
+        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
+        val assetsGenerationDir: File = outputAssetsDir.get().asFile
+        return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
+            // TODO find way to remove this NOP
+            createCommon = { NOPColorResourceGenerator() },
+            createAndroid = {
+                AndroidColorResourceGenerator(
+                    androidRClassPackage = getAndroidR(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createApple = {
+                AppleColorResourceGenerator(
+                    assetsGenerationDir = assetsGenerationDir
+                )
+            },
+            createJvm = {
+                JvmColorResourceGenerator(
+                    className = resourcesClassName.get()
+                )
+            },
+            createJs = {
+                JsColorResourceGenerator()
             }
         )
     }

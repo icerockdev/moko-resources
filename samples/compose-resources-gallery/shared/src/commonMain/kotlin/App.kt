@@ -69,7 +69,7 @@ internal fun App() {
                 modifier = Modifier.fillMaxWidth()
                     .padding(vertical = 8.dp),
                 text = stringResource(MR.plurals.chars_count, counter, counter),
-//                color = colorResource(MR.colors.textColor),
+                color = colorResource(MR.colors.textColor),
 //                fontFamily = fontFamilyResource(MR.fonts.cormorant.italic)
             )
 

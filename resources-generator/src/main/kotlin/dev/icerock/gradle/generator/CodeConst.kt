@@ -11,6 +11,9 @@ internal object CodeConst {
     val stringResourceName = ClassName("dev.icerock.moko.resources", "StringResource")
     val pluralsResourceName = ClassName("dev.icerock.moko.resources", "PluralsResource")
     val imageResourceName = ClassName("dev.icerock.moko.resources", "ImageResource")
+    val colorResourceName = ClassName("dev.icerock.moko.resources", "ColorResource")
+
+    val graphicsColorName = ClassName("dev.icerock.moko.graphics", "Color")
 
     object Apple {
         val nsBundleName = ClassName("platform.Foundation", "NSBundle")
