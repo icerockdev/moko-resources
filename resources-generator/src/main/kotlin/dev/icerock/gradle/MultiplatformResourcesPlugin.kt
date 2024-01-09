@@ -156,12 +156,9 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                 resourcesGenerationDir = genTaskProvider.flatMap {
                                     it.outputResourcesDir.asFile
                                 },
-                                iosLocalizationRegion = genTaskProvider.flatMap {
-                                    it.iosBaseLocalizationRegion
-                                },
-                                resourcePackageName = genTaskProvider.flatMap {
-                                    it.resourcesPackageName
-                                }
+                                iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
+                                resourcePackageName = mrExtension.resourcesPackage,
+                                acToolMinimalDeploymentTarget = mrExtension.acToolMinimalDeploymentTarget
                             )
                         }
                     }

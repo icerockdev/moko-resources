@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.actions.apple
 
+import dev.icerock.gradle.generator.CodeConst
 import dev.icerock.gradle.generator.platform.apple.LoadableBundle
 import dev.icerock.gradle.utils.unzipTo
 import org.gradle.api.Action
@@ -15,28 +16,35 @@ import org.jetbrains.kotlin.konan.file.zipDirAs
 import java.io.File
 import java.util.Properties
 
-internal class PackResourcesToKLibAction(
+internal class PackAppleResourcesToKLibAction(
     private val assetsDirectory: Provider<File>,
     private val baseLocalizationRegion: Provider<String>,
     private val resourcePackageName: Provider<String>,
     private val resourcesGenerationDir: Provider<File>,
+    private val acToolMinimalDeploymentTarget: Provider<String>
 ) : Action<Task> {
     override fun execute(task: Task) {
         task as KotlinNativeCompile
+
+        val assetsDirectory: File = assetsDirectory.get()
+        val resourcesGenerationDir: File = resourcesGenerationDir.get()
+
+        val resourcesExists: Boolean = listOf(
+            assetsDirectory,
+            resourcesGenerationDir
+        ).any { file ->
+            file.exists() && file.listFiles()?.isNotEmpty() == true
+        }
+
+        if (!resourcesExists) {
+            task.logger.info("Resources not found. Skip klib repack action.")
+            return
+        }
 
         val klibFile: File = task.outputFile.get()
         val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
         val defaultDir = File(repackDir, "default")
         val resRepackDir = File(defaultDir, "resources")
-        val assetsDirectory: File = assetsDirectory.get()
-        val resourcesGenerationDir: File = resourcesGenerationDir.get()
-
-        if (resourcesGenerationDir.exists().not()
-            || resourcesGenerationDir.listFiles()?.isEmpty() != false
-        ) {
-            task.logger.info("Resources not found. Skip klib repack action.")
-            return
-        }
 
         task.logger.info("Adding resources to klib file `{}`", klibFile)
         unzipTo(zipFile = klibFile, outputDirectory = repackDir)
@@ -45,7 +53,7 @@ internal class PackResourcesToKLibAction(
         val manifest = Properties()
         manifest.load(manifestFile.inputStream())
 
-        val uniqueName = manifest["unique_name"] as String
+        val uniqueName: String = manifest["unique_name"] as String
 
         val loadableBundle = LoadableBundle(
             directory = resRepackDir,
@@ -56,28 +64,37 @@ internal class PackResourcesToKLibAction(
 
         loadableBundle.write()
 
-        val process: Process = Runtime.getRuntime().exec(
-            "xcrun actool Assets.xcassets --compile . --platform iphoneos --minimum-deployment-target 9.0",
-            emptyArray(),
-            assetsDirectory.parentFile
-        )
-        val errors: String = process.errorStream.bufferedReader().readText()
-        val input: String = process.inputStream.bufferedReader().readText()
-        val result: Int = process.waitFor()
-        if (result != 0) {
-            task.logger.error("can't compile assets - $result")
-            task.logger.info(input)
-            task.logger.error(errors)
-            throw GradleException("Assets compilation failed: $errors")
-        } else {
-            task.logger.info("assets compiled")
-            assetsDirectory.deleteRecursively()
-        }
-
         resourcesGenerationDir.copyRecursively(
             loadableBundle.resourcesDir,
             overwrite = true
         )
+        assetsDirectory.copyRecursively(
+            loadableBundle.resourcesDir,
+            overwrite = true
+        )
+
+        val rawAssetsDir = File(loadableBundle.resourcesDir, CodeConst.Apple.assetsDirectoryName)
+        if (rawAssetsDir.exists()) {
+            val process: Process = Runtime.getRuntime().exec(
+                "xcrun actool ${rawAssetsDir.name} --compile . --platform iphoneos --minimum-deployment-target ${acToolMinimalDeploymentTarget.get()}",
+                emptyArray(),
+                rawAssetsDir.parentFile
+            )
+            val errors: String = process.errorStream.bufferedReader().readText()
+            val input: String = process.inputStream.bufferedReader().readText()
+            val result: Int = process.waitFor()
+            if (result != 0) {
+                task.logger.error("can't compile assets - $result")
+                task.logger.info(input)
+                task.logger.error(errors)
+                throw GradleException("Assets compilation failed: $errors")
+            } else {
+                task.logger.info("assets compiled")
+                rawAssetsDir.deleteRecursively()
+            }
+        } else {
+            task.logger.info("assets not found, compilation not required")
+        }
 
         val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
         val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)

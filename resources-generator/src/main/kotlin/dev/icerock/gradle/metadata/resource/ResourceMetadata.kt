@@ -67,7 +67,7 @@ internal data class ImageMetadata(
 ) : ResourceMetadata {
     @Serializable
     data class ImageQualityItem(
-        val quality: Int,
+        val quality: String?,
         val filePath: File
     )
 

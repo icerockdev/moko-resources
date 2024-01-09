@@ -10,10 +10,14 @@ internal object CodeConst {
     val resourceContainerName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
     val stringResourceName = ClassName("dev.icerock.moko.resources", "StringResource")
     val pluralsResourceName = ClassName("dev.icerock.moko.resources", "PluralsResource")
+    val imageResourceName = ClassName("dev.icerock.moko.resources", "ImageResource")
 
     object Apple {
         val nsBundleName = ClassName("platform.Foundation", "NSBundle")
         val loadableBundleName = ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
+
+        const val assetsDirectoryName = "Assets.xcassets"
+
         const val resourcesBundlePropertyName = "bundle"
         const val containerBundlePropertyName = "nsBundle"
     }

@@ -8,7 +8,7 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToFrameworkAction
-import dev.icerock.gradle.actions.apple.PackResourcesToKLibAction
+import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppEntryPointTask
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import org.gradle.api.Action
@@ -36,13 +36,15 @@ fun setupAppleKLibResources(
     resourcesGenerationDir: Provider<File>,
     iosLocalizationRegion: Provider<String>,
     resourcePackageName: Provider<String>,
+    acToolMinimalDeploymentTarget: Provider<String>
 ) {
-    compileTask.doLast (
-        PackResourcesToKLibAction(
+    compileTask.doLast(
+        PackAppleResourcesToKLibAction(
             baseLocalizationRegion = iosLocalizationRegion,
             resourcePackageName = resourcePackageName,
             assetsDirectory = assetsDirectory,
             resourcesGenerationDir = resourcesGenerationDir,
+            acToolMinimalDeploymentTarget = acToolMinimalDeploymentTarget
         )
     )
 

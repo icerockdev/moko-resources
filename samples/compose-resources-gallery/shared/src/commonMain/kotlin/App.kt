@@ -40,17 +40,17 @@ internal fun App() {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            Image(
-//                painter = painterResource(MR.images.moko_logo),
-//                contentDescription = null
-//            )
-//
-//            Image(
-//                modifier = Modifier.size(30.dp).padding(top = 16.dp),
-//                painter = painterResource(MR.images.car_black),
-//                contentDescription = null,
-//                colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground)
-//            )
+            Image(
+                painter = painterResource(MR.images.moko_logo),
+                contentDescription = null
+            )
+
+            Image(
+                modifier = Modifier.size(30.dp).padding(top = 16.dp),
+                painter = painterResource(MR.images.car_black),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground)
+            )
 
             var text: String by remember { mutableStateOf("") }
 

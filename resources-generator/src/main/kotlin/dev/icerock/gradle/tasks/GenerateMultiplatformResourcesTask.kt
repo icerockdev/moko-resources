@@ -14,6 +14,12 @@ import dev.icerock.gradle.generator.ResourcesGenerator
 import dev.icerock.gradle.generator.container.AppleContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
+import dev.icerock.gradle.generator.image.AndroidImageResourceGenerator
+import dev.icerock.gradle.generator.image.AppleImageResourceGenerator
+import dev.icerock.gradle.generator.image.ImageResourceGenerator
+import dev.icerock.gradle.generator.image.JsImageResourceGenerator
+import dev.icerock.gradle.generator.image.JvmImageResourceGenerator
+import dev.icerock.gradle.generator.image.NOPImageResourceGenerator
 import dev.icerock.gradle.generator.plural.AndroidPluralResourceGenerator
 import dev.icerock.gradle.generator.plural.ApplePluralResourceGenerator
 import dev.icerock.gradle.generator.plural.JsPluralResourceGenerator
@@ -29,9 +35,11 @@ import dev.icerock.gradle.generator.string.StringResourceGenerator
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
+import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.toModifier
+import dev.icerock.gradle.utils.createByPlatform
 import dev.icerock.gradle.utils.flatName
 import dev.icerock.gradle.utils.getAndroidRClassPackage
 import dev.icerock.gradle.utils.isStrictLineBreaks
@@ -128,6 +136,11 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     @TaskAction
     fun generate() {
+        // cleanup destinations
+        listOf(outputResourcesDir, outputSourcesDir, outputAssetsDir, outputMetadataFile).forEach {
+            it.get().asFile.deleteRecursively()
+        }
+
         val json = Json {
             prettyPrint = true
         }
@@ -168,7 +181,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             containerGenerator = createPlatformContainerGenerator(),
             typesGenerators = listOf(
                 createStringGenerator(),
-                createPluralsGenerator()
+                createPluralsGenerator(),
+                createImagesGenerator()
             ),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
@@ -180,6 +194,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     private fun createPlatformContainerGenerator(): PlatformContainerGenerator {
         return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
             createCommon = { NOPContainerGenerator() },
             createAndroid = { NOPContainerGenerator() },
             createJs = { NOPContainerGenerator() },
@@ -226,9 +242,60 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         )
     }
 
+    private fun createImagesGenerator(): ResourceTypeGenerator<ImageMetadata> {
+        return ResourceTypeGenerator(
+            generationPackage = resourcesPackageName.get(),
+            resourceClass = CodeConst.imageResourceName,
+            resourceType = ResourceType.IMAGES,
+            metadataClass = ImageMetadata::class,
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            generator = ImageResourceGenerator(),
+            platformResourceGenerator = createPlatformImageGenerator(),
+            filter = {
+                include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
+            }
+        )
+    }
+
+    private fun createPlatformImageGenerator(): PlatformResourceGenerator<ImageMetadata> {
+        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
+        val assetsGenerationDir: File = outputAssetsDir.get().asFile
+        return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
+            // TODO find way to remove this NOP
+            createCommon = { NOPImageResourceGenerator() },
+            createAndroid = {
+                AndroidImageResourceGenerator(
+                    androidRClassPackage = getAndroidR(),
+                    resourcesGenerationDir = resourcesGenerationDir,
+                    logger = this.logger
+                )
+            },
+            createApple = {
+                AppleImageResourceGenerator(
+                    assetsGenerationDir = assetsGenerationDir
+                )
+            },
+            createJvm = {
+                JvmImageResourceGenerator(
+                    className = resourcesClassName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJs = {
+                JsImageResourceGenerator(
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            }
+        )
+    }
+
     private fun createPlatformPluralGenerator(): PlatformResourceGenerator<PluralMetadata> {
         val resourcesGenerationDir: File = outputResourcesDir.get().asFile
         return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
             // TODO find way to remove this NOP
             createCommon = { NOPPluralResourceGenerator() },
             createAndroid = {
@@ -264,6 +331,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createPlatformStringGenerator(): PlatformResourceGenerator<StringMetadata> {
         val resourcesGenerationDir: File = outputResourcesDir.get().asFile
         return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
             // TODO find way to remove this NOP
             createCommon = { NOPStringResourceGenerator() },
             createAndroid = {
@@ -292,60 +361,5 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
                 )
             }
         )
-    }
-
-    private fun <T> createByPlatform(
-        createCommon: () -> T,
-        createAndroid: () -> T,
-        createApple: () -> T,
-        createJvm: () -> T,
-        createJs: () -> T,
-    ): T {
-        return when (kotlinPlatformType) {
-            KotlinPlatformType.common -> createCommon()
-            KotlinPlatformType.jvm -> createJvm()
-            KotlinPlatformType.androidJvm -> createAndroid()
-            KotlinPlatformType.js -> createJs()
-            KotlinPlatformType.native -> when (kotlinKonanTarget) {
-                KonanTarget.IOS_ARM32,
-                KonanTarget.IOS_ARM64,
-                KonanTarget.IOS_SIMULATOR_ARM64,
-                KonanTarget.IOS_X64,
-
-                KonanTarget.MACOS_ARM64,
-                KonanTarget.MACOS_X64,
-
-                KonanTarget.TVOS_ARM64,
-                KonanTarget.TVOS_SIMULATOR_ARM64,
-                KonanTarget.TVOS_X64,
-
-                KonanTarget.WATCHOS_ARM32,
-                KonanTarget.WATCHOS_ARM64,
-                KonanTarget.WATCHOS_DEVICE_ARM64,
-                KonanTarget.WATCHOS_SIMULATOR_ARM64,
-                KonanTarget.WATCHOS_X64,
-                KonanTarget.WATCHOS_X86 -> createApple()
-
-                KonanTarget.ANDROID_ARM32,
-                KonanTarget.ANDROID_ARM64,
-                KonanTarget.ANDROID_X64,
-                KonanTarget.ANDROID_X86,
-
-                KonanTarget.LINUX_ARM32_HFP,
-                KonanTarget.LINUX_ARM64,
-                KonanTarget.LINUX_MIPS32,
-                KonanTarget.LINUX_MIPSEL32,
-                KonanTarget.LINUX_X64,
-
-                KonanTarget.MINGW_X64,
-                KonanTarget.MINGW_X86,
-
-                KonanTarget.WASM32,
-
-                is KonanTarget.ZEPHYR -> error("$kotlinKonanTarget not supported by moko-resources now")
-            }
-
-            KotlinPlatformType.wasm -> error("$kotlinPlatformType not supported by moko-resources now")
-        }
     }
 }

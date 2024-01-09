@@ -5,6 +5,7 @@
 package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.utils.klibs
+import dev.icerock.gradle.utils.toKonanFile
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -35,7 +36,7 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
             .filter { library -> library.extension == "klib" }
             .filter(File::exists)
             .forEach { inputFile ->
-                val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
+                val klibKonan: org.jetbrains.kotlin.konan.file.File = inputFile.toKonanFile()
                 val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
                 val layout = klib.extractingToTemp
 

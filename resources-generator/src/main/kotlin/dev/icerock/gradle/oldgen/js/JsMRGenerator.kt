@@ -84,9 +84,4 @@
 //////            task = generationTask,
 //////        )
 ////    }
-//
-//    companion object {
-//        const val SUPPORTED_LOCALES_PROPERTY_NAME = "supportedLocales"
-//        const val LOCALIZATION_DIR = "localization"
-//    }
 //}
