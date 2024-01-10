@@ -14,35 +14,31 @@ import dev.icerock.gradle.generator.ResourcesGenerator
 import dev.icerock.gradle.generator.container.AppleContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
+import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.color.AndroidColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.AppleColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.ColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.JsColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.JvmColorResourceGenerator
-import dev.icerock.gradle.generator.resources.color.NOPColorResourceGenerator
 import dev.icerock.gradle.generator.resources.font.AndroidFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.AppleFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.FontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.JsFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.JvmFontResourceGenerator
-import dev.icerock.gradle.generator.resources.font.NOPFontResourceGenerator
 import dev.icerock.gradle.generator.resources.image.AndroidImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.AppleImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.ImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.JsImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.JvmImageResourceGenerator
-import dev.icerock.gradle.generator.resources.image.NOPImageResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.AndroidPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.ApplePluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.JsPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.JvmPluralResourceGenerator
-import dev.icerock.gradle.generator.resources.plural.NOPPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.PluralResourceGenerator
 import dev.icerock.gradle.generator.resources.string.AndroidStringResourceGenerator
 import dev.icerock.gradle.generator.resources.string.AppleStringResourceGenerator
 import dev.icerock.gradle.generator.resources.string.JsStringResourceGenerator
 import dev.icerock.gradle.generator.resources.string.JvmStringResourceGenerator
-import dev.icerock.gradle.generator.resources.string.NOPStringResourceGenerator
 import dev.icerock.gradle.generator.resources.string.StringResourceGenerator
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
@@ -310,7 +306,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             konanTarget = ::kotlinKonanTarget,
             // TODO find way to remove this NOP
-            createCommon = { NOPFontResourceGenerator() },
+            createCommon = { NOPResourceGenerator() },
             createAndroid = {
                 AndroidFontResourceGenerator(
                     androidRClassPackage = androidRClassPackage.get(),
@@ -344,7 +340,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             konanTarget = ::kotlinKonanTarget,
             // TODO find way to remove this NOP
-            createCommon = { NOPColorResourceGenerator() },
+            createCommon = { NOPResourceGenerator() },
             createAndroid = {
                 AndroidColorResourceGenerator(
                     androidRClassPackage = androidRClassPackage.get(),
@@ -374,7 +370,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             konanTarget = ::kotlinKonanTarget,
             // TODO find way to remove this NOP
-            createCommon = { NOPImageResourceGenerator() },
+            createCommon = { NOPResourceGenerator() },
             createAndroid = {
                 AndroidImageResourceGenerator(
                     androidRClassPackage = androidRClassPackage.get(),
@@ -407,7 +403,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             konanTarget = ::kotlinKonanTarget,
             // TODO find way to remove this NOP
-            createCommon = { NOPPluralResourceGenerator() },
+            createCommon = { NOPResourceGenerator() },
             createAndroid = {
                 AndroidPluralResourceGenerator(
                     androidRClassPackage = androidRClassPackage.get(),
@@ -442,7 +438,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             konanTarget = ::kotlinKonanTarget,
             // TODO find way to remove this NOP
-            createCommon = { NOPStringResourceGenerator() },
+            createCommon = { NOPResourceGenerator() },
             createAndroid = {
                 AndroidStringResourceGenerator(
                     androidRClassPackage = androidRClassPackage.get(),
