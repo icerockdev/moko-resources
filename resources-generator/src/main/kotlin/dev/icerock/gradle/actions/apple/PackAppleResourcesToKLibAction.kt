@@ -64,14 +64,18 @@ internal class PackAppleResourcesToKLibAction(
 
         loadableBundle.write()
 
-        resourcesGenerationDir.copyRecursively(
-            loadableBundle.resourcesDir,
-            overwrite = true
-        )
-        assetsDirectory.copyRecursively(
-            loadableBundle.resourcesDir,
-            overwrite = true
-        )
+        if (resourcesGenerationDir.exists()) {
+            resourcesGenerationDir.copyRecursively(
+                loadableBundle.resourcesDir,
+                overwrite = true
+            )
+        }
+        if (assetsDirectory.exists()) {
+            assetsDirectory.copyRecursively(
+                loadableBundle.resourcesDir,
+                overwrite = true
+            )
+        }
 
         val rawAssetsDir = File(loadableBundle.resourcesDir, CodeConst.Apple.assetsDirectoryName)
         if (rawAssetsDir.exists()) {

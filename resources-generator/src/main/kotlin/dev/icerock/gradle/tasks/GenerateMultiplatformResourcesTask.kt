@@ -20,6 +20,11 @@ import dev.icerock.gradle.generator.resources.color.AppleColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.ColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.JsColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.JvmColorResourceGenerator
+import dev.icerock.gradle.generator.resources.file.AndroidFileResourceGenerator
+import dev.icerock.gradle.generator.resources.file.AppleFileResourceGenerator
+import dev.icerock.gradle.generator.resources.file.FileResourceGenerator
+import dev.icerock.gradle.generator.resources.file.JsFileResourceGenerator
+import dev.icerock.gradle.generator.resources.file.JvmFileResourceGenerator
 import dev.icerock.gradle.generator.resources.font.AndroidFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.AppleFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.FontResourceGenerator
@@ -44,6 +49,7 @@ import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ColorMetadata
+import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.PluralMetadata
@@ -199,7 +205,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
                 createPluralsGenerator(),
                 createImagesGenerator(),
                 createColorsGenerator(),
-                createFontsGenerator()
+                createFontsGenerator(),
+                createFilesGenerator()
             ),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
@@ -297,6 +304,51 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             generator = FontResourceGenerator(),
             platformResourceGenerator = createPlatformFontGenerator(),
             filter = { include("fonts/**.ttf", "fonts/**.otf") }
+        )
+    }
+
+    private fun createFilesGenerator(): ResourceTypeGenerator<FileMetadata> {
+        return ResourceTypeGenerator(
+            generationPackage = resourcesPackageName.get(),
+            resourceClass = CodeConst.fileResourceName,
+            resourceType = ResourceType.FILES,
+            metadataClass = FileMetadata::class,
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            generator = FileResourceGenerator(),
+            platformResourceGenerator = createPlatformFileGenerator(),
+            filter = { include("files/**") }
+        )
+    }
+
+    private fun createPlatformFileGenerator(): PlatformResourceGenerator<FileMetadata> {
+        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
+        return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
+            // TODO find way to remove this NOP
+            createCommon = { NOPResourceGenerator() },
+            createAndroid = {
+                AndroidFileResourceGenerator(
+                    androidRClassPackage = androidRClassPackage.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createApple = {
+                AppleFileResourceGenerator(
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJvm = {
+                JvmFileResourceGenerator(
+                    className = resourcesClassName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJs = {
+                JsFileResourceGenerator(
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            }
         )
     }
 
