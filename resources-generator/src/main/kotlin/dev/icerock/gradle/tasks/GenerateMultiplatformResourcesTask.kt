@@ -20,6 +20,12 @@ import dev.icerock.gradle.generator.resources.color.ColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.JsColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.JvmColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.NOPColorResourceGenerator
+import dev.icerock.gradle.generator.resources.font.AndroidFontResourceGenerator
+import dev.icerock.gradle.generator.resources.font.AppleFontResourceGenerator
+import dev.icerock.gradle.generator.resources.font.FontResourceGenerator
+import dev.icerock.gradle.generator.resources.font.JsFontResourceGenerator
+import dev.icerock.gradle.generator.resources.font.JvmFontResourceGenerator
+import dev.icerock.gradle.generator.resources.font.NOPFontResourceGenerator
 import dev.icerock.gradle.generator.resources.image.AndroidImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.AppleImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.ImageResourceGenerator
@@ -42,6 +48,7 @@ import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ColorMetadata
+import dev.icerock.gradle.metadata.resource.FontMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.metadata.resource.StringMetadata
@@ -109,6 +116,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Input
     abstract val resourcesVisibility: Property<MRVisibility>
 
+    @get:Optional
     @get:Input
     abstract val androidRClassPackage: Property<String>
 
@@ -194,7 +202,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
                 createStringGenerator(),
                 createPluralsGenerator(),
                 createImagesGenerator(),
-                createColorsGenerator()
+                createColorsGenerator(),
+                createFontsGenerator()
             ),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
@@ -279,6 +288,52 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             generator = ColorResourceGenerator(),
             platformResourceGenerator = createPlatformColorGenerator(),
             filter = { include("**/colors*.xml") }
+        )
+    }
+
+    private fun createFontsGenerator(): ResourceTypeGenerator<FontMetadata> {
+        return ResourceTypeGenerator(
+            generationPackage = resourcesPackageName.get(),
+            resourceClass = CodeConst.fontResourceName,
+            resourceType = ResourceType.FONTS,
+            metadataClass = FontMetadata::class,
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            generator = FontResourceGenerator(),
+            platformResourceGenerator = createPlatformFontGenerator(),
+            filter = { include("fonts/**.ttf", "fonts/**.otf") }
+        )
+    }
+
+    private fun createPlatformFontGenerator(): PlatformResourceGenerator<FontMetadata> {
+        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
+        return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
+            // TODO find way to remove this NOP
+            createCommon = { NOPFontResourceGenerator() },
+            createAndroid = {
+                AndroidFontResourceGenerator(
+                    androidRClassPackage = androidRClassPackage.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createApple = {
+                AppleFontResourceGenerator(
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJvm = {
+                JvmFontResourceGenerator(
+                    className = resourcesClassName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJs = {
+                JsFontResourceGenerator(
+                    resourcesPackageName = resourcesPackageName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            }
         )
     }
 

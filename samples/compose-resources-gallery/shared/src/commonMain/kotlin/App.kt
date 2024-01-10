@@ -70,7 +70,7 @@ internal fun App() {
                     .padding(vertical = 8.dp),
                 text = stringResource(MR.plurals.chars_count, counter, counter),
                 color = colorResource(MR.colors.textColor),
-//                fontFamily = fontFamilyResource(MR.fonts.cormorant.italic)
+                fontFamily = fontFamilyResource(MR.fonts.cormorant_italic)
             )
 
             Button(onClick = { text = "Hello, ${getPlatformName()}" }) {

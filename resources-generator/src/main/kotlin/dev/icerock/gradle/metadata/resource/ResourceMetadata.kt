@@ -78,16 +78,10 @@ internal data class ImageMetadata(
 @Serializable
 internal data class FontMetadata(
     override val key: String,
-    val values: List<FontFamilyItem>
+    val filePath: File
 ) : ResourceMetadata {
-    @Serializable
-    data class FontFamilyItem(
-        val family: String,
-        val filePath: File
-    )
 
-    override fun contentHash(): String = values.map { it.filePath.calculateResourcesHash() }
-        .calculateHash()
+    override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
 @Serializable

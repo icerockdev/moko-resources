@@ -5,9 +5,9 @@
 package dev.icerock.gradle.generator.resources.string
 
 import com.squareup.kotlinpoet.PropertySpec
-import dev.icerock.gradle.generator.exceptions.EqualStringKeysException
 import dev.icerock.gradle.generator.CodeConst
 import dev.icerock.gradle.generator.ResourceGenerator
+import dev.icerock.gradle.generator.exceptions.EqualStringKeysException
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.removeLineWraps

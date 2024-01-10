@@ -9,7 +9,7 @@ import com.android.build.gradle.api.AndroidSourceSet
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
-import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.findByType
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -20,7 +20,8 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 internal fun Project.getAndroidRClassPackage(): Provider<String> {
     return provider {
-        val androidExt: BaseExtension = project.extensions.getByType()
+        val androidExt: BaseExtension = project.extensions.findByType()
+            ?: return@provider null
         androidExt.namespace ?: getAndroidPackage(androidExt.mainSourceSet.manifest.srcFile)
     }
 }
