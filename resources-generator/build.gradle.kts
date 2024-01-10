@@ -1,9 +1,9 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-
 /*
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
+
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version ("1.9.0")
@@ -27,6 +27,8 @@ dependencies {
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
     implementation(libs.commonsCodec)
+
+    testImplementation(kotlin("test-junit"))
 }
 
 java {

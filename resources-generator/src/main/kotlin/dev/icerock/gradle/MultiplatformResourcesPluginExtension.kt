@@ -13,6 +13,7 @@ abstract class MultiplatformResourcesPluginExtension {
     abstract val iosBaseLocalizationRegion: Property<String>
     abstract val staticFrameworkWarningEnabled: Property<Boolean>
     abstract val resourcesVisibility: Property<MRVisibility>
+    abstract val acToolMinimalDeploymentTarget: Property<String>
 }
 
 internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Project) {
@@ -21,4 +22,5 @@ internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Proj
     iosBaseLocalizationRegion.convention("en")
     staticFrameworkWarningEnabled.convention(true)
     resourcesVisibility.convention(MRVisibility.Public)
+    acToolMinimalDeploymentTarget.convention("9.0")
 }

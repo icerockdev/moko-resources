@@ -16,11 +16,8 @@ internal fun Project.propertyString(name: String): String? {
 }
 
 internal fun Project.requiredPropertyString(name: String): String {
-    val property: Any = findProperty(name)
+    return propertyString(name)
         ?: throw GradleException("Required property $name not found")
-
-    return property as? String
-        ?: throw GradleException("Property $name should be String")
 }
 
 internal val Project.isStrictLineBreaks: Boolean

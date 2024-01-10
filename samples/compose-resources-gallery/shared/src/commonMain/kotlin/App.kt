@@ -70,7 +70,7 @@ internal fun App() {
                     .padding(vertical = 8.dp),
                 text = stringResource(MR.plurals.chars_count, counter, counter),
                 color = colorResource(MR.colors.textColor),
-                fontFamily = fontFamilyResource(MR.fonts.cormorant.italic)
+                fontFamily = fontFamilyResource(MR.fonts.cormorant_italic)
             )
 
             Button(onClick = { text = "Hello, ${getPlatformName()}" }) {
@@ -84,7 +84,7 @@ internal fun App() {
                 color = MaterialTheme.colors.onBackground
             )
 
-            val assetContent: String? by MR.assets.some_asset.readTextAsState()
+            val assetContent: String? by MR.assets.second_inner_text_file.readTextAsState()
             Text(
                 modifier = Modifier.padding(top = 16.dp),
                 text = assetContent.orEmpty(),

@@ -10,6 +10,7 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.io.FileFilter
 
+// TODO register tasks
 open class CopyXCFrameworkResourcesToApp : DefaultTask() {
     init {
         group = "moko-resources"

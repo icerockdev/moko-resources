@@ -6,14 +6,17 @@ package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
-import dev.icerock.gradle.generator.apple.setupAppleKLibResources
-import dev.icerock.gradle.generator.apple.setupFatFrameworkTasks
-import dev.icerock.gradle.generator.apple.setupFrameworkResources
-import dev.icerock.gradle.generator.apple.setupTestsResources
-import dev.icerock.gradle.generator.js.setupJsKLibResources
-import dev.icerock.gradle.generator.js.setupJsResources
+import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
+import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
+import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
+import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
+import dev.icerock.gradle.generator.platform.apple.setupTestsResources
+import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
+import dev.icerock.gradle.generator.platform.js.setupJsResources
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.dependsOnObservable
+import dev.icerock.gradle.utils.getAndroidRClassPackage
+import dev.icerock.gradle.utils.isStrictLineBreaks
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -78,13 +81,9 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 mrExtension = mrExtension
             )
 
-            configureLowerDependencies(
-                kotlinSourceSet = kotlinSourceSet,
-                genTask = genTask
-            )
-
             configureUpperDependencies(
                 kotlinSourceSet = kotlinSourceSet,
+                resourcesSourceSetName = kotlinSourceSet.name,
                 resourcesSourceDirectory = resourcesSourceDirectory
             )
 
@@ -138,7 +137,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                 compileTask = compileTask,
                                 resourcesGenerationDir = genTaskProvider.flatMap {
                                     it.outputResourcesDir.asFile
-                                }
+                                },
+                                projectDir = project.provider { project.projectDir }
                             )
                             setupJsKLibResources(
                                 compileTask = compileTask,
@@ -159,17 +159,19 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                 resourcesGenerationDir = genTaskProvider.flatMap {
                                     it.outputResourcesDir.asFile
                                 },
-                                iosLocalizationRegion = genTaskProvider.flatMap {
-                                    it.iosBaseLocalizationRegion
-                                },
-                                resourcePackageName = genTaskProvider.flatMap {
-                                    it.resourcesPackageName
-                                }
+                                iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
+                                resourcePackageName = mrExtension.resourcesPackage,
+                                acToolMinimalDeploymentTarget = mrExtension.acToolMinimalDeploymentTarget
                             )
                         }
                     }
                 }
             }
+        }
+
+        project.tasks.register("generateMR") {
+            it.group = "moko-resources"
+            it.dependsOn(project.tasks.withType<GenerateMultiplatformResourcesTask>())
         }
     }
 
@@ -233,6 +235,11 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         @Suppress("DEPRECATION")
         val androidVariant: BaseVariant = compilation.androidVariant
         androidVariant.preBuildProvider.configure { it.dependsOn(genTaskProvider) }
+
+        // TODO this way do more than required - we trigger generate all android related resources at all
+        project.tasks.withType<AndroidLintAnalysisTask>().configureEach {
+            it.dependsOn(genTaskProvider)
+        }
     }
 
     private fun setupAppleTasks(
@@ -274,7 +281,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         mrExtension: MultiplatformResourcesPluginExtension,
     ): TaskProvider<GenerateMultiplatformResourcesTask> {
         val generateTaskName: String = "generateMR" + kotlinSourceSet.name
-        val generatedMokoResourcesDir = File(project.buildDir, "generated/moko-resources")
+        val generatedMokoResourcesDir = File(
+            project.layout.buildDirectory.get().asFile,
+            "generated/moko-resources"
+        )
 
         val taskProvider: TaskProvider<GenerateMultiplatformResourcesTask> = project.tasks.register(
             generateTaskName,
@@ -289,6 +299,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             generateTask.resourcesClassName.set(mrExtension.resourcesClassName)
             generateTask.resourcesPackageName.set(mrExtension.resourcesPackage)
             generateTask.resourcesVisibility.set(mrExtension.resourcesVisibility)
+            generateTask.androidRClassPackage.set(project.getAndroidRClassPackage())
+            generateTask.strictLineBreaks.set(project.provider { project.isStrictLineBreaks })
             generateTask.outputMetadataFile.set(
                 File(
                     File(generatedMokoResourcesDir, "metadata"),
@@ -319,29 +331,9 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         return taskProvider
     }
 
-    private fun configureLowerDependencies(
-        kotlinSourceSet: KotlinSourceSet,
-        genTask: TaskProvider<GenerateMultiplatformResourcesTask>,
-    ) {
-        kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
-            val resourcesDir: SourceDirectorySet = requireNotNull(
-                dependsSourceSet.extras[mokoResourcesSourceDirectoryKey()]
-            )
-
-            genTask.configure {
-                val files: Set<File> = resourcesDir.srcDirs
-                it.lowerResources.from(files)
-            }
-
-            configureLowerDependencies(
-                kotlinSourceSet = dependsSourceSet,
-                genTask = genTask
-            )
-        }
-    }
-
     private fun configureUpperDependencies(
         kotlinSourceSet: KotlinSourceSet,
+        resourcesSourceSetName: String,
         resourcesSourceDirectory: SourceDirectorySet,
     ) {
         kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
@@ -351,11 +343,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 
             dependsGenTask.configure {
                 val files: Set<File> = resourcesSourceDirectory.srcDirs
-                it.upperResources.from(files)
+                it.upperSourceSets.put(resourcesSourceSetName, kotlinSourceSet.project.files(files))
             }
 
             configureUpperDependencies(
                 kotlinSourceSet = dependsSourceSet,
+                resourcesSourceSetName = resourcesSourceSetName,
                 resourcesSourceDirectory = resourcesSourceDirectory
             )
         }
@@ -371,24 +364,9 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             )
 
             genTask.configure { resourceTask ->
-                resourceTask.inputMetadataFiles.setFrom(
-                    dependsGenTask.flatMap {
-                        it.outputMetadataFile
-                    }
-                )
+                resourceTask.inputMetadataFiles.from(dependsGenTask.flatMap { it.outputMetadataFile })
             }
         }
-    }
-}
-
-private fun KotlinSourceSet.whenDependsOn(sourceSetName: String, action: () -> Unit) {
-    if (this.name == sourceSetName) {
-        action()
-    }
-
-    dependsOnObservable.forAll { dependencySourceSet ->
-        if (dependencySourceSet.name == sourceSetName) action()
-        else dependencySourceSet.whenDependsOn(sourceSetName, action)
     }
 }
 
