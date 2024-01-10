@@ -1,1 +1,1 @@
-Text from asset resource.
+Text from inner asset resource.

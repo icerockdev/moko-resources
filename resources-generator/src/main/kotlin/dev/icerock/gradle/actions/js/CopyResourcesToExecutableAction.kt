@@ -54,6 +54,7 @@ internal class CopyResourcesToExecutableAction(
         {
             test: /\.(.*)/,
             resource: [
+                path.resolve(mokoResourcePath, "assets"),
                 path.resolve(mokoResourcePath, "files"),
                 path.resolve(mokoResourcePath, "images"),
                 path.resolve(mokoResourcePath, "localization"),

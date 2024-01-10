@@ -15,6 +15,11 @@ import dev.icerock.gradle.generator.container.AppleContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
+import dev.icerock.gradle.generator.resources.asset.AndroidAssetResourceGenerator
+import dev.icerock.gradle.generator.resources.asset.AppleAssetResourceGenerator
+import dev.icerock.gradle.generator.resources.asset.AssetResourceGenerator
+import dev.icerock.gradle.generator.resources.asset.JsAssetResourceGenerator
+import dev.icerock.gradle.generator.resources.asset.JvmAssetResourceGenerator
 import dev.icerock.gradle.generator.resources.color.AndroidColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.AppleColorResourceGenerator
 import dev.icerock.gradle.generator.resources.color.ColorResourceGenerator
@@ -48,6 +53,7 @@ import dev.icerock.gradle.generator.resources.string.StringResourceGenerator
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
+import dev.icerock.gradle.metadata.resource.AssetMetadata
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.metadata.resource.FontMetadata
@@ -65,6 +71,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.internal.file.collections.FileCollectionAdapter
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
@@ -206,7 +213,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
                 createImagesGenerator(),
                 createColorsGenerator(),
                 createFontsGenerator(),
-                createFilesGenerator()
+                createFilesGenerator(),
+                createAssetsGenerator()
             ),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
@@ -317,6 +325,58 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             generator = FileResourceGenerator(),
             platformResourceGenerator = createPlatformFileGenerator(),
             filter = { include("files/**") }
+        )
+    }
+
+    private fun createAssetsGenerator(): ResourceTypeGenerator<AssetMetadata> {
+        return ResourceTypeGenerator(
+            generationPackage = resourcesPackageName.get(),
+            resourceClass = CodeConst.assetResourceName,
+            resourceType = ResourceType.ASSETS,
+            metadataClass = AssetMetadata::class,
+            visibilityModifier = resourcesVisibility.get().toModifier(),
+            generator = AssetResourceGenerator(
+                assetDirs = ownResources.from
+                    .map { it as FileCollectionAdapter }
+                    .flatMap { it.files }
+                    .map { File(it, "assets") }
+                    .toSet()
+            ),
+            platformResourceGenerator = createPlatformAssetGenerator(),
+            filter = { include("assets/**") }
+        )
+    }
+
+    private fun createPlatformAssetGenerator(): PlatformResourceGenerator<AssetMetadata> {
+        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
+        val assetsGenerationDir: File = outputAssetsDir.get().asFile
+        return createByPlatform(
+            kotlinPlatformType = kotlinPlatformType,
+            konanTarget = ::kotlinKonanTarget,
+            // TODO find way to remove this NOP
+            createCommon = { NOPResourceGenerator() },
+            createAndroid = {
+                AndroidAssetResourceGenerator(
+                    androidRClassPackage = androidRClassPackage.get(),
+                    assetsGenerationDir = assetsGenerationDir,
+                )
+            },
+            createApple = {
+                AppleAssetResourceGenerator(
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJvm = {
+                JvmAssetResourceGenerator(
+                    className = resourcesClassName.get(),
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            },
+            createJs = {
+                JsAssetResourceGenerator(
+                    resourcesGenerationDir = resourcesGenerationDir
+                )
+            }
         )
     }
 

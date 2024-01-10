@@ -14,6 +14,7 @@ internal object CodeConst {
     val colorResourceName = ClassName("dev.icerock.moko.resources", "ColorResource")
     val fontResourceName = ClassName("dev.icerock.moko.resources", "FontResource")
     val fileResourceName = ClassName("dev.icerock.moko.resources", "FileResource")
+    val assetResourceName = ClassName("dev.icerock.moko.resources", "AssetResource")
 
     val graphicsColorName = ClassName("dev.icerock.moko.graphics", "Color")
 

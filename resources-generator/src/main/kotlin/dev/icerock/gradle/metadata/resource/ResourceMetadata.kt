@@ -129,10 +129,13 @@ internal data class ColorMetadata(
 }
 
 @Serializable
-internal data class AssetsMetadata(
+internal data class AssetMetadata(
     override val key: String,
     val relativePath: File,
     val filePath: File
 ) : ResourceMetadata {
+    val pathRelativeToBase: File
+        get() = filePath.relativeTo(relativePath)
+
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
