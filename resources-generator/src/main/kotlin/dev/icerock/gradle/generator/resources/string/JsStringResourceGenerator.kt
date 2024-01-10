@@ -10,13 +10,13 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.platform.js.convertToMessageFormat
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
 import dev.icerock.gradle.generator.addJsSupportedLocalesProperty
 import dev.icerock.gradle.generator.localization.LanguageType
+import dev.icerock.gradle.generator.platform.js.convertToMessageFormat
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.flatName
 import kotlinx.serialization.json.buildJsonObject
@@ -35,7 +35,7 @@ internal class JsStringResourceGenerator(
         return CodeBlock.of(
             "StringResource(key = %S, loader = %L)",
             metadata.key,
-            CodeConst.Js.stringsLoaderPropertyName
+            Constants.Js.stringsLoaderPropertyName
         )
     }
 
@@ -52,7 +52,7 @@ internal class JsStringResourceGenerator(
         builder: TypeSpec.Builder,
         metadata: List<StringMetadata>
     ) {
-        builder.addSuperinterface(CodeConst.Js.loaderHolderName)
+        builder.addSuperinterface(Constants.Js.loaderHolderName)
 
         builder.addJsFallbackProperty(
             fallbackFilePath = LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base)
@@ -82,7 +82,7 @@ internal class JsStringResourceGenerator(
             .addStatement("return listOf($languageKeysList)")
             .returns(
                 ClassName("kotlin.collections", "List")
-                    .parameterizedBy(CodeConst.stringResourceName)
+                    .parameterizedBy(Constants.stringResourceName)
             )
             .build()
 

@@ -10,12 +10,12 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 
 internal class JsColorResourceGenerator : PlatformResourceGenerator<ColorMetadata> {
-    override fun imports(): List<ClassName> = listOf(CodeConst.graphicsColorName)
+    override fun imports(): List<ClassName> = listOf(Constants.graphicsColorName)
 
     override fun generateInitializer(metadata: ColorMetadata): CodeBlock {
         return createColorResourceCodeInitializer(metadata)
@@ -34,7 +34,7 @@ internal class JsColorResourceGenerator : PlatformResourceGenerator<ColorMetadat
             .addStatement("return listOf($languageKeysList)")
             .returns(
                 ClassName("kotlin.collections", "List")
-                    .parameterizedBy(CodeConst.colorResourceName)
+                    .parameterizedBy(Constants.colorResourceName)
             )
             .build()
 

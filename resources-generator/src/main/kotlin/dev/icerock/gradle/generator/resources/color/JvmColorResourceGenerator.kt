@@ -6,17 +6,16 @@ package dev.icerock.gradle.generator.resources.color
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addJvmResourcesClassLoaderProperty
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 
 internal class JvmColorResourceGenerator(
     private val className: String
 ) : PlatformResourceGenerator<ColorMetadata> {
-    override fun imports(): List<ClassName> = listOf(CodeConst.graphicsColorName)
+    override fun imports(): List<ClassName> = listOf(Constants.graphicsColorName)
 
     override fun generateInitializer(metadata: ColorMetadata): CodeBlock {
         return createColorResourceCodeInitializer(metadata)
@@ -28,15 +27,6 @@ internal class JvmColorResourceGenerator(
         builder: TypeSpec.Builder,
         metadata: List<ColorMetadata>
     ) {
-        // FIXME duplication
-        val classLoaderProperty: PropertySpec = PropertySpec.builder(
-            CodeConst.Jvm.resourcesClassLoaderPropertyName,
-            CodeConst.Jvm.classLoaderName,
-            KModifier.OVERRIDE
-        )
-            .initializer(CodeBlock.of(className + "." + CodeConst.Jvm.resourcesClassLoaderPropertyName))
-            .build()
-
-        builder.addProperty(classLoaderProperty)
+        builder.addJvmResourcesClassLoaderProperty(className)
     }
 }

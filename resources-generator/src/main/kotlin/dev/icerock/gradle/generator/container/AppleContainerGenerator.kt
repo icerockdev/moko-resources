@@ -6,7 +6,7 @@ package dev.icerock.gradle.generator.container
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
 import dev.icerock.gradle.generator.addAppleResourcesBundleProperty
 
@@ -15,8 +15,8 @@ internal class AppleContainerGenerator(
 ) : PlatformContainerGenerator {
     override fun getImports(): List<ClassName> {
         return listOf(
-            CodeConst.Apple.nsBundleName,
-            CodeConst.Apple.loadableBundleName
+            Constants.Apple.nsBundleName,
+            Constants.Apple.loadableBundleName
         )
     }
 

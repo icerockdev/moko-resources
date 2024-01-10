@@ -7,7 +7,7 @@ package dev.icerock.gradle.generator.resources.file
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleProperty
 import dev.icerock.gradle.metadata.resource.FileMetadata
@@ -23,7 +23,7 @@ internal class AppleFileResourceGenerator(
             "FileResource(fileName = %S, extension = %S, bundle = %L)",
             metadata.filePath.nameWithoutExtension,
             metadata.filePath.extension,
-            CodeConst.Apple.containerBundlePropertyName
+            Constants.Apple.containerBundlePropertyName
         )
     }
 

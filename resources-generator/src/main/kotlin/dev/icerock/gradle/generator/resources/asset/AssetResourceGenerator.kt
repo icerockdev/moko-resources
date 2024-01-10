@@ -5,7 +5,7 @@
 package dev.icerock.gradle.generator.resources.asset
 
 import com.squareup.kotlinpoet.PropertySpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
@@ -25,7 +25,7 @@ internal class AssetResourceGenerator(
     }
 
     override fun generateProperty(metadata: AssetMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, CodeConst.assetResourceName)
+        return PropertySpec.builder(metadata.key, Constants.assetResourceName)
     }
 
     // TODO commonize?

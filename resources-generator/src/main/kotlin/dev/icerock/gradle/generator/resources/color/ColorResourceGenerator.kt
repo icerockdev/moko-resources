@@ -5,7 +5,7 @@
 package dev.icerock.gradle.generator.resources.color
 
 import com.squareup.kotlinpoet.PropertySpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 import org.gradle.api.GradleException
@@ -93,7 +93,7 @@ internal class ColorResourceGenerator : ResourceGenerator<ColorMetadata> {
     }
 
     override fun generateProperty(metadata: ColorMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, CodeConst.colorResourceName)
+        return PropertySpec.builder(metadata.key, Constants.colorResourceName)
     }
 
     private fun Map<String, String>.parseColor(color: String): String {

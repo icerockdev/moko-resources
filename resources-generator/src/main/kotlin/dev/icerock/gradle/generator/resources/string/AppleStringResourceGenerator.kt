@@ -7,7 +7,7 @@ package dev.icerock.gradle.generator.resources.string
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleProperty
 import dev.icerock.gradle.generator.localization.LanguageType
@@ -25,7 +25,7 @@ internal class AppleStringResourceGenerator(
         return CodeBlock.of(
             "StringResource(resourceId = %S, bundle = %L)",
             metadata.key,
-            CodeConst.Apple.containerBundlePropertyName
+            Constants.Apple.containerBundlePropertyName
         )
     }
 

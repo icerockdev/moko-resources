@@ -7,7 +7,7 @@ package dev.icerock.gradle.generator.resources.font
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleProperty
 import dev.icerock.gradle.metadata.resource.FontMetadata
@@ -22,7 +22,7 @@ internal class AppleFontResourceGenerator(
         return CodeBlock.of(
             "FontResource(fontName = %S, bundle = %L)",
             metadata.filePath.name,
-            CodeConst.Apple.containerBundlePropertyName
+            Constants.Apple.containerBundlePropertyName
         )
     }
 

@@ -5,13 +5,14 @@
 package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.ResourcesFiles
 import dev.icerock.gradle.generator.ResourcesGenerator
 import dev.icerock.gradle.generator.container.AppleContainerGenerator
+import dev.icerock.gradle.generator.container.JsContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -94,8 +95,14 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Input
     abstract val sourceSetName: Property<String>
 
+    // not used directly in code, but required to outdate cache of target tasks when resources
+    // changed
     @get:InputFiles
-    @get:Classpath
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val lowerResources: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val ownResources: ConfigurableFileCollection
 
     @get:Input
@@ -136,7 +143,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     abstract val outputMetadataFile: RegularFileProperty
 
     @get:Optional
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:InputFiles
     abstract val inputMetadataFiles: ConfigurableFileCollection
 
@@ -230,7 +237,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             konanTarget = ::kotlinKonanTarget,
             createCommon = { NOPContainerGenerator() },
             createAndroid = { NOPContainerGenerator() },
-            createJs = { NOPContainerGenerator() },
+            createJs = { JsContainerGenerator() },
             createApple = {
                 AppleContainerGenerator(
                     bundleIdentifier = "${resourcesPackageName.get()}.MR"
@@ -247,7 +254,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createStringGenerator(): ResourceTypeGenerator<StringMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = CodeConst.stringResourceName,
+            resourceClass = Constants.stringResourceName,
             resourceType = ResourceType.STRINGS,
             metadataClass = StringMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
@@ -262,7 +269,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createPluralsGenerator(): ResourceTypeGenerator<PluralMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = CodeConst.pluralsResourceName,
+            resourceClass = Constants.pluralsResourceName,
             resourceType = ResourceType.PLURALS,
             metadataClass = PluralMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
@@ -277,7 +284,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createImagesGenerator(): ResourceTypeGenerator<ImageMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = CodeConst.imageResourceName,
+            resourceClass = Constants.imageResourceName,
             resourceType = ResourceType.IMAGES,
             metadataClass = ImageMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
@@ -292,7 +299,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createColorsGenerator(): ResourceTypeGenerator<ColorMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = CodeConst.colorResourceName,
+            resourceClass = Constants.colorResourceName,
             resourceType = ResourceType.COLORS,
             metadataClass = ColorMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
@@ -305,7 +312,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createFontsGenerator(): ResourceTypeGenerator<FontMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = CodeConst.fontResourceName,
+            resourceClass = Constants.fontResourceName,
             resourceType = ResourceType.FONTS,
             metadataClass = FontMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
@@ -318,7 +325,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createFilesGenerator(): ResourceTypeGenerator<FileMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = CodeConst.fileResourceName,
+            resourceClass = Constants.fileResourceName,
             resourceType = ResourceType.FILES,
             metadataClass = FileMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),
@@ -331,7 +338,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createAssetsGenerator(): ResourceTypeGenerator<AssetMetadata> {
         return ResourceTypeGenerator(
             generationPackage = resourcesPackageName.get(),
-            resourceClass = CodeConst.assetResourceName,
+            resourceClass = Constants.assetResourceName,
             resourceType = ResourceType.ASSETS,
             metadataClass = AssetMetadata::class,
             visibilityModifier = resourcesVisibility.get().toModifier(),

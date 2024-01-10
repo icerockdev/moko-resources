@@ -5,7 +5,7 @@
 package dev.icerock.gradle.generator.resources.image
 
 import com.squareup.kotlinpoet.PropertySpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.utils.nameWithoutScale
@@ -30,7 +30,7 @@ internal class ImageResourceGenerator : ResourceGenerator<ImageMetadata> {
     }
 
     override fun generateProperty(metadata: ImageMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, CodeConst.imageResourceName)
+        return PropertySpec.builder(metadata.key, Constants.imageResourceName)
     }
 
     private fun extractKey(file: File): String {

@@ -10,8 +10,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addJvmResourcesClassLoaderProperty
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import org.apache.commons.text.StringEscapeUtils
@@ -27,7 +28,7 @@ internal class JvmStringResourceGenerator(
     override fun generateInitializer(metadata: StringMetadata): CodeBlock {
         return CodeBlock.of(
             "StringResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
-            CodeConst.Jvm.resourcesClassLoaderPropertyName,
+            Constants.Jvm.resourcesClassLoaderPropertyName,
             stringsBundlePropertyName,
             metadata.key
         )
@@ -46,23 +47,14 @@ internal class JvmStringResourceGenerator(
         builder: TypeSpec.Builder,
         metadata: List<StringMetadata>
     ) {
-        // FIXME duplication
-        val classLoaderProperty: PropertySpec = PropertySpec.builder(
-            CodeConst.Jvm.resourcesClassLoaderPropertyName,
-            CodeConst.Jvm.classLoaderName,
-            KModifier.OVERRIDE
-        )
-            .initializer(CodeBlock.of(className + "." + CodeConst.Jvm.resourcesClassLoaderPropertyName))
-            .build()
-
-        builder.addProperty(classLoaderProperty)
+        builder.addJvmResourcesClassLoaderProperty(className)
 
         // FIXME duplication
         val property: PropertySpec = PropertySpec.builder(
             stringsBundlePropertyName,
             STRING,
             KModifier.PRIVATE
-        ).initializer(CodeBlock.of("\"%L/%L\"", CodeConst.Jvm.localizationDir, getBundlePath()))
+        ).initializer(CodeBlock.of("\"%L/%L\"", Constants.Jvm.localizationDir, getBundlePath()))
             .build()
 
         builder.addProperty(property)
@@ -71,7 +63,7 @@ internal class JvmStringResourceGenerator(
     private fun generateLanguageFile(language: LanguageType, strings: Map<String, String>) {
         val fileDirName = "${getBundlePath()}${language.jvmResourcesSuffix}"
 
-        val localizationDir = File(resourcesGenerationDir, CodeConst.Jvm.localizationDir)
+        val localizationDir = File(resourcesGenerationDir, Constants.Jvm.localizationDir)
         localizationDir.mkdirs()
 
         val stringsFile = File(localizationDir, "$fileDirName.properties")

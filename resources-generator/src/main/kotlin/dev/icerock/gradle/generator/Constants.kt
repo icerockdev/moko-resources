@@ -6,7 +6,7 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 
-internal object CodeConst {
+internal object Constants {
     val resourceContainerName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
     val stringResourceName = ClassName("dev.icerock.moko.resources", "StringResource")
     val pluralsResourceName = ClassName("dev.icerock.moko.resources", "PluralsResource")

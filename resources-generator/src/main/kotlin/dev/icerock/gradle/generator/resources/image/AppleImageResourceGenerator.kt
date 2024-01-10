@@ -7,7 +7,7 @@ package dev.icerock.gradle.generator.resources.image
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleProperty
 import dev.icerock.gradle.metadata.resource.ImageMetadata
@@ -27,12 +27,12 @@ internal class AppleImageResourceGenerator(
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = %L)",
             metadata.key,
-            CodeConst.Apple.containerBundlePropertyName
+            Constants.Apple.containerBundlePropertyName
         )
     }
 
     override fun generateResourceFiles(data: List<ImageMetadata>) {
-        val assetsDirectory = File(assetsGenerationDir, CodeConst.Apple.assetsDirectoryName)
+        val assetsDirectory = File(assetsGenerationDir, Constants.Apple.assetsDirectoryName)
 
         data.forEach { imageMetadata ->
             val assetDir = File(assetsDirectory, "${imageMetadata.key}.imageset")

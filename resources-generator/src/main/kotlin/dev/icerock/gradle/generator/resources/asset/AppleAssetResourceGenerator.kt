@@ -7,7 +7,7 @@ package dev.icerock.gradle.generator.resources.asset
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleProperty
 import dev.icerock.gradle.metadata.resource.AssetMetadata
@@ -26,7 +26,7 @@ internal class AppleAssetResourceGenerator(
                 .replace('/', PATH_DELIMITER)
                 .substringBeforeLast('.'),
             metadata.filePath.extension,
-            CodeConst.Apple.containerBundlePropertyName
+            Constants.Apple.containerBundlePropertyName
         )
     }
 

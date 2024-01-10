@@ -42,19 +42,6 @@ internal fun setupAppleKLibResources(
             acToolMinimalDeploymentTarget = acToolMinimalDeploymentTarget
         )
     )
-
-    // tasks like compileIosMainKotlinMetadata when only one target enabled
-//        generationTask.project.tasks
-//            .withType<KotlinCommonCompile>()
-//            .matching { it.name.contains(sourceSet.name, ignoreCase = true) }
-//            .configureEach { it.dependsOn(generationTask) }
-
-    //TODO fix usage of sourceSet
-//        dependsOnProcessResources(
-//            project = generationTask.project,
-//            sourceSet = sourceSet,
-//            task = generationTask,
-//        )
 }
 
 internal fun setupFrameworkResources(compilation: KotlinNativeCompilation) {
@@ -117,6 +104,35 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
 //        xcodeTask.dependsOn(copyTask)
 //    }
 }
+
+//private fun setupCopyXCFrameworkResourcesTask(project: Project) {
+//    // Seems that there were problem with this block in the past with mystic task adding. Need more info
+//    // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
+//    // Suppose that on that moment there were no lazy register method for task container
+//    project.tasks.withType(XCFrameworkTask::class).all { task ->
+//        val copyTaskName: String = task.name
+//            .replace("assemble", "copyResources").plus("ToApp")
+//
+//        project.tasks.register<CopyXCFrameworkResourcesToApp>(copyTaskName) {
+//            xcFrameworkDir = task.outputDir
+//            dependsOn(task)
+//        }
+//    }
+//}
+
+//private fun createCopyResourcesToAppTask(project: Project) {
+//    project.tasks
+//        .withType<KotlinNativeLink>()
+//        .matching { it.binary is AbstractExecutable }
+//        .all { linkTask ->
+//            val copyTaskName: String = linkTask.name.replace("link", "copyResources")
+//
+//            project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
+//                this.linkTask = linkTask
+//                dependsOn(linkTask)
+//            }
+//        }
+//}
 
 internal fun setupTestsResources(compilation: KotlinNativeCompilation) {
     compilation.target.binaries.withType<TestExecutable>().configureEach { executable ->

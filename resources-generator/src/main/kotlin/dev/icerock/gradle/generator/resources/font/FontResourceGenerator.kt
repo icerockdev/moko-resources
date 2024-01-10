@@ -5,7 +5,7 @@
 package dev.icerock.gradle.generator.resources.font
 
 import com.squareup.kotlinpoet.PropertySpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
@@ -22,6 +22,6 @@ internal class FontResourceGenerator : ResourceGenerator<FontMetadata> {
     }
 
     override fun generateProperty(metadata: FontMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, CodeConst.fontResourceName)
+        return PropertySpec.builder(metadata.key, Constants.fontResourceName)
     }
 }

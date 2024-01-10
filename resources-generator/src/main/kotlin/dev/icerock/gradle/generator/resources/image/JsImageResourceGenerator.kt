@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import java.io.File
@@ -51,7 +51,7 @@ internal class JsImageResourceGenerator(
             .addStatement("return listOf($languageKeysList)")
             .returns(
                 ClassName("kotlin.collections", "List")
-                    .parameterizedBy(CodeConst.imageResourceName)
+                    .parameterizedBy(Constants.imageResourceName)
             )
             .build()
 

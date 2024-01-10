@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
@@ -35,7 +35,7 @@ internal class JsPluralResourceGenerator(
         return CodeBlock.of(
             "PluralsResource(key = %S, loader = %L)",
             metadata.key,
-            CodeConst.Js.stringsLoaderPropertyName
+            Constants.Js.stringsLoaderPropertyName
         )
     }
 
@@ -52,7 +52,7 @@ internal class JsPluralResourceGenerator(
         builder: TypeSpec.Builder,
         metadata: List<PluralMetadata>
     ) {
-        builder.addSuperinterface(CodeConst.Js.loaderHolderName)
+        builder.addSuperinterface(Constants.Js.loaderHolderName)
 
         builder.addJsFallbackProperty(
             fallbackFilePath = LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base)
@@ -82,7 +82,7 @@ internal class JsPluralResourceGenerator(
             .addStatement("return listOf($languageKeysList)")
             .returns(
                 ClassName("kotlin.collections", "List")
-                    .parameterizedBy(CodeConst.pluralsResourceName)
+                    .parameterizedBy(Constants.pluralsResourceName)
             )
             .build()
 

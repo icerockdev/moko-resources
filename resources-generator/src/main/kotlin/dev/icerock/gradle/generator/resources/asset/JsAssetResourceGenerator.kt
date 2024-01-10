@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
@@ -54,7 +54,7 @@ internal class JsAssetResourceGenerator(
             .addStatement("return listOf($values)")
             .returns(
                 ClassName("kotlin.collections", "List")
-                    .parameterizedBy(CodeConst.assetResourceName)
+                    .parameterizedBy(Constants.assetResourceName)
             )
             .build()
 

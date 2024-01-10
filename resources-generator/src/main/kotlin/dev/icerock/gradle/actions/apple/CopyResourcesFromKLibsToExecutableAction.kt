@@ -5,7 +5,6 @@
 package dev.icerock.gradle.actions.apple
 
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
 internal class CopyResourcesFromKLibsToExecutableAction : CopyResourcesFromKLibsAction() {

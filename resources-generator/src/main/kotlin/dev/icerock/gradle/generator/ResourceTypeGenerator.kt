@@ -74,7 +74,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
             // implement ResourceType<**Resource> for extensions
-            .addSuperinterface(CodeConst.resourceContainerName.parameterizedBy(resourceClass))
+            .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .addSuperinterfaces(typeInterfaces.map {
                 ClassName(packageName = generationPackage, it.name)
@@ -139,7 +139,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .addModifiers(visibilityModifier)
             .addModifiers(KModifier.ACTUAL)
             // implement ResourceType<**Resource> for extensions
-            .addSuperinterface(CodeConst.resourceContainerName.parameterizedBy(resourceClass))
+            .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .addSuperinterfaces(typeInterfaces.map {
                 ClassName(packageName = generationPackage, it.name)
@@ -178,7 +178,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
             // implement ResourceType<**Resource> for extensions
-            .addSuperinterface(CodeConst.resourceContainerName.parameterizedBy(resourceClass))
+            .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .also { builder ->
                 platformResourceGenerator.generateBeforeProperties(builder, typeResources)

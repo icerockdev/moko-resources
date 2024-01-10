@@ -7,7 +7,7 @@ package dev.icerock.gradle.generator.resources.plural
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleProperty
 import dev.icerock.gradle.generator.localization.LanguageType
@@ -24,7 +24,7 @@ internal class ApplePluralResourceGenerator(
         return CodeBlock.of(
             "PluralsResource(resourceId = %S, bundle = %L)",
             metadata.key,
-            CodeConst.Apple.containerBundlePropertyName
+            Constants.Apple.containerBundlePropertyName
         )
     }
 

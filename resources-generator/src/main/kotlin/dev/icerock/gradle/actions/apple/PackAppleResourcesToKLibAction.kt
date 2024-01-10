@@ -4,7 +4,7 @@
 
 package dev.icerock.gradle.actions.apple
 
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.platform.apple.LoadableBundle
 import dev.icerock.gradle.utils.unzipTo
 import org.gradle.api.Action
@@ -77,7 +77,7 @@ internal class PackAppleResourcesToKLibAction(
             )
         }
 
-        val rawAssetsDir = File(loadableBundle.resourcesDir, CodeConst.Apple.assetsDirectoryName)
+        val rawAssetsDir = File(loadableBundle.resourcesDir, Constants.Apple.assetsDirectoryName)
         if (rawAssetsDir.exists()) {
             val process: Process = Runtime.getRuntime().exec(
                 "xcrun actool ${rawAssetsDir.name} --compile . --platform iphoneos --minimum-deployment-target ${acToolMinimalDeploymentTarget.get()}",

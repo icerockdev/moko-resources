@@ -12,8 +12,8 @@ import com.squareup.kotlinpoet.TypeSpec
 
 internal fun TypeSpec.Builder.addAppleResourcesBundleProperty(bundleIdentifier: String) {
     val bundleProperty: PropertySpec = PropertySpec.builder(
-        CodeConst.Apple.resourcesBundlePropertyName,
-        CodeConst.Apple.nsBundleName,
+        Constants.Apple.resourcesBundlePropertyName,
+        Constants.Apple.nsBundleName,
         KModifier.PRIVATE
     ).delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(%S) }", bundleIdentifier))
         .build()
@@ -33,10 +33,10 @@ internal fun TypeSpec.Builder.addContentHashProperty(hash: String) {
 internal fun TypeSpec.Builder.addAppleContainerBundleProperty() {
     val bundleProperty: PropertySpec =
         PropertySpec.builder(
-            CodeConst.Apple.containerBundlePropertyName,
-            CodeConst.Apple.nsBundleName,
+            Constants.Apple.containerBundlePropertyName,
+            Constants.Apple.nsBundleName,
             KModifier.OVERRIDE
-        ).initializer(CodeConst.Apple.resourcesBundlePropertyName)
+        ).initializer(Constants.Apple.resourcesBundlePropertyName)
             .build()
 
     addProperty(bundleProperty)
@@ -44,8 +44,8 @@ internal fun TypeSpec.Builder.addAppleContainerBundleProperty() {
 
 internal fun TypeSpec.Builder.addJvmClassLoaderProperty(resourcesClassName: String) {
     val property: PropertySpec = PropertySpec.builder(
-        CodeConst.Jvm.resourcesClassLoaderPropertyName,
-        CodeConst.Jvm.classLoaderName,
+        Constants.Jvm.resourcesClassLoaderPropertyName,
+        Constants.Jvm.classLoaderName,
         KModifier.PRIVATE
     ).initializer(CodeBlock.of("$resourcesClassName::class.java.classLoader"))
         .build()
@@ -53,9 +53,21 @@ internal fun TypeSpec.Builder.addJvmClassLoaderProperty(resourcesClassName: Stri
     addProperty(property)
 }
 
+internal fun TypeSpec.Builder.addJvmResourcesClassLoaderProperty(resourcesClassName: String) {
+    val classLoaderProperty: PropertySpec = PropertySpec.builder(
+        Constants.Jvm.resourcesClassLoaderPropertyName,
+        Constants.Jvm.classLoaderName,
+        KModifier.OVERRIDE
+    )
+        .initializer(CodeBlock.of(resourcesClassName + "." + Constants.Jvm.resourcesClassLoaderPropertyName))
+        .build()
+
+    addProperty(classLoaderProperty)
+}
+
 internal fun TypeSpec.Builder.addJsFallbackProperty(fallbackFilePath: String) {
     val property: PropertySpec = PropertySpec
-        .builder(CodeConst.Js.fallbackFilePropertyName, String::class, KModifier.PRIVATE)
+        .builder(Constants.Js.fallbackFilePropertyName, String::class, KModifier.PRIVATE)
         .initializer(
             CodeBlock.of(
                 "js(%S) as %T",
@@ -73,18 +85,18 @@ internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
 ) {
     val property: PropertySpec = PropertySpec
         .builder(
-            CodeConst.Js.supportedLocalesPropertyName,
-            CodeConst.Js.supportedLocalesName,
+            Constants.Js.supportedLocalesPropertyName,
+            Constants.Js.supportedLocalesName,
             KModifier.PRIVATE
         ).initializer(
             CodeBlock
                 .builder()
                 .apply {
-                    add("%T(listOf(\n", CodeConst.Js.supportedLocalesName)
+                    add("%T(listOf(\n", Constants.Js.supportedLocalesName)
                     bcpLangToPath.forEach { (bcpLang, filePath) ->
                         add(
                             "%T(%S, js(%S) as %T),\n",
-                            CodeConst.Js.supportedLocaleName,
+                            Constants.Js.supportedLocaleName,
                             bcpLang,
                             "require(\"$filePath\")",
                             String::class
@@ -99,14 +111,14 @@ internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
 
 internal fun TypeSpec.Builder.addJsContainerStringsLoaderProperty() {
     val property = PropertySpec.builder(
-        CodeConst.Js.stringsLoaderPropertyName,
-        CodeConst.Js.stringLoaderName,
+        Constants.Js.stringsLoaderPropertyName,
+        Constants.Js.stringLoaderName,
         KModifier.OVERRIDE
     ).initializer(
         CodeBlock.of(
             "RemoteJsStringLoader.Impl(supportedLocales = %N, fallbackFileUri = %N)",
-            CodeConst.Js.supportedLocalesPropertyName,
-            CodeConst.Js.fallbackFilePropertyName
+            Constants.Js.supportedLocalesPropertyName,
+            Constants.Js.fallbackFilePropertyName
         )
     ).build()
     addProperty(property)

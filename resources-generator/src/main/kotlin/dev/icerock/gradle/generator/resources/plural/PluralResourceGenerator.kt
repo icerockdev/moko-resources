@@ -5,7 +5,7 @@
 package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.PropertySpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
@@ -56,7 +56,7 @@ internal class PluralResourceGenerator(
     }
 
     override fun generateProperty(metadata: PluralMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, CodeConst.pluralsResourceName)
+        return PropertySpec.builder(metadata.key, Constants.pluralsResourceName)
     }
 
     private fun loadLanguageStrings(stringsFile: File): Map<KeyType, PluralMap> {

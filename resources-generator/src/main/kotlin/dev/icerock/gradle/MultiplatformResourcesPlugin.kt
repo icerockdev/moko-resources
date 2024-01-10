@@ -81,6 +81,11 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 mrExtension = mrExtension
             )
 
+            configureLowerDependencies(
+                kotlinSourceSet = kotlinSourceSet,
+                genTask = genTask
+            )
+
             configureUpperDependencies(
                 kotlinSourceSet = kotlinSourceSet,
                 resourcesSourceSetName = kotlinSourceSet.name,
@@ -329,6 +334,26 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         kotlinSourceSet.extras[mokoResourcesGenTaskKey()] = taskProvider
 
         return taskProvider
+    }
+
+    private fun configureLowerDependencies(
+        kotlinSourceSet: KotlinSourceSet,
+        genTask: TaskProvider<GenerateMultiplatformResourcesTask>,
+    ) {
+        kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
+            val resourcesDir: SourceDirectorySet =
+                requireNotNull(dependsSourceSet.extras[mokoResourcesSourceDirectoryKey()])
+
+            genTask.configure {
+                val files: Set<File> = resourcesDir.srcDirs
+                it.lowerResources.from(files)
+            }
+
+            configureLowerDependencies(
+                kotlinSourceSet = dependsSourceSet,
+                genTask = genTask
+            )
+        }
     }
 
     private fun configureUpperDependencies(

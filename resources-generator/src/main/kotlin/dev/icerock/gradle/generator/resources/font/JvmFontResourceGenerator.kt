@@ -6,11 +6,10 @@ package dev.icerock.gradle.generator.resources.font
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addJvmResourcesClassLoaderProperty
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
 
@@ -23,7 +22,7 @@ internal class JvmFontResourceGenerator(
     override fun generateInitializer(metadata: FontMetadata): CodeBlock {
         return CodeBlock.of(
             "FontResource(resourcesClassLoader = %L, filePath = %S)",
-            CodeConst.Jvm.resourcesClassLoaderPropertyName,
+            Constants.Jvm.resourcesClassLoaderPropertyName,
             "$FONTS_DIR/${metadata.filePath.name}"
         )
     }
@@ -41,16 +40,7 @@ internal class JvmFontResourceGenerator(
         builder: TypeSpec.Builder,
         metadata: List<FontMetadata>
     ) {
-        // FIXME duplication
-        val classLoaderProperty: PropertySpec = PropertySpec.builder(
-            CodeConst.Jvm.resourcesClassLoaderPropertyName,
-            CodeConst.Jvm.classLoaderName,
-            KModifier.OVERRIDE
-        )
-            .initializer(CodeBlock.of(className + "." + CodeConst.Jvm.resourcesClassLoaderPropertyName))
-            .build()
-
-        builder.addProperty(classLoaderProperty)
+        builder.addJvmResourcesClassLoaderProperty(className)
     }
 
     private companion object {

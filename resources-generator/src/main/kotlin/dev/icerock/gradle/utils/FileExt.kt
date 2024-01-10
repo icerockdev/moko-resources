@@ -7,14 +7,17 @@ package dev.icerock.gradle.utils
 import java.io.File
 import org.jetbrains.kotlin.konan.file.File as KonanFile
 
-internal val File.svg: Boolean get() =
-    extension.equals("svg", ignoreCase = true)
+internal val File.svg: Boolean
+    get() =
+        extension.equals("svg", ignoreCase = true)
 
-internal val File.scale: String get() =
-    nameWithoutExtension.substringAfter("@").substringBefore("x")
+internal val File.scale: String
+    get() =
+        nameWithoutExtension.substringAfter("@").substringBefore("x")
 
-internal val File.nameWithoutScale: String get() =
-    nameWithoutExtension.withoutScale
+internal val File.nameWithoutScale: String
+    get() =
+        nameWithoutExtension.withoutScale
 
 internal val File.targetName: String
     get() = parentFile.parentFile.parentFile.name

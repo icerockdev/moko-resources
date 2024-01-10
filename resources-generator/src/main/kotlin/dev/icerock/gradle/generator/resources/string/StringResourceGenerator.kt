@@ -5,7 +5,7 @@
 package dev.icerock.gradle.generator.resources.string
 
 import com.squareup.kotlinpoet.PropertySpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.exceptions.EqualStringKeysException
 import dev.icerock.gradle.generator.localization.LanguageType
@@ -50,7 +50,7 @@ internal class StringResourceGenerator(
     }
 
     override fun generateProperty(metadata: StringMetadata): PropertySpec.Builder {
-        return PropertySpec.builder(metadata.key, CodeConst.stringResourceName)
+        return PropertySpec.builder(metadata.key, Constants.stringResourceName)
     }
 
     private fun loadLanguageStrings(stringsFile: File): Map<KeyType, String> {

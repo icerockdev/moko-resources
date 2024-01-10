@@ -7,7 +7,6 @@ package dev.icerock.gradle.actions.apple
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Task
-import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl

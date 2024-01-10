@@ -6,7 +6,7 @@ package dev.icerock.gradle.generator.container
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
 import dev.icerock.gradle.generator.addJvmClassLoaderProperty
 
@@ -14,7 +14,7 @@ internal class JvmContainerGenerator(
     private val resourcesClassName: String
 ) : PlatformContainerGenerator {
     override fun getImports(): List<ClassName> {
-        return listOf(CodeConst.Jvm.classLoaderName)
+        return listOf(Constants.Jvm.classLoaderName)
     }
 
     override fun generateBeforeTypes(builder: TypeSpec.Builder) {

@@ -6,11 +6,10 @@ package dev.icerock.gradle.generator.resources.image
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.CodeConst
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addJvmResourcesClassLoaderProperty
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import java.io.File
 
@@ -25,7 +24,7 @@ internal class JvmImageResourceGenerator(
         val fileName = "${metadata.key}.${item.filePath.extension}"
         return CodeBlock.of(
             "ImageResource(resourcesClassLoader = %L, filePath = %S)",
-            CodeConst.Jvm.resourcesClassLoaderPropertyName,
+            Constants.Jvm.resourcesClassLoaderPropertyName,
             "$IMAGES_DIR/${fileName}"
         )
     }
@@ -38,16 +37,7 @@ internal class JvmImageResourceGenerator(
         builder: TypeSpec.Builder,
         metadata: List<ImageMetadata>
     ) {
-        // FIXME duplication
-        val classLoaderProperty: PropertySpec = PropertySpec.builder(
-            CodeConst.Jvm.resourcesClassLoaderPropertyName,
-            CodeConst.Jvm.classLoaderName,
-            KModifier.OVERRIDE
-        )
-            .initializer(CodeBlock.of(className + "." + CodeConst.Jvm.resourcesClassLoaderPropertyName))
-            .build()
-
-        builder.addProperty(classLoaderProperty)
+        builder.addJvmResourcesClassLoaderProperty(className)
     }
 
     private companion object {
