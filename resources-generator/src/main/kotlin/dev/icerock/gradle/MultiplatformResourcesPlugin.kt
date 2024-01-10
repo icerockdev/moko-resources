@@ -137,7 +137,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                 compileTask = compileTask,
                                 resourcesGenerationDir = genTaskProvider.flatMap {
                                     it.outputResourcesDir.asFile
-                                }
+                                },
+                                projectDir = project.provider { project.projectDir }
                             )
                             setupJsKLibResources(
                                 compileTask = compileTask,

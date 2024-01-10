@@ -12,12 +12,9 @@ internal class CopyResourcesFromKLibsToExecutableAction : CopyResourcesFromKLibs
     override fun execute(task: Task) {
         task as KotlinNativeLink
 
-        val executable: AbstractExecutable = task.binary as AbstractExecutable
-
         copyResourcesFromLibraries(
             linkTask = task,
-            project = task.project,
-            outputDir = executable.outputDirectory
+            outputDir = task.outputFile.get()
         )
     }
 }

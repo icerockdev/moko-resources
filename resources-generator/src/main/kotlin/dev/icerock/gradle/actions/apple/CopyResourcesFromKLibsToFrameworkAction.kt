@@ -12,12 +12,9 @@ internal class CopyResourcesFromKLibsToFrameworkAction : CopyResourcesFromKLibsA
     override fun execute(task: Task) {
         task as KotlinNativeLink
 
-        val framework: Framework = task.binary as Framework
-
         copyResourcesFromLibraries(
             linkTask = task,
-            project = task.project,
-            outputDir = framework.outputFile
+            outputDir = task.outputFile.get()
         )
     }
 }

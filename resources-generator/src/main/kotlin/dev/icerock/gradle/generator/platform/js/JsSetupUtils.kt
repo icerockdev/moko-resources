@@ -23,9 +23,13 @@ internal fun setupJsKLibResources(
 
 internal fun setupJsResources(
     compileTask: Kotlin2JsCompile,
-    resourcesGenerationDir: Provider<File>
+    resourcesGenerationDir: Provider<File>,
+    projectDir: Provider<File>
 ) {
-    val copyResourcesAction = CopyResourcesToExecutableAction(resourcesGenerationDir)
+    val copyResourcesAction = CopyResourcesToExecutableAction(
+        resourcesGeneratedDir = resourcesGenerationDir,
+        projectDir = projectDir
+    )
     @Suppress("UNCHECKED_CAST")
     compileTask.doLast(copyResourcesAction as Action<in Task>)
 }

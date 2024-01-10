@@ -5,31 +5,31 @@
 package dev.icerock.gradle.tasks
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Internal
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import java.io.File
 import java.io.FileFilter
 
-open class CopyFrameworkResourcesToAppTask : DefaultTask() {
+abstract class CopyFrameworkResourcesToAppTask : DefaultTask() {
     init {
         group = "moko-resources"
     }
 
-    @Internal
-    lateinit var framework: Framework
+    @get:InputDirectory
+    abstract val inputFrameworkDirectory: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
 
     @TaskAction
     fun copyResources() {
-        val buildProductsDir =
-            project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
-        val contentsFolderPath =
-            project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
-        val outputDir = File("$buildProductsDir/$contentsFolderPath")
+        val outputDir: File = outputDirectory.get().asFile
 
-        val inputDir = framework.outputFile
+        val inputDir: File = inputFrameworkDirectory.get().asFile
         inputDir.listFiles(FileFilter { it.extension == "bundle" })?.forEach {
-            project.logger.info("copy resources bundle $it to $outputDir")
+            logger.info("copy resources bundle $it to $outputDir")
             it.copyRecursively(File(outputDir, it.name), overwrite = true)
         }
     }

@@ -6,33 +6,34 @@ package dev.icerock.gradle.actions.js
 
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
-import org.gradle.api.Project
+import org.gradle.api.logging.Logger
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
+import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 internal class CopyResourcesToExecutableAction(
     private val resourcesGeneratedDir: Provider<File>,
+    private val projectDir: Provider<File>
 ) : Action<Kotlin2JsCompile> {
     override fun execute(task: Kotlin2JsCompile) {
-        val project: Project = task.project
         val resourceDir = resourcesGeneratedDir.get()
 
         task.klibs.forEach { dependency ->
             copyResourcesFromLibraries(
+                logger = task.logger,
                 inputFile = dependency,
-                project = project,
                 outputDir = resourceDir
             )
         }
 
-        generateWebpackConfig(project, resourceDir)
-        generateKarmaConfig(project)
+        generateWebpackConfig(resourceDir)
+        generateKarmaConfig()
     }
 
-    private fun generateWebpackConfig(project: Project, resourcesOutput: File) {
-        val webpackDir = File(project.projectDir, "webpack.config.d")
+    private fun generateWebpackConfig(resourcesOutput: File) {
+        val webpackDir = File(projectDir.get(), "webpack.config.d")
         webpackDir.mkdirs()
 
         val webpackConfig = File(webpackDir, "moko-resources-generated.js")
@@ -88,8 +89,8 @@ internal class CopyResourcesToExecutableAction(
         )
     }
 
-    private fun generateKarmaConfig(project: Project) {
-        val webpackDir = File(project.projectDir, "karma.config.d")
+    private fun generateKarmaConfig() {
+        val webpackDir = File(projectDir.get(), "karma.config.d")
         webpackDir.mkdirs()
 
         val webpackTestConfig = File(webpackDir, "moko-resources-generated.js")
@@ -124,16 +125,16 @@ internal class CopyResourcesToExecutableAction(
 
     private fun copyResourcesFromLibraries(
         inputFile: File,
-        project: Project,
-        outputDir: File
+        outputDir: File,
+        logger: Logger
     ) {
         if (inputFile.extension != "klib") return
         if (inputFile.exists().not()) return
 
-        project.logger.info("copy resources from $inputFile into $outputDir")
+        logger.info("copy resources from $inputFile into $outputDir")
         val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
         val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-        val layout = klib.extractingToTemp
+        val layout: KotlinLibraryLayout = klib.extractingToTemp
 
         try {
             File(layout.resourcesDir.path, "moko-resources-js").copyRecursively(
@@ -141,9 +142,9 @@ internal class CopyResourcesToExecutableAction(
                 overwrite = true
             )
         } catch (@Suppress("SwallowedException") exc: NoSuchFileException) {
-            project.logger.info("resources in $inputFile not found")
+            logger.info("resources in $inputFile not found")
         } catch (@Suppress("SwallowedException") exc: java.nio.file.NoSuchFileException) {
-            project.logger.info("resources in $inputFile not found (empty lib)")
+            logger.info("resources in $inputFile not found (empty lib)")
         }
     }
 }
