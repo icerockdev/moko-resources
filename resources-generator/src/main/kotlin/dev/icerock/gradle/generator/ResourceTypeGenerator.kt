@@ -19,6 +19,7 @@ import dev.icerock.gradle.utils.filterClass
 import org.gradle.api.tasks.util.PatternFilterable
 import kotlin.reflect.KClass
 
+@Suppress("LongParameterList", "TooManyFunctions")
 internal class ResourceTypeGenerator<T : ResourceMetadata>(
     private val generationPackage: String,
     private val resourceClass: ClassName,
@@ -40,8 +41,10 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         return files.matching(filter).upperSourceSets.mapNotNull { sourceSetResources ->
             if (sourceSetResources.fileTree.isEmpty) return@mapNotNull null
 
-            val interfaceName: String = sourceSetResources.sourceSetName.capitalize() +
-                    resourceType.name.lowercase().capitalize()
+            val interfaceName: String = buildString {
+                append(sourceSetResources.sourceSetName.capitalize())
+                append(resourceType.name.lowercase().capitalize())
+            }
 
             GenerationResult(
                 typeSpec = TypeSpec.interfaceBuilder(interfaceName)
@@ -76,9 +79,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             // implement ResourceType<**Resource> for extensions
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
-            .addSuperinterfaces(typeInterfaces.map {
-                ClassName(packageName = generationPackage, it.name)
-            })
+            .addSuperinterfaces(
+                typeInterfaces.map { ClassName(packageName = generationPackage, it.name) }
+            )
             // add all properties of available resources
             .addProperties(typeMetadata.map { generator.generateProperty(it).build() })
 
@@ -141,10 +144,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             // implement ResourceType<**Resource> for extensions
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
-            .addSuperinterfaces(typeInterfaces.map {
-                ClassName(packageName = generationPackage, it.name)
-            })
-            .also { builder ->
+            .addSuperinterfaces(
+                typeInterfaces.map { ClassName(packageName = generationPackage, it.name) }
+            ).also { builder ->
                 platformResourceGenerator.generateBeforeProperties(builder, resources)
             }
             // add all properties of interfaces

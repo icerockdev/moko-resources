@@ -17,7 +17,6 @@ import java.io.File
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 
-
 internal fun Project.getAndroidRClassPackage(): Provider<String> {
     return provider {
         val androidExt: BaseExtension = project.extensions.findByType()

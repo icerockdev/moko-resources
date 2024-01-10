@@ -104,15 +104,19 @@ internal class ColorResourceGenerator : ResourceGenerator<ColorMetadata> {
             parseColor(colorValue)
         } else {
             val rawColor: String = color.removePrefix("#").removePrefix("0x")
-            return if (rawColor.length == RgbFormatLength) "${rawColor}${DefaultAlpha}"
-            else rawColor
+            return if (rawColor.length == RgbFormatLength) {
+                "${rawColor}$DefaultAlpha"
+            } else {
+                rawColor
+            }
         }
     }
 
+    @Suppress("MagicNumber")
     private fun String.toColor(): ColorMetadata.Color {
         val rgbaColor: Long = try {
             this.toLong(16)
-        } catch (exc: Exception) {
+        } catch (exc: NumberFormatException) {
             throw GradleException("can't parse $this to ColorMetadata.Color", exc)
         }
         return ColorMetadata.Color(

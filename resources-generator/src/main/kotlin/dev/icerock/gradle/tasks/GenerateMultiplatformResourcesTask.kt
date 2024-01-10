@@ -5,65 +5,24 @@
 package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
-import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
-import dev.icerock.gradle.generator.PlatformResourceGenerator
-import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.ResourcesFiles
 import dev.icerock.gradle.generator.ResourcesGenerator
 import dev.icerock.gradle.generator.container.AppleContainerGenerator
 import dev.icerock.gradle.generator.container.JsContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
-import dev.icerock.gradle.generator.resources.NOPResourceGenerator
-import dev.icerock.gradle.generator.resources.asset.AndroidAssetResourceGenerator
-import dev.icerock.gradle.generator.resources.asset.AppleAssetResourceGenerator
-import dev.icerock.gradle.generator.resources.asset.AssetResourceGenerator
-import dev.icerock.gradle.generator.resources.asset.JsAssetResourceGenerator
-import dev.icerock.gradle.generator.resources.asset.JvmAssetResourceGenerator
-import dev.icerock.gradle.generator.resources.color.AndroidColorResourceGenerator
-import dev.icerock.gradle.generator.resources.color.AppleColorResourceGenerator
-import dev.icerock.gradle.generator.resources.color.ColorResourceGenerator
-import dev.icerock.gradle.generator.resources.color.JsColorResourceGenerator
-import dev.icerock.gradle.generator.resources.color.JvmColorResourceGenerator
-import dev.icerock.gradle.generator.resources.file.AndroidFileResourceGenerator
-import dev.icerock.gradle.generator.resources.file.AppleFileResourceGenerator
-import dev.icerock.gradle.generator.resources.file.FileResourceGenerator
-import dev.icerock.gradle.generator.resources.file.JsFileResourceGenerator
-import dev.icerock.gradle.generator.resources.file.JvmFileResourceGenerator
-import dev.icerock.gradle.generator.resources.font.AndroidFontResourceGenerator
-import dev.icerock.gradle.generator.resources.font.AppleFontResourceGenerator
-import dev.icerock.gradle.generator.resources.font.FontResourceGenerator
-import dev.icerock.gradle.generator.resources.font.JsFontResourceGenerator
-import dev.icerock.gradle.generator.resources.font.JvmFontResourceGenerator
-import dev.icerock.gradle.generator.resources.image.AndroidImageResourceGenerator
-import dev.icerock.gradle.generator.resources.image.AppleImageResourceGenerator
-import dev.icerock.gradle.generator.resources.image.ImageResourceGenerator
-import dev.icerock.gradle.generator.resources.image.JsImageResourceGenerator
-import dev.icerock.gradle.generator.resources.image.JvmImageResourceGenerator
-import dev.icerock.gradle.generator.resources.plural.AndroidPluralResourceGenerator
-import dev.icerock.gradle.generator.resources.plural.ApplePluralResourceGenerator
-import dev.icerock.gradle.generator.resources.plural.JsPluralResourceGenerator
-import dev.icerock.gradle.generator.resources.plural.JvmPluralResourceGenerator
-import dev.icerock.gradle.generator.resources.plural.PluralResourceGenerator
-import dev.icerock.gradle.generator.resources.string.AndroidStringResourceGenerator
-import dev.icerock.gradle.generator.resources.string.AppleStringResourceGenerator
-import dev.icerock.gradle.generator.resources.string.JsStringResourceGenerator
-import dev.icerock.gradle.generator.resources.string.JvmStringResourceGenerator
-import dev.icerock.gradle.generator.resources.string.StringResourceGenerator
+import dev.icerock.gradle.generator.factory.AssetGeneratorFactory
+import dev.icerock.gradle.generator.factory.ColorGeneratorFactory
+import dev.icerock.gradle.generator.factory.FileGeneratorFactory
+import dev.icerock.gradle.generator.factory.FontGeneratorFactory
+import dev.icerock.gradle.generator.factory.ImageGeneratorFactory
+import dev.icerock.gradle.generator.factory.PluralGeneratorFactory
+import dev.icerock.gradle.generator.factory.StringGeneratorFactory
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
-import dev.icerock.gradle.metadata.container.ResourceType
-import dev.icerock.gradle.metadata.resource.AssetMetadata
-import dev.icerock.gradle.metadata.resource.ColorMetadata
-import dev.icerock.gradle.metadata.resource.FileMetadata
-import dev.icerock.gradle.metadata.resource.FontMetadata
-import dev.icerock.gradle.metadata.resource.ImageMetadata
-import dev.icerock.gradle.metadata.resource.PluralMetadata
-import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
-import dev.icerock.gradle.utils.flatName
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -72,11 +31,9 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.internal.file.collections.FileCollectionAdapter
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
@@ -87,7 +44,6 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.konan.target.KonanTarget
-import java.io.File
 
 @CacheableTask
 abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
@@ -214,15 +170,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createGenerator(): ResourcesGenerator {
         return ResourcesGenerator(
             containerGenerator = createPlatformContainerGenerator(),
-            typesGenerators = listOf(
-                createStringGenerator(),
-                createPluralsGenerator(),
-                createImagesGenerator(),
-                createColorsGenerator(),
-                createFontsGenerator(),
-                createFilesGenerator(),
-                createAssetsGenerator()
-            ),
+            typesGenerators = createTypeGenerators(),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
             sourceSetName = sourceSetName.get(),
@@ -251,338 +199,79 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         )
     }
 
-    private fun createStringGenerator(): ResourceTypeGenerator<StringMetadata> {
-        return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName.get(),
-            resourceClass = Constants.stringResourceName,
-            resourceType = ResourceType.STRINGS,
-            metadataClass = StringMetadata::class,
-            visibilityModifier = resourcesVisibility.get().toModifier(),
-            generator = StringResourceGenerator(
-                strictLineBreaks = strictLineBreaks.get()
-            ),
-            platformResourceGenerator = createPlatformStringGenerator(),
-            filter = { include("**/strings*.xml") }
-        )
-    }
-
-    private fun createPluralsGenerator(): ResourceTypeGenerator<PluralMetadata> {
-        return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName.get(),
-            resourceClass = Constants.pluralsResourceName,
-            resourceType = ResourceType.PLURALS,
-            metadataClass = PluralMetadata::class,
-            visibilityModifier = resourcesVisibility.get().toModifier(),
-            generator = PluralResourceGenerator(
-                strictLineBreaks = strictLineBreaks.get()
-            ),
-            platformResourceGenerator = createPlatformPluralGenerator(),
-            filter = { include("**/plurals*.xml") }
-        )
-    }
-
-    private fun createImagesGenerator(): ResourceTypeGenerator<ImageMetadata> {
-        return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName.get(),
-            resourceClass = Constants.imageResourceName,
-            resourceType = ResourceType.IMAGES,
-            metadataClass = ImageMetadata::class,
-            visibilityModifier = resourcesVisibility.get().toModifier(),
-            generator = ImageResourceGenerator(),
-            platformResourceGenerator = createPlatformImageGenerator(),
-            filter = {
-                include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
-            }
-        )
-    }
-
-    private fun createColorsGenerator(): ResourceTypeGenerator<ColorMetadata> {
-        return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName.get(),
-            resourceClass = Constants.colorResourceName,
-            resourceType = ResourceType.COLORS,
-            metadataClass = ColorMetadata::class,
-            visibilityModifier = resourcesVisibility.get().toModifier(),
-            generator = ColorResourceGenerator(),
-            platformResourceGenerator = createPlatformColorGenerator(),
-            filter = { include("**/colors*.xml") }
-        )
-    }
-
-    private fun createFontsGenerator(): ResourceTypeGenerator<FontMetadata> {
-        return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName.get(),
-            resourceClass = Constants.fontResourceName,
-            resourceType = ResourceType.FONTS,
-            metadataClass = FontMetadata::class,
-            visibilityModifier = resourcesVisibility.get().toModifier(),
-            generator = FontResourceGenerator(),
-            platformResourceGenerator = createPlatformFontGenerator(),
-            filter = { include("fonts/**.ttf", "fonts/**.otf") }
-        )
-    }
-
-    private fun createFilesGenerator(): ResourceTypeGenerator<FileMetadata> {
-        return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName.get(),
-            resourceClass = Constants.fileResourceName,
-            resourceType = ResourceType.FILES,
-            metadataClass = FileMetadata::class,
-            visibilityModifier = resourcesVisibility.get().toModifier(),
-            generator = FileResourceGenerator(),
-            platformResourceGenerator = createPlatformFileGenerator(),
-            filter = { include("files/**") }
-        )
-    }
-
-    private fun createAssetsGenerator(): ResourceTypeGenerator<AssetMetadata> {
-        return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName.get(),
-            resourceClass = Constants.assetResourceName,
-            resourceType = ResourceType.ASSETS,
-            metadataClass = AssetMetadata::class,
-            visibilityModifier = resourcesVisibility.get().toModifier(),
-            generator = AssetResourceGenerator(
-                assetDirs = ownResources.from
-                    .map { it as FileCollectionAdapter }
-                    .flatMap { it.files }
-                    .map { File(it, "assets") }
-                    .toSet()
-            ),
-            platformResourceGenerator = createPlatformAssetGenerator(),
-            filter = { include("assets/**") }
-        )
-    }
-
-    private fun createPlatformAssetGenerator(): PlatformResourceGenerator<AssetMetadata> {
-        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
-        val assetsGenerationDir: File = outputAssetsDir.get().asFile
-        return createByPlatform(
+    @Suppress("LongMethod")
+    private fun createTypeGenerators() = listOf(
+        StringGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
+            resourcesVisibility = resourcesVisibility.get(),
+            strictLineBreaks = strictLineBreaks.get(),
+            outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
-            konanTarget = ::kotlinKonanTarget,
-            // TODO find way to remove this NOP
-            createCommon = { NOPResourceGenerator() },
-            createAndroid = {
-                AndroidAssetResourceGenerator(
-                    androidRClassPackage = androidRClassPackage.get(),
-                    assetsGenerationDir = assetsGenerationDir,
-                )
-            },
-            createApple = {
-                AppleAssetResourceGenerator(
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJvm = {
-                JvmAssetResourceGenerator(
-                    className = resourcesClassName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJs = {
-                JsAssetResourceGenerator(
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            }
-        )
-    }
-
-    private fun createPlatformFileGenerator(): PlatformResourceGenerator<FileMetadata> {
-        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
-        return createByPlatform(
+            kotlinKonanTarget = ::kotlinKonanTarget,
+            androidRClassPackage = androidRClassPackage::get,
+            iosBaseLocalizationRegion = iosBaseLocalizationRegion::get,
+        ).create(),
+        PluralGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
+            resourcesVisibility = resourcesVisibility.get(),
+            strictLineBreaks = strictLineBreaks.get(),
+            outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
-            konanTarget = ::kotlinKonanTarget,
-            // TODO find way to remove this NOP
-            createCommon = { NOPResourceGenerator() },
-            createAndroid = {
-                AndroidFileResourceGenerator(
-                    androidRClassPackage = androidRClassPackage.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createApple = {
-                AppleFileResourceGenerator(
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJvm = {
-                JvmFileResourceGenerator(
-                    className = resourcesClassName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJs = {
-                JsFileResourceGenerator(
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            }
-        )
-    }
-
-    private fun createPlatformFontGenerator(): PlatformResourceGenerator<FontMetadata> {
-        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
-        return createByPlatform(
+            kotlinKonanTarget = ::kotlinKonanTarget,
+            androidRClassPackage = androidRClassPackage::get,
+            iosBaseLocalizationRegion = iosBaseLocalizationRegion::get,
+        ).create(),
+        ImageGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
+            resourcesVisibility = resourcesVisibility.get(),
+            outputResourcesDir = outputResourcesDir.get().asFile,
+            outputAssetsDir = outputAssetsDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
-            konanTarget = ::kotlinKonanTarget,
-            // TODO find way to remove this NOP
-            createCommon = { NOPResourceGenerator() },
-            createAndroid = {
-                AndroidFontResourceGenerator(
-                    androidRClassPackage = androidRClassPackage.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createApple = {
-                AppleFontResourceGenerator(
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJvm = {
-                JvmFontResourceGenerator(
-                    className = resourcesClassName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJs = {
-                JsFontResourceGenerator(
-                    resourcesPackageName = resourcesPackageName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            }
-        )
-    }
-
-    private fun createPlatformColorGenerator(): PlatformResourceGenerator<ColorMetadata> {
-        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
-        val assetsGenerationDir: File = outputAssetsDir.get().asFile
-        return createByPlatform(
+            kotlinKonanTarget = ::kotlinKonanTarget,
+            androidRClassPackage = androidRClassPackage::get,
+            logger = logger
+        ).create(),
+        ColorGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
+            resourcesVisibility = resourcesVisibility.get(),
+            outputResourcesDir = outputResourcesDir.get().asFile,
+            outputAssetsDir = outputAssetsDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
-            konanTarget = ::kotlinKonanTarget,
-            // TODO find way to remove this NOP
-            createCommon = { NOPResourceGenerator() },
-            createAndroid = {
-                AndroidColorResourceGenerator(
-                    androidRClassPackage = androidRClassPackage.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createApple = {
-                AppleColorResourceGenerator(
-                    assetsGenerationDir = assetsGenerationDir
-                )
-            },
-            createJvm = {
-                JvmColorResourceGenerator(
-                    className = resourcesClassName.get()
-                )
-            },
-            createJs = {
-                JsColorResourceGenerator()
-            }
-        )
-    }
-
-    private fun createPlatformImageGenerator(): PlatformResourceGenerator<ImageMetadata> {
-        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
-        val assetsGenerationDir: File = outputAssetsDir.get().asFile
-        return createByPlatform(
+            kotlinKonanTarget = ::kotlinKonanTarget,
+            androidRClassPackage = androidRClassPackage::get,
+        ).create(),
+        FontGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
+            resourcesVisibility = resourcesVisibility.get(),
+            outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
-            konanTarget = ::kotlinKonanTarget,
-            // TODO find way to remove this NOP
-            createCommon = { NOPResourceGenerator() },
-            createAndroid = {
-                AndroidImageResourceGenerator(
-                    androidRClassPackage = androidRClassPackage.get(),
-                    resourcesGenerationDir = resourcesGenerationDir,
-                    logger = this.logger
-                )
-            },
-            createApple = {
-                AppleImageResourceGenerator(
-                    assetsGenerationDir = assetsGenerationDir
-                )
-            },
-            createJvm = {
-                JvmImageResourceGenerator(
-                    className = resourcesClassName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJs = {
-                JsImageResourceGenerator(
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            }
-        )
-    }
-
-    private fun createPlatformPluralGenerator(): PlatformResourceGenerator<PluralMetadata> {
-        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
-        return createByPlatform(
+            kotlinKonanTarget = ::kotlinKonanTarget,
+            androidRClassPackage = androidRClassPackage::get,
+        ).create(),
+        FileGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
+            resourcesVisibility = resourcesVisibility.get(),
+            outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
-            konanTarget = ::kotlinKonanTarget,
-            // TODO find way to remove this NOP
-            createCommon = { NOPResourceGenerator() },
-            createAndroid = {
-                AndroidPluralResourceGenerator(
-                    androidRClassPackage = androidRClassPackage.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createApple = {
-                ApplePluralResourceGenerator(
-                    baseLocalizationRegion = iosBaseLocalizationRegion.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJvm = {
-                JvmPluralResourceGenerator(
-                    flattenClassPackage = resourcesPackageName.get().flatName,
-                    className = resourcesClassName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJs = {
-                JsPluralResourceGenerator(
-                    resourcesPackageName = resourcesPackageName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            }
-        )
-    }
-
-    private fun createPlatformStringGenerator(): PlatformResourceGenerator<StringMetadata> {
-        val resourcesGenerationDir: File = outputResourcesDir.get().asFile
-        return createByPlatform(
+            kotlinKonanTarget = ::kotlinKonanTarget,
+            androidRClassPackage = androidRClassPackage::get,
+        ).create(),
+        AssetGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
+            resourcesClassName = resourcesClassName.get(),
+            resourcesVisibility = resourcesVisibility.get(),
+            outputResourcesDir = outputResourcesDir.get().asFile,
+            outputAssetsDir = outputAssetsDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
-            konanTarget = ::kotlinKonanTarget,
-            // TODO find way to remove this NOP
-            createCommon = { NOPResourceGenerator() },
-            createAndroid = {
-                AndroidStringResourceGenerator(
-                    androidRClassPackage = androidRClassPackage.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createApple = {
-                AppleStringResourceGenerator(
-                    baseLocalizationRegion = iosBaseLocalizationRegion.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJvm = {
-                JvmStringResourceGenerator(
-                    flattenClassPackage = resourcesPackageName.get().flatName,
-                    className = resourcesClassName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            },
-            createJs = {
-                JsStringResourceGenerator(
-                    resourcesPackageName = resourcesPackageName.get(),
-                    resourcesGenerationDir = resourcesGenerationDir
-                )
-            }
-        )
-    }
+            kotlinKonanTarget = ::kotlinKonanTarget,
+            androidRClassPackage = androidRClassPackage::get,
+            ownResources = ownResources
+        ).create()
+    )
 }

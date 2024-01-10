@@ -7,6 +7,7 @@ package dev.icerock.gradle
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class MultiplatformResourcesPluginExtension {
     abstract val resourcesPackage: Property<String>
     abstract val resourcesClassName: Property<String>

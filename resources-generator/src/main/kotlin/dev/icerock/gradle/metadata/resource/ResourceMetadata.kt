@@ -32,6 +32,7 @@ internal data class StringMetadata(
         val value: String
     )
 
+    @Suppress("MagicNumber")
     override fun contentHash(): String = values.hashCode().toString(16)
 }
 
@@ -52,11 +53,11 @@ internal data class PluralMetadata(
         val value: String
     ) {
         enum class Quantity {
-            ZERO, ONE, TWO, FEW, MANY, OTHER;
-
+            ZERO, ONE, TWO, FEW, MANY, OTHER
         }
     }
 
+    @Suppress("MagicNumber")
     override fun contentHash(): String = values.hashCode().toString(16)
 }
 
@@ -114,17 +115,20 @@ internal data class ColorMetadata(
         val blue: Int,
         val alpha: Int
     ) {
+        @Suppress("MagicNumber")
         fun toArgbHex(): String {
             return listOf(alpha, red, green, blue)
                 .joinToString(separator = "") { it.toString(16).padStart(2, '0') }
         }
 
+        @Suppress("MagicNumber")
         fun toRgbaHex(): String {
             return listOf(red, green, blue, alpha)
                 .joinToString(separator = "") { it.toString(16).padStart(2, '0') }
         }
     }
 
+    @Suppress("MagicNumber")
     override fun contentHash(): String = value.hashCode().toString(16)
 }
 

@@ -75,7 +75,7 @@ internal class JvmStringResourceGenerator(
         stringsFile.writeText(content)
     }
 
-    private fun getBundlePath(): String = "${flattenClassPackage}_${stringsBundleName}"
+    private fun getBundlePath(): String = "${flattenClassPackage}_$stringsBundleName"
 
     // FIXME duplication
     // TODO should we do that?

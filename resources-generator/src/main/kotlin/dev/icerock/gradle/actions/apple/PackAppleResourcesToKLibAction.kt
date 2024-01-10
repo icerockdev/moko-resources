@@ -79,23 +79,7 @@ internal class PackAppleResourcesToKLibAction(
 
         val rawAssetsDir = File(loadableBundle.resourcesDir, Constants.Apple.assetsDirectoryName)
         if (rawAssetsDir.exists()) {
-            val process: Process = Runtime.getRuntime().exec(
-                "xcrun actool ${rawAssetsDir.name} --compile . --platform iphoneos --minimum-deployment-target ${acToolMinimalDeploymentTarget.get()}",
-                emptyArray(),
-                rawAssetsDir.parentFile
-            )
-            val errors: String = process.errorStream.bufferedReader().readText()
-            val input: String = process.inputStream.bufferedReader().readText()
-            val result: Int = process.waitFor()
-            if (result != 0) {
-                task.logger.error("can't compile assets - $result")
-                task.logger.info(input)
-                task.logger.error(errors)
-                throw GradleException("Assets compilation failed: $errors")
-            } else {
-                task.logger.info("assets compiled")
-                rawAssetsDir.deleteRecursively()
-            }
+            compileAppleAssets(rawAssetsDir, task)
         } else {
             task.logger.info("assets not found, compilation not required")
         }
@@ -107,5 +91,33 @@ internal class PackAppleResourcesToKLibAction(
         repackKonan.zipDirAs(klibKonan)
 
         repackDir.deleteRecursively()
+    }
+
+    private fun compileAppleAssets(
+        rawAssetsDir: File,
+        task: KotlinNativeCompile
+    ) {
+        val process: Process = Runtime.getRuntime().exec(
+            buildString {
+                append("xcrun actool ")
+                append(rawAssetsDir.name)
+                append(" --compile . --platform iphoneos --minimum-deployment-target ")
+                append(acToolMinimalDeploymentTarget.get())
+            },
+            emptyArray(),
+            rawAssetsDir.parentFile
+        )
+        val errors: String = process.errorStream.bufferedReader().readText()
+        val input: String = process.inputStream.bufferedReader().readText()
+        val result: Int = process.waitFor()
+        if (result != 0) {
+            task.logger.error("can't compile assets - $result")
+            task.logger.info(input)
+            task.logger.error(errors)
+            throw GradleException("Assets compilation failed: $errors")
+        } else {
+            task.logger.info("assets compiled")
+            rawAssetsDir.deleteRecursively()
+        }
     }
 }

@@ -15,6 +15,7 @@ import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.calculateHash
 import java.io.File
 
+@Suppress("LongParameterList")
 internal class ResourcesGenerator(
     private val containerGenerator: PlatformContainerGenerator,
     private val typesGenerators: List<ResourceTypeGenerator<*>>,
@@ -24,6 +25,7 @@ internal class ResourcesGenerator(
     private val visibilityModifier: KModifier,
     private val sourcesGenerationDir: File
 ) {
+    @Suppress("LongMethod")
     fun generateTargetKotlin(
         files: ResourcesFiles,
         inputMetadata: List<ContainerMetadata>
@@ -103,9 +105,9 @@ internal class ResourcesGenerator(
 
             // then we should generate dummy actual interfaces
             val dummyInterfaces: List<GenerationResult> = expectInterfaces.map { it.name }
-                .minus(actualInterfaces.map { (it.metadata as ActualInterfaceMetadata).name }
-                    .toSet())
-                .map { dummyInterfaceName ->
+                .minus(
+                    actualInterfaces.map { (it.metadata as ActualInterfaceMetadata).name }.toSet()
+                ).map { dummyInterfaceName ->
                     GenerationResult(
                         typeSpec = TypeSpec.interfaceBuilder(dummyInterfaceName)
                             .addModifiers(visibilityModifier)
@@ -128,8 +130,12 @@ internal class ResourcesGenerator(
             val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
                 typeGenerator.generateActualObject(
                     objects = inputMetadata.mapNotNull { it as? ObjectMetadata },
-                    interfaces = inputMetadata.mapNotNull { it as? ActualInterfaceMetadata } +
-                            (actualInterfaces + dummyInterfaces).map { it.metadata as ActualInterfaceMetadata }
+                    interfaces = inputMetadata
+                        .mapNotNull { it as? ActualInterfaceMetadata }
+                        .plus(
+                            (actualInterfaces + dummyInterfaces)
+                                .map { it.metadata as ActualInterfaceMetadata }
+                        )
                 )
             }
             objects.forEach { outputMetadata.add(it.metadata) }

@@ -40,9 +40,8 @@ internal object Constants {
         val supportedLocaleName = ClassName(internalPackage, "SupportedLocale")
         val loaderHolderName = ClassName(internalPackage, "RemoteJsStringLoaderHolder")
 
-        val stringLoaderName = ClassName(
-            "dev.icerock.moko.resources.provider", "RemoteJsStringLoader"
-        )
+        val stringLoaderName =
+            ClassName("dev.icerock.moko.resources.provider", "RemoteJsStringLoader")
         const val stringsLoaderPropertyName = "stringsLoader"
 
         const val fallbackFilePropertyName = "fallbackFileUrl"

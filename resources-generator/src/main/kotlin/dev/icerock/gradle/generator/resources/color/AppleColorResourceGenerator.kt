@@ -122,6 +122,7 @@ internal class AppleColorResourceGenerator(
         put("color-space", "srgb")
         put(
             "components",
+            @Suppress("MagicNumber")
             buildJsonObject {
                 put("alpha", color.alpha / 255.0f)
                 put("red", color.red / 255.0f)

@@ -78,7 +78,7 @@ internal class JsFontResourceGenerator(
         val addFontsFun: FunSpec = FunSpec.builder("addFontsToPage")
             .addCode(
                 "js(%S)",
-                """require("$FONTS_DIR/${cssDeclarationsFileName}")"""
+                """require("$FONTS_DIR/$cssDeclarationsFileName")"""
             ).build()
         builder.addFunction(addFontsFun)
     }

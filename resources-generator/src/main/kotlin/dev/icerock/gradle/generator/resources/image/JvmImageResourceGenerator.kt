@@ -25,7 +25,7 @@ internal class JvmImageResourceGenerator(
         return CodeBlock.of(
             "ImageResource(resourcesClassLoader = %L, filePath = %S)",
             Constants.Jvm.resourcesClassLoaderPropertyName,
-            "$IMAGES_DIR/${fileName}"
+            "$IMAGES_DIR/$fileName"
         )
     }
 

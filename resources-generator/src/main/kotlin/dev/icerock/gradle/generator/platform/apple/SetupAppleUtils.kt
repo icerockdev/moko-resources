@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import java.io.File
 
+@Suppress("LongParameterList")
 internal fun setupAppleKLibResources(
     compileTask: KotlinNativeCompile,
     assetsDirectory: Provider<File>,
@@ -73,21 +74,23 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
     val copyTask: TaskProvider<CopyFrameworkResourcesToAppTask> =
         project.tasks.register(taskName, CopyFrameworkResourcesToAppTask::class.java) {
             it.inputFrameworkDirectory.set(framework.outputDirectoryProperty)
-            it.outputDirectory.set(project.provider {
-                val buildProductsDir =
-                    project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
-                val contentsFolderPath =
-                    project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
+            it.outputDirectory.set(
+                project.provider {
+                    val buildProductsDir =
+                        project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
+                    val contentsFolderPath =
+                        project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
 
-                val targetDir = File("$buildProductsDir/$contentsFolderPath")
-                val baseDir: File = project.layout.projectDirectory.asFile
+                    val targetDir = File("$buildProductsDir/$contentsFolderPath")
+                    val baseDir: File = project.layout.projectDirectory.asFile
 
-                project.layout.projectDirectory.dir(targetDir.relativeTo(baseDir).path)
-            })
+                    project.layout.projectDirectory.dir(targetDir.relativeTo(baseDir).path)
+                }
+            )
         }
     copyTask.dependsOn(framework.linkTaskProvider)
 
-    //TODO: Вынести в отдельную таску, должно создаваться один раз
+// FIXME Вынести в отдельную таску, должно создаваться один раз
 //    val xcodeTask = project.tasks.maybeCreate(
 //        "copyFrameworkResourcesToApp",
 //        CopyFrameworkResourcesToAppEntryPointTask::class.java
@@ -105,7 +108,7 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
 //    }
 }
 
-//private fun setupCopyXCFrameworkResourcesTask(project: Project) {
+// private fun setupCopyXCFrameworkResourcesTask(project: Project) {
 //    // Seems that there were problem with this block in the past with mystic task adding. Need more info
 //    // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
 //    // Suppose that on that moment there were no lazy register method for task container
@@ -118,9 +121,9 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
 //            dependsOn(task)
 //        }
 //    }
-//}
+// }
 
-//private fun createCopyResourcesToAppTask(project: Project) {
+// private fun createCopyResourcesToAppTask(project: Project) {
 //    project.tasks
 //        .withType<KotlinNativeLink>()
 //        .matching { it.binary is AbstractExecutable }
@@ -132,7 +135,7 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
 //                dependsOn(linkTask)
 //            }
 //        }
-//}
+// }
 
 internal fun setupTestsResources(compilation: KotlinNativeCompilation) {
     compilation.target.binaries.withType<TestExecutable>().configureEach { executable ->

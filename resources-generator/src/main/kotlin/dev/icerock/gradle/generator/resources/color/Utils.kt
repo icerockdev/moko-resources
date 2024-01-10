@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator.resources.color
 import com.squareup.kotlinpoet.CodeBlock
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 
-
 internal fun createColorResourceCodeInitializer(color: ColorMetadata): CodeBlock {
     return when (color.value) {
         is ColorMetadata.ColorItem.Single -> {

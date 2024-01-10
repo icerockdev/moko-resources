@@ -51,8 +51,11 @@ internal class AndroidImageResourceGenerator(
             val drawableDir = File(resourcesGenerationDir, drawableDirName)
             val processedKey: String = processKey(key)
 
-            val resourceExtension: String = if (item.quality == null) "xml"
-            else item.filePath.extension
+            val resourceExtension: String = if (item.quality == null) {
+                "xml"
+            } else {
+                item.filePath.extension
+            }
 
             val resourceFile = File(drawableDir, "$processedKey.$resourceExtension")
             if (item.quality == null) {

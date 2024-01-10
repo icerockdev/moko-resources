@@ -63,6 +63,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
+    @Suppress("LongMethod")
     private fun configureKotlinTargetGenerator(
         project: Project,
         mrExtension: MultiplatformResourcesPluginExtension,

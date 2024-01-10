@@ -19,7 +19,4 @@ internal val File.nameWithoutScale: String
     get() =
         nameWithoutExtension.withoutScale
 
-internal val File.targetName: String
-    get() = parentFile.parentFile.parentFile.name
-
 internal fun File.toKonanFile(): KonanFile = KonanFile(this.path)

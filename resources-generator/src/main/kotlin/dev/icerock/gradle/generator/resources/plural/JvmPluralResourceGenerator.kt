@@ -83,7 +83,7 @@ internal class JvmPluralResourceGenerator(
         stringsFile.writeText(content)
     }
 
-    private fun getBundlePath(): String = "${flattenClassPackage}_${pluralsBundleName}"
+    private fun getBundlePath(): String = "${flattenClassPackage}_$pluralsBundleName"
 
     // FIXME duplication
     // TODO should we do that?

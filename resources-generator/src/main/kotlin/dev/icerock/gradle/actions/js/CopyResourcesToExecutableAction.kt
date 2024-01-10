@@ -86,7 +86,7 @@ internal class CopyResourcesToExecutableAction(
     
     config.resolve.modules.push(mokoResourcePath);
 })(config);
-                """.trimIndent()
+            """.trimIndent()
         )
     }
 
@@ -120,7 +120,7 @@ internal class CopyResourcesToExecutableAction(
                         )
                     }
                 )
-                """.trimIndent()
+            """.trimIndent()
         )
     }
 
