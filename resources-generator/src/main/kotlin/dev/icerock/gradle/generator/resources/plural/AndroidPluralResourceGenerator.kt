@@ -21,7 +21,7 @@ internal class AndroidPluralResourceGenerator(
     )
 
     override fun generateInitializer(metadata: PluralMetadata): CodeBlock {
-        return CodeBlock.of("PluralsResource(R.plurals.%L)", processKey(metadata.key))
+        return CodeBlock.of("PluralsResource(R.plurals.%L)", metadata.key)
     }
 
     override fun generateResourceFiles(data: List<PluralMetadata>) {
@@ -48,8 +48,7 @@ internal class AndroidPluralResourceGenerator(
             """.trimIndent()
 
         val content = strings.map { (key, pluralMap) ->
-            val processedKey = processKey(key)
-            val start = "\t<plurals name=\"$processedKey\">\n"
+            val start = "\t<plurals name=\"$key\">\n"
             val items: String = pluralMap.map { (quantity, value) ->
                 val processedValue = StringEscapeUtils.escapeXml10(value)
                 "\t\t<item quantity=\"$quantity\">$processedValue</item>"
@@ -67,10 +66,5 @@ internal class AndroidPluralResourceGenerator(
         stringsFile.writeText(header + "\n")
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
-    }
-
-    // TODO should we do that?
-    private fun processKey(key: String): String {
-        return key.replace(".", "_")
     }
 }

@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.resources.image
 import com.squareup.kotlinpoet.PropertySpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
+import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.utils.nameWithoutScale
 import dev.icerock.gradle.utils.scale
@@ -18,7 +19,7 @@ internal class ImageResourceGenerator : ResourceGenerator<ImageMetadata> {
     override fun generateMetadata(files: Set<File>): List<ImageMetadata> {
         return files.groupBy { extractKey(it) }.map { (key: String, files: List<File>) ->
             ImageMetadata(
-                key = key,
+                key = generateKey(key),
                 values = files.map { file ->
                     ImageMetadata.ImageQualityItem(
                         quality = if (file.svg) null else file.scale,

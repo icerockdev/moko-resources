@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.resources.color
 import com.squareup.kotlinpoet.PropertySpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
+import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 import org.gradle.api.GradleException
 import org.w3c.dom.Document
@@ -87,7 +88,7 @@ internal class ColorResourceGenerator : ResourceGenerator<ColorMetadata> {
         }
 
         return ColorMetadata(
-            key = colorName,
+            key = generateKey(colorName),
             value = item
         )
     }

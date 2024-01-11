@@ -21,7 +21,7 @@ internal class AndroidStringResourceGenerator(
     )
 
     override fun generateInitializer(metadata: StringMetadata): CodeBlock {
-        return CodeBlock.of("StringResource(R.string.%L)", processKey(metadata.key))
+        return CodeBlock.of("StringResource(R.string.%L)", metadata.key)
     }
 
     override fun generateResourceFiles(data: List<StringMetadata>) {
@@ -45,9 +45,8 @@ internal class AndroidStringResourceGenerator(
             """.trimIndent()
 
         val content = strings.map { (key, value) ->
-            val processedKey = processKey(key)
             val processedValue = convertXmlStringToAndroidLocalization(value)
-            "\t<string name=\"$processedKey\">$processedValue</string>"
+            "\t<string name=\"$key\">$processedValue</string>"
         }.joinToString("\n")
 
         val footer =
@@ -58,11 +57,6 @@ internal class AndroidStringResourceGenerator(
         stringsFile.writeText(header + "\n")
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
-    }
-
-    // TODO should we do that?
-    private fun processKey(key: String): String {
-        return key.replace(".", "_")
     }
 
     // TODO should we do that?

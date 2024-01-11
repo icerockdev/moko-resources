@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.exceptions.EqualStringKeysException
+import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.removeLineWraps
@@ -38,7 +39,7 @@ internal class StringResourceGenerator(
 
         return keyLangText.map { (key, langText) ->
             StringMetadata(
-                key = key,
+                key = generateKey(key),
                 values = langText.map { (lang, value) ->
                     StringMetadata.LocaleItem(
                         locale = lang.language(),

@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.resources.font
 import com.squareup.kotlinpoet.PropertySpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
+import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
 
@@ -14,8 +15,12 @@ internal class FontResourceGenerator : ResourceGenerator<FontMetadata> {
 
     override fun generateMetadata(files: Set<File>): List<FontMetadata> {
         return files.map { file ->
+            val key: String = file.nameWithoutExtension
+                .replace('-', '_')
+                .lowercase()
+
             FontMetadata(
-                key = file.nameWithoutExtension.replace('-', '_').lowercase(),
+                key = generateKey(key),
                 filePath = file,
             )
         }

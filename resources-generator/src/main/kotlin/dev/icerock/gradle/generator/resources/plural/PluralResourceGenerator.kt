@@ -7,6 +7,7 @@ package dev.icerock.gradle.generator.resources.plural
 import com.squareup.kotlinpoet.PropertySpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
+import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.removeLineWraps
@@ -39,7 +40,7 @@ internal class PluralResourceGenerator(
 
         return keyLangText.map { (key: KeyType, langText: Map<LanguageType, PluralMap>) ->
             PluralMetadata(
-                key = key,
+                key = generateKey(key),
                 values = langText.map { (lang: LanguageType, value: PluralMap) ->
                     PluralMetadata.LocaleItem(
                         locale = lang.language(),

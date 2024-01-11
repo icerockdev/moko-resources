@@ -103,7 +103,6 @@ internal class AndroidImageResourceGenerator(
         }
     }
 
-    // TODO we need this?
     private fun processKey(key: String): String {
         return key.lowercase()
     }
