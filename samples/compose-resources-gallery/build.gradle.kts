@@ -14,6 +14,6 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath(moko.resourcesGradlePlugin)
+//        classpath(moko.resourcesGradlePlugin)
     }
 }
