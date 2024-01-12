@@ -95,13 +95,13 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Input
     abstract val strictLineBreaks: Property<Boolean>
 
-    @get:OutputFile
-    abstract val outputMetadataFile: RegularFileProperty
-
     @get:Optional
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:InputFiles
     abstract val inputMetadataFiles: ConfigurableFileCollection
+
+    @get:OutputFile
+    abstract val outputMetadataFile: RegularFileProperty
 
     @get:OutputDirectory
     abstract val outputResourcesDir: DirectoryProperty
