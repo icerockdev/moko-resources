@@ -12,7 +12,6 @@ import dev.icerock.gradle.generator.PlatformContainerGenerator
 internal class JsContainerGenerator : PlatformContainerGenerator {
     override fun generateAfterTypes(builder: TypeSpec.Builder) {
         val loaders: List<String> = builder.typeSpecs
-            .flatMap { it.typeSpecs }
             .mapNotNull { typeSpec ->
                 val loaderProperty = typeSpec.propertySpecs
                     .singleOrNull { it.name == Constants.Js.stringsLoaderPropertyName }
