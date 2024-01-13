@@ -19,6 +19,14 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 internal fun Project.getAndroidRClassPackage(): Provider<String> {
     return provider {
+        // before call android specific classes we should ensure that android plugin in classpath at all
+        // it's required to support gradle projects without android target
+        val isAndroidEnabled = listOf(
+            "com.android.library",
+            "com.android.application"
+        ).any { project.plugins.findPlugin(it) != null }
+        if (!isAndroidEnabled) return@provider null
+
         val androidExt: BaseExtension = project.extensions.findByType()
             ?: return@provider null
         androidExt.namespace ?: getAndroidPackage(androidExt.mainSourceSet.manifest.srcFile)
