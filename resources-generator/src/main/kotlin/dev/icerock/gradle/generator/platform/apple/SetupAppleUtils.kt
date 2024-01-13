@@ -11,16 +11,19 @@ import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
+import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import java.io.File
@@ -108,20 +111,32 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
 //    }
 }
 
-// private fun setupCopyXCFrameworkResourcesTask(project: Project) {
-//    // Seems that there were problem with this block in the past with mystic task adding. Need more info
-//    // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
-//    // Suppose that on that moment there were no lazy register method for task container
-//    project.tasks.withType(XCFrameworkTask::class).all { task ->
-//        val copyTaskName: String = task.name
-//            .replace("assemble", "copyResources").plus("ToApp")
-//
-//        project.tasks.register<CopyXCFrameworkResourcesToApp>(copyTaskName) {
-//            xcFrameworkDir = task.outputDir
-//            dependsOn(task)
-//        }
-//    }
-// }
+internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
+    // Seems that there were problem with this block in the past with mystic task adding. Need more info
+    // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
+    // Suppose that on that moment there were no lazy register method for task container
+    project.tasks.withType(XCFrameworkTask::class).all { task ->
+        val copyTaskName: String = task.name
+            .replace("assemble", "copyResources").plus("ToApp")
+
+        project.tasks.register<CopyXCFrameworkResourcesToApp>(copyTaskName) {
+            xcFrameworkDir.set(task.outputDir)
+            outputDir.set(
+                project.layout.dir(
+                    project.provider {
+                        val buildProductsDir =
+                            project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
+                        val contentsFolderPath =
+                            project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
+
+                        File("$buildProductsDir/$contentsFolderPath")
+                    }
+                )
+            )
+            dependsOn(task)
+        }
+    }
+}
 
 // private fun createCopyResourcesToAppTask(project: Project) {
 //    project.tasks
