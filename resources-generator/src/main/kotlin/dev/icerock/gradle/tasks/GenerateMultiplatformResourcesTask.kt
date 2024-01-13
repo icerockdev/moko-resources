@@ -75,6 +75,10 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Input
     abstract val resourcesPackageName: Property<String>
 
+    @get:Optional
+    @get:Input
+    abstract val appleBundleIdentifier: Property<String>
+
     @get:Input
     abstract val resourcesClassName: Property<String>
 
@@ -188,7 +192,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             createJs = { JsContainerGenerator() },
             createApple = {
                 AppleContainerGenerator(
-                    bundleIdentifier = "${resourcesPackageName.get()}.MR"
+                    bundleIdentifier = appleBundleIdentifier.get()
                 )
             },
             createJvm = {

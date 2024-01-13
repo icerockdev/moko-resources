@@ -31,13 +31,13 @@ internal fun setupAppleKLibResources(
     assetsDirectory: Provider<File>,
     resourcesGenerationDir: Provider<File>,
     iosLocalizationRegion: Provider<String>,
-    resourcePackageName: Provider<String>,
-    acToolMinimalDeploymentTarget: Provider<String>
+    appleBundleIdentifier: Provider<String>,
+    acToolMinimalDeploymentTarget: Provider<String>,
 ) {
     compileTask.doLast(
         PackAppleResourcesToKLibAction(
             baseLocalizationRegion = iosLocalizationRegion,
-            resourcePackageName = resourcePackageName,
+            bundleIdentifier = appleBundleIdentifier,
             assetsDirectory = assetsDirectory,
             resourcesGenerationDir = resourcesGenerationDir,
             acToolMinimalDeploymentTarget = acToolMinimalDeploymentTarget

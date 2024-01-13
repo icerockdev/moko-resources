@@ -19,6 +19,7 @@ import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
@@ -122,8 +123,17 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                 }
                             )
                         }
+                    }
 
-                        if (target is KotlinNativeTarget) {
+                    if (target is KotlinNativeTarget && target.konanTarget.family.isAppleFamily) {
+                        val appleIdentifier: Provider<String> = mrExtension.resourcesPackage
+                            .map { it + "." + compilation.name }
+
+                        genTaskProvider.configure {
+                            it.appleBundleIdentifier.set(appleIdentifier)
+                        }
+
+                        compilation.compileTaskProvider.configure { compileTask: KotlinCompilationTask<*> ->
                             compileTask as KotlinNativeCompile
 
                             setupAppleKLibResources(
@@ -135,8 +145,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                     it.outputResourcesDir.asFile
                                 },
                                 iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
-                                resourcePackageName = mrExtension.resourcesPackage,
-                                acToolMinimalDeploymentTarget = mrExtension.acToolMinimalDeploymentTarget
+                                acToolMinimalDeploymentTarget = mrExtension.acToolMinimalDeploymentTarget,
+                                appleBundleIdentifier = appleIdentifier
                             )
                         }
                     }

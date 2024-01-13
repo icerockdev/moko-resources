@@ -19,7 +19,7 @@ import java.util.Properties
 internal class PackAppleResourcesToKLibAction(
     private val assetsDirectory: Provider<File>,
     private val baseLocalizationRegion: Provider<String>,
-    private val resourcePackageName: Provider<String>,
+    private val bundleIdentifier: Provider<String>,
     private val resourcesGenerationDir: Provider<File>,
     private val acToolMinimalDeploymentTarget: Provider<String>
 ) : Action<Task> {
@@ -59,7 +59,7 @@ internal class PackAppleResourcesToKLibAction(
             directory = resRepackDir,
             bundleName = uniqueName,
             developmentRegion = baseLocalizationRegion.get(),
-            identifier = "${resourcePackageName.get()}.MR"
+            identifier = bundleIdentifier.get()
         )
 
         loadableBundle.write()
