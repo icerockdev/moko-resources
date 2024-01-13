@@ -13,7 +13,7 @@ internal class CopyResourcesFromKLibsToExecutableAction : CopyResourcesFromKLibs
 
         copyResourcesFromLibraries(
             linkTask = task,
-            outputDir = task.outputFile.get()
+            outputDir = task.outputFile.get().parentFile
         )
     }
 }
