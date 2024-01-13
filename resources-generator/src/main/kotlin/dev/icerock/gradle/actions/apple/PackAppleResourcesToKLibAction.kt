@@ -32,8 +32,8 @@ internal class PackAppleResourcesToKLibAction(
         val resourcesExists: Boolean = listOf(
             assetsDirectory,
             resourcesGenerationDir
-        ).any { file ->
-            file.exists() && file.listFiles()?.isNotEmpty() == true
+        ).any { dir ->
+            dir.exists() && dir.walkTopDown().any { it.isFile }
         }
 
         if (!resourcesExists) {
