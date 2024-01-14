@@ -6,12 +6,11 @@ package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.utils.toKonanFile
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.InputFiles
+import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
@@ -20,9 +19,8 @@ import java.io.FileFilter
 
 abstract class CopyExecutableResourcesToApp : DefaultTask() {
 
-    @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val klibs: ConfigurableFileCollection
+    @get:Input
+    abstract val klibs: Property<FileCollection>
 
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
@@ -35,7 +33,7 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
     fun copyResources() {
         val outputDir: File = outputDirectory.get().asFile
 
-        klibs
+        klibs.get()
             .filter { library -> library.extension == "klib" }
             .filter(File::exists)
             .forEach { inputFile ->

@@ -6,7 +6,7 @@ package dev.icerock.gradle.generator.platform.apple
 
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import dev.icerock.gradle.MultiplatformResourcesPluginExtension
-import dev.icerock.gradle.actions.apple.CopyResourcesFromFrameworkToFatAction
+import dev.icerock.gradle.actions.apple.CopyAppleResourcesFromFrameworkToFatAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
@@ -24,12 +24,11 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 
 @Suppress("LongParameterList")
@@ -52,8 +51,8 @@ internal fun setupAppleKLibResources(
     )
 }
 
-internal fun setupFrameworkResources(compilation: KotlinNativeCompilation) {
-    compilation.target.binaries.withType<Framework>().configureEach { framework ->
+internal fun setupFrameworkResources(target: KotlinNativeTarget) {
+    target.binaries.withType<Framework>().configureEach { framework ->
         framework.linkTaskProvider.configure { linkTask ->
             linkTask.doLast(CopyResourcesFromKLibsToFrameworkAction())
         }
@@ -142,45 +141,43 @@ internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
     }
 }
 
-internal fun setupCopyResourcesToAppTask(project: Project) {
-    project.tasks
-        .withType<KotlinNativeLink>()
-        .matching { it.binary is AbstractExecutable }
-        .all { linkTask ->
-            val copyTaskName: String = linkTask.name.replace("link", "copyResources")
+internal fun setupExecutableResources(target: KotlinNativeTarget) {
+    val project: Project = target.project
+    target.binaries.withType<AbstractExecutable>().configureEach { executable ->
+        val copyTaskName: String = executable.linkTaskProvider.name.replace("link", "copyResources")
 
-            project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
-                dependsOn(linkTask)
+        project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
+            dependsOn(executable.linkTaskProvider)
 
-                klibs.from(linkTask.klibs)
+            klibs.set(executable.linkTaskProvider.map { it.klibs })
 
-                outputDirectory.set(
-                    project.layout.dir(
-                        project.provider {
-                            val buildProductsDir =
-                                project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
-                            val contentsFolderPath =
-                                project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
+            outputDirectory.set(
+                project.layout.dir(
+                    project.provider {
+                        val buildProductsDir =
+                            project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
+                        val contentsFolderPath =
+                            project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
 
-                            File("$buildProductsDir/$contentsFolderPath")
-                        }
-                    )
+                        File("$buildProductsDir/$contentsFolderPath")
+                    }
                 )
-            }
+            )
         }
+    }
 }
 
-internal fun setupTestsResources(compilation: KotlinNativeCompilation) {
-    compilation.target.binaries.withType<TestExecutable>().configureEach { executable ->
+internal fun setupTestsResources(target: KotlinNativeTarget) {
+    target.binaries.withType<TestExecutable>().configureEach { executable ->
         executable.linkTaskProvider.configure { link ->
             link.doLast(CopyResourcesFromKLibsToExecutableAction())
         }
     }
 }
 
-internal fun setupFatFrameworkTasks(compilation: KotlinNativeCompilation) {
-    compilation.project.tasks.withType<FatFrameworkTask>().configureEach {
+internal fun setupFatFrameworkTasks(project: Project) {
+    project.tasks.withType<FatFrameworkTask>().configureEach {
         @Suppress("UNCHECKED_CAST")
-        it.doLast(CopyResourcesFromFrameworkToFatAction() as Action<Task>)
+        it.doLast(CopyAppleResourcesFromFrameworkToFatAction() as Action<Task>)
     }
 }

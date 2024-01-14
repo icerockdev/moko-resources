@@ -9,8 +9,8 @@ import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
 import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
-import dev.icerock.gradle.generator.platform.apple.setupCopyResourcesToAppTask
 import dev.icerock.gradle.generator.platform.apple.setupCopyXCFrameworkResourcesTask
+import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
 import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
 import dev.icerock.gradle.generator.platform.apple.setupTestsResources
@@ -35,7 +35,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
@@ -60,7 +59,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             )
 
             setupCopyXCFrameworkResourcesTask(project = project)
-            setupCopyResourcesToAppTask(project = project)
+            setupFatFrameworkTasks(project = project)
+            registerGenerateAllResources(project = project)
         }
     }
 
@@ -75,6 +75,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         kmpExtension.targets.configureEach { target ->
+            if (target is KotlinNativeTarget) {
+                setupExecutableResources(target = target)
+                setupFrameworkResources(target = target)
+                setupTestsResources(target = target)
+            }
+
             target.compilations.configureEach { compilation ->
                 compilation.kotlinSourceSetsObservable.forAll { sourceSet: KotlinSourceSet ->
                     val genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask> =
@@ -101,12 +107,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         target = target,
                         sourceSet = sourceSet,
                         genTaskProvider = genTaskProvider,
-                        compilation = compilation
-                    )
-
-                    // Setup apple specific tasks
-                    setupAppleTasks(
-                        target = target,
                         compilation = compilation
                     )
 
@@ -158,7 +158,9 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 }
             }
         }
+    }
 
+    private fun registerGenerateAllResources(project: Project) {
         project.tasks.register("generateMR") {
             it.group = "moko-resources"
             it.dependsOn(project.tasks.withType<GenerateMultiplatformResourcesTask>())
@@ -230,18 +232,5 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         project.tasks.withType<AndroidLintAnalysisTask>().configureEach {
             it.dependsOn(genTaskProvider)
         }
-    }
-
-    private fun setupAppleTasks(
-        target: KotlinTarget,
-        compilation: KotlinCompilation<*>,
-    ) {
-        if (target !is KotlinNativeTarget) return
-
-        compilation as KotlinNativeCompilation
-
-        setupFrameworkResources(compilation = compilation)
-        setupTestsResources(compilation = compilation)
-        setupFatFrameworkTasks(compilation = compilation)
     }
 }

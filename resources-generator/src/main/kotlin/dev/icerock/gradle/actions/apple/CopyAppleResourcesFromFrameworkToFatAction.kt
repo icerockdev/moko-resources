@@ -8,7 +8,7 @@ import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import java.io.File
 
-internal class CopyResourcesFromFrameworkToFatAction : Action<FatFrameworkTask> {
+internal class CopyAppleResourcesFromFrameworkToFatAction : Action<FatFrameworkTask> {
     override fun execute(task: FatFrameworkTask) {
         val fatFrameworkDir: File = task.fatFramework
         val frameworkFile: File = task.frameworks.first().files.rootDir
