@@ -1,3 +1,4 @@
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationDelegateProtocol
 import platform.UIKit.UIApplicationDelegateProtocolMeta
@@ -19,6 +20,7 @@ class AppDelegate : UIResponder, UIApplicationDelegateProtocol {
         _window = window
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     override fun application(
         application: UIApplication,
         didFinishLaunchingWithOptions: Map<Any?, *>?

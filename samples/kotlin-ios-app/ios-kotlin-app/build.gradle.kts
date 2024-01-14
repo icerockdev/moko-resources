@@ -41,5 +41,4 @@ kotlin {
 
 multiplatformResources {
     resourcesPackage.set("com.icerockdev.app")
-    resourcesSourceSet = "iosMain"
 }
