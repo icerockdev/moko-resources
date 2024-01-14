@@ -142,7 +142,7 @@ internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
     }
 }
 
- internal fun setupCopyResourcesToAppTask(project: Project) {
+internal fun setupCopyResourcesToAppTask(project: Project) {
     project.tasks
         .withType<KotlinNativeLink>()
         .matching { it.binary is AbstractExecutable }
@@ -168,7 +168,7 @@ internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
                 )
             }
         }
- }
+}
 
 internal fun setupTestsResources(compilation: KotlinNativeCompilation) {
     compilation.target.binaries.withType<TestExecutable>().configureEach { executable ->
