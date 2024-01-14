@@ -10,8 +10,10 @@ import dev.icerock.gradle.actions.apple.CopyResourcesFromFrameworkToFatAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
+import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
+import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -20,12 +22,14 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 
 @Suppress("LongParameterList")
@@ -138,19 +142,33 @@ internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
     }
 }
 
-// private fun createCopyResourcesToAppTask(project: Project) {
-//    project.tasks
-//        .withType<KotlinNativeLink>()
-//        .matching { it.binary is AbstractExecutable }
-//        .all { linkTask ->
-//            val copyTaskName: String = linkTask.name.replace("link", "copyResources")
-//
-//            project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
-//                this.linkTask = linkTask
-//                dependsOn(linkTask)
-//            }
-//        }
-// }
+ internal fun setupCopyResourcesToAppTask(project: Project) {
+    project.tasks
+        .withType<KotlinNativeLink>()
+        .matching { it.binary is AbstractExecutable }
+        .all { linkTask ->
+            val copyTaskName: String = linkTask.name.replace("link", "copyResources")
+
+            project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
+                dependsOn(linkTask)
+
+                klibs.from(linkTask.klibs)
+
+                outputDirectory.set(
+                    project.layout.dir(
+                        project.provider {
+                            val buildProductsDir =
+                                project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
+                            val contentsFolderPath =
+                                project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
+
+                            File("$buildProductsDir/$contentsFolderPath")
+                        }
+                    )
+                )
+            }
+        }
+ }
 
 internal fun setupTestsResources(compilation: KotlinNativeCompilation) {
     compilation.target.binaries.withType<TestExecutable>().configureEach { executable ->

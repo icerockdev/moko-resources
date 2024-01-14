@@ -9,6 +9,7 @@ import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
 import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
+import dev.icerock.gradle.generator.platform.apple.setupCopyResourcesToAppTask
 import dev.icerock.gradle.generator.platform.apple.setupCopyXCFrameworkResourcesTask
 import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
@@ -59,6 +60,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             )
 
             setupCopyXCFrameworkResourcesTask(project = project)
+            setupCopyResourcesToAppTask(project = project)
         }
     }
 
