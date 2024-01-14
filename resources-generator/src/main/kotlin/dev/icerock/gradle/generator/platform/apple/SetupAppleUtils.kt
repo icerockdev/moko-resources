@@ -149,7 +149,7 @@ internal fun setupExecutableResources(target: KotlinNativeTarget) {
         project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
             dependsOn(executable.linkTaskProvider)
 
-            klibs.set(executable.linkTaskProvider.map { it.klibs })
+            klibs.from(executable.linkTaskProvider.map { it.klibs })
 
             outputDirectory.set(
                 project.layout.dir(
