@@ -25,10 +25,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
-      - name: Prebuild plugin
-        run: ./gradlew -p resources-generator publishToMavenLocal
       - name: Prebuild library
-        run: ./gradlew publishToMavenLocal
+        run: ./gradlew publishToMavenLocal --rerun-tasks
       - name: Publish library
         run: ./gradlew publish --no-parallel
       - name: Publish plugin
