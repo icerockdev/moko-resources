@@ -7,6 +7,7 @@ package dev.icerock.moko.resources
 import cnames.structs.CGDataProvider
 import cnames.structs.__CFData
 import cnames.structs.__CTFont
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.CoreFoundation.CFDataCreate
@@ -37,6 +38,7 @@ actual class FontResource(
             ) ?: error("file $fontName not found in $bundle")
         }
 
+    @OptIn(BetaInteropApi::class)
     val data: NSData
         get() {
             val filePath: String = this.filePath
@@ -46,6 +48,8 @@ actual class FontResource(
 
     init {
         val fontData: NSData = this.data
+
+        @Suppress("UNCHECKED_CAST")
         val cfDataRef: CPointer<__CFData>? = CFDataCreate(
             kCFAllocatorDefault,
             fontData.bytes() as CPointer<UInt8Var>,
