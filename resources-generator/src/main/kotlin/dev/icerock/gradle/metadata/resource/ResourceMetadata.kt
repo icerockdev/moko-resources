@@ -64,11 +64,12 @@ internal data class PluralMetadata(
 @Serializable
 internal data class ImageMetadata(
     override val key: String,
-    val values: List<ImageQualityItem>
+    val values: List<ImageItem>
 ) : ResourceMetadata {
     @Serializable
-    data class ImageQualityItem(
+    data class ImageItem(
         val quality: String?,
+        val appearance: Appearance?,
         val filePath: File
     )
 
@@ -142,4 +143,10 @@ internal data class AssetMetadata(
         get() = filePath.relativeTo(relativePath)
 
     override fun contentHash(): String = filePath.calculateResourcesHash()
+}
+
+@Serializable
+internal enum class Appearance {
+    LIGHT,
+    DARK
 }

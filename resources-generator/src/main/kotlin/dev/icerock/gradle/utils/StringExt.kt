@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.utils
 
+import dev.icerock.gradle.metadata.resource.Appearance
 import java.util.Locale
 
 /**
@@ -37,3 +38,16 @@ internal fun String.remove(char: String): String {
 
 internal val String.flatName: String
     get() = this.remove('.')
+
+internal val String.appearance: Appearance?
+    get() = Appearance.values().firstOrNull { this.contains("_${it.name}", true) }
+
+internal val String.withoutAppearance: String
+    get() {
+        var result = this
+        Appearance.values()
+            .forEach {
+                result = result.replace("_${it.name}", "", true)
+            }
+        return result
+    }

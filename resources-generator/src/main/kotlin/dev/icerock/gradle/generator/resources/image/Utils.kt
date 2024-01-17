@@ -16,7 +16,7 @@ internal fun generateHighestQualityImageResources(
     imagesDir.mkdirs()
 
     data.forEach { metadata ->
-        val item: ImageMetadata.ImageQualityItem = metadata.getHighestQualityItem()
+        val item: ImageMetadata.ImageItem = metadata.getHighestQualityItem()
         val file: File = item.filePath
         val key: String = metadata.key
 
@@ -24,7 +24,7 @@ internal fun generateHighestQualityImageResources(
     }
 }
 
-internal fun ImageMetadata.getHighestQualityItem(): ImageMetadata.ImageQualityItem {
+internal fun ImageMetadata.getHighestQualityItem(): ImageMetadata.ImageItem {
     return values.singleOrNull { it.quality == null }
         ?: values.maxBy { it.quality!!.toDouble() }
 }

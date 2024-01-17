@@ -22,7 +22,7 @@ internal class JsImageResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: ImageMetadata): CodeBlock {
-        val item: ImageMetadata.ImageQualityItem = metadata.getHighestQualityItem()
+        val item: ImageMetadata.ImageItem = metadata.getHighestQualityItem()
         val fileName = "${metadata.key}.${item.filePath.extension}"
         val requireDeclaration = """require("$IMAGES_DIR/$fileName")"""
         return CodeBlock.of(
