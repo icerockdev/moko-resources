@@ -172,5 +172,11 @@ private fun configureTaskDependencies(
         genTask.configure { resourceTask ->
             resourceTask.inputMetadataFiles.from(dependsGenTask.flatMap { it.outputMetadataFile })
         }
+
+        configureTaskDependencies(
+            kotlinSourceSet = dependsSourceSet,
+            genTask = genTask,
+            mrExtension = mrExtension
+        )
     }
 }
