@@ -11,3 +11,4 @@ set -e
 (cd samples/kotlin-ios-app && ./local-check.sh)
 (cd samples/resources-gallery && ./local-check.sh)
 (cd samples/compose-resources-gallery && ./local-check.sh)
+(cd samples/default-hierarchy-gallery-mobile && ./local-check.sh)

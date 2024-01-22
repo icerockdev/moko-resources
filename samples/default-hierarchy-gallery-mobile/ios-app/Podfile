@@ -1,0 +1,17 @@
+source 'https://cdn.cocoapods.org/'
+
+# ignore all warnings from all pods
+inhibit_all_warnings!
+
+use_frameworks!
+platform :ios, '11.0'
+
+pre_install do |installer|
+  puts "prebuild mpp-library..."
+  `cd .. && ./gradlew :mpp-library:podspec`
+  puts "prebuild completed"
+end
+
+target 'TestProj' do
+  pod 'mpp_library', :path => '../mpp-library'
+end
