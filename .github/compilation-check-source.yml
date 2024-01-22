@@ -152,6 +152,23 @@ jobs:
       - *publish_test_report
       - *upload_reports
 
+  check-sample-default-hierarchy-resources-gallery-mobile:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - resources-gallery
+        run: cd samples/default-hierarchy-gallery-mobile && ./local-check.sh
+
+      - *publish_test_report
+      - *upload_reports
+
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
     needs: build-library
