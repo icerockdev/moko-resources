@@ -8,6 +8,7 @@ import com.android.ide.common.vectordrawable.Svg2Vector
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.metadata.resource.Appearance
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import org.slf4j.Logger
 import java.io.File
@@ -33,8 +34,8 @@ internal class AndroidImageResourceGenerator(
     override fun generateResourceFiles(data: List<ImageMetadata>) {
         data.flatMap { imageMetadata ->
             imageMetadata.values.map { imageMetadata.key to it }
-        }.forEach { (key: String, item: ImageMetadata.ImageQualityItem) ->
-            val drawableDirName: String = "drawable" + when (item.quality) {
+        }.forEach { (key: String, item: ImageMetadata.ImageItem) ->
+            val densityRes = when (item.quality) {
                 "0.75" -> "-ldpi"
                 "1" -> "-mdpi"
                 "1.5" -> "-hdpi"
@@ -47,6 +48,11 @@ internal class AndroidImageResourceGenerator(
                     return@forEach
                 }
             }
+            val themeRes = when(item.appearance) {
+                Appearance.LIGHT, null -> ""
+                Appearance.DARK -> "-night"
+            }
+            val drawableDirName = "drawable$themeRes$densityRes"
 
             val drawableDir = File(resourcesGenerationDir, drawableDirName)
             val processedKey: String = processKey(key)

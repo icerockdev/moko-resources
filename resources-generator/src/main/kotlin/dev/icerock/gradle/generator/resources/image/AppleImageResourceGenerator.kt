@@ -39,7 +39,7 @@ internal class AppleImageResourceGenerator(
             assetDir.mkdirs()
             val contentsFile = File(assetDir, "Contents.json")
 
-            val validItems: List<ImageMetadata.ImageQualityItem> =
+            val validItems: List<ImageMetadata.ImageItem> =
                 imageMetadata.values.filter { item ->
                     item.quality == null || VALID_SIZES.any { item.quality == it.toString() }
                 }
@@ -66,6 +66,14 @@ internal class AppleImageResourceGenerator(
                         put("filename", JsonPrimitive(item.filePath.name))
                         item.quality?.let { quality ->
                             put("scale", JsonPrimitive(quality + "x"))
+                        }
+                        item.appearance?.let { appearance ->
+                            put("appearances", buildJsonArray {
+                                add(buildJsonObject {
+                                    put("appearance", JsonPrimitive("luminosity"))
+                                    put("value", JsonPrimitive(appearance.name.lowercase()))
+                                })
+                            })
                         }
                     }
                 }.forEach { add(it) }

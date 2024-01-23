@@ -20,7 +20,7 @@ internal class JvmImageResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: ImageMetadata): CodeBlock {
-        val item: ImageMetadata.ImageQualityItem = metadata.getHighestQualityItem()
+        val item: ImageMetadata.ImageItem = metadata.getHighestQualityItem()
         val fileName = "${metadata.key}.${item.filePath.extension}"
         return CodeBlock.of(
             "ImageResource(resourcesClassLoader = %L, filePath = %S)",
