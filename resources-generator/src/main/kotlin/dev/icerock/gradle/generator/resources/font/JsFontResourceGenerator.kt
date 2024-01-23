@@ -45,7 +45,7 @@ internal class JsFontResourceGenerator(
         val cssDeclarationsFile = File(fontsDir, cssDeclarationsFileName)
 
         val declarations: String = data
-            .joinToString(separator = "\n") { (family, file) ->
+            .joinToString(separator = "\n") { (_, family, file) ->
                 // language=css
                 """
                     @font-face {

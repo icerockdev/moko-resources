@@ -6,15 +6,22 @@
 
 package dev.icerock.gradle.metadata.resource
 
+import dev.icerock.gradle.serialization.ColorResourceSerializer
 import dev.icerock.gradle.serialization.FileSerializer
+import dev.icerock.gradle.serialization.ResourceMetadataSerializer
 import dev.icerock.gradle.utils.calculateHash
 import dev.icerock.gradle.utils.calculateResourcesHash
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import java.io.File
 
-@Serializable
-internal sealed interface ResourceMetadata {
+@Serializable(with = ResourceMetadataSerializer::class)
+@SerialName("resource-metadata")
+sealed interface ResourceMetadata {
+    val resourceType: String
     // TODO validate key at create
     val key: String
 
@@ -23,6 +30,9 @@ internal sealed interface ResourceMetadata {
 
 @Serializable
 internal data class StringMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = StringMetadata::class.java.name,
     override val key: String,
     val values: List<LocaleItem>
 ) : ResourceMetadata {
@@ -38,6 +48,9 @@ internal data class StringMetadata(
 
 @Serializable
 internal data class PluralMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = PluralMetadata::class.java.name,
     override val key: String,
     val values: List<LocaleItem>
 ) : ResourceMetadata {
@@ -63,6 +76,9 @@ internal data class PluralMetadata(
 
 @Serializable
 internal data class ImageMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = ImageMetadata::class.java.name,
     override val key: String,
     val values: List<ImageQualityItem>
 ) : ResourceMetadata {
@@ -78,34 +94,65 @@ internal data class ImageMetadata(
 
 @Serializable
 internal data class FontMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = FontMetadata::class.java.name,
     override val key: String,
     val filePath: File
 ) : ResourceMetadata {
-
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
 @Serializable
 internal data class FileMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = FileMetadata::class.java.name,
     override val key: String,
     val filePath: File
 ) : ResourceMetadata {
-
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
 @Serializable
-internal data class ColorMetadata(
+data class ColorMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = ColorMetadata::class.java.name,
     override val key: String,
     val value: ColorItem
 ) : ResourceMetadata {
-    @Serializable
+    @Serializable(with = ColorResourceSerializer::class)
     sealed interface ColorItem {
+        val colorType: String
         @Serializable
-        data class Single(val color: Color) : ColorItem
+        data class Single(
+            @OptIn(ExperimentalSerializationApi::class)
+            @EncodeDefault
+            override val colorType: String = getJavaName(),
+            val color: Color
+        ) : ColorItem {
+            companion object {
+                internal fun getJavaName(): String {
+                    return Single::class.java.name.replace('$', '.')
+                }
+            }
+        }
 
         @Serializable
-        data class Themed(val light: Color, val dark: Color) : ColorItem
+        data class Themed(
+            @OptIn(ExperimentalSerializationApi::class)
+            @EncodeDefault
+            override val colorType: String = getJavaName(),
+            val light: Color,
+            val dark: Color
+        ) : ColorItem {
+            companion object {
+                internal fun getJavaName(): String {
+                    return Themed::class.java.name.replace('$', '.')
+                }
+            }
+        }
     }
 
     @Serializable
@@ -134,6 +181,9 @@ internal data class ColorMetadata(
 
 @Serializable
 internal data class AssetMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = AssetMetadata::class.java.name,
     override val key: String,
     val relativePath: File,
     val filePath: File
