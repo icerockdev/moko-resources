@@ -38,6 +38,7 @@ internal object ColorResourceSerializer : KSerializer<ColorItem> {
             }
         }
     }
+
     override val descriptor: SerialDescriptor = PolymorphicSerializer(ColorItem::class).descriptor
 
     override fun deserialize(decoder: Decoder): ColorItem {

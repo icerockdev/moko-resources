@@ -22,6 +22,7 @@ import java.io.File
 @SerialName("resource-metadata")
 sealed interface ResourceMetadata {
     val resourceType: String
+
     // TODO validate key at create
     val key: String
 
@@ -34,12 +35,12 @@ internal data class StringMetadata(
     @EncodeDefault
     override val resourceType: String = StringMetadata::class.java.name,
     override val key: String,
-    val values: List<LocaleItem>
+    val values: List<LocaleItem>,
 ) : ResourceMetadata {
     @Serializable
     data class LocaleItem(
         val locale: String,
-        val value: String
+        val value: String,
     )
 
     @Suppress("MagicNumber")
@@ -52,18 +53,18 @@ internal data class PluralMetadata(
     @EncodeDefault
     override val resourceType: String = PluralMetadata::class.java.name,
     override val key: String,
-    val values: List<LocaleItem>
+    val values: List<LocaleItem>,
 ) : ResourceMetadata {
     @Serializable
     data class LocaleItem(
         val locale: String,
-        val values: List<PluralItem>
+        val values: List<PluralItem>,
     )
 
     @Serializable
     data class PluralItem(
         val quantity: Quantity,
-        val value: String
+        val value: String,
     ) {
         enum class Quantity {
             ZERO, ONE, TWO, FEW, MANY, OTHER
@@ -80,12 +81,12 @@ internal data class ImageMetadata(
     @EncodeDefault
     override val resourceType: String = ImageMetadata::class.java.name,
     override val key: String,
-    val values: List<ImageQualityItem>
+    val values: List<ImageQualityItem>,
 ) : ResourceMetadata {
     @Serializable
     data class ImageQualityItem(
         val quality: String?,
-        val filePath: File
+        val filePath: File,
     )
 
     override fun contentHash(): String = values.map { it.filePath.calculateResourcesHash() }
@@ -98,7 +99,7 @@ internal data class FontMetadata(
     @EncodeDefault
     override val resourceType: String = FontMetadata::class.java.name,
     override val key: String,
-    val filePath: File
+    val filePath: File,
 ) : ResourceMetadata {
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
@@ -109,7 +110,7 @@ internal data class FileMetadata(
     @EncodeDefault
     override val resourceType: String = FileMetadata::class.java.name,
     override val key: String,
-    val filePath: File
+    val filePath: File,
 ) : ResourceMetadata {
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
@@ -120,17 +121,18 @@ data class ColorMetadata(
     @EncodeDefault
     override val resourceType: String = ColorMetadata::class.java.name,
     override val key: String,
-    val value: ColorItem
+    val value: ColorItem,
 ) : ResourceMetadata {
     @Serializable(with = ColorResourceSerializer::class)
     sealed interface ColorItem {
         val colorType: String
+
         @Serializable
         data class Single(
             @OptIn(ExperimentalSerializationApi::class)
             @EncodeDefault
             override val colorType: String = getJavaName(),
-            val color: Color
+            val color: Color,
         ) : ColorItem {
             companion object {
                 internal fun getJavaName(): String {
@@ -145,7 +147,7 @@ data class ColorMetadata(
             @EncodeDefault
             override val colorType: String = getJavaName(),
             val light: Color,
-            val dark: Color
+            val dark: Color,
         ) : ColorItem {
             companion object {
                 internal fun getJavaName(): String {
@@ -160,7 +162,7 @@ data class ColorMetadata(
         val red: Int,
         val green: Int,
         val blue: Int,
-        val alpha: Int
+        val alpha: Int,
     ) {
         @Suppress("MagicNumber")
         fun toArgbHex(): String {
@@ -186,7 +188,7 @@ internal data class AssetMetadata(
     override val resourceType: String = AssetMetadata::class.java.name,
     override val key: String,
     val relativePath: File,
-    val filePath: File
+    val filePath: File,
 ) : ResourceMetadata {
     val pathRelativeToBase: File
         get() = filePath.relativeTo(relativePath)

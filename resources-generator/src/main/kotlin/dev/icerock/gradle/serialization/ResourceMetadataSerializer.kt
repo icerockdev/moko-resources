@@ -70,7 +70,6 @@ internal object ResourceMetadataSerializer : KSerializer<ResourceMetadata> {
         }
     }
 
-
     override val descriptor: SerialDescriptor =
         PolymorphicSerializer(ResourceMetadata::class).descriptor
 
