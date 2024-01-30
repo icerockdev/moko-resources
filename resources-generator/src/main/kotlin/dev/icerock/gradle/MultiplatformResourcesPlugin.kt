@@ -1,13 +1,12 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
-import com.android.build.gradle.api.BaseVariant
-import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
+import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
 import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
 import dev.icerock.gradle.generator.platform.apple.setupCopyXCFrameworkResourcesTask
 import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
@@ -200,37 +199,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             }
 
             KotlinPlatformType.common, KotlinPlatformType.native, KotlinPlatformType.wasm -> Unit
-        }
-    }
-
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    private fun setupAndroidTasks(
-        target: KotlinTarget,
-        sourceSet: KotlinSourceSet,
-        genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
-        compilation: KotlinCompilation<*>,
-    ) {
-        if (target !is KotlinAndroidTarget) return
-
-        compilation as KotlinJvmAndroidCompilation
-
-        val project: Project = target.project
-
-        val androidSourceSet: AndroidSourceSet = project.findAndroidSourceSet(sourceSet)
-            ?: throw GradleException("can't find android source set for $sourceSet")
-
-        // save android sourceSet name to skip build type specific tasks
-        @Suppress("UnstableApiUsage")
-        genTaskProvider.configure { it.androidSourceSetName.set(androidSourceSet.name) }
-
-        // connect generateMR task with android preBuild
-        @Suppress("DEPRECATION")
-        val androidVariant: BaseVariant = compilation.androidVariant
-        androidVariant.preBuildProvider.configure { it.dependsOn(genTaskProvider) }
-
-        // TODO this way do more than required - we trigger generate all android related resources at all
-        project.tasks.withType<AndroidLintAnalysisTask>().configureEach {
-            it.dependsOn(genTaskProvider)
         }
     }
 }

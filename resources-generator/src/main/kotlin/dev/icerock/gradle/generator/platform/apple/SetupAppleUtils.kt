@@ -13,22 +13,32 @@ import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
 import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
+import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.klibs
+import dev.icerock.gradle.utils.propertyString
+import dev.icerock.gradle.utils.remove
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
+import org.jetbrains.kotlin.gradle.plugin.cocoapods.KotlinCocoapodsPlugin
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 @Suppress("LongParameterList")
@@ -51,25 +61,26 @@ internal fun setupAppleKLibResources(
     )
 }
 
-internal fun setupFrameworkResources(target: KotlinNativeTarget) {
+internal fun setupFrameworkResources(
+    target: KotlinNativeTarget,
+) {
     target.binaries.withType<Framework>().configureEach { framework ->
         framework.linkTaskProvider.configure { linkTask ->
             linkTask.doLast(CopyResourcesFromKLibsToFrameworkAction())
         }
 
-        if (framework.isStatic) {
-            val project: Project = framework.project
-            val resourcesExtension: MultiplatformResourcesPluginExtension =
-                project.extensions.getByType()
-            if (resourcesExtension.staticFrameworkWarningEnabled.get()) {
-                project.logger.warn(
-                    """
+        val project: Project = framework.project
+        val resourcesExtension: MultiplatformResourcesPluginExtension =
+            project.extensions.getByType()
+        if (resourcesExtension.staticFrameworkWarningEnabled.get()) {
+            project.logger.warn(
+                """
 ${framework.linkTaskName} produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources
 """
-                )
-            }
-            createCopyFrameworkResourcesTask(framework)
+            )
         }
+
+        createCopyFrameworkResourcesTask(framework)
     }
 }
 
@@ -77,41 +88,79 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
     val project: Project = framework.project
     val taskName: String = framework.linkTaskName.replace("link", "copyResources")
 
-    val copyTask: TaskProvider<CopyFrameworkResourcesToAppTask> =
-        project.tasks.register(taskName, CopyFrameworkResourcesToAppTask::class.java) {
-            it.inputFrameworkDirectory.set(framework.outputDirectoryProperty)
-            it.outputDirectory.set(
-                project.provider {
-                    val buildProductsDir =
-                        project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
-                    val contentsFolderPath =
-                        project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
+    val copyTask: TaskProvider<CopyFrameworkResourcesToAppTask> = project.tasks.register(
+        /* name = */ taskName,
+        /* type = */ CopyFrameworkResourcesToAppTask::class.java
+    ) {
+        it.frameworkIsStatic.set(
+            project.provider {
+                framework.isStatic
+            }
+        )
+        it.inputFrameworkDirectory.set(
+            framework.outputFile
+        )
+        it.outputDirectory.set(
+            project.provider {
+                val buildProductsDir =
+                    project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
+                val contentsFolderPath =
+                    project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
 
-                    val targetDir = File("$buildProductsDir/$contentsFolderPath")
-                    val baseDir: File = project.layout.projectDirectory.asFile
+                val targetDir = File("$buildProductsDir/$contentsFolderPath")
+                val baseDir: File = project.layout.projectDirectory.asFile
 
-                    project.layout.projectDirectory.dir(targetDir.relativeTo(baseDir).path)
-                }
-            )
-        }
+                project.layout.projectDirectory.dir(targetDir.relativeTo(baseDir).path)
+            }
+        )
+    }
     copyTask.dependsOn(framework.linkTaskProvider)
 
-// FIXME Вынести в отдельную таску, должно создаваться один раз
-//    val xcodeTask = project.tasks.maybeCreate(
-//        "copyFrameworkResourcesToApp",
-//        CopyFrameworkResourcesToAppEntryPointTask::class.java
-//    )
-//    val multiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
-//    xcodeTask.configurationMapper = (multiplatformExtension as? ExtensionAware)?.extensions
-//        ?.findByType<CocoapodsExtension>()
-//        ?.xcodeConfigurationToNativeBuildType
-//        ?: emptyMap()
-//
-//    if (framework.target.konanTarget == xcodeTask.konanTarget &&
-//        framework.buildType.getName() == xcodeTask.configuration?.lowercase()
-//    ) {
-//        xcodeTask.dependsOn(copyTask)
-//    }
+    registerCopyFrameworkResourcesToAppTask(
+        project = project,
+        framework = framework,
+        copyTask = copyTask
+    )
+}
+
+private fun registerCopyFrameworkResourcesToAppTask(
+    project: Project,
+    framework: Framework,
+    copyTask: TaskProvider<CopyFrameworkResourcesToAppTask>,
+) {
+    val configuration: String? = project.propertyString(
+        name = KotlinCocoapodsPlugin.CONFIGURATION_PROPERTY
+    )
+    val platform: String? = project.propertyString(
+        name = KotlinCocoapodsPlugin.PLATFORM_PROPERTY
+    )
+    val archs: String? = project.propertyString(
+        name = KotlinCocoapodsPlugin.ARCHS_PROPERTY
+    )
+
+    if (platform == null || archs == null || configuration == null) return
+
+    val kotlinMultiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
+    val configMap: Map<String, NativeBuildType> = (kotlinMultiplatformExtension as? ExtensionAware)
+        ?.extensions
+        ?.findByType<CocoapodsExtension>()
+        ?.xcodeConfigurationToNativeBuildType
+        ?: emptyMap()
+
+    val configName = (configMap[configuration]?.name ?: configuration).lowercase()
+
+    if (
+        framework.target.konanTarget.clearName() == platform &&
+        framework.target.konanTarget.architecture.name.lowercase() == archs &&
+        framework.buildType.getName() == configName
+    ) {
+        val frameworkName: String = framework.name.capitalize()
+        val xcodeTask: TaskProvider<Task> = project.tasks.register(
+            name = "copy${frameworkName}FrameworkResourcesToApp"
+        )
+
+        xcodeTask.dependsOn(copyTask)
+    }
 }
 
 internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
@@ -180,4 +229,11 @@ internal fun setupFatFrameworkTasks(project: Project) {
         @Suppress("UNCHECKED_CAST")
         it.doLast(CopyAppleResourcesFromFrameworkToFatAction() as Action<Task>)
     }
+}
+
+private fun KonanTarget.clearName(): String {
+    return name.replace("ios_simulator", "iphonesimulator")
+        .remove('_')
+        .remove("x64")
+        .remove("arm64")
 }
