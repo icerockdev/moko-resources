@@ -38,7 +38,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 @Suppress("LongParameterList")
@@ -99,7 +98,7 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
             }
         )
         it.inputFrameworkDirectory.set(
-            framework.outputFile
+            project.layout.projectDirectory.dir(framework.outputFile.absolutePath)
         )
         it.outputDirectory.set(
             project.provider {
@@ -151,13 +150,12 @@ private fun registerCopyFrameworkResourcesToAppTask(
     val configName = (configMap[configuration]?.name ?: configuration).lowercase()
 
     if (
-        framework.target.konanTarget.clearName() == platform &&
+        framework.target.konanTarget.platformName() == platform &&
         framework.target.konanTarget.architecture.name.lowercase() == archs &&
         framework.buildType.getName() == configName
     ) {
-        val frameworkName: String = framework.name.capitalize()
         val xcodeTask: TaskProvider<Task> = project.tasks.register(
-            name = "copy${frameworkName}FrameworkResourcesToApp"
+            name = "copy${framework.baseName.capitalize()}FrameworkResourcesToApp"
         )
 
         xcodeTask.dependsOn(copyTask)
@@ -230,11 +228,4 @@ internal fun setupFatFrameworkTasks(project: Project) {
         @Suppress("UNCHECKED_CAST")
         it.doLast(CopyAppleResourcesFromFrameworkToFatAction() as Action<Task>)
     }
-}
-
-private fun KonanTarget.clearName(): String {
-    return name.replace("ios_simulator", "iphonesimulator")
-        .remove('_')
-        .remove("x64")
-        .remove("arm64")
 }
