@@ -72,9 +72,11 @@ internal fun setupFrameworkResources(
         if (project.disableStaticFrameworkWarning.not()) {
             project.logger.warn(
                 """
-                |${framework.linkTaskName} founded.
-                |If you use static framework, Xcode should have Build Phase with copy${framework.baseName.capitalize()}ResourcesToApp gradle task call. 
+                |${framework.linkTaskName} is found.
+                |If you use a static framework, Xcode should have Build Phase with copy${framework.baseName.capitalize()}ResourcesToApp gradle task call. 
                 |Please read readme on https://github.com/icerockdev/moko-resources
+                |-
+                |To hide this message, add 'moko.resources.disableStaticFrameworkWarning=true' to the Gradle properties.
                 |
             """.trimMargin()
             )
