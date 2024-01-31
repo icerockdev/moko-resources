@@ -76,8 +76,8 @@ internal fun setupFrameworkResources(
                 |Please read readme on https://github.com/icerockdev/moko-resources
                 |-
                 |To hide this message, add 'moko.resources.disableStaticFrameworkWarning=true' to the Gradle properties.
-                |
-            """.trimMargin()
+                
+                """.trimMargin()
             )
         }
 
@@ -125,6 +125,7 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
     )
 }
 
+@Suppress("UnusedPrivateMember")
 private fun registerCopyFrameworkResourcesToAppTask(
     project: Project,
     framework: Framework,
@@ -158,7 +159,7 @@ private fun registerCopyFrameworkResourcesToAppTask(
     ) {
         val xcodeTask: TaskProvider<Task> = project.tasks.register(
             name = "copy${framework.baseName.capitalize()}FrameworkResourcesToApp"
-        ){
+        ) {
             dependsOn(copyTask)
         }
     }
