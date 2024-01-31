@@ -14,6 +14,9 @@ log "default-hierarchy-gallery-mobile android success"
 ./gradlew clean compileKotlinIosX64
 log "default-hierarchy-gallery-mobile ios success"
 
+./gradlew clean podspec build generateDummyFramework --rerun-tasks
+log "compose-resources-gallery full build success"
+
 (
 cd ios-app &&
 pod install &&

@@ -10,7 +10,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
 @Suppress("MagicNumber", "TooManyFunctions")
-public object Testing {
+public object AppleTesting {
     public fun getStrings(): List<StringDesc> {
         return listOf(
             strings.apple_target_name.desc(),
