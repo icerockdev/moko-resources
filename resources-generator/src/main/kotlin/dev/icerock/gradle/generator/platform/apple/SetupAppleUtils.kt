@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle.generator.platform.apple
 
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import dev.icerock.gradle.actions.apple.CopyAppleResourcesFromFrameworkToFatAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToFrameworkAction
@@ -115,8 +114,9 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
                 project.layout.projectDirectory.dir(targetDir.relativeTo(baseDir).path)
             }
         )
+
+        it.dependsOn(framework.linkTaskProvider)
     }
-    copyTask.dependsOn(framework.linkTaskProvider)
 
     registerCopyFrameworkResourcesToAppTask(
         project = project,
@@ -158,9 +158,9 @@ private fun registerCopyFrameworkResourcesToAppTask(
     ) {
         val xcodeTask: TaskProvider<Task> = project.tasks.register(
             name = "copy${framework.baseName.capitalize()}FrameworkResourcesToApp"
-        )
-
-        xcodeTask.dependsOn(copyTask)
+        ){
+            dependsOn(copyTask)
+        }
     }
 }
 
