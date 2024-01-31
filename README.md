@@ -165,13 +165,32 @@ path (`$SRCROOT/../` in example).
 In Xcode add `Build Phase` (at end of list) with script:
 
 ```shell script
-"$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copy`YourFrameworkName`FrameworkResourcesToApp \
     -Pmoko.resources.BUILT_PRODUCTS_DIR="$BUILT_PRODUCTS_DIR" \
     -Pmoko.resources.CONTENTS_FOLDER_PATH="$CONTENTS_FOLDER_PATH" \
     -Pkotlin.native.cocoapods.platform="$PLATFORM_NAME" \
     -Pkotlin.native.cocoapods.archs="$ARCHS" \
     -Pkotlin.native.cocoapods.configuration="$CONFIGURATION" 
 ```
+
+- `YourFrameworkName` is base name of your project framework, for example:
+If you have `shared` module contains kotlin multiplatform code You can find framework 
+base name in build.gradle.kts:
+
+```kotlin
+kotlin {
+    cocoapods {
+        framework {
+            baseName = "shared"
+            isStatic = true
+        }
+    }
+}
+    
+```
+If You don't setup base name of framework, then his name will be like module name: shared. 
+If Your module has compound name like: mpp-Library, then base name should be like: "mpp_Library"
+The copyFrameworkResourcesToApp task is generated with capitalized base name of your framework.
 
 #### Without org.jetbrains.kotlin.native.cocoapods
 
