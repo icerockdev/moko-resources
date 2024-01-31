@@ -177,7 +177,7 @@ In Xcode add `Build Phase` (at end of list) with script:
 If you have `shared` module contains kotlin multiplatform code You can find framework 
 base name in build.gradle.kts:
 
-```kotlin
+```groovy
 kotlin {
     cocoapods {
         framework {
@@ -189,7 +189,7 @@ kotlin {
     
 ```
 If You don't setup base name of framework, then his name will be like module name: shared. 
-If Your module has compound name like: mpp-Library, then base name should be like: "mpp_Library"
+If Your module has compound name like: mpp-Library, then base name will be like: "mpp_Library"
 The copyFrameworkResourcesToApp task is generated with capitalized base name of your framework.
 
 #### Without org.jetbrains.kotlin.native.cocoapods
