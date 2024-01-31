@@ -5,7 +5,6 @@
 package dev.icerock.gradle.generator.platform.apple
 
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import dev.icerock.gradle.MultiplatformResourcesPluginExtension
 import dev.icerock.gradle.actions.apple.CopyAppleResourcesFromFrameworkToFatAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToFrameworkAction
@@ -14,9 +13,10 @@ import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import dev.icerock.gradle.utils.capitalize
+import dev.icerock.gradle.utils.disableStaticFrameworkWarning
 import dev.icerock.gradle.utils.klibs
+import dev.icerock.gradle.utils.platformName
 import dev.icerock.gradle.utils.propertyString
-import dev.icerock.gradle.utils.remove
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -70,13 +70,14 @@ internal fun setupFrameworkResources(
         }
 
         val project: Project = framework.project
-        val resourcesExtension: MultiplatformResourcesPluginExtension =
-            project.extensions.getByType()
-        if (resourcesExtension.staticFrameworkWarningEnabled.get()) {
+        if (project.disableStaticFrameworkWarning.not()) {
             project.logger.warn(
                 """
-${framework.linkTaskName} produces static framework, Xcode should have Build Phase with copyFrameworkResourcesToApp gradle task call. Please read readme on https://github.com/icerockdev/moko-resources
-"""
+                |${framework.linkTaskName} founded.
+                |If you use static framework, Xcode should have Build Phase with copy${framework.baseName.capitalize()}ResourcesToApp gradle task call. 
+                |Please read readme on https://github.com/icerockdev/moko-resources
+                |
+            """.trimMargin()
             )
         }
 

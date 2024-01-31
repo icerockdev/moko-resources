@@ -24,3 +24,8 @@ internal val Project.isStrictLineBreaks: Boolean
     get() = project
         .propertyString("moko.resources.strictLineBreaks")
         ?.toBoolean() ?: false
+
+internal val Project.disableStaticFrameworkWarning: Boolean
+    get() = project
+        .propertyString("moko.resources.disableStaticFrameworkWarning")
+        ?.toBoolean() ?: false
