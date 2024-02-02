@@ -79,13 +79,3 @@ android {
 multiplatformResources {
     resourcesPackage.set("com.share.resources.module")
 }
-
-project.tasks.matching {
-    it.name.lowercase().contains("LintModel".lowercase())
-}.configureEach {
-    mustRunAfter(
-        project.tasks.withType<GenerateMultiplatformResourcesTask>().matching {
-            it.name.lowercase().contains("generateMRandroidUnitTest".lowercase())
-        }
-    )
-}

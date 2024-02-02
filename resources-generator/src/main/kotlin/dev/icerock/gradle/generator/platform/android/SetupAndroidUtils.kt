@@ -3,6 +3,7 @@ package dev.icerock.gradle.generator.platform.android
 import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
+import com.android.build.gradle.internal.lint.LintModelWriterTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -43,6 +44,10 @@ internal fun setupAndroidTasks(
 
     // TODO this way do more than required - we trigger generate all android related resources at all
     project.tasks.withType<AndroidLintAnalysisTask>().configureEach {
+        it.dependsOn(genTaskProvider)
+    }
+
+    project.tasks.withType<LintModelWriterTask>().configureEach {
         it.dependsOn(genTaskProvider)
     }
 }
