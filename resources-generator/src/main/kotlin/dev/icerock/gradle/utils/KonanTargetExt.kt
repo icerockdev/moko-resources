@@ -1,15 +1,7 @@
 package dev.icerock.gradle.utils
 
 import org.gradle.api.GradleException
-import org.gradle.api.Plugin
 import org.jetbrains.kotlin.konan.target.KonanTarget
-
-internal fun KonanTarget.platformName(): String {
-    return name.lowercase().replace("ios_simulator", "iphonesimulator")
-        .remove('_')
-        .remove("x64")
-        .remove("arm64")
-}
 
 internal fun getKonanTargets(
     platform: String,
@@ -20,6 +12,7 @@ internal fun getKonanTargets(
     }
 }
 
+@Suppress("CyclomaticComplexMethod", "ThrowsCount")
 internal fun getKonanTarget(
     platform: String,
     arch: String,

@@ -13,10 +13,8 @@ import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.disableStaticFrameworkWarning
-import dev.icerock.gradle.utils.getKonanTarget
 import dev.icerock.gradle.utils.getKonanTargets
 import dev.icerock.gradle.utils.klibs
-import dev.icerock.gradle.utils.platformName
 import dev.icerock.gradle.utils.propertyString
 import dev.icerock.gradle.utils.propertyStrings
 import org.gradle.api.Action
@@ -40,7 +38,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.konan.target.Architecture
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
