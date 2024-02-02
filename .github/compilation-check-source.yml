@@ -163,7 +163,7 @@ jobs:
       - *cache_konan
       - *download_maven
 
-      - name: Sample - resources-gallery
+      - name: Sample - default-hierarchy-gallery-mobile
         run: cd samples/default-hierarchy-gallery-mobile && ./local-check.sh
 
       - *publish_test_report
@@ -182,6 +182,23 @@ jobs:
 
       - name: Sample - ios-static-xcframework
         run: cd samples/ios-static-xcframework && ./local-check.sh
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-sample-ios-cocoapods-static-framework:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - ios-cocoapods-static-framework
+        run: cd samples/ios-cocoapods-static-framework && ./local-check.sh
 
       - *publish_test_report
       - *upload_reports
