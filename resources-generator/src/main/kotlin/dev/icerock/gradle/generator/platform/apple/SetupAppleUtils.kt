@@ -13,9 +13,12 @@ import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
 import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.disableStaticFrameworkWarning
+import dev.icerock.gradle.utils.getKonanTarget
+import dev.icerock.gradle.utils.getKonanTargets
 import dev.icerock.gradle.utils.klibs
 import dev.icerock.gradle.utils.platformName
 import dev.icerock.gradle.utils.propertyString
+import dev.icerock.gradle.utils.propertyStrings
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -37,6 +40,8 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
+import org.jetbrains.kotlin.konan.target.Architecture
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 @Suppress("LongParameterList")
@@ -125,7 +130,6 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
     )
 }
 
-@Suppress("UnusedPrivateMember")
 private fun registerCopyFrameworkResourcesToAppTask(
     project: Project,
     framework: Framework,
@@ -137,7 +141,7 @@ private fun registerCopyFrameworkResourcesToAppTask(
     val platform: String? = project.propertyString(
         name = KotlinCocoapodsPlugin.PLATFORM_PROPERTY
     )
-    val archs: String? = project.propertyString(
+    val archs: List<String>? = project.propertyStrings(
         name = KotlinCocoapodsPlugin.ARCHS_PROPERTY
     )
 
@@ -152,16 +156,17 @@ private fun registerCopyFrameworkResourcesToAppTask(
 
     val configName = (configMap[configuration]?.name ?: configuration).lowercase()
 
+    val requiredKonanTargets: List<KonanTarget> = getKonanTargets(platform, archs)
+
     if (
-        framework.target.konanTarget.platformName() == platform &&
-        framework.target.konanTarget.architecture.name.lowercase() == archs &&
+        requiredKonanTargets.contains(framework.target.konanTarget) &&
         framework.buildType.getName() == configName
     ) {
-        val xcodeTask: TaskProvider<Task> = project.tasks.register(
-            name = "copy${framework.baseName.capitalize()}FrameworkResourcesToApp"
-        ) {
-            dependsOn(copyTask)
-        }
+        val xcodeTask: Task = project.tasks.maybeCreate(
+            "copy${framework.baseName.capitalize()}FrameworkResourcesToApp"
+        )
+
+        xcodeTask.dependsOn(copyTask)
     }
 }
 

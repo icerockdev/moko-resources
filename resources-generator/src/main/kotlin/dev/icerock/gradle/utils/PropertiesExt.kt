@@ -15,6 +15,12 @@ internal fun Project.propertyString(name: String): String? {
         ?: throw GradleException("Property $name should be String")
 }
 
+internal fun Project.propertyStrings(name: String): List<String>? {
+    val properties: String = propertyString(name) ?: return null
+
+    return properties.split(" ")
+}
+
 internal fun Project.requiredPropertyString(name: String): String {
     return propertyString(name)
         ?: throw GradleException("Required property $name not found")
