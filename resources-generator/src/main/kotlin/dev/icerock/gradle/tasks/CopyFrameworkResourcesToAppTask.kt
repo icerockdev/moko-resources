@@ -9,6 +9,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
@@ -24,6 +25,15 @@ abstract class CopyFrameworkResourcesToAppTask : DefaultTask() {
 
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
+
+    @get:Internal
+    internal abstract var configuration: String
+
+    @get:Internal
+    internal abstract var konanTarget: String
+
+    @get:Internal
+    internal abstract var frameworkPrefix: String
 
     @get:Input
     abstract val frameworkIsStatic: Property<Boolean>

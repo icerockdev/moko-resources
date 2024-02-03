@@ -173,24 +173,7 @@ In Xcode add `Build Phase` (at end of list) with script:
     -Pkotlin.native.cocoapods.configuration="$CONFIGURATION" 
 ```
 
-- `YourFrameworkName` is base name of your project framework, for example:
-If you have `shared` module contains kotlin multiplatform code You can find framework 
-base name in build.gradle.kts:
-
-```groovy
-kotlin {
-    cocoapods {
-        framework {
-            baseName = "shared"
-            isStatic = true
-        }
-    }
-}
-    
-```
-If You don't setup base name of framework, then his name will be like module name: shared. 
-If Your module has compound name like: mpp-Library, then base name will be like: "mpp_Library"
-The copyFrameworkResourcesToApp task is generated with capitalized base name of your framework.
+`YourFrameworkName` is name of your project framework. Please, see on a static framework warning for get correct task name.
 
 #### Without org.jetbrains.kotlin.native.cocoapods
 

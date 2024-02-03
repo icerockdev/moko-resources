@@ -1,5 +1,3 @@
-import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
-
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -41,10 +39,6 @@ kotlin {
                 api(moko.resources)
                 api(moko.resourcesCompose)
             }
-        }
-        named("commonMain") {
-            resources.srcDirs("resources")
-            // other parts
         }
         val androidMain by getting {
             dependencies {

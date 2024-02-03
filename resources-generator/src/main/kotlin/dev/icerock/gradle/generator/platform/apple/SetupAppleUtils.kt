@@ -11,13 +11,15 @@ import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
 import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
+import dev.icerock.gradle.utils.AppleSdk
 import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.disableStaticFrameworkWarning
-import dev.icerock.gradle.utils.getKonanTargets
 import dev.icerock.gradle.utils.klibs
+import dev.icerock.gradle.utils.nameWithoutBuildType
 import dev.icerock.gradle.utils.propertyString
 import dev.icerock.gradle.utils.propertyStrings
 import org.gradle.api.Action
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
@@ -38,7 +40,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 @Suppress("LongParameterList")
@@ -74,7 +75,7 @@ internal fun setupFrameworkResources(
             project.logger.warn(
                 """
                 |${framework.linkTaskName} is found.
-                |If you use a static framework, Xcode should have Build Phase with copy${framework.baseName.capitalize()}ResourcesToApp gradle task call. 
+                |If you use a static framework, Xcode should have Build Phase with copy${framework.nameWithoutBuildType.capitalize()}FrameworkResourcesToApp gradle task call. 
                 |Please read readme on https://github.com/icerockdev/moko-resources
                 |-
                 |To hide this message, add 'moko.resources.disableStaticFrameworkWarning=true' to the Gradle properties.
@@ -95,6 +96,10 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
         /* name = */ taskName,
         /* type = */ CopyFrameworkResourcesToAppTask::class.java
     ) {
+        it.configuration = framework.buildType.name
+        it.konanTarget = framework.compilation.konanTarget.name
+        it.frameworkPrefix = framework.nameWithoutBuildType
+
         it.frameworkIsStatic.set(
             project.provider {
                 framework.isStatic
@@ -119,27 +124,25 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
 
         it.dependsOn(framework.linkTaskProvider)
     }
-
-    registerCopyFrameworkResourcesToAppTask(
-        project = project,
-        framework = framework,
-        copyTask = copyTask
-    )
 }
 
-private fun registerCopyFrameworkResourcesToAppTask(
+internal fun registerCopyFrameworkResourcesToAppTask(
     project: Project,
-    framework: Framework,
-    copyTask: TaskProvider<CopyFrameworkResourcesToAppTask>,
 ) {
     val configuration: String? = project.propertyString(
         name = KotlinCocoapodsPlugin.CONFIGURATION_PROPERTY
+    ) ?: project.propertyString(
+        name = "moko.resources.CONFIGURATION"
     )
     val platform: String? = project.propertyString(
         name = KotlinCocoapodsPlugin.PLATFORM_PROPERTY
+    ) ?: project.propertyString(
+        name = "moko.resources.PLATFORM"
     )
     val archs: List<String>? = project.propertyStrings(
         name = KotlinCocoapodsPlugin.ARCHS_PROPERTY
+    ) ?: project.propertyStrings(
+        name = "moko.resources.ARCHS"
     )
 
     if (platform == null || archs == null || configuration == null) return
@@ -151,19 +154,37 @@ private fun registerCopyFrameworkResourcesToAppTask(
         ?.xcodeConfigurationToNativeBuildType
         ?: emptyMap()
 
-    val configName = (configMap[configuration]?.name ?: configuration).lowercase()
+    val configName: String = (configMap[configuration]?.name ?: configuration).lowercase()
+    val requiredKonanTargets: List<String> =
+        AppleSdk.defineNativeTargets(platform, archs).map { it.name }
+    val frameworkNames: DomainObjectSet<String> =
+        project.objects.domainObjectSet(String::class.java)
 
-    val requiredKonanTargets: List<KonanTarget> = getKonanTargets(platform, archs)
+    kotlinMultiplatformExtension.targets.withType<KotlinNativeTarget>().configureEach { target ->
+        target.binaries.withType<Framework>().configureEach {
+            frameworkNames.add(it.nameWithoutBuildType)
+        }
+    }
 
-    if (
-        requiredKonanTargets.contains(framework.target.konanTarget) &&
-        framework.buildType.getName() == configName
-    ) {
-        val xcodeTask: Task = project.tasks.maybeCreate(
-            "copy${framework.baseName.capitalize()}FrameworkResourcesToApp"
+    frameworkNames.configureEach { frameworkPrefix ->
+        val xcodeTask: TaskProvider<Task> = project.tasks.register(
+            "copy${frameworkPrefix.capitalize()}FrameworkResourcesToApp"
         )
 
-        xcodeTask.dependsOn(copyTask)
+        xcodeTask.configure {
+            it.dependsOn(
+                project.tasks.withType<CopyFrameworkResourcesToAppTask>().matching { copyTask ->
+                    val isCorrectConfiguration: Boolean =
+                        copyTask.configuration.lowercase() == configName
+                    val isCorrectFrameworkPrefix: Boolean =
+                        copyTask.frameworkPrefix == frameworkPrefix
+                    val isCorrectKonanTarget: Boolean =
+                        requiredKonanTargets.contains(copyTask.konanTarget)
+
+                    isCorrectConfiguration && isCorrectFrameworkPrefix && isCorrectKonanTarget
+                }
+            )
+        }
     }
 }
 

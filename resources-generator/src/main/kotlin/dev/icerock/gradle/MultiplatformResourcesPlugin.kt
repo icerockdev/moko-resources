@@ -7,6 +7,7 @@ package dev.icerock.gradle
 import com.android.build.api.dsl.AndroidSourceSet
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
 import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
+import dev.icerock.gradle.generator.platform.apple.registerCopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
 import dev.icerock.gradle.generator.platform.apple.setupCopyXCFrameworkResourcesTask
 import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
@@ -60,6 +61,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             setupCopyXCFrameworkResourcesTask(project = project)
             setupFatFrameworkTasks(project = project)
             registerGenerateAllResources(project = project)
+            registerCopyFrameworkResourcesToAppTask(project = project)
         }
     }
 
