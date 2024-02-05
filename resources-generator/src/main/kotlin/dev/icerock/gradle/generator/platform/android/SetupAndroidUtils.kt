@@ -86,16 +86,16 @@ internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<Generate
 }
 
 internal fun setupAndroidVariantsSync(project: Project) {
-    val androidVariants: NamedDomainObjectContainer<Variant> =
-        project.objects.domainObjectContainer(Variant::class.java)
-
-    project.extra.set(VARIANTS_EXTRA_NAME, androidVariants)
-
     listOf(
         "com.android.application",
         "com.android.library"
     ).forEach {
         project.plugins.withId(it) {
+            val androidVariants: NamedDomainObjectContainer<Variant> =
+                project.objects.domainObjectContainer(Variant::class.java)
+
+            project.extra.set(VARIANTS_EXTRA_NAME, androidVariants)
+
             val componentsExtension: AndroidComponentsExtension<*, *, *> = project.extensions
                 .findByType<LibraryAndroidComponentsExtension>()
                 ?: project.extensions.findByType<ApplicationAndroidComponentsExtension>()
