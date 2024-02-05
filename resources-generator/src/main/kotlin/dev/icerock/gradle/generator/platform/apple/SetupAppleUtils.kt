@@ -92,7 +92,7 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
     val project: Project = framework.project
     val taskName: String = framework.linkTaskName.replace("link", "copyResources")
 
-    val copyTask: TaskProvider<CopyFrameworkResourcesToAppTask> = project.tasks.register(
+    project.tasks.register(
         /* name = */ taskName,
         /* type = */ CopyFrameworkResourcesToAppTask::class.java
     ) {
