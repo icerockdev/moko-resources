@@ -4,6 +4,7 @@ import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
+import com.android.build.api.variant.Sources
 import com.android.build.api.variant.Variant
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.GradleException
@@ -21,7 +22,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
 
 // TODO cleanup code here
-private const val variantsExtraName = "dev.icerock.moko.resources.android-variants"
+private const val VARIANTS_EXTRA_NAME = "dev.icerock.moko.resources.android-variants"
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 internal fun setupAndroidTasks(
@@ -45,36 +46,50 @@ internal fun setupAndroidTasks(
 
     // connect generateMR task with android tasks
     val androidVariants: NamedDomainObjectContainer<Variant> = project.extra
-        .get(variantsExtraName) as NamedDomainObjectContainer<Variant>
-
-    project.logger.warn("configure $compilation with $genTaskProvider")
+        .get(VARIANTS_EXTRA_NAME) as NamedDomainObjectContainer<Variant>
 
     androidVariants
-        .matching { it.name == compilation.androidVariant.name }
         .configureEach { variant ->
-            @Suppress("UnstableApiUsage")
-            variant.sources.kotlin?.addGeneratedSourceDirectory(
-                taskProvider = genTaskProvider,
-                wiredWith = GenerateMultiplatformResourcesTask::outputSourcesDir
-            )
+            if (variant.name == compilation.name) {
+                variant.sources.addGenerationTaskDependency(genTaskProvider)
+            }
 
-            variant.sources.res?.addGeneratedSourceDirectory(
-                taskProvider = genTaskProvider,
-                wiredWith = GenerateMultiplatformResourcesTask::outputResourcesDir
-            )
-
-            variant.sources.assets?.addGeneratedSourceDirectory(
-                taskProvider = genTaskProvider,
-                wiredWith = GenerateMultiplatformResourcesTask::outputAssetsDir
-            )
+            variant.nestedComponents.forEach { component ->
+                if (component.name == compilation.name) {
+                    component.sources.addGenerationTaskDependency(genTaskProvider)
+                }
+            }
         }
+
+    // to fix issues with android lint - depends on preBuild
+    project.tasks
+        .matching { it.name == "preBuild" }
+        .configureEach { it.dependsOn(genTaskProvider) }
+}
+
+internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<GenerateMultiplatformResourcesTask>) {
+    @Suppress("UnstableApiUsage")
+    kotlin?.addGeneratedSourceDirectory(
+        taskProvider = provider,
+        wiredWith = GenerateMultiplatformResourcesTask::outputSourcesDir
+    )
+
+    res?.addGeneratedSourceDirectory(
+        taskProvider = provider,
+        wiredWith = GenerateMultiplatformResourcesTask::outputResourcesDir
+    )
+
+    assets?.addGeneratedSourceDirectory(
+        taskProvider = provider,
+        wiredWith = GenerateMultiplatformResourcesTask::outputAssetsDir
+    )
 }
 
 internal fun setupAndroidVariantsSync(project: Project) {
     val androidVariants: NamedDomainObjectContainer<Variant> =
         project.objects.domainObjectContainer(Variant::class.java)
 
-    project.extra.set(variantsExtraName, androidVariants)
+    project.extra.set(VARIANTS_EXTRA_NAME, androidVariants)
 
     listOf(
         "com.android.application",
@@ -87,8 +102,6 @@ internal fun setupAndroidVariantsSync(project: Project) {
                 ?: error("can't find AndroidComponentsExtension")
 
             componentsExtension.onVariants { variant: Variant ->
-                project.logger.warn("found $variant")
-
                 androidVariants.add(variant)
             }
         }

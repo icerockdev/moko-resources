@@ -184,7 +184,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
 
-            KotlinPlatformType.androidJvm, KotlinPlatformType.common, KotlinPlatformType.native, KotlinPlatformType.wasm -> Unit
+            KotlinPlatformType.androidJvm, KotlinPlatformType.common, KotlinPlatformType.native,
+            KotlinPlatformType.wasm -> Unit
         }
     }
 }
