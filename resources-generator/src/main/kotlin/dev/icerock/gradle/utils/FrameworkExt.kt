@@ -8,9 +8,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 
 internal val Framework.nameWithoutBuildType: String
     get() {
-        val buildType: String = this.buildType.name.lowercase().capitalize()
+        val buildType: String = this.buildType.name
+        val nameWithoutFramework: String = this.name.removeSuffix("Framework")
 
-        return this.name
-            .removeSuffix("Framework")
-            .removeSuffix(buildType)
+        return nameWithoutFramework.substring(
+            startIndex = 0,
+            endIndex = nameWithoutFramework.length - buildType.length
+        )
     }
