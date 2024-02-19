@@ -137,7 +137,7 @@ internal fun registerCopyFrameworkResourcesToAppTask(
     val platform: String? = project.propertyString(
         name = KotlinCocoapodsPlugin.PLATFORM_PROPERTY
     ) ?: project.propertyString(
-        name = "moko.resources.PLATFORM"
+        name = "moko.resources.PLATFORM_NAME"
     )
     val archs: List<String>? = project.propertyStrings(
         name = KotlinCocoapodsPlugin.ARCHS_PROPERTY
