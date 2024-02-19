@@ -16,6 +16,15 @@ kotlin {
         val iosMain by getting {
             dependsOn(appleMain)
         }
+        val watchosMain by getting {
+            dependsOn(appleMain)
+        }
+        val watchos64Main by getting {
+            dependsOn(watchosMain)
+        }
+        val watchos32Main by getting {
+            dependsOn(watchosMain)
+        }
         val macosMain by getting {
             dependsOn(appleMain)
         }

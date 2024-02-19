@@ -33,6 +33,18 @@ kotlin {
         val iosSimulatorArm64Test by getting
         iosSimulatorArm64Test.dependsOn(iosTest)
 
+        val watchosMain by creating
+        val watchos64Main by creating
+        val watchos32Main by creating
+        val watchosX64Main by creating
+        val watchosArm64Main by creating
+        val watchosSimulatorArm64Main by creating
+        watchos64Main.dependsOn(watchosMain)
+        watchos32Main.dependsOn(watchosMain)
+        watchosX64Main.dependsOn(watchos64Main)
+        watchosArm64Main.dependsOn(watchos32Main)
+        watchosSimulatorArm64Main.dependsOn(watchos64Main)
+
         val commonMain by getting
         val macosMain by creating
         val macosArm64Main by getting
