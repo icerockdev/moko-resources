@@ -13,6 +13,10 @@ plugins {
 }
 
 kotlin {
+    watchosX64()
+    watchosArm64()
+    watchosSimulatorArm64()
+
     sourceSets {
         getByName("jsMain") {
             dependencies {
