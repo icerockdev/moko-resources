@@ -59,12 +59,10 @@ abstract class StringsGenerator(
             mutableMap[name] = if (strictLineBreaks) value else value.removeLineWraps()
         }
 
-        val incorrectKeys = mutableMap
-            .filter { it.key == it.value }
-            .keys
-            .toList()
+        val regex = Regex("[a-zA-Z_][a-zA-Z_0-9]*")
+        val incorrectKeys = mutableMap.keys.filter { !regex.matches(it) }
         if (incorrectKeys.isNotEmpty()) {
-            throw EqualStringKeysException(incorrectKeys)
+            throw InvalidKey(incorrectKeys)
         }
 
         return mutableMap
