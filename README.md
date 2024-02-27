@@ -16,7 +16,7 @@ macOS, iOS, Android the JVM and JS/Browser with the support of the default syste
 
 Also MOKO resources
 supports [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) so you can
-implement all you UI in Kotlin with Jetpack Compose and MOKO resources.
+implement all your UI in Kotlin with Jetpack Compose and MOKO resources.
 
 ## Table of Contents
 
