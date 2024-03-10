@@ -1,8 +1,6 @@
 package dev.icerock.gradle.serialization
 
-import dev.icerock.gradle.metadata.container.ActualInterfaceMetadata
 import dev.icerock.gradle.metadata.container.ContainerMetadata
-import dev.icerock.gradle.metadata.container.ExpectInterfaceMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
@@ -28,16 +26,6 @@ internal object ContainerMetadataSerializer : KSerializer<ContainerMetadata> {
             serializersModule = SerializersModule {
                 polymorphic(
                     baseClass = ContainerMetadata::class,
-                    actualClass = ExpectInterfaceMetadata::class,
-                    actualSerializer = ExpectInterfaceMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ContainerMetadata::class,
-                    actualClass = ActualInterfaceMetadata::class,
-                    actualSerializer = ActualInterfaceMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ContainerMetadata::class,
                     actualClass = ObjectMetadata::class,
                     actualSerializer = ObjectMetadata.serializer()
                 )
@@ -45,14 +33,13 @@ internal object ContainerMetadataSerializer : KSerializer<ContainerMetadata> {
         }
     }
 
-    override val descriptor: SerialDescriptor = PolymorphicSerializer(ContainerMetadata::class).descriptor
+    override val descriptor: SerialDescriptor =
+        PolymorphicSerializer(ContainerMetadata::class).descriptor
 
     override fun deserialize(decoder: Decoder): ContainerMetadata {
         val jsonElement = (decoder as JsonDecoder).decodeJsonElement()
 
         return when (val type = jsonElement.jsonObject["containerType"]?.jsonPrimitive?.content) {
-            "actual-interface" -> json.decodeFromJsonElement(ActualInterfaceMetadata.serializer(), jsonElement)
-            "expect-interface" -> json.decodeFromJsonElement(ExpectInterfaceMetadata.serializer(), jsonElement)
             "object" -> json.decodeFromJsonElement(ObjectMetadata.serializer(), jsonElement)
             else -> throw SerializationException(
                 message = "ContainerMetadataSerializer. Unknown type: $type. Element: $jsonElement"
@@ -61,16 +48,9 @@ internal object ContainerMetadataSerializer : KSerializer<ContainerMetadata> {
     }
 
     override fun serialize(encoder: Encoder, value: ContainerMetadata) {
-        when (value) {
-            is ActualInterfaceMetadata -> {
-                ActualInterfaceMetadata.serializer().serialize(encoder, value)
-            }
-            is ExpectInterfaceMetadata -> {
-                ExpectInterfaceMetadata.serializer().serialize(encoder, value)
-            }
-            is ObjectMetadata -> {
-                ObjectMetadata.serializer().serialize(encoder, value)
-            }
-        }
+        return ObjectMetadata.serializer().serialize(
+            encoder = encoder,
+            value = value as ObjectMetadata
+        )
     }
 }

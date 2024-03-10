@@ -7,16 +7,16 @@ package dev.icerock.gradle.generator
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.metadata.container.ActualInterfaceMetadata
 import dev.icerock.gradle.metadata.container.ContainerMetadata
-import dev.icerock.gradle.metadata.container.ExpectInterfaceMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.calculateHash
+import org.gradle.api.logging.Logger
 import java.io.File
 
 @Suppress("LongParameterList")
 internal class ResourcesGenerator(
+    val logger: Logger,
     private val containerGenerator: PlatformContainerGenerator,
     private val typesGenerators: List<ResourceTypeGenerator<*>>,
     private val resourcesPackageName: String,
@@ -28,6 +28,7 @@ internal class ResourcesGenerator(
     @Suppress("LongMethod")
     fun generateTargetKotlin(
         files: ResourcesFiles,
+//        metadataSourceSetName: String,
         inputMetadata: List<ContainerMetadata>
     ): List<ContainerMetadata> {
         val ownMetadata: List<ResourceMetadata> = typesGenerators
@@ -71,74 +72,20 @@ internal class ResourcesGenerator(
 
             fileSpec.addType(objectSpec.build())
         } else {
-            // for each input metadata we should generate actual
-
-            // at first we should filter already generated expect-actual interfaces
-            val expectInterfaces: List<ExpectInterfaceMetadata> = inputMetadata
-                .mapNotNull { it as? ExpectInterfaceMetadata }
-                .filter { expectInterface ->
-                    inputMetadata.mapNotNull { it as? ActualInterfaceMetadata }
-                        .none { expectInterface.name == it.name }
-                }
-            val alreadyActualInterfaces: List<String> = inputMetadata
-                .mapNotNull { it as? ActualInterfaceMetadata }
-                .map { it.name }
-
-            // then we should generate actual interfaces with resources at our level
-            val actualInterfaces: List<GenerationResult> =
-                typesGenerators.mapNotNull { typeGenerator ->
-                    typeGenerator.generateActualInterface(
-                        interfaces = expectInterfaces.filterNot {
-                            alreadyActualInterfaces.contains(
-                                it.name
-                            )
-                        },
-                        metadata = ownMetadata,
-                        sourceSet = sourceSetName
-                    )
-                }
-
-            actualInterfaces.forEach { result ->
-                fileSpec.addType(result.typeSpec)
-                outputMetadata.add(result.metadata)
-            }
-
-            // then we should generate dummy actual interfaces
-            val dummyInterfaces: List<GenerationResult> = expectInterfaces.map { it.name }
-                .minus(
-                    actualInterfaces.map { (it.metadata as ActualInterfaceMetadata).name }.toSet()
-                ).map { dummyInterfaceName ->
-                    GenerationResult(
-                        typeSpec = TypeSpec.interfaceBuilder(dummyInterfaceName)
-                            .addModifiers(visibilityModifier)
-                            .addModifiers(KModifier.ACTUAL)
-                            .build(),
-                        metadata = ActualInterfaceMetadata(
-                            name = dummyInterfaceName,
-                            resources = emptyList()
-                        )
-                    )
-                }
-
-            dummyInterfaces
-                .forEach { result ->
-                    fileSpec.addType(result.typeSpec)
-                    outputMetadata.add(result.metadata)
-                }
-
-            // then we should generate actual object
+            // for each input metadata we should generate actual object
             val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
                 typeGenerator.generateActualObject(
                     objects = inputMetadata.mapNotNull { it as? ObjectMetadata },
-                    interfaces = inputMetadata
-                        .mapNotNull { it as? ActualInterfaceMetadata }
-                        .plus(
-                            (actualInterfaces + dummyInterfaces)
-                                .map { it.metadata as ActualInterfaceMetadata }
-                        )
                 )
             }
             objects.forEach { outputMetadata.add(it.metadata) }
+
+            //TODO Нужно переработать в работу с отдельными источниками, а не всеми
+//            val actualObjectName: String = if (metadataSourceSetName != sourceSetName) {
+//                "$resourcesClassName$sourceSetName"
+//            } else {
+//                resourcesClassName
+//            }
 
             val objectSpec: TypeSpec.Builder =
                 TypeSpec.objectBuilder(resourcesClassName) // default: object MR
@@ -149,8 +96,8 @@ internal class ResourcesGenerator(
                 .plus(typesGenerators.flatMap { it.getImports() })
                 .forEach { fileSpec.addImport(it.packageName, it.simpleNames) }
 
-            val contentHash: String =
-                (inputMetadata + outputMetadata).mapNotNull { it.contentHash() }
+            val contentHash: String = (inputMetadata + outputMetadata)
+                    .mapNotNull { it.contentHash() }
                     .calculateHash()
             objectSpec.addContentHashProperty(contentHash)
 
@@ -177,7 +124,7 @@ internal class ResourcesGenerator(
             .flatMap { it.generateMetadata(files) }
 
         // we not have any resources on this level.
-        // so we should not generate expect and actuals too
+        // so we should not generate expect and actual too
         if (ownMetadata.isEmpty()) return emptyList()
 
         // here we see metadata on our level
@@ -188,50 +135,33 @@ internal class ResourcesGenerator(
 
         val outputMetadata: MutableList<ContainerMetadata> = mutableListOf()
 
-        if (inputMetadata.isEmpty()) {
-            // at lower level we not see any resources. so we should generate expects
-            // read upper files for interface
-            val interfaces: List<GenerationResult> = typesGenerators
-                .flatMap { it.generateExpectInterfaces(files) }
-            // read own metadata for object
-            val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
-                typeGenerator.generateExpectObject(
-                    metadata = ownMetadata,
-                    interfaces = interfaces.mapNotNull { it.metadata as? ExpectInterfaceMetadata }
-                )
-            }
-
-            interfaces.forEach { result ->
-                fileSpec.addType(result.typeSpec)
-                outputMetadata.add(result.metadata)
-            }
-
-            val objectSpec: TypeSpec.Builder =
-                TypeSpec.objectBuilder(resourcesClassName) // default: object MR
-                    .addModifiers(KModifier.EXPECT)
-                    .addModifiers(visibilityModifier)
-
-            objects.forEach { result ->
-                objectSpec.addType(result.typeSpec)
-                outputMetadata.add(result.metadata)
-            }
-
-            fileSpec.addType(objectSpec.build())
-        } else {
-            // at lower level already exist expect. we should generate our actual interfaces
-            val interfaces: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
-                typeGenerator.generateActualInterface(
-                    interfaces = inputMetadata.mapNotNull { it as? ExpectInterfaceMetadata },
-                    metadata = ownMetadata,
-                    sourceSet = sourceSetName
-                )
-            }
-
-            interfaces.forEach { result ->
-                fileSpec.addType(result.typeSpec)
-                outputMetadata.add(result.metadata)
-            }
+        // at lower level we not see any resources. so we should generate expects
+        // read own metadata for object
+        val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
+            typeGenerator.generateExpectObject(
+                metadata = ownMetadata,
+            )
         }
+
+        // if previous levels doesn't have resources should use "MR"
+        // but if resources found should generate SourceSet "MR" object
+        val expectObjectName: String = if (inputMetadata.isNotEmpty()) {
+            "$resourcesClassName$sourceSetName"
+        } else {
+            resourcesClassName
+        }
+
+        val objectSpec: TypeSpec.Builder =
+            TypeSpec.objectBuilder(expectObjectName) // default: object MR
+                .addModifiers(KModifier.EXPECT)
+                .addModifiers(visibilityModifier)
+
+        objects.forEach { result ->
+            objectSpec.addType(result.typeSpec)
+            outputMetadata.add(result.metadata)
+        }
+
+        fileSpec.addType(objectSpec.build())
 
         // write file
         fileSpec.build().writeTo(sourcesGenerationDir)

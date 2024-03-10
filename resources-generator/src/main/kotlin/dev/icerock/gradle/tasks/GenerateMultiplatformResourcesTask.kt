@@ -23,6 +23,7 @@ import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
+import dev.icerock.gradle.utils.isCommon
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -158,15 +159,16 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files.flatMap { file ->
             json.decodeFromString(serializer, file.readText())
         }
+        //TODO Нужно будет для извлечения целевого MR на конечном сорсете
+//        file.nameWithoutExtension.remove("-metadata")
 
-        val outputMetadata: List<ContainerMetadata> =
-            if (kotlinPlatformType == KotlinPlatformType.common) {
-                generator.generateCommonKotlin(files, inputMetadata)
-            } else {
-                generator.generateTargetKotlin(files, inputMetadata).also { containers ->
-                    generator.generateResources(containers.mapNotNull { it as? ObjectMetadata })
-                }
+        val outputMetadata: List<ContainerMetadata> = if (kotlinPlatformType.isCommon) {
+            generator.generateCommonKotlin(files, inputMetadata)
+        } else {
+            generator.generateTargetKotlin(files, inputMetadata).also { containers ->
+                generator.generateResources(containers.mapNotNull { it as? ObjectMetadata })
             }
+        }
 
         outputMetadataFile.get().asFile.writeText(json.encodeToString(serializer, outputMetadata))
     }
@@ -179,7 +181,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             resourcesClassName = resourcesClassName.get(),
             sourceSetName = sourceSetName.get(),
             visibilityModifier = resourcesVisibility.get().toModifier(),
-            sourcesGenerationDir = outputSourcesDir.get().asFile
+            sourcesGenerationDir = outputSourcesDir.get().asFile,
+            logger = logger
         )
     }
 

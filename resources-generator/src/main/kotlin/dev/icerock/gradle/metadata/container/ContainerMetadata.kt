@@ -20,31 +20,6 @@ sealed interface ContainerMetadata {
 }
 
 @Serializable
-@SerialName("expect-interface")
-internal data class ExpectInterfaceMetadata(
-    @OptIn(ExperimentalSerializationApi::class)
-    @EncodeDefault
-    override val containerType: String = "expect-interface",
-    val name: String,
-    val resourceType: ResourceType,
-    val sourceSet: String,
-) : ContainerMetadata {
-    override fun contentHash() = null
-}
-
-@Serializable
-@SerialName("actual-interface")
-internal data class ActualInterfaceMetadata(
-    @OptIn(ExperimentalSerializationApi::class)
-    @EncodeDefault
-    override val containerType: String = "actual-interface",
-    val name: String,
-    val resources: List<ResourceMetadata>,
-) : ContainerMetadata {
-    override fun contentHash(): String = resources.mapNotNull { it.contentHash() }.calculateHash()
-}
-
-@Serializable
 @SerialName("object")
 internal data class ObjectMetadata(
     @OptIn(ExperimentalSerializationApi::class)
@@ -52,7 +27,6 @@ internal data class ObjectMetadata(
     override val containerType: String = "object",
     val name: String,
     val resourceType: ResourceType,
-    val interfaces: List<String>,
     val resources: List<ResourceMetadata>,
 ) : ContainerMetadata {
     override fun contentHash(): String = resources.mapNotNull { it.contentHash() }.calculateHash()
