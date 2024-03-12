@@ -4,9 +4,7 @@
 
 package dev.icerock.moko.resources
 
-actual interface ResourceContainer<T> {
-    fun values(): List<T>
-}
+actual class ResourcePlatformDetails
 
 actual fun ResourceContainer<ImageResource>.getImageByFileName(
     fileName: String

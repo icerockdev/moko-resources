@@ -10,13 +10,15 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
 internal class JsFileResourceGenerator(
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FileMetadata> {
 
     override fun imports(): List<ClassName> = emptyList()
@@ -38,9 +40,18 @@ internal class JsFileResourceGenerator(
         }
     }
 
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<FileMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifiers)
+    }
+
     override fun generateAfterProperties(
         builder: TypeSpec.Builder,
-        metadata: List<FileMetadata>
+        metadata: List<FileMetadata>,
+        modifiers: List<KModifier>
     ) {
         // FIXME duplicate
         val values: String = metadata.joinToString { it.key }

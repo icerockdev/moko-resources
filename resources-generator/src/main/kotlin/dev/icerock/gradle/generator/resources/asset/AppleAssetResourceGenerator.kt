@@ -6,15 +6,20 @@ package dev.icerock.gradle.generator.resources.asset
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
-import dev.icerock.gradle.generator.addAppleContainerBundleProperty
+import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
 internal class AppleAssetResourceGenerator(
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<AssetMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
@@ -26,7 +31,7 @@ internal class AppleAssetResourceGenerator(
                 .replace('/', PATH_DELIMITER)
                 .substringBeforeLast('.'),
             metadata.filePath.extension,
-            Constants.Apple.containerBundlePropertyName
+            Constants.Apple.platformContainerBundlePropertyName
         )
     }
 
@@ -39,9 +44,21 @@ internal class AppleAssetResourceGenerator(
 
     override fun generateBeforeProperties(
         builder: TypeSpec.Builder,
-        metadata: List<AssetMetadata>
+        metadata: List<AssetMetadata>,
+        modifiers: List<KModifier>,
     ) {
-        builder.addAppleContainerBundleProperty()
+        builder.addAppleContainerBundleInitializerProperty(modifiers)
+    }
+
+    override fun generateAfterProperties(
+        builder: Builder, metadata: List<AssetMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addValuesFunction(
+            modifiers = modifiers,
+            metadata = metadata,
+            classType = Constants.assetResourceName
+        )
     }
 
     private companion object {

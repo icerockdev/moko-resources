@@ -6,13 +6,21 @@ package dev.icerock.gradle.generator.resources.color
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec.Builder
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addValuesFunction
+import dev.icerock.gradle.metadata.resource.AssetMetadata
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 import java.io.File
 
 internal class AndroidColorResourceGenerator(
     private val androidRClassPackage: String,
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<ColorMetadata> {
     override fun imports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
@@ -20,6 +28,26 @@ internal class AndroidColorResourceGenerator(
 
     override fun generateInitializer(metadata: ColorMetadata): CodeBlock {
         return CodeBlock.of("ColorResource(R.color.%L)", metadata.key)
+    }
+
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<ColorMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifiers)
+    }
+
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<ColorMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addValuesFunction(
+            modifiers = modifiers,
+            metadata = metadata,
+            classType = Constants.colorResourceName
+        )
     }
 
     override fun generateResourceFiles(data: List<ColorMetadata>) {

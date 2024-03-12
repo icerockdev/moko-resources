@@ -6,10 +6,11 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.KModifier.ACTUAL
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.metadata.container.ObjectMetadata
+import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.filterClass
@@ -25,7 +26,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     private val visibilityModifier: KModifier,
     private val generator: ResourceGenerator<T>,
     private val platformResourceGenerator: PlatformResourceGenerator<T>,
-    private val filter: PatternFilterable.() -> Unit
+    private val filter: PatternFilterable.() -> Unit,
 ) {
     fun generateMetadata(files: ResourcesFiles): List<T> {
         return generator.generateMetadata(files.matching(filter).ownSourceSet.fileTree.files)
@@ -33,25 +34,32 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
 
     fun getImports(): List<ClassName> = platformResourceGenerator.imports()
 
-    fun generateExpectObject(metadata: List<ResourceMetadata>): GenerationResult? {
+    fun generateExpectObject(
+        parentObjectName: String,
+        metadata: List<ResourceMetadata>
+    ): GenerationResult? {
         val typeMetadata: List<T> = metadata.filterClass(typeClass = metadataClass)
 
         // if we not have any resources of our type at all - not generate object
         if (typeMetadata.isEmpty()) return null
 
         val objectName: String = resourceType.name.lowercase()
-
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
             // implement ResourceType<**Resource> for extensions
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
+            // implement ResourceContainer platform property
+            .addOverridePlatformProperty()
             // add all properties of available resources
             .addProperties(typeMetadata.map { generator.generateProperty(it).build() })
+            // implement ResourceContainer values function
+            .addOverrideAbstractValuesFunction(resourceClass)
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
-            metadata = ObjectMetadata(
+            metadata = ContainerMetadata(
+                parentObjectName = parentObjectName,
                 name = objectName,
                 resourceType = resourceType,
                 resources = typeMetadata
@@ -60,9 +68,10 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     }
 
     fun generateActualObject(
-        objects: List<ObjectMetadata>,
+        parentObjectName: String,
+        objects: List<ContainerMetadata>,
     ): GenerationResult? {
-        val typeObject: ObjectMetadata = objects
+        val typeObject: ContainerMetadata = objects
             .singleOrNull { it.resourceType == resourceType } ?: return null
 
         val typeResources: List<T> = typeObject.resources.filterClass(metadataClass)
@@ -73,17 +82,26 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             // implement ResourceType<**Resource> for extensions
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             .also { builder ->
-                platformResourceGenerator.generateBeforeProperties(builder, typeResources)
+                platformResourceGenerator.generateBeforeProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                    modifiers = listOf(ACTUAL),
+                )
             }
             // add all properties of object
             .addProperties(typeResources.map(::createActualProperty))
             .also { builder ->
-                platformResourceGenerator.generateAfterProperties(builder, typeResources)
+                platformResourceGenerator.generateAfterProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                    modifiers = listOf(ACTUAL),
+                )
             }
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
-            metadata = ObjectMetadata(
+            metadata = ContainerMetadata(
+                parentObjectName = parentObjectName,
                 name = typeObject.name,
                 resourceType = resourceType,
                 resources = typeObject.resources
@@ -92,13 +110,15 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     }
 
     fun generateObject(
-        metadata: List<ResourceMetadata>
+        parentObjectName: String,
+        metadata: List<ResourceMetadata>,
     ): GenerationResult? {
         val typeResources: List<T> = metadata.filterClass(metadataClass)
+
+        // if we not have any resources of our type at all - not generate object
         if (typeResources.isEmpty()) return null
 
         val objectName: String = resourceType.name.lowercase()
-
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
@@ -106,17 +126,26 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .also { builder ->
-                platformResourceGenerator.generateBeforeProperties(builder, typeResources)
+                platformResourceGenerator.generateBeforeProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                    modifiers = listOf(),
+                )
             }
             // add all properties of object
             .addProperties(typeResources.map(::createSimpleProperty))
             .also { builder ->
-                platformResourceGenerator.generateAfterProperties(builder, typeResources)
+                platformResourceGenerator.generateAfterProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                    modifiers = listOf(),
+                )
             }
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
-            metadata = ObjectMetadata(
+            metadata = ContainerMetadata(
+                parentObjectName = parentObjectName,
                 name = objectName,
                 resourceType = resourceType,
                 resources = typeResources
@@ -138,13 +167,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         return createProperty(resource, KModifier.ACTUAL)
     }
 
-    private fun createOverrideProperty(resource: T): PropertySpec {
-        return createProperty(resource, KModifier.OVERRIDE)
-    }
-
     private fun createProperty(
         resource: T,
-        modifier: KModifier? = null
+        modifier: KModifier? = null,
     ): PropertySpec {
         return generator.generateProperty(resource)
             .apply {

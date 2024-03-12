@@ -10,13 +10,15 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import java.io.File
 
 internal class JsImageResourceGenerator(
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<ImageMetadata> {
 
     override fun imports(): List<ClassName> = emptyList()
@@ -32,6 +34,14 @@ internal class JsImageResourceGenerator(
         )
     }
 
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<ImageMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifiers)
+    }
+
     override fun generateResourceFiles(data: List<ImageMetadata>) {
         generateHighestQualityImageResources(
             resourcesGenerationDir = resourcesGenerationDir,
@@ -42,7 +52,8 @@ internal class JsImageResourceGenerator(
 
     override fun generateAfterProperties(
         builder: TypeSpec.Builder,
-        metadata: List<ImageMetadata>
+        metadata: List<ImageMetadata>,
+        modifiers: List<KModifier>
     ) {
         val languageKeysList: String = metadata.joinToString { it.key }
 

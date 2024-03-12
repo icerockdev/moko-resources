@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
 import dev.icerock.gradle.generator.addJsSupportedLocalesProperty
@@ -50,8 +51,11 @@ internal class JsPluralResourceGenerator(
 
     override fun generateBeforeProperties(
         builder: TypeSpec.Builder,
-        metadata: List<PluralMetadata>
+        metadata: List<PluralMetadata>,
+        modifiers: List<KModifier>
     ) {
+        builder.addEmptyPlatformResourceProperty(modifiers)
+
         builder.addSuperinterface(Constants.Js.loaderHolderName)
 
         builder.addJsFallbackProperty(
@@ -73,7 +77,8 @@ internal class JsPluralResourceGenerator(
 
     override fun generateAfterProperties(
         builder: TypeSpec.Builder,
-        metadata: List<PluralMetadata>
+        metadata: List<PluralMetadata>,
+        modifiers: List<KModifier>
     ) {
         val languageKeysList: String = metadata.joinToString { it.key }
 

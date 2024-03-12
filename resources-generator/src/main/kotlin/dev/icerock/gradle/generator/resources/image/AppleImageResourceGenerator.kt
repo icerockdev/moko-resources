@@ -6,10 +6,15 @@ package dev.icerock.gradle.generator.resources.image
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
-import dev.icerock.gradle.generator.addAppleContainerBundleProperty
+import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
@@ -19,7 +24,7 @@ import org.gradle.api.InvalidUserDataException
 import java.io.File
 
 internal class AppleImageResourceGenerator(
-    private val assetsGenerationDir: File
+    private val assetsGenerationDir: File,
 ) : PlatformResourceGenerator<ImageMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
@@ -27,7 +32,7 @@ internal class AppleImageResourceGenerator(
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = %L)",
             metadata.key,
-            Constants.Apple.containerBundlePropertyName
+            Constants.Apple.platformContainerBundlePropertyName
         )
     }
 
@@ -97,9 +102,18 @@ internal class AppleImageResourceGenerator(
 
     override fun generateBeforeProperties(
         builder: TypeSpec.Builder,
-        metadata: List<ImageMetadata>
+        metadata: List<ImageMetadata>,
+        modifiers: List<KModifier>,
     ) {
-        builder.addAppleContainerBundleProperty()
+        builder.addAppleContainerBundleInitializerProperty(modifiers)
+    }
+
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<ImageMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addValuesFunction(modifiers, metadata, Constants.imageResourceName)
     }
 
     private companion object {

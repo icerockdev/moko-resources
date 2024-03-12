@@ -6,17 +6,22 @@ package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
-import dev.icerock.gradle.generator.addAppleContainerBundleProperty
+import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import java.io.File
 
 internal class ApplePluralResourceGenerator(
     private val baseLocalizationRegion: String,
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<PluralMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
@@ -24,7 +29,7 @@ internal class ApplePluralResourceGenerator(
         return CodeBlock.of(
             "PluralsResource(resourceId = %S, bundle = %L)",
             metadata.key,
-            Constants.Apple.containerBundlePropertyName
+            Constants.Apple.platformContainerBundlePropertyName
         )
     }
 
@@ -39,14 +44,27 @@ internal class ApplePluralResourceGenerator(
 
     override fun generateBeforeProperties(
         builder: TypeSpec.Builder,
-        metadata: List<PluralMetadata>
+        metadata: List<PluralMetadata>,
+        modifiers: List<KModifier>,
     ) {
-        builder.addAppleContainerBundleProperty()
+        builder.addAppleContainerBundleInitializerProperty(modifiers)
+    }
+
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<PluralMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addValuesFunction(
+            modifiers = modifiers,
+            metadata = metadata,
+            classType = Constants.pluralsResourceName
+        )
     }
 
     private fun generateLanguageFile(
         language: LanguageType,
-        strings: Map<String, Map<String, String>>
+        strings: Map<String, Map<String, String>>,
     ) {
         val resDir = File(resourcesGenerationDir, language.appleResourcesDir)
         val localizableFile = File(resDir, "Localizable.stringsdict")

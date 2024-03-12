@@ -20,7 +20,6 @@ import dev.icerock.gradle.generator.factory.ImageGeneratorFactory
 import dev.icerock.gradle.generator.factory.PluralGeneratorFactory
 import dev.icerock.gradle.generator.factory.StringGeneratorFactory
 import dev.icerock.gradle.metadata.container.ContainerMetadata
-import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
 import dev.icerock.gradle.utils.isCommon
@@ -159,14 +158,12 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files.flatMap { file ->
             json.decodeFromString(serializer, file.readText())
         }
-        //TODO Нужно будет для извлечения целевого MR на конечном сорсете
-//        file.nameWithoutExtension.remove("-metadata")
 
         val outputMetadata: List<ContainerMetadata> = if (kotlinPlatformType.isCommon) {
             generator.generateCommonKotlin(files, inputMetadata)
         } else {
             generator.generateTargetKotlin(files, inputMetadata).also { containers ->
-                generator.generateResources(containers.mapNotNull { it as? ObjectMetadata })
+                generator.generateResources(containers)
             }
         }
 

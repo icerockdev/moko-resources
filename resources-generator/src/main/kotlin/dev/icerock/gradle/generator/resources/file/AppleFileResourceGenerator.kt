@@ -6,15 +6,20 @@ package dev.icerock.gradle.generator.resources.file
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
-import dev.icerock.gradle.generator.addAppleContainerBundleProperty
+import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
 internal class AppleFileResourceGenerator(
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FileMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
@@ -23,7 +28,7 @@ internal class AppleFileResourceGenerator(
             "FileResource(fileName = %S, extension = %S, bundle = %L)",
             metadata.filePath.nameWithoutExtension,
             metadata.filePath.extension,
-            Constants.Apple.containerBundlePropertyName
+            Constants.Apple.platformContainerBundlePropertyName
         )
     }
 
@@ -38,8 +43,21 @@ internal class AppleFileResourceGenerator(
 
     override fun generateBeforeProperties(
         builder: TypeSpec.Builder,
-        metadata: List<FileMetadata>
+        metadata: List<FileMetadata>,
+        modifiers: List<KModifier>,
     ) {
-        builder.addAppleContainerBundleProperty()
+        builder.addAppleContainerBundleInitializerProperty(modifiers)
+    }
+
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<FileMetadata>,
+        modifiers: List<KModifier>,
+    ) {
+        builder.addValuesFunction(
+            modifiers = modifiers,
+            metadata = metadata,
+            classType = Constants.fileResourceName
+        )
     }
 }
