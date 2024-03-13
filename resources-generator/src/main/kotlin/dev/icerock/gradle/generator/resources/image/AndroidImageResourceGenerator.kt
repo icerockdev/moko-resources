@@ -7,7 +7,12 @@ package dev.icerock.gradle.generator.resources.image
 import com.android.ide.common.vectordrawable.Svg2Vector
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec.Builder
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import org.slf4j.Logger
 import java.io.File
@@ -20,7 +25,7 @@ import kotlin.reflect.full.functions
 internal class AndroidImageResourceGenerator(
     private val androidRClassPackage: String,
     private val resourcesGenerationDir: File,
-    private val logger: Logger
+    private val logger: Logger,
 ) : PlatformResourceGenerator<ImageMetadata> {
     override fun imports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
@@ -28,6 +33,26 @@ internal class AndroidImageResourceGenerator(
 
     override fun generateInitializer(metadata: ImageMetadata): CodeBlock {
         return CodeBlock.of("ImageResource(R.drawable.%L)", processKey(metadata.key))
+    }
+
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<ImageMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifier)
+    }
+
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<ImageMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addValuesFunction(
+            metadata = metadata,
+            classType = Constants.imageResourceName,
+            modifier = modifier
+        )
     }
 
     override fun generateResourceFiles(data: List<ImageMetadata>) {

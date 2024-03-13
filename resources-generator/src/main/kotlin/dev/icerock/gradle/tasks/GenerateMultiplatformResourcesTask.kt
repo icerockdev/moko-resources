@@ -20,9 +20,9 @@ import dev.icerock.gradle.generator.factory.ImageGeneratorFactory
 import dev.icerock.gradle.generator.factory.PluralGeneratorFactory
 import dev.icerock.gradle.generator.factory.StringGeneratorFactory
 import dev.icerock.gradle.metadata.container.ContainerMetadata
-import dev.icerock.gradle.metadata.container.ObjectMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
+import dev.icerock.gradle.utils.isCommon
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -159,14 +159,13 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             json.decodeFromString(serializer, file.readText())
         }
 
-        val outputMetadata: List<ContainerMetadata> =
-            if (kotlinPlatformType == KotlinPlatformType.common) {
-                generator.generateCommonKotlin(files, inputMetadata)
-            } else {
-                generator.generateTargetKotlin(files, inputMetadata).also { containers ->
-                    generator.generateResources(containers.mapNotNull { it as? ObjectMetadata })
-                }
+        val outputMetadata: List<ContainerMetadata> = if (kotlinPlatformType.isCommon) {
+            generator.generateCommonKotlin(files, inputMetadata)
+        } else {
+            generator.generateTargetKotlin(files, inputMetadata).also { containers ->
+                generator.generateResources(containers)
             }
+        }
 
         outputMetadataFile.get().asFile.writeText(json.encodeToString(serializer, outputMetadata))
     }
@@ -179,7 +178,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             resourcesClassName = resourcesClassName.get(),
             sourceSetName = sourceSetName.get(),
             visibilityModifier = resourcesVisibility.get().toModifier(),
-            sourcesGenerationDir = outputSourcesDir.get().asFile
+            sourcesGenerationDir = outputSourcesDir.get().asFile,
+            logger = logger
         )
     }
 

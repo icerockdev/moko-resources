@@ -4,4 +4,4 @@
 
 package dev.icerock.moko.resources
 
-actual interface ResourceContainer<T>
+actual class ResourcePlatformDetails

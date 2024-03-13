@@ -9,9 +9,10 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 
 internal class JsColorResourceGenerator : PlatformResourceGenerator<ColorMetadata> {
@@ -23,9 +24,18 @@ internal class JsColorResourceGenerator : PlatformResourceGenerator<ColorMetadat
 
     override fun generateResourceFiles(data: List<ColorMetadata>) = Unit
 
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<ColorMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifier)
+    }
+
     override fun generateAfterProperties(
-        builder: TypeSpec.Builder,
-        metadata: List<ColorMetadata>
+        builder: Builder,
+        metadata: List<ColorMetadata>,
+        modifier: KModifier?,
     ) {
         val languageKeysList: String = metadata.joinToString { it.key }
 

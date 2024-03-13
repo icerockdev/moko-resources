@@ -6,7 +6,12 @@ package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec.Builder
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import org.apache.commons.text.StringEscapeUtils
@@ -14,7 +19,7 @@ import java.io.File
 
 internal class AndroidPluralResourceGenerator(
     private val androidRClassPackage: String,
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<PluralMetadata> {
     override fun imports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
@@ -22,6 +27,14 @@ internal class AndroidPluralResourceGenerator(
 
     override fun generateInitializer(metadata: PluralMetadata): CodeBlock {
         return CodeBlock.of("PluralsResource(R.plurals.%L)", metadata.key)
+    }
+
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<PluralMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifier)
     }
 
     override fun generateResourceFiles(data: List<PluralMetadata>) {
@@ -33,9 +46,21 @@ internal class AndroidPluralResourceGenerator(
         }
     }
 
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<PluralMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addValuesFunction(
+            modifier = modifier,
+            metadata = metadata,
+            classType = Constants.pluralsResourceName
+        )
+    }
+
     private fun generateLanguageFile(
         language: LanguageType,
-        strings: Map<String, Map<String, String>>
+        strings: Map<String, Map<String, String>>,
     ) {
         val valuesDir = File(resourcesGenerationDir, language.androidResourcesDir)
         val stringsFile = File(valuesDir, "multiplatform_plurals.xml")

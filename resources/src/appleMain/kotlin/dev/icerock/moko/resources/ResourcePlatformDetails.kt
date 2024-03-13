@@ -6,6 +6,6 @@ package dev.icerock.moko.resources
 
 import platform.Foundation.NSBundle
 
-actual interface ResourceContainer<T> {
+actual class ResourcePlatformDetails(
     val nsBundle: NSBundle
-}
+)
