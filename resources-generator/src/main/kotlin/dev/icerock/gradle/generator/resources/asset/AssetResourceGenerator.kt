@@ -16,9 +16,9 @@ internal class AssetResourceGenerator(
 ) : ResourceGenerator<AssetMetadata> {
 
     override fun generateMetadata(files: Set<File>): List<AssetMetadata> {
-        return files.map { file ->
+        return files.map { file: File ->
             AssetMetadata(
-                key = generateKey(file.nameWithoutExtension),
+                key = generateKey(file.name),
                 relativePath = assetDirs.single { file.absolutePath.contains(it.absolutePath) },
                 filePath = file,
             )

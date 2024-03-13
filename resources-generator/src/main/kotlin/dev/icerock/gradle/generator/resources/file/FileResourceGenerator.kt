@@ -16,7 +16,7 @@ internal class FileResourceGenerator : ResourceGenerator<FileMetadata> {
     override fun generateMetadata(files: Set<File>): List<FileMetadata> {
         return files.map { file ->
             FileMetadata(
-                key = generateKey(file.nameWithoutExtension),
+                key = generateKey(file.name),
                 filePath = file,
             )
         }
