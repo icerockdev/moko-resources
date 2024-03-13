@@ -6,7 +6,6 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.KModifier.ACTUAL
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -85,7 +84,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 platformResourceGenerator.generateBeforeProperties(
                     builder = builder,
                     metadata = typeResources,
-                    modifiers = listOf(ACTUAL),
+                    modifier = KModifier.ACTUAL,
                 )
             }
             // add all properties of object
@@ -94,7 +93,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 platformResourceGenerator.generateAfterProperties(
                     builder = builder,
                     metadata = typeResources,
-                    modifiers = listOf(ACTUAL),
+                    modifier = KModifier.ACTUAL,
                 )
             }
 
@@ -129,7 +128,6 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 platformResourceGenerator.generateBeforeProperties(
                     builder = builder,
                     metadata = typeResources,
-                    modifiers = listOf(),
                 )
             }
             // add all properties of object
@@ -138,7 +136,6 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 platformResourceGenerator.generateAfterProperties(
                     builder = builder,
                     metadata = typeResources,
-                    modifiers = listOf(),
                 )
             }
 

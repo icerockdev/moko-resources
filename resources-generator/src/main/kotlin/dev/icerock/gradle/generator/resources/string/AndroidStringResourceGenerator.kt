@@ -32,18 +32,18 @@ internal class AndroidStringResourceGenerator(
     override fun generateBeforeProperties(
         builder: Builder,
         metadata: List<StringMetadata>,
-        modifiers: List<KModifier>,
+        modifier: KModifier?,
     ) {
-        builder.addEmptyPlatformResourceProperty(modifiers)
+        builder.addEmptyPlatformResourceProperty(modifier)
     }
 
     override fun generateAfterProperties(
         builder: Builder,
         metadata: List<StringMetadata>,
-        modifiers: List<KModifier>,
+        modifier: KModifier?,
     ) {
         builder.addValuesFunction(
-            modifiers = modifiers,
+            modifier = modifier,
             metadata = metadata,
             classType = Constants.stringResourceName
         )

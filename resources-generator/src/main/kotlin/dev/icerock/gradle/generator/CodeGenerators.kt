@@ -38,7 +38,7 @@ internal fun TypeSpec.Builder.addContentHashProperty(hash: String) {
 }
 
 internal fun TypeSpec.Builder.addAppleContainerBundleInitializerProperty(
-    modifiers: List<KModifier>
+    modifier: KModifier? = null,
 ) {
     val codeBlock = "${PlatformDetails.platformDetailsClass}(${Apple.resourcesBundlePropertyName})"
 
@@ -47,7 +47,11 @@ internal fun TypeSpec.Builder.addAppleContainerBundleInitializerProperty(
             PlatformDetails.platformDetailsPropertyName,
             Constants.resourcePlatformDetailsName
         )
-        .addModifiers(modifiers)
+        .also {
+            if (modifier != null){
+                it.addModifiers(modifier)
+            }
+        }
         .addModifiers(KModifier.OVERRIDE)
         .initializer(
             CodeBlock.of(codeBlock)
@@ -68,8 +72,8 @@ internal fun TypeSpec.Builder.addJvmClassLoaderProperty(resourcesClassName: Stri
 }
 
 internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
-    modifiers: List<KModifier>,
-    resourcesClassName: String
+    resourcesClassName: String,
+    modifier: KModifier? = null,
 ) {
     val codeInitProperty: String = resourcesClassName + "." + Jvm.resourcesClassLoaderPropertyName
     val codeBlock = "${PlatformDetails.platformDetailsClass}($codeInitProperty)"
@@ -79,7 +83,11 @@ internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
             PlatformDetails.platformDetailsPropertyName,
             Constants.resourcePlatformDetailsName
         )
-        .addModifiers(modifiers)
+        .also {
+            if (modifier != null){
+                it.addModifiers(modifier)
+            }
+        }
         .addModifiers(KModifier.OVERRIDE)
         .initializer(CodeBlock.of(codeBlock))
         .build()
@@ -88,14 +96,18 @@ internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
 }
 
 internal fun TypeSpec.Builder.addEmptyPlatformResourceProperty(
-    modifiers: List<KModifier>
+    modifier: KModifier? = null,
 ) {
     val resourcePlatformDetailsPropertySpec = PropertySpec
         .builder(
             PlatformDetails.platformDetailsPropertyName,
             Constants.resourcePlatformDetailsName
         )
-        .addModifiers(modifiers)
+        .also {
+            if (modifier != null){
+                it.addModifiers(modifier)
+            }
+        }
         .addModifiers(KModifier.OVERRIDE)
         .initializer(
             CodeBlock.of("${PlatformDetails.platformDetailsClass}()")
@@ -105,14 +117,18 @@ internal fun TypeSpec.Builder.addEmptyPlatformResourceProperty(
 }
 
 internal fun TypeSpec.Builder.addValuesFunction(
-    modifiers: List<KModifier>,
     metadata: List<ResourceMetadata>,
     classType: ClassName,
+    modifier: KModifier? = null,
 ) {
     val languageKeysList: String = metadata.joinToString { it.key }
 
     val valuesFun: FunSpec = FunSpec.builder("values")
-        .addModifiers(modifiers)
+        .also {
+            if (modifier != null){
+                it.addModifiers(modifier)
+            }
+        }
         .addModifiers(KModifier.OVERRIDE)
         .addStatement("return listOf($languageKeysList)")
         .returns(

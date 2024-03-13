@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator.resources.string
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
@@ -42,20 +41,20 @@ internal class AppleStringResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        builder: TypeSpec.Builder,
+        builder: Builder,
         metadata: List<StringMetadata>,
-        modifiers: List<KModifier>,
+        modifier: KModifier?,
     ) {
-        builder.addAppleContainerBundleInitializerProperty(modifiers)
+        builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
     override fun generateAfterProperties(
         builder: Builder,
         metadata: List<StringMetadata>,
-        modifiers: List<KModifier>,
+        modifier: KModifier?,
     ) {
         builder.addValuesFunction(
-            modifiers = modifiers,
+            modifier = modifier,
             metadata = metadata,
             classType = Constants.stringResourceName
         )

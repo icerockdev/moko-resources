@@ -9,7 +9,6 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
@@ -38,9 +37,9 @@ internal class JsAssetResourceGenerator(
     override fun generateBeforeProperties(
         builder: Builder,
         metadata: List<AssetMetadata>,
-        modifiers: List<KModifier>,
+        modifier: KModifier?,
     ) {
-        builder.addEmptyPlatformResourceProperty(modifiers)
+        builder.addEmptyPlatformResourceProperty(modifier)
     }
 
     override fun generateResourceFiles(data: List<AssetMetadata>) {
@@ -53,9 +52,9 @@ internal class JsAssetResourceGenerator(
     }
 
     override fun generateAfterProperties(
-        builder: TypeSpec.Builder,
+        builder: Builder,
         metadata: List<AssetMetadata>,
-        modifiers: List<KModifier>,
+        modifier: KModifier?,
     ) {
         // FIXME duplicate
         val values: String = metadata.joinToString { it.key }
