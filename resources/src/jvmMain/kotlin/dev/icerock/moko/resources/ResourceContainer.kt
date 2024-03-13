@@ -29,6 +29,6 @@ actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String)
     return AssetResource(
         resourcesClassLoader = __platformDetails.resourcesClassLoader,
         originalPath = originalPath,
-        path = "files/$originalPath"
+        path = "assets/$originalPath"
     )
 }
