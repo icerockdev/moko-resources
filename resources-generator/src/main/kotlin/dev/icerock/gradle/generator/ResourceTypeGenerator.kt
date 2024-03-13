@@ -16,7 +16,7 @@ import dev.icerock.gradle.utils.filterClass
 import org.gradle.api.tasks.util.PatternFilterable
 import kotlin.reflect.KClass
 
-@Suppress("LongParameterList", "TooManyFunctions")
+@Suppress("LongParameterList", "TooManyFunctions", "UnusedPrivateMember")
 internal class ResourceTypeGenerator<T : ResourceMetadata>(
     private val generationPackage: String,
     private val resourceClass: ClassName,

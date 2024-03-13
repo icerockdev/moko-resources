@@ -48,7 +48,8 @@ internal class AppleAssetResourceGenerator(
     }
 
     override fun generateAfterProperties(
-        builder: Builder, metadata: List<AssetMetadata>,
+        builder: Builder,
+        metadata: List<AssetMetadata>,
         modifier: KModifier?,
     ) {
         builder.addValuesFunction(

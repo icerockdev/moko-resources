@@ -2,6 +2,8 @@
  * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("TooManyFunctions")
+
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
@@ -48,7 +50,7 @@ internal fun TypeSpec.Builder.addAppleContainerBundleInitializerProperty(
             Constants.resourcePlatformDetailsName
         )
         .also {
-            if (modifier != null){
+            if (modifier != null) {
                 it.addModifiers(modifier)
             }
         }
@@ -84,7 +86,7 @@ internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
             Constants.resourcePlatformDetailsName
         )
         .also {
-            if (modifier != null){
+            if (modifier != null) {
                 it.addModifiers(modifier)
             }
         }
@@ -104,7 +106,7 @@ internal fun TypeSpec.Builder.addEmptyPlatformResourceProperty(
             Constants.resourcePlatformDetailsName
         )
         .also {
-            if (modifier != null){
+            if (modifier != null) {
                 it.addModifiers(modifier)
             }
         }
@@ -125,7 +127,7 @@ internal fun TypeSpec.Builder.addValuesFunction(
 
     val valuesFun: FunSpec = FunSpec.builder("values")
         .also {
-            if (modifier != null){
+            if (modifier != null) {
                 it.addModifiers(modifier)
             }
         }

@@ -6,10 +6,6 @@ package dev.icerock.moko.resources
 
 import java.io.FileNotFoundException
 
-actual class ResourcePlatformDetails(
-    val resourcesClassLoader: ClassLoader
-)
-
 actual fun ResourceContainer<ImageResource>.getImageByFileName(
     fileName: String
 ): ImageResource? {

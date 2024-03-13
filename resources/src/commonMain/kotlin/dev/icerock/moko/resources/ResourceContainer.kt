@@ -8,8 +8,7 @@ expect fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String)
 expect fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource?
 
 interface ResourceContainer<T> {
+    @Suppress("VariableNaming")
     val __platformDetails: ResourcePlatformDetails
     fun values(): List<T>
 }
-
-expect class ResourcePlatformDetails

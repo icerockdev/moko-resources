@@ -4,8 +4,6 @@
 
 package dev.icerock.moko.resources
 
-actual class ResourcePlatformDetails
-
 actual fun ResourceContainer<ImageResource>.getImageByFileName(
     fileName: String
 ): ImageResource? = values()

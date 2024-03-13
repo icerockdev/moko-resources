@@ -25,7 +25,7 @@ internal class ResourcesGenerator(
     private val visibilityModifier: KModifier,
     private val sourcesGenerationDir: File,
 ) {
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "TooGenericExceptionThrown")
     fun generateTargetKotlin(
         files: ResourcesFiles,
         inputMetadata: List<ContainerMetadata>,

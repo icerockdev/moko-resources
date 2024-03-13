@@ -7,4 +7,4 @@ package dev.icerock.gradle.utils
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 internal val KotlinPlatformType.isCommon: Boolean
-    get() = this  == KotlinPlatformType.common
+    get() = this == KotlinPlatformType.common
