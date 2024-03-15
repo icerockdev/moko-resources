@@ -6,6 +6,7 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.Sources
 import com.android.build.api.variant.Variant
+import com.android.build.gradle.BaseExtension
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
@@ -19,6 +20,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
+import org.jetbrains.kotlin.gradle.plugin.sources.android.androidSourceSetInfoOrNull
 import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
 
 // TODO cleanup code here
@@ -106,4 +108,15 @@ internal fun setupAndroidVariantsSync(project: Project) {
             }
         }
     }
+}
+
+/**
+ * Replace of ExperimentalKotlinGradlePluginApi in AGP
+ * Current realisation in plugin use of Deprecated version AndroidSourceSet
+ */
+@ExperimentalKotlinGradlePluginApi
+internal fun Project.getAndroidSourceSetOrNull(kotlinSourceSet: KotlinSourceSet): AndroidSourceSet? {
+    val androidSourceSetInfo = kotlinSourceSet.androidSourceSetInfoOrNull ?: return null
+    val android = extensions.findByType<BaseExtension>() ?: return null
+    return android.sourceSets.getByName(androidSourceSetInfo.androidSourceSetName)
 }
