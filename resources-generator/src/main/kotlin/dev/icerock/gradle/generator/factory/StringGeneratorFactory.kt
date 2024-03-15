@@ -71,7 +71,6 @@ internal class StringGeneratorFactory(
             createJvm = {
                 JvmStringResourceGenerator(
                     flattenClassPackage = resourcesPackageName.flatName,
-                    className = resourcesClassName,
                     resourcesGenerationDir = outputResourcesDir
                 )
             },

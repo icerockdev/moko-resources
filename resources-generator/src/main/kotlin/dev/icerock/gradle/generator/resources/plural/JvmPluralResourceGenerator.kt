@@ -23,7 +23,6 @@ import java.io.File
 
 internal class JvmPluralResourceGenerator(
     private val flattenClassPackage: String,
-    private val className: String,
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<PluralMetadata> {
     override fun imports(): List<ClassName> = emptyList()
@@ -47,13 +46,14 @@ internal class JvmPluralResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?,
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(
+            parentObjectName = parentObjectName,
             modifier = modifier,
-            resourcesClassName = className
         )
 
         // FIXME duplication

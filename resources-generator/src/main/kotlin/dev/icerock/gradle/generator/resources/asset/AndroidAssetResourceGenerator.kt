@@ -28,6 +28,7 @@ internal class AndroidAssetResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?

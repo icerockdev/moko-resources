@@ -41,6 +41,7 @@ internal class AppleStringResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<StringMetadata>,
         modifier: KModifier?,

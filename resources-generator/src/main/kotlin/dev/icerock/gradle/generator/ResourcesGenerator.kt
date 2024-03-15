@@ -53,14 +53,11 @@ internal class ResourcesGenerator(
                 inputMetadata = inputMetadata
             )
         } else {
-            val inputMetadataMap: Map<String, List<ContainerMetadata>> = inputMetadata.groupBy {
-                it.parentObjectName
-            }
+            val inputMetadataObjectsMap: Map<String, List<ContainerMetadata>> =
+                inputMetadata.groupBy { it.parentObjectName }
 
-            inputMetadataMap.keys.contains(resourcesClassName)
-
-            inputMetadataMap.keys.forEach { expectObjectName ->
-                val inputMetadataList: List<ContainerMetadata> = inputMetadataMap
+            inputMetadataObjectsMap.keys.forEach { expectObjectName ->
+                val inputMetadataList: List<ContainerMetadata> = inputMetadataObjectsMap
                     .getOrElse(expectObjectName) {
                         throw Exception("Current sourceSet not found.")
                     }
@@ -80,6 +77,7 @@ internal class ResourcesGenerator(
                         .addModifiers(visibilityModifier)
 
                 finalizeObjectSpec(
+                    objectName = expectObjectName,
                     fileSpec = fileSpec,
                     objectSpec = objectSpec,
                     generatedObjects = objects,
@@ -129,6 +127,7 @@ internal class ResourcesGenerator(
                 .addModifiers(visibilityModifier)
 
         finalizeObjectSpec(
+            objectName = parentObjectName,
             fileSpec = fileSpec,
             objectSpec = objectSpec,
             generatedObjects = objects,
@@ -197,11 +196,12 @@ internal class ResourcesGenerator(
     }
 
     private fun finalizeObjectSpec(
+        objectName: String,
         fileSpec: Builder,
         objectSpec: TypeSpec.Builder,
         generatedObjects: List<GenerationResult>,
         inputMetadata: List<ContainerMetadata>,
-        outputMetadata: MutableList<ContainerMetadata>
+        outputMetadata: MutableList<ContainerMetadata>,
     ) {
         containerGenerator.getImports()
             .plus(typesGenerators.flatMap { it.getImports() })
@@ -213,7 +213,9 @@ internal class ResourcesGenerator(
 
         objectSpec.addContentHashProperty(contentHash)
 
-        objectSpec.also(containerGenerator::generateBeforeTypes)
+        objectSpec.also { builder ->
+            containerGenerator.generateBeforeTypes(objectName, builder)
+        }
 
         generatedObjects.forEach { objectSpec.addType(it.typeSpec) }
 

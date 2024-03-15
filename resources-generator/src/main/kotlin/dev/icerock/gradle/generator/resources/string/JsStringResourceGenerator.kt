@@ -50,6 +50,7 @@ internal class JsStringResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<StringMetadata>,
         modifier: KModifier?

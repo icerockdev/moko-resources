@@ -35,6 +35,7 @@ internal class AppleFontResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,

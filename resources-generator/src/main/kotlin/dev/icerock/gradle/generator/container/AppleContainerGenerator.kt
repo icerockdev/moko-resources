@@ -6,12 +6,13 @@ package dev.icerock.gradle.generator.container
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
 import dev.icerock.gradle.generator.addAppleResourcesBundleProperty
 
 internal class AppleContainerGenerator(
-    private val bundleIdentifier: String
+    private val bundleIdentifier: String,
 ) : PlatformContainerGenerator {
     override fun getImports(): List<ClassName> {
         return listOf(
@@ -20,7 +21,7 @@ internal class AppleContainerGenerator(
         )
     }
 
-    override fun generateBeforeTypes(builder: TypeSpec.Builder) {
+    override fun generateBeforeTypes(objectName: String, builder: Builder) {
         builder.addAppleResourcesBundleProperty(bundleIdentifier)
     }
 }

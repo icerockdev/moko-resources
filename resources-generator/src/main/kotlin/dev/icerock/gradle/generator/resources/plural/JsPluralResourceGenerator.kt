@@ -50,6 +50,7 @@ internal class JsPluralResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?

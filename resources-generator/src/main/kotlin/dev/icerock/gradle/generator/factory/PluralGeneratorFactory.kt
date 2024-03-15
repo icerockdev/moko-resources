@@ -71,7 +71,6 @@ internal class PluralGeneratorFactory(
             createJvm = {
                 JvmPluralResourceGenerator(
                     flattenClassPackage = resourcesPackageName.flatName,
-                    className = resourcesClassName,
                     resourcesGenerationDir = outputResourcesDir
                 )
             },

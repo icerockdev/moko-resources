@@ -196,9 +196,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
                 )
             },
             createJvm = {
-                JvmContainerGenerator(
-                    resourcesClassName = resourcesClassName.get()
-                )
+                JvmContainerGenerator()
             }
         )
     }

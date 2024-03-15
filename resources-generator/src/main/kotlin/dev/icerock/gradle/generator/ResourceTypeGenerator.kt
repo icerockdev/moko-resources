@@ -82,6 +82,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             .also { builder ->
                 platformResourceGenerator.generateBeforeProperties(
+                    parentObjectName = parentObjectName,
                     builder = builder,
                     metadata = typeResources,
                     modifier = KModifier.ACTUAL,
@@ -126,6 +127,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             // implement interfaces for generated expect object
             .also { builder ->
                 platformResourceGenerator.generateBeforeProperties(
+                    parentObjectName = parentObjectName,
                     builder = builder,
                     metadata = typeResources,
                 )

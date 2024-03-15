@@ -88,6 +88,7 @@ internal class AppleColorResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<ColorMetadata>,
         modifier: KModifier?,

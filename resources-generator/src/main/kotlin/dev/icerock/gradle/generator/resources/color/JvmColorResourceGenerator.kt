@@ -26,13 +26,14 @@ internal class JvmColorResourceGenerator(
     override fun generateResourceFiles(data: List<ColorMetadata>) = Unit
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<ColorMetadata>,
         modifier: KModifier?,
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(
+            parentObjectName = parentObjectName,
             modifier = modifier,
-            resourcesClassName = className
         )
     }
 

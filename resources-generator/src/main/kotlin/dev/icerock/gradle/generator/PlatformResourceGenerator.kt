@@ -14,6 +14,7 @@ internal interface PlatformResourceGenerator<T : ResourceMetadata> {
     fun imports(): List<ClassName>
 
     fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<T>,
         modifier: KModifier? = null,

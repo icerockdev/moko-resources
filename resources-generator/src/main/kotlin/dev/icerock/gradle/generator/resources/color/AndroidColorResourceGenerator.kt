@@ -28,6 +28,7 @@ internal class AndroidColorResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<ColorMetadata>,
         modifier: KModifier?,

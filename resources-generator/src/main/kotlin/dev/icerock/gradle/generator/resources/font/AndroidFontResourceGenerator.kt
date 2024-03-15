@@ -28,6 +28,7 @@ internal class AndroidFontResourceGenerator(
     }
 
     override fun generateBeforeProperties(
+        parentObjectName: String,
         builder: Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,
