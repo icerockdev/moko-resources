@@ -205,7 +205,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     private fun createTypeGenerators() = listOf(
         StringGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
-            resourcesClassName = resourcesClassName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             strictLineBreaks = strictLineBreaks.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
@@ -216,7 +215,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         ).create(),
         PluralGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
-            resourcesClassName = resourcesClassName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             strictLineBreaks = strictLineBreaks.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
@@ -227,7 +225,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         ).create(),
         ImageGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
-            resourcesClassName = resourcesClassName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,
@@ -238,7 +235,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         ).create(),
         ColorGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
-            resourcesClassName = resourcesClassName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,
@@ -248,7 +244,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         ).create(),
         FontGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
-            resourcesClassName = resourcesClassName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
@@ -257,7 +252,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         ).create(),
         FileGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
-            resourcesClassName = resourcesClassName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
@@ -266,7 +260,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         ).create(),
         AssetGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
-            resourcesClassName = resourcesClassName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,

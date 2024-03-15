@@ -18,7 +18,6 @@ import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
 internal class JvmAssetResourceGenerator(
-    private val className: String,
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<AssetMetadata> {
     override fun imports(): List<ClassName> = emptyList()

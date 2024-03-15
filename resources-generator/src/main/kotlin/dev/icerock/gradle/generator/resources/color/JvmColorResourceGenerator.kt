@@ -14,9 +14,7 @@ import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 
-internal class JvmColorResourceGenerator(
-    private val className: String,
-) : PlatformResourceGenerator<ColorMetadata> {
+internal class JvmColorResourceGenerator : PlatformResourceGenerator<ColorMetadata> {
     override fun imports(): List<ClassName> = listOf(Constants.graphicsColorName)
 
     override fun generateInitializer(metadata: ColorMetadata): CodeBlock {

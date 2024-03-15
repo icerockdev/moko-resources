@@ -26,7 +26,6 @@ import java.io.File
 @Suppress("LongParameterList")
 internal class PluralGeneratorFactory(
     private val resourcesPackageName: String,
-    private val resourcesClassName: String,
     private val resourcesVisibility: MRVisibility,
     private val strictLineBreaks: Boolean,
     private val outputResourcesDir: File,

@@ -25,7 +25,6 @@ import java.io.File
 @Suppress("LongParameterList")
 internal class FileGeneratorFactory(
     private val resourcesPackageName: String,
-    private val resourcesClassName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val kotlinPlatformType: KotlinPlatformType,
@@ -64,7 +63,6 @@ internal class FileGeneratorFactory(
             },
             createJvm = {
                 JvmFileResourceGenerator(
-                    className = resourcesClassName,
                     resourcesGenerationDir = outputResourcesDir
                 )
             },

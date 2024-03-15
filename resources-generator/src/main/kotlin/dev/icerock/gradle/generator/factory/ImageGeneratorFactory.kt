@@ -26,7 +26,6 @@ import java.io.File
 @Suppress("LongParameterList")
 internal class ImageGeneratorFactory(
     private val resourcesPackageName: String,
-    private val resourcesClassName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val outputAssetsDir: File,
@@ -70,7 +69,6 @@ internal class ImageGeneratorFactory(
             },
             createJvm = {
                 JvmImageResourceGenerator(
-                    className = resourcesClassName,
                     resourcesGenerationDir = outputResourcesDir
                 )
             },

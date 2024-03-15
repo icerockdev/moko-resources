@@ -25,7 +25,6 @@ import java.io.File
 @Suppress("LongParameterList")
 internal class ColorGeneratorFactory(
     private val resourcesPackageName: String,
-    private val resourcesClassName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val outputAssetsDir: File,
@@ -64,9 +63,7 @@ internal class ColorGeneratorFactory(
                 )
             },
             createJvm = {
-                JvmColorResourceGenerator(
-                    className = resourcesClassName
-                )
+                JvmColorResourceGenerator()
             },
             createJs = {
                 JsColorResourceGenerator()

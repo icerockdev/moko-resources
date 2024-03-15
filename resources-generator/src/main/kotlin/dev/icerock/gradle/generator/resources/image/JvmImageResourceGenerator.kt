@@ -18,7 +18,6 @@ import dev.icerock.gradle.metadata.resource.ImageMetadata
 import java.io.File
 
 internal class JvmImageResourceGenerator(
-    private val className: String,
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<ImageMetadata> {
     override fun imports(): List<ClassName> = emptyList()

@@ -115,6 +115,7 @@ internal fun setupAndroidVariantsSync(project: Project) {
  * Current realisation in plugin use of Deprecated version AndroidSourceSet
  */
 @ExperimentalKotlinGradlePluginApi
+@Suppress("ReturnCount")
 internal fun Project.getAndroidSourceSetOrNull(kotlinSourceSet: KotlinSourceSet): AndroidSourceSet? {
     val androidSourceSetInfo = kotlinSourceSet.androidSourceSetInfoOrNull ?: return null
     val android = extensions.findByType<BaseExtension>() ?: return null

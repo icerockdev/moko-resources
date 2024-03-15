@@ -18,7 +18,6 @@ import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
 internal class JvmFileResourceGenerator(
-    private val className: String,
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FileMetadata> {
     override fun imports(): List<ClassName> = emptyList()

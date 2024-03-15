@@ -18,7 +18,6 @@ import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
 
 internal class JvmFontResourceGenerator(
-    private val className: String,
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FontMetadata> {
     override fun imports(): List<ClassName> = emptyList()
