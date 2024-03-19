@@ -61,6 +61,11 @@ internal class JsAssetResourceGenerator(
         val values: String = metadata.joinToString { it.key }
 
         val valuesFun: FunSpec = FunSpec.builder("values")
+            .also {
+                if (modifier != null) {
+                    it.addModifiers(modifier)
+                }
+            }
             .addModifiers(KModifier.OVERRIDE)
             .addStatement("return listOf($values)")
             .returns(
