@@ -11,6 +11,12 @@ plugins {
     id("publication-convention")
 }
 
+kotlin {
+    watchosX64()
+    watchosArm64()
+    watchosSimulatorArm64()
+}
+
 android {
     namespace = "dev.icerock.moko.resources.test"
 }
