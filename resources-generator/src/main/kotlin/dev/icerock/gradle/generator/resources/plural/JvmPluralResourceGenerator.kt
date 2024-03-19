@@ -46,15 +46,11 @@ internal class JvmPluralResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addJvmPlatformResourceClassLoaderProperty(
-            parentObjectName = parentObjectName,
-            modifier = modifier,
-        )
+        builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
 
         // FIXME duplication
         val property: PropertySpec = PropertySpec.builder(

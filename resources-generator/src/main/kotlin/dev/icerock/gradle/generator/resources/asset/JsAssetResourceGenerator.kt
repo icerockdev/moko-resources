@@ -35,7 +35,6 @@ internal class JsAssetResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?,

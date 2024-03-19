@@ -60,7 +60,6 @@ internal class JsFontResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,

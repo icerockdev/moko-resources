@@ -30,7 +30,6 @@ internal class AndroidStringResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<StringMetadata>,
         modifier: KModifier?,

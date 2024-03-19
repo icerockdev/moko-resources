@@ -74,11 +74,10 @@ internal fun TypeSpec.Builder.addJvmClassLoaderProperty(resourcesClassName: Stri
 }
 
 internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
-    parentObjectName: String,
     modifier: KModifier? = null,
 ) {
-    val codeInitProperty: String = "$parentObjectName." + Jvm.resourcesClassLoaderPropertyName
-    val codeBlock = "${PlatformDetails.platformDetailsClass}($codeInitProperty)"
+
+    val codeBlock = "${PlatformDetails.platformDetailsClass}(${Jvm.resourcesClassLoaderPropertyName})"
 
     val resourcePlatformDetailsPropertySpec = PropertySpec
         .builder(

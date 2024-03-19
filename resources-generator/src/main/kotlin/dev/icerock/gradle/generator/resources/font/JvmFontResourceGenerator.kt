@@ -40,15 +40,11 @@ internal class JvmFontResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addJvmPlatformResourceClassLoaderProperty(
-            parentObjectName = parentObjectName,
-            modifier = modifier,
-        )
+        builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
     override fun generateAfterProperties(

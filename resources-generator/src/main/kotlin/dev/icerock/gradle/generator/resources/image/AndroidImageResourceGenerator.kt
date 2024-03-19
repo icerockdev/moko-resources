@@ -36,7 +36,6 @@ internal class AndroidImageResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<ImageMetadata>,
         modifier: KModifier?,

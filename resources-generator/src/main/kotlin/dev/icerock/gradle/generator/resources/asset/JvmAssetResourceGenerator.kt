@@ -38,15 +38,11 @@ internal class JvmAssetResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addJvmPlatformResourceClassLoaderProperty(
-            parentObjectName = parentObjectName,
-            modifier = modifier,
-        )
+        builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
     override fun generateAfterProperties(

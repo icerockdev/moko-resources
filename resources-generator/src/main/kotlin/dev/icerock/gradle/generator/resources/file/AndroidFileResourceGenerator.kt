@@ -29,7 +29,6 @@ internal class AndroidFileResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<FileMetadata>,
         modifier: KModifier?,

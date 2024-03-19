@@ -37,15 +37,11 @@ internal class JvmImageResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<ImageMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addJvmPlatformResourceClassLoaderProperty(
-            parentObjectName = parentObjectName,
-            modifier = modifier,
-        )
+        builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
     override fun generateAfterProperties(

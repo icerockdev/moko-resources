@@ -40,15 +40,11 @@ internal class JvmFileResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<FileMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addJvmPlatformResourceClassLoaderProperty(
-            parentObjectName = parentObjectName,
-            modifier = modifier,
-        )
+        builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
     override fun generateAfterProperties(

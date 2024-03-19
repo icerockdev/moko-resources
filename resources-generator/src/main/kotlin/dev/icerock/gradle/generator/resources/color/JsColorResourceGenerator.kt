@@ -25,7 +25,6 @@ internal class JsColorResourceGenerator : PlatformResourceGenerator<ColorMetadat
     override fun generateResourceFiles(data: List<ColorMetadata>) = Unit
 
     override fun generateBeforeProperties(
-        parentObjectName: String,
         builder: Builder,
         metadata: List<ColorMetadata>,
         modifier: KModifier?,
