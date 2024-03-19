@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.getUIColor
 import kotlinx.cinterop.DoubleVarOf
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
@@ -18,6 +19,7 @@ import kotlinx.cinterop.value
 import platform.CoreGraphics.CGFloat
 import platform.UIKit.UIColor
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun colorResource(resource: ColorResource): Color {
     // TODO https://github.com/icerockdev/moko-resources/issues/443

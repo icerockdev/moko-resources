@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="apple_targets_count">
+        <item quantity="zero">No targets</item>
+        <item quantity="one">One target</item>
+        <item quantity="two">Two targets</item>
+        <item quantity="other">Same targets</item>
+    </plural>
+</resources>

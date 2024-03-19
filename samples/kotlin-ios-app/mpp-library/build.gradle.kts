@@ -24,6 +24,5 @@ kotlin {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
-    multiplatformResourcesSourceSet = "iosMain"
+    resourcesPackage.set("com.icerockdev.library")
 }

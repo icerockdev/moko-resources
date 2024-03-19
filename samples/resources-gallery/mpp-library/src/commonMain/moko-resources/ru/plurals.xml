@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="my_plural">
+        <item quantity="zero">нет элементов</item>
+        <item quantity="one">%d элемент</item>
+        <item quantity="two">%d элемента</item>
+        <item quantity="few">%d элемента</item>
+        <item quantity="many">%d элементов</item>
+        <item quantity="other">%d элемента</item>
+    </plural>
+    <plural name="myPlural">
+        <item quantity="zero">нет элементов</item>
+        <item quantity="one">%d элемент</item>
+        <item quantity="two">%d элемента</item>
+        <item quantity="few">%d элемента</item>
+        <item quantity="many">%d элементов</item>
+        <item quantity="other">%d элемента</item>
+    </plural>
+</resources>

@@ -18,7 +18,7 @@ log "compose-resources-gallery jvm success"
 log "compose-resources-gallery ios success"
 
 # rerun tasks because kotlinjs compilation broken with build cache :(
-./gradlew clean podspec build --rerun-tasks
+./gradlew clean podspec build generateDummyFramework --rerun-tasks
 log "compose-resources-gallery full build success"
 
 (

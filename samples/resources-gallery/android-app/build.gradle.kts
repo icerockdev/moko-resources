@@ -15,11 +15,6 @@ android {
         versionName = "0.1.0"
     }
     namespace = "com.icerockdev"
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
 }
 
 dependencies {

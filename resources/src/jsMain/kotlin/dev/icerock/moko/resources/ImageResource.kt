@@ -4,4 +4,6 @@
 
 package dev.icerock.moko.resources
 
-actual class ImageResource(val fileName: String, val fileUrl: String)
+import dev.icerock.moko.parcelize.Parcelable
+
+actual data class ImageResource(val fileName: String, val fileUrl: String) : Parcelable

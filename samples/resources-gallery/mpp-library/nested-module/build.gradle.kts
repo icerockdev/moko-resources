@@ -19,7 +19,7 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library.nested"
-    multiplatformResourcesClassName = "NestedMR"
-    multiplatformResourcesVisibility = MRVisibility.Internal
+    resourcesPackage.set("com.icerockdev.library.nested")
+    resourcesClassName.set("NestedMR")
+    resourcesVisibility.set(MRVisibility.Internal)
 }

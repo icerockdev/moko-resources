@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="test.simple">prueba</string>
+    <string name="test2">prueba 2</string>
+    <string name="test3">prueba 3</string>
+    <string name="Test4">prueba 4</string>
+    <string name="common.name">proyecto de prueba</string>
+    <string name="format">datos de prueba %d</string>
+    <string name="encoding">ELIJA LA CARTERA Y LA CANTIDAD</string>
+    <string name="positional">segunda cadena %2$s primer decimal %1$d</string>
+    <string name="multilined">primera línea\nsegunda línea\ntercera línea.</string>
+    <string name="quotes">Alex009 dijo "hola mundo" &amp; "escribir pruebas".</string>
+    <string name="single_quotes">Alex009 dijo \'hola\'</string>
+    <string name="test.dialect">Spanish</string>
+</resources>

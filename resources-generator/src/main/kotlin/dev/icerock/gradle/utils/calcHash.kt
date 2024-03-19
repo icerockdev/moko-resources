@@ -19,3 +19,7 @@ internal fun File.calculateResourcesHash(): String {
 
     return singleInputStream.use { DigestUtils.md5Hex(it) }
 }
+
+internal fun List<String>.calculateHash(): String {
+    return DigestUtils.md5Hex(this.joinToString(":"))
+}

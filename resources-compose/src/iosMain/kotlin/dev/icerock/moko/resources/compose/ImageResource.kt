@@ -11,10 +11,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.compose.internal.toSkiaImage
+import kotlinx.cinterop.ExperimentalForeignApi
 import org.jetbrains.skia.Image
 import platform.CoreGraphics.CGImageRef
 import platform.UIKit.UIImage
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
     return remember(imageResource) {

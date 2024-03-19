@@ -10,5 +10,5 @@ actual fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String)
     val name = filePath.substringBeforeLast('.')
         .replace('/', '+')
 
-    return AssetResource(filePath.removeFirstSlash(), name, ext, nsBundle)
+    return AssetResource(filePath.removeFirstSlash(), name, ext, __platformDetails.nsBundle)
 }

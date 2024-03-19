@@ -4,9 +4,11 @@
 
 package dev.icerock.moko.resources.compose
 
+import androidx.compose.runtime.Composable
 import dev.icerock.moko.resources.desc.StringDesc
 
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+@Composable
 actual fun StringDesc.localized(): String {
     return this.localized()
 }

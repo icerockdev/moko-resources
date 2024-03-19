@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="test.plural">
+        <item quantity="zero">zero</item>
+        <item quantity="one">one</item>
+        <item quantity="two">two</item>
+        <item quantity="other">other</item>
+    </plural>
+    <plural name="test.plural.intformat">
+        <item quantity="zero">%.2d zero</item>
+        <item quantity="one">%.2d one</item>
+        <item quantity="two">%.2d two</item>
+        <item quantity="other">%.2d other</item>
+    </plural>
+    <plural name="test.plural.stringformat">
+        <item quantity="zero">zero %%</item>
+        <item quantity="one">%s one</item>
+        <item quantity="two">%s two</item>
+        <item quantity="other">%s other</item>
+    </plural>
+    <!-- Verify that we can use the 'plurals' element. -->
+    <plurals name="test.plural.interop">
+        <item quantity="zero">plurals-interop: zero</item>
+        <item quantity="one">plurals-interop: one</item>
+        <item quantity="two">plurals-interop: two</item>
+        <item quantity="other">plurals-interop: other</item>
+    </plurals>
+</resources>

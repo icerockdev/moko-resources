@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="my_plural">
+        <item quantity="zero">no items</item>
+        <item quantity="one">%d item</item>
+        <item quantity="two">%d items</item>
+        <item quantity="other">%d items</item>
+    </plural>
+    <plural name="myPlural">
+        <item quantity="zero">no items</item>
+        <item quantity="one">%d item</item>
+        <item quantity="two">%d items</item>
+        <item quantity="other">%d items</item>
+    </plural>
+</resources>

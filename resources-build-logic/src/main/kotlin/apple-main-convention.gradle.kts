@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     sourceSets {
-        val commonMain by getting {}
+        val commonMain by getting
 
         val appleMain by creating {
             dependsOn(commonMain)
@@ -20,7 +20,7 @@ kotlin {
             dependsOn(appleMain)
         }
 
-        val commonTest by getting {}
+        val commonTest by getting
         val appleTest by creating {
             dependsOn(commonTest)
         }
