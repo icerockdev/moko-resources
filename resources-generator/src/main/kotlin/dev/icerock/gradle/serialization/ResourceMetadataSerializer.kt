@@ -4,6 +4,7 @@ import dev.icerock.gradle.metadata.resource.AssetMetadata
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.metadata.resource.FontMetadata
+import dev.icerock.gradle.metadata.resource.HierarchyMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
@@ -135,6 +136,7 @@ internal object ResourceMetadataSerializer : KSerializer<ResourceMetadata> {
             is StringMetadata -> {
                 encoder.encodeSerializableValue(StringMetadata.serializer(), value)
             }
+            is HierarchyMetadata -> Unit
         }
     }
 }

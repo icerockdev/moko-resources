@@ -118,7 +118,7 @@ internal class ResourcesGenerator(
         val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
             typeGenerator.generateObject(
                 parentObjectName = parentObjectName,
-                metadata = ownMetadata
+                resources = ownMetadata
             )
         }
         objects.forEach { outputMetadata.add(it.metadata) }
@@ -169,7 +169,7 @@ internal class ResourcesGenerator(
         val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
             typeGenerator.generateExpectObject(
                 parentObjectName = expectObjectName,
-                metadata = ownMetadata,
+                resources = ownMetadata,
             )
         }
 

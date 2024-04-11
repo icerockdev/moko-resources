@@ -10,6 +10,6 @@ internal fun generateKey(input: String): String {
         .replace(".", "_")
 }
 
-internal fun generateDirKey(input: String): String {
+internal fun normalizePathName(input: String): String {
     return generateKey(input).replace(" ", "_")
 }

@@ -10,21 +10,15 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.container.ContainerMetadata
-import dev.icerock.gradle.metadata.container.FileNode
 import dev.icerock.gradle.metadata.container.ResourceType
-import dev.icerock.gradle.metadata.container.hasInChildren
-import dev.icerock.gradle.metadata.container.hasInDir
-import dev.icerock.gradle.metadata.resource.AssetMetadata
-import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.filterClass
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.util.PatternFilterable
 import kotlin.reflect.KClass
 
 @Suppress("LongParameterList", "TooManyFunctions", "UnusedPrivateMember")
 internal class ResourceTypeGenerator<T : ResourceMetadata>(
-    private val generationPackage: String,
+    private val propertiesGenerationStrategy: PropertiesGenerationStrategy<T>,
     private val resourceClass: ClassName,
     private val resourceType: ResourceType,
     private val metadataClass: KClass<T>,
@@ -41,9 +35,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
 
     fun generateExpectObject(
         parentObjectName: String,
-        metadata: List<ResourceMetadata>,
+        resources: List<ResourceMetadata>,
     ): GenerationResult? {
-        val typeMetadata: List<T> = metadata.filterClass(typeClass = metadataClass)
+        val typeMetadata: List<T> = resources.filterClass(typeClass = metadataClass)
 
         // if we not have any resources of our type at all - not generate object
         if (typeMetadata.isEmpty()) return null
@@ -58,21 +52,14 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .addOverridePlatformProperty()
             // add all properties of available resources
             .also { builder ->
-                if (metadataClass == AssetMetadata::class || metadataClass == FileMetadata::class) {
-                    // For Assets and files need to preserve the file tree hierarchy
-                    builder.addObjectsProperties(
-                        typeResources = typeMetadata,
-                        generateProperty = {
-                            generator.generateProperty(it).build()
-                        }
-                    )
-                } else {
-                    builder.addProperties(
-                        typeMetadata.map {
-                            generator.generateProperty(it).build()
-                        }
-                    )
-                }
+                propertiesGenerationStrategy.generateProperties(
+                    builder = builder,
+                    resources = typeMetadata,
+                    modifier = null,
+                    generateProperty = {
+                        generator.generateProperty(it).build()
+                    }
+                )
             }
             // implement ResourceContainer values function
             .addOverrideAbstractValuesFunction(resourceClass)
@@ -111,16 +98,12 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             }
             // add all properties of object
             .also { builder ->
-                if (metadataClass == AssetMetadata::class || metadataClass == FileMetadata::class) {
-                    // For Assets and files need to preserve the file tree hierarchy
-                    builder.addObjectsProperties(
-                        typeResources = typeResources,
-                        modifier = KModifier.ACTUAL,
-                        generateProperty = ::createActualProperty
-                    )
-                } else {
-                    builder.addProperties(typeResources.map(::createActualProperty))
-                }
+                propertiesGenerationStrategy.generateProperties(
+                    builder = builder,
+                    resources = typeResources,
+                    modifier = KModifier.ACTUAL,
+                    generateProperty = ::createActualProperty
+                )
             }
             .also { builder ->
                 platformResourceGenerator.generateAfterProperties(
@@ -143,9 +126,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
 
     fun generateObject(
         parentObjectName: String,
-        metadata: List<ResourceMetadata>,
+        resources: List<ResourceMetadata>,
     ): GenerationResult? {
-        val typeResources: List<T> = metadata.filterClass(metadataClass)
+        val typeResources: List<T> = resources.filterClass(metadataClass)
 
         // if we not have any resources of our type at all - not generate object
         if (typeResources.isEmpty()) return null
@@ -165,15 +148,12 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             }
             // add all properties of object
             .also { builder ->
-                if (metadataClass == AssetMetadata::class || metadataClass == FileMetadata::class) {
-                    // For Assets and files need to preserve the file tree hierarchy
-                    builder.addObjectsProperties(
-                        typeResources = typeResources,
-                        generateProperty = ::createSimpleProperty
-                    )
-                } else {
-                    builder.addProperties(typeResources.map(::createSimpleProperty))
-                }
+                propertiesGenerationStrategy.generateProperties(
+                    builder = builder,
+                    resources = typeResources,
+                    modifier = null,
+                    generateProperty = ::createSimpleProperty
+                )
             }
             .also { builder ->
                 platformResourceGenerator.generateAfterProperties(
@@ -217,134 +197,5 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             }
             .initializer(platformResourceGenerator.generateInitializer(resource))
             .build()
-    }
-
-    @Suppress("LongMethod")
-    private fun TypeSpec.Builder.addObjectsProperties(
-        typeResources: List<T>,
-        generateProperty: (T) -> PropertySpec,
-        modifier: KModifier? = null,
-    ) {
-        val filesMap = typeResources.map {
-            Pair(it.pathRelativeToBase.path, it)
-        }.sortedBy {
-            it.first
-        }
-
-        val rootNode: FileNode<T> = FileNode(
-            current = "root",
-            specObject = null,
-        )
-
-        filesMap.forEach { fileInfo: Pair<String, T> ->
-            val relativePath = fileInfo.first
-            val metadata = fileInfo.second
-
-            val dirs: List<String> = relativePath.split('/')
-
-            // If file in root dir
-            if (dirs.size == 1 && !rootNode.children.hasInChildren(relativePath)) {
-                rootNode.children.add(
-                    FileNode(
-                        current = relativePath,
-                        filePath = relativePath,
-                        specObject = null,
-                        metadata = metadata
-                    )
-                )
-
-                addProperty(
-                    generateProperty(metadata)
-                )
-
-                return@forEach
-            }
-
-            // For files in folders
-            // Create graph with Nodes containing dirs and files
-            var previousNode: FileNode<T>? = null
-
-            dirs.forEachIndexed { dirIndex, dirName ->
-                val node: FileNode<T>? = if (dirIndex == 0) rootNode else previousNode
-                val hasInChildren: FileNode<T>? = node?.children?.hasInDir(dirName)
-
-                if (hasInChildren == null) {
-                    node?.children?.add(
-                        FileNode(
-                            current = dirName,
-                            filePath = if (dirIndex == dirs.lastIndex) {
-                                relativePath
-                            } else {
-                                null
-                            },
-                            specObject = if (dirIndex != dirs.lastIndex) {
-                                generateObjectContainer(dirName, modifier)
-                            } else {
-                                null
-                            },
-                            metadata = if (dirIndex == dirs.lastIndex) {
-                                metadata
-                            } else {
-                                null
-                            }
-                        )
-                    )
-                }
-
-                previousNode = node?.children?.first { it.current == dirName }
-            }
-        }
-
-        // Generate properties in objects and add in main object
-        rootNode.generateObjectProperties(
-            parentObject = this,
-            generateProperty = generateProperty
-        )
-    }
-
-    private fun generateObjectContainer(
-        name: String,
-        modifiers: KModifier? = null,
-    ): TypeSpec.Builder {
-        if (!name.first().isLetter()) {
-            throw GradleException("Catalog name should start from letter: $name")
-        }
-
-        return TypeSpec
-            .objectBuilder(generateDirKey(name))
-            .apply {
-                if (modifiers != null) {
-                    addModifiers(modifiers)
-                }
-            }
-    }
-
-    private fun FileNode<T>.generateObjectProperties(
-        parentObject: TypeSpec.Builder,
-        generateProperty: (T) -> PropertySpec,
-    ) {
-        children.forEachIndexed { index, node ->
-            val specObject: TypeSpec.Builder? = node.specObject
-            val metadata: T? = node.metadata
-
-            if (metadata != null) {
-                // If node of hierarchy is property
-                parentObject.addProperty(
-                    generateProperty(metadata)
-                )
-            } else if (specObject != null) {
-                // If node of hierarchy is directory go to next level of tree
-                node.generateObjectProperties(specObject, generateProperty)
-            }
-
-            // When children list is ended need generate object
-            if (index == children.lastIndex) {
-                children.forEach {
-                    it.specObject?.let { spec ->
-                        parentObject.addType(spec.build())
-                    }
-                }
-            }
-        }
     }
 }

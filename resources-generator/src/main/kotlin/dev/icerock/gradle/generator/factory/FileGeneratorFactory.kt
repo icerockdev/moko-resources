@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.factory
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
+import dev.icerock.gradle.generator.HierarchyPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -26,7 +27,6 @@ import java.io.File
 
 @Suppress("LongParameterList")
 internal class FileGeneratorFactory(
-    private val resourcesPackageName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val kotlinPlatformType: KotlinPlatformType,
@@ -36,7 +36,7 @@ internal class FileGeneratorFactory(
 ) {
     fun create(): ResourceTypeGenerator<FileMetadata> {
         return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName,
+            propertiesGenerationStrategy = HierarchyPropertiesGenerationStrategy(),
             resourceClass = Constants.fileResourceName,
             resourceType = ResourceType.FILES,
             metadataClass = FileMetadata::class,

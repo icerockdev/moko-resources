@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.factory
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
+import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -24,7 +25,6 @@ import java.io.File
 
 @Suppress("LongParameterList")
 internal class ColorGeneratorFactory(
-    private val resourcesPackageName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val outputAssetsDir: File,
@@ -34,7 +34,7 @@ internal class ColorGeneratorFactory(
 ) {
     fun create(): ResourceTypeGenerator<ColorMetadata> {
         return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName,
+            propertiesGenerationStrategy = FlatPropertiesGenerationStrategy(),
             resourceClass = Constants.colorResourceName,
             resourceType = ResourceType.COLORS,
             metadataClass = ColorMetadata::class,

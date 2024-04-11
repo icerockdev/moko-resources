@@ -17,6 +17,8 @@ internal class FileResourceGenerator(
 
     override fun generateMetadata(files: Set<File>): List<FileMetadata> {
         return files.map { file ->
+            println("FILES: $file ${file.name} genK = ${generateKey(file.name)}" )
+
             FileMetadata(
                 key = generateKey(file.name),
                 relativePath = fileDirs.single { file.absolutePath.contains(it.absolutePath) },

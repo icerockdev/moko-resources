@@ -17,9 +17,9 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Apple
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
-import dev.icerock.gradle.metadata.resource.AssetMetadata
-import dev.icerock.gradle.metadata.resource.FileMetadata
+import dev.icerock.gradle.metadata.resource.HierarchyMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
+import org.gradle.api.GradleException
 
 internal fun TypeSpec.Builder.addAppleResourcesBundleProperty(bundleIdentifier: String) {
     val bundleProperty: PropertySpec = PropertySpec.builder(
@@ -127,18 +127,18 @@ internal fun <T : ResourceMetadata> TypeSpec.Builder.addValuesFunction(
     // Find metadata type
     val resourceMetadata: T = metadata.first()
     val languageKeysList: String =
-        if (resourceMetadata is AssetMetadata || resourceMetadata is FileMetadata) {
+        if (resourceMetadata is HierarchyMetadata) {
             // For Assets and Files need create key considering File path
-            metadata.joinToString { meta ->
-                val dirs: MutableList<String> =
-                    meta.pathRelativeToBase.path.split('/').toMutableList()
-                // Normalize file name as key and replace him in file path
-                val fileName: String = dirs.last()
-                dirs.removeLast() // exclude file name
-                dirs.joinToString(".") { file ->
-                    // Normalize dir name
-                    generateDirKey(file)
-                } + ".${generateKey(fileName)}" // add file name as in property
+            val hierarchyMetadata: List<HierarchyMetadata> = metadata
+                .filterIsInstance<HierarchyMetadata>()
+                .takeIf {
+                    it.size == metadata.size
+                } ?: throw GradleException("Invalid ResourceMetadata type for Assets or Files")
+
+            hierarchyMetadata.joinToString { meta ->
+                meta.path.joinToString(separator = ".") +
+                    (".".takeIf { meta.path.isNotEmpty() } ?: "") +
+                    meta.key
             }
         } else {
             // Create simple resource key

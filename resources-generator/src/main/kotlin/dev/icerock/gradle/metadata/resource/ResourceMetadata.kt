@@ -6,6 +6,7 @@
 
 package dev.icerock.gradle.metadata.resource
 
+import dev.icerock.gradle.generator.normalizePathName
 import dev.icerock.gradle.serialization.ColorResourceSerializer
 import dev.icerock.gradle.serialization.FileSerializer
 import dev.icerock.gradle.serialization.ResourceMetadataSerializer
@@ -26,8 +27,6 @@ sealed interface ResourceMetadata {
     // TODO validate key at create
     val key: String
 
-    val pathRelativeToBase: File
-
     fun contentHash(): String?
 }
 
@@ -44,9 +43,6 @@ internal data class StringMetadata(
         val locale: String,
         val value: String,
     )
-
-    override val pathRelativeToBase: File
-        get() = File("")
 
     @Suppress("MagicNumber")
     override fun contentHash(): String = values.hashCode().toString(16)
@@ -76,9 +72,6 @@ internal data class PluralMetadata(
         }
     }
 
-    override val pathRelativeToBase: File
-        get() = File("")
-
     @Suppress("MagicNumber")
     override fun contentHash(): String = values.hashCode().toString(16)
 }
@@ -97,9 +90,6 @@ internal data class ImageMetadata(
         val filePath: File,
     )
 
-    override val pathRelativeToBase: File
-        get() = File("")
-
     override fun contentHash(): String = values.map { it.filePath.calculateResourcesHash() }
         .calculateHash()
 }
@@ -112,24 +102,6 @@ internal data class FontMetadata(
     override val key: String,
     val filePath: File,
 ) : ResourceMetadata {
-    override val pathRelativeToBase: File
-        get() = File("")
-
-    override fun contentHash(): String = filePath.calculateResourcesHash()
-}
-
-@Serializable
-internal data class FileMetadata(
-    @OptIn(ExperimentalSerializationApi::class)
-    @EncodeDefault
-    override val resourceType: String = FileMetadata::class.java.name,
-    override val key: String,
-    val relativePath: File,
-    val filePath: File,
-) : ResourceMetadata {
-    override val pathRelativeToBase: File
-        get() = filePath.relativeTo(relativePath)
-
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
@@ -195,11 +167,23 @@ data class ColorMetadata(
         }
     }
 
-    override val pathRelativeToBase: File
-        get() = File("")
-
     @Suppress("MagicNumber")
     override fun contentHash(): String = value.hashCode().toString(16)
+}
+
+@Serializable
+internal data class FileMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = FileMetadata::class.java.name,
+    override val key: String,
+    val relativePath: File,
+    val filePath: File,
+) : ResourceMetadata, HierarchyMetadata {
+
+    override val path: List<String> = getFilePath(filePath, relativePath)
+
+    override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
 @Serializable
@@ -209,10 +193,24 @@ internal data class AssetMetadata(
     override val resourceType: String = AssetMetadata::class.java.name,
     override val key: String,
     val relativePath: File,
-    val filePath: File = File(""),
-) : ResourceMetadata {
-    override val pathRelativeToBase: File
+    val filePath: File,
+) : ResourceMetadata, HierarchyMetadata {
+
+    val pathRelativeToBase: File
         get() = filePath.relativeTo(relativePath)
 
+    override val path: List<String> = getFilePath(filePath, relativePath)
+
     override fun contentHash(): String = filePath.calculateResourcesHash()
+}
+
+interface HierarchyMetadata : ResourceMetadata {
+    val path: List<String>
+}
+
+private fun getFilePath(filePath: File, relativePath: File): List<String> {
+    return filePath.relativeTo(relativePath).path
+        .split(File.separatorChar)
+        .dropLast(1)
+        .map(::normalizePathName)
 }
