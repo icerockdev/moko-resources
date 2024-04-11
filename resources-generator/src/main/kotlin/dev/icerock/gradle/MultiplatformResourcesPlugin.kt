@@ -189,7 +189,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             KotlinPlatformType.androidJvm -> {
                 // Fix: android sourceSets indexation in IDE
                 // Usage of api of v2.model in AGP broken for IDE resources indexing
-                // For correct indexing of resources set resource directory from api.v1
+                // For correct indexing of resources set resource directory
                 // https://issuetracker.google.com/issues/329702045
                 @OptIn(ExperimentalKotlinGradlePluginApi::class)
                 val androidSourceSet: AndroidSourceSet =

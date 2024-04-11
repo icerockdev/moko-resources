@@ -9,3 +9,7 @@ internal fun generateKey(input: String): String {
         .replace("-", "_")
         .replace(".", "_")
 }
+
+internal fun generateDirKey(input: String): String {
+    return generateKey(input).replace(" ", "_")
+}

@@ -6,13 +6,12 @@ package dev.icerock.gradle.generator.resources.file
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
@@ -52,24 +51,11 @@ internal class JsFileResourceGenerator(
         metadata: List<FileMetadata>,
         modifier: KModifier?
     ) {
-        // FIXME duplicate
-        val values: String = metadata.joinToString { it.key }
-
-        val valuesFun: FunSpec = FunSpec.builder("values")
-            .also {
-                if (modifier != null) {
-                    it.addModifiers(modifier)
-                }
-            }
-            .addModifiers(KModifier.OVERRIDE)
-            .addStatement("return listOf($values)")
-            .returns(
-                ClassName("kotlin.collections", "List")
-                    .parameterizedBy(Constants.fileResourceName)
-            )
-            .build()
-
-        builder.addFunction(valuesFun)
+        builder.addValuesFunction(
+            modifier = modifier,
+            metadata = metadata,
+            classType = Constants.fileResourceName
+        )
     }
 
     private companion object {

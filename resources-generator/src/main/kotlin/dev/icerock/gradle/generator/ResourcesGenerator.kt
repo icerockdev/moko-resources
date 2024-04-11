@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.calculateHash
+import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import java.io.File
 
@@ -59,7 +60,7 @@ internal class ResourcesGenerator(
             inputMetadataObjectsMap.keys.forEach { expectObjectName ->
                 val inputMetadataList: List<ContainerMetadata> = inputMetadataObjectsMap
                     .getOrElse(expectObjectName) {
-                        throw Exception("Current sourceSet not found.")
+                        throw GradleException("Current sourceSet not found.")
                     }
 
                 // for each input metadata we should generate actual object
@@ -177,6 +178,7 @@ internal class ResourcesGenerator(
                 .addModifiers(KModifier.EXPECT)
                 .addModifiers(visibilityModifier)
 
+        // Add generated objects and create metadata of current sourceSet
         objects.forEach { result ->
             objectSpec.addType(result.typeSpec)
             outputMetadata.add(result.metadata)

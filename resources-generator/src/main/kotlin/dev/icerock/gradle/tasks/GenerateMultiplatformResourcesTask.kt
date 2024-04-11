@@ -257,6 +257,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
+            ownResources = ownResources
         ).create(),
         AssetGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),

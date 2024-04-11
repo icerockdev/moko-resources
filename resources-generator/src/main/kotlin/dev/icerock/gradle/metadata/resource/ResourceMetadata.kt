@@ -26,6 +26,8 @@ sealed interface ResourceMetadata {
     // TODO validate key at create
     val key: String
 
+    val pathRelativeToBase: File
+
     fun contentHash(): String?
 }
 
@@ -42,6 +44,9 @@ internal data class StringMetadata(
         val locale: String,
         val value: String,
     )
+
+    override val pathRelativeToBase: File
+        get() = File("")
 
     @Suppress("MagicNumber")
     override fun contentHash(): String = values.hashCode().toString(16)
@@ -71,6 +76,9 @@ internal data class PluralMetadata(
         }
     }
 
+    override val pathRelativeToBase: File
+        get() = File("")
+
     @Suppress("MagicNumber")
     override fun contentHash(): String = values.hashCode().toString(16)
 }
@@ -89,6 +97,9 @@ internal data class ImageMetadata(
         val filePath: File,
     )
 
+    override val pathRelativeToBase: File
+        get() = File("")
+
     override fun contentHash(): String = values.map { it.filePath.calculateResourcesHash() }
         .calculateHash()
 }
@@ -101,6 +112,9 @@ internal data class FontMetadata(
     override val key: String,
     val filePath: File,
 ) : ResourceMetadata {
+    override val pathRelativeToBase: File
+        get() = File("")
+
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
@@ -110,8 +124,12 @@ internal data class FileMetadata(
     @EncodeDefault
     override val resourceType: String = FileMetadata::class.java.name,
     override val key: String,
+    val relativePath: File,
     val filePath: File,
 ) : ResourceMetadata {
+    override val pathRelativeToBase: File
+        get() = filePath.relativeTo(relativePath)
+
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
@@ -177,6 +195,9 @@ data class ColorMetadata(
         }
     }
 
+    override val pathRelativeToBase: File
+        get() = File("")
+
     @Suppress("MagicNumber")
     override fun contentHash(): String = value.hashCode().toString(16)
 }
@@ -188,9 +209,9 @@ internal data class AssetMetadata(
     override val resourceType: String = AssetMetadata::class.java.name,
     override val key: String,
     val relativePath: File,
-    val filePath: File,
+    val filePath: File = File(""),
 ) : ResourceMetadata {
-    val pathRelativeToBase: File
+    override val pathRelativeToBase: File
         get() = filePath.relativeTo(relativePath)
 
     override fun contentHash(): String = filePath.calculateResourcesHash()

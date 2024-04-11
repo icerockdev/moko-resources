@@ -18,6 +18,8 @@ import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.internal.file.collections.FileCollectionAdapter
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
@@ -30,6 +32,7 @@ internal class FileGeneratorFactory(
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
+    private val ownResources: ConfigurableFileCollection
 ) {
     fun create(): ResourceTypeGenerator<FileMetadata> {
         return ResourceTypeGenerator(
@@ -38,7 +41,13 @@ internal class FileGeneratorFactory(
             resourceType = ResourceType.FILES,
             metadataClass = FileMetadata::class,
             visibilityModifier = resourcesVisibility.toModifier(),
-            generator = FileResourceGenerator(),
+            generator = FileResourceGenerator(
+                fileDirs = ownResources.from
+                    .map { it as FileCollectionAdapter }
+                    .flatMap { it.files }
+                    .map { File(it, "files") }
+                    .toSet()
+            ),
             platformResourceGenerator = createPlatformFileGenerator(),
             filter = { include("files/**") }
         )

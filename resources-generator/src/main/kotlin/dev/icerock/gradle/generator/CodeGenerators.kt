@@ -17,6 +17,8 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Apple
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
+import dev.icerock.gradle.metadata.resource.AssetMetadata
+import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 
 internal fun TypeSpec.Builder.addAppleResourcesBundleProperty(bundleIdentifier: String) {
@@ -76,8 +78,8 @@ internal fun TypeSpec.Builder.addJvmClassLoaderProperty(resourcesClassName: Stri
 internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
     modifier: KModifier? = null,
 ) {
-
-    val codeBlock = "${PlatformDetails.platformDetailsClass}(${Jvm.resourcesClassLoaderPropertyName})"
+    val codeBlock =
+        "${PlatformDetails.platformDetailsClass}(${Jvm.resourcesClassLoaderPropertyName})"
 
     val resourcePlatformDetailsPropertySpec = PropertySpec
         .builder(
@@ -117,12 +119,31 @@ internal fun TypeSpec.Builder.addEmptyPlatformResourceProperty(
     addProperty(resourcePlatformDetailsPropertySpec)
 }
 
-internal fun TypeSpec.Builder.addValuesFunction(
-    metadata: List<ResourceMetadata>,
+internal fun <T : ResourceMetadata> TypeSpec.Builder.addValuesFunction(
+    metadata: List<T>,
     classType: ClassName,
     modifier: KModifier? = null,
 ) {
-    val languageKeysList: String = metadata.joinToString { it.key }
+    // Find metadata type
+    val resourceMetadata: T = metadata.first()
+    val languageKeysList: String =
+        if (resourceMetadata is AssetMetadata || resourceMetadata is FileMetadata) {
+            // For Assets and Files need create key considering File path
+            metadata.joinToString { meta ->
+                val dirs: MutableList<String> =
+                    meta.pathRelativeToBase.path.split('/').toMutableList()
+                // Normalize file name as key and replace him in file path
+                val fileName: String = dirs.last()
+                dirs.removeLast() // exclude file name
+                dirs.joinToString(".") { file ->
+                    // Normalize dir name
+                    generateDirKey(file)
+                } + ".${generateKey(fileName)}" // add file name as in property
+            }
+        } else {
+            // Create simple resource key
+            metadata.joinToString { it.key }
+        }
 
     val valuesFun: FunSpec = FunSpec.builder("values")
         .also {
