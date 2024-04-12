@@ -12,13 +12,11 @@ import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
 internal class AssetResourceGenerator(
-    private val assetDirs: Set<File>
+    private val assetDirs: Set<File>,
 ) : ResourceGenerator<AssetMetadata> {
 
     override fun generateMetadata(files: Set<File>): List<AssetMetadata> {
         return files.map { file: File ->
-            println("ASSETS: $file ${file.name} genK = ${generateKey(file.name)}" )
-
             AssetMetadata(
                 key = generateKey(file.name),
                 relativePath = assetDirs.single { file.absolutePath.contains(it.absolutePath) },

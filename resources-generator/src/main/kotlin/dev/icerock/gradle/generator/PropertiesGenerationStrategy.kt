@@ -63,21 +63,6 @@ internal class HierarchyPropertiesGenerationStrategy<T : HierarchyMetadata> :
             }
         }
 
-        println("groupBy")
-
-        typeResources.groupBy {
-            it.path
-        }.forEach {
-            println(it)
-        }
-
-        println("filesMap")
-
-        filesMap.forEach {
-            println(it)
-
-        }
-
         this.generateObjects(
             map = filesMap,
             objectKey = emptyList(),
@@ -90,9 +75,6 @@ internal class HierarchyPropertiesGenerationStrategy<T : HierarchyMetadata> :
         objectKey: List<String>,
         modifier: KModifier?,
     ) {
-        println("generateObjects map[objectKey]")
-        println(map[objectKey])
-
         addProperties(map[objectKey].orEmpty())
 
         addTypes(
@@ -101,17 +83,19 @@ internal class HierarchyPropertiesGenerationStrategy<T : HierarchyMetadata> :
             }.filter {
                 it.key.dropLast(1) == objectKey
             }.map {
-                TypeSpec.objectBuilder(it.key.last()).also { builder ->
-                    builder.generateObjects(
-                        map = map,
-                        objectKey = it.key,
-                        modifier = modifier
-                    )
-                }.also { builder ->
-                    if (modifier != null) {
-                        builder.addModifiers(modifier)
-                    }
-                }.build()
+                TypeSpec
+                    .objectBuilder(it.key.last())
+                    .also { builder ->
+                        builder.generateObjects(
+                            map = map,
+                            objectKey = it.key,
+                            modifier = modifier
+                        )
+                    }.also { builder ->
+                        if (modifier != null) {
+                            builder.addModifiers(modifier)
+                        }
+                    }.build()
             }
         )
     }
