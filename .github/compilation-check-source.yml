@@ -236,3 +236,37 @@ jobs:
 
       - *publish_test_report
       - *upload_reports
+
+  check-kotlin-2-sample:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - kotlin-2-sample
+        run: cd samples/kotlin-2-sample && ./local-check.sh
+
+      - *publish_test_report
+      - *upload_reports
+      -
+  check-cm-resources-sample:
+    runs-on: macOS-latest
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - cm-resources-sample
+        run: cd samples/cm-resources-sample && ./local-check.sh
+
+      - *publish_test_report
+      - *upload_reports
