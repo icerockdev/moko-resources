@@ -84,10 +84,22 @@ internal fun App() {
                 color = MaterialTheme.colors.onBackground
             )
 
-            val assetContent: String? by MR.assets.second_inner_text_file_txt.readTextAsState()
+            val assetContent: String? by MR.assets.some_asset_txt.readTextAsState()
             Text(
                 modifier = Modifier.padding(top = 16.dp),
                 text = assetContent.orEmpty(),
+                color = MaterialTheme.colors.onBackground
+            )
+            val assetContent2: String? by MR.assets.additionalDir.second_inner_text_file_txt.readTextAsState()
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = assetContent2.orEmpty(),
+                color = MaterialTheme.colors.onBackground
+            )
+            val assetContent3: String? by MR.assets.additionalDir.innerDir.innerText_txt.readTextAsState()
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = assetContent3.orEmpty(),
                 color = MaterialTheme.colors.onBackground
             )
         }
