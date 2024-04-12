@@ -122,9 +122,9 @@ public object Testing {
 
     public fun getTextsFromAssets(): List<AssetResource> {
         return listOf(
-            MR.assets.test_1,
+            MR.assets.test_1_txt,
             MR.assets.getAssetByFilePath("texts/test2.txt") ?: error("Can't load asset"),
-            MR.assets.test3 // FIXME duplication will be here!
+            MR.assets.texts.inner_1.test3_txt // FIXME duplication will be here!
         )
     }
 
@@ -134,11 +134,11 @@ public object Testing {
     }
 
     public fun getTextFile(): FileResource {
-        return MR.files.test
+        return MR.files.test_txt
     }
 
     public fun getJsonFile(): FileResource {
-        return MR.files.some
+        return MR.files.some_json
     }
 
     public fun getNestedJsonFile(): FileResource {
