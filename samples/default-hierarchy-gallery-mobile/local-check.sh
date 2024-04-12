@@ -15,7 +15,7 @@ log "default-hierarchy-gallery-mobile android success"
 log "default-hierarchy-gallery-mobile ios success"
 
 ./gradlew clean podspec build generateDummyFramework --rerun-tasks
-log "compose-resources-gallery full build success"
+log "default-hierarchy-gallery-mobile full build success"
 
 (
 cd ios-app &&
