@@ -195,7 +195,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 val androidSourceSet: AndroidSourceSet =
                     target.project.getAndroidSourceSetOrNull(sourceSet) ?: return
                 androidSourceSet.res.srcDir(genTaskProvider.map { it.outputResourcesDir })
-                androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
+
+                // Assets added in variants for correct generation
+                // see: dev.icerock.gradle.generator.platform.android.SetupAndroidUtilsKt.addGenerationTaskDependency
+                // androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
             KotlinPlatformType.common, KotlinPlatformType.native,
             KotlinPlatformType.wasm -> Unit

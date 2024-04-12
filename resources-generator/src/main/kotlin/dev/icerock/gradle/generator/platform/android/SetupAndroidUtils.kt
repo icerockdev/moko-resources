@@ -76,11 +76,15 @@ internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<Generate
         wiredWith = GenerateMultiplatformResourcesTask::outputSourcesDir
     )
 
-    res?.addGeneratedSourceDirectory(
-        taskProvider = provider,
-        wiredWith = GenerateMultiplatformResourcesTask::outputResourcesDir
-    )
+    // Resources doesn't add in android variants for IDE indexing
+    // Resource directory set here:
+    // dev.icerock.gradle.MultiplatformResourcesPlugin.setupSourceSets
+    //    res?.addGeneratedSourceDirectory(
+    //        taskProvider = provider,
+    //        wiredWith = GenerateMultiplatformResourcesTask::outputResourcesDir
+    //    )
 
+    // Assets add here, for correct compilation
     assets?.addGeneratedSourceDirectory(
         taskProvider = provider,
         wiredWith = GenerateMultiplatformResourcesTask::outputAssetsDir
