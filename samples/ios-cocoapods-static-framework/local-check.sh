@@ -8,9 +8,6 @@ log() {
   echo "\033[0;32m> $1\033[0m"
 }
 
-./gradlew clean assembleDebug
-log "ios-cocoapods-static-framework android success"
-
 ./gradlew clean compileKotlinIosX64
 log "ios-cocoapods-static-framework ios success"
 
