@@ -9,11 +9,13 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
@@ -53,15 +55,10 @@ internal class JvmStringResourceGenerator(
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
 
-        // FIXME duplication
-        val property: PropertySpec = PropertySpec.builder(
-            stringsBundlePropertyName,
-            STRING,
-            KModifier.PRIVATE
-        ).initializer(CodeBlock.of("\"%L/%L\"", Jvm.localizationDir, getBundlePath()))
-            .build()
-
-        builder.addProperty(property)
+        builder.addJvmPlatformResourceBundleProperty(
+            bundlePropertyName = stringsBundlePropertyName,
+            bundlePath = getBundlePath()
+        )
     }
 
     override fun generateAfterProperties(

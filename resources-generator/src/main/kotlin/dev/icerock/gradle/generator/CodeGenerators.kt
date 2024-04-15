@@ -98,6 +98,20 @@ internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
     addProperty(resourcePlatformDetailsPropertySpec)
 }
 
+internal fun TypeSpec.Builder.addJvmPlatformResourceBundleProperty(
+    bundlePropertyName: String,
+    bundlePath: String
+) {
+    val property: PropertySpec = PropertySpec.builder(
+        name = bundlePropertyName,
+        type = STRING,
+        KModifier.PRIVATE
+    ).initializer(CodeBlock.of("\"%L/%L\"", Jvm.localizationDir, bundlePath))
+        .build()
+
+    addProperty(property)
+}
+
 internal fun TypeSpec.Builder.addEmptyPlatformResourceProperty(
     modifier: KModifier? = null,
 ) {
