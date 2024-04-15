@@ -21,13 +21,16 @@ import java.io.File
 
 @Serializable(with = ResourceMetadataSerializer::class)
 @SerialName("resource-metadata")
-sealed interface ResourceMetadata {
+internal sealed interface ResourceMetadata {
     val resourceType: String
 
-    // TODO validate key at create
     val key: String
 
     fun contentHash(): String?
+
+    fun assertKeyValue() {
+        assert(key.isNotEmpty())
+    }
 }
 
 @Serializable
@@ -38,6 +41,11 @@ internal data class StringMetadata(
     override val key: String,
     val values: List<LocaleItem>,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     @Serializable
     data class LocaleItem(
         val locale: String,
@@ -56,6 +64,11 @@ internal data class PluralMetadata(
     override val key: String,
     val values: List<LocaleItem>,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     @Serializable
     data class LocaleItem(
         val locale: String,
@@ -84,6 +97,11 @@ internal data class ImageMetadata(
     override val key: String,
     val values: List<ImageQualityItem>,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     @Serializable
     data class ImageQualityItem(
         val quality: String?,
@@ -102,6 +120,11 @@ internal data class FontMetadata(
     override val key: String,
     val filePath: File,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
@@ -113,6 +136,11 @@ data class ColorMetadata(
     override val key: String,
     val value: ColorItem,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     @Serializable(with = ColorResourceSerializer::class)
     sealed interface ColorItem {
         val colorType: String
@@ -181,6 +209,10 @@ internal data class FileMetadata(
     val filePath: File,
 ) : ResourceMetadata, HierarchyMetadata {
 
+    init {
+        assertKeyValue()
+    }
+
     override val path: List<String> = getFilePath(filePath, relativePath)
 
     override fun contentHash(): String = filePath.calculateResourcesHash()
@@ -196,6 +228,10 @@ internal data class AssetMetadata(
     val filePath: File,
 ) : ResourceMetadata, HierarchyMetadata {
 
+    init {
+        assertKeyValue()
+    }
+
     val pathRelativeToBase: File
         get() = filePath.relativeTo(relativePath)
 
@@ -204,7 +240,7 @@ internal data class AssetMetadata(
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
-interface HierarchyMetadata : ResourceMetadata {
+internal interface HierarchyMetadata : ResourceMetadata {
     val path: List<String>
 }
 
