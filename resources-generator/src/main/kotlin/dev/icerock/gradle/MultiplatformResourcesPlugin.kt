@@ -157,7 +157,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                     it.outputResourcesDir.asFile
                                 },
                                 iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
-                                acToolMinimalDeploymentTarget = mrExtension.acToolMinimalDeploymentTarget,
+                                iosMinimalDeploymentTarget = mrExtension.iosMinimalDeploymentTarget,
                                 appleBundleIdentifier = appleIdentifier
                             )
                         }

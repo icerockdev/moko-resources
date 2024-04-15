@@ -91,7 +91,7 @@ multiplatformResources {
     resourcesClassName.set("SharedRes") // optional, default MR
     resourcesVisibility.set(MRVisibility.Internal) // optional, default Public
     iosBaseLocalizationRegion.set("en") // optional, default "en"
-    acToolMinimalDeploymentTarget.convention("9.0") // optional, default ""
+    iosMinimalDeploymentTarget.convention("9.0") // optional, default ""
 }
 ```
 
