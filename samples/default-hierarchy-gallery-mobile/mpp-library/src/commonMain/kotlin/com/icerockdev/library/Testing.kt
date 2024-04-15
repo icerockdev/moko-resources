@@ -121,7 +121,7 @@ public object Testing {
         return listOf(
             MR.assets.test_1_txt,
             MR.assets.getAssetByFilePath("texts/test2.txt") ?: error("Can't load asset"),
-            MR.assets.texts.inner_1.test3_txt // FIXME duplication will be here!
+            MR.assets.texts.inner_1.test3_txt
         )
     }
 
