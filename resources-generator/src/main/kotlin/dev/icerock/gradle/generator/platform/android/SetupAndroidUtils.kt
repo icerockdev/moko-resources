@@ -1,3 +1,7 @@
+/*
+ * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package dev.icerock.gradle.generator.platform.android
 
 import com.android.build.api.dsl.AndroidSourceSet
@@ -23,7 +27,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.sources.android.androidSourceSetInfoOrNull
 import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
 
-// TODO cleanup code here
 private const val VARIANTS_EXTRA_NAME = "dev.icerock.moko.resources.android-variants"
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
