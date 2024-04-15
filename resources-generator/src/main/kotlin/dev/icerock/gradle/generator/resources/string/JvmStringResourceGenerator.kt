@@ -7,9 +7,6 @@ package dev.icerock.gradle.generator.resources.string
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.STRING
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.Constants.Jvm
@@ -21,7 +18,6 @@ import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
-import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 
 internal class JvmStringResourceGenerator(

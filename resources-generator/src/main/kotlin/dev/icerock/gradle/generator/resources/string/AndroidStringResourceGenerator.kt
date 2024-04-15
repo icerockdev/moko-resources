@@ -15,7 +15,6 @@ import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.convertXmlStringToAndroidLocalization
-import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 
 internal class AndroidStringResourceGenerator(

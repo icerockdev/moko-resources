@@ -11,8 +11,8 @@ import androidx.core.content.res.ResourcesCompat
 
 actual class FontResource(
     @FontRes
-    val fontResourceId: Int
-)  {
+    val fontResourceId: Int,
+) {
 
     fun getTypeface(context: Context): Typeface? {
         return ResourcesCompat.getFont(context, fontResourceId)
