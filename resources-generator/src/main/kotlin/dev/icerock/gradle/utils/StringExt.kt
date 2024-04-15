@@ -5,6 +5,7 @@
 package dev.icerock.gradle.utils
 
 import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.translate.UnicodeUnescaper
 import java.util.Locale
 
 /**
@@ -41,7 +42,9 @@ internal val String.flatName: String
 
 internal fun String.convertXmlStringToLocalizationValue(): String {
     return StringEscapeUtils.unescapeXml(this).let {
-        StringEscapeUtils.escapeJava(it)
+        UnicodeUnescaper().translate(
+            StringEscapeUtils.escapeJava(it)
+        )
     }
 }
 
