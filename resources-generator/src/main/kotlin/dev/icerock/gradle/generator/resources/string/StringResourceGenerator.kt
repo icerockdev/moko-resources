@@ -7,7 +7,6 @@ package dev.icerock.gradle.generator.resources.string
 import com.squareup.kotlinpoet.PropertySpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
-import dev.icerock.gradle.generator.exceptions.EqualStringKeysException
 import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
@@ -69,17 +68,6 @@ internal class StringResourceGenerator(
             val value: String = stringNode.textContent
 
             resultMap[name] = if (strictLineBreaks) value else value.removeLineWraps()
-        }
-
-        // check keys == values for apple locale change logic
-        // TODO maybe remove this logic?
-        val incorrectKeys: List<KeyType> = resultMap
-            .filter { it.key == it.value }
-            .keys
-            .toList()
-
-        if (incorrectKeys.isNotEmpty()) {
-            throw EqualStringKeysException(incorrectKeys)
         }
 
         return resultMap
