@@ -26,7 +26,6 @@ batikVersion = "1.16"
 
 # moko
 mokoGraphicsVersion = "0.9.0"
-mokoParcelizeVersion = "0.9.0"
 mokoTestVersion = "0.6.1"
 mokoMultiplatformPluginVersion = "0.14.2"
 
@@ -36,7 +35,6 @@ kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-j
 kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesVersion" }
 
 # moko
-mokoParcelize = { module = "dev.icerock.moko:parcelize", version.ref = "mokoParcelizeVersion" }
 mokoGraphics = { module = "dev.icerock.moko:graphics", version.ref = "mokoGraphicsVersion" }
 mokoTestCore = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestVersion" }
 

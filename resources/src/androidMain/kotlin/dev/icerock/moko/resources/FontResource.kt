@@ -6,16 +6,13 @@ package dev.icerock.moko.resources
 
 import android.content.Context
 import android.graphics.Typeface
-import android.os.Parcelable
 import androidx.annotation.FontRes
 import androidx.core.content.res.ResourcesCompat
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 actual class FontResource(
     @FontRes
     val fontResourceId: Int
-) : Parcelable {
+)  {
 
     fun getTypeface(context: Context): Typeface? {
         return ResourcesCompat.getFont(context, fontResourceId)

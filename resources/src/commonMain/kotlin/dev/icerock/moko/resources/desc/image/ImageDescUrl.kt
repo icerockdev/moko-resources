@@ -4,9 +4,6 @@
 
 package dev.icerock.moko.resources.desc.image
 
-import dev.icerock.moko.parcelize.Parcelize
-
-@Parcelize
 data class ImageDescUrl(val url: String) : ImageDesc
 
 @Suppress("FunctionName")

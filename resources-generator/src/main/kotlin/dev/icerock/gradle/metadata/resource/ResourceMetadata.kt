@@ -21,7 +21,7 @@ import java.io.File
 
 @Serializable(with = ResourceMetadataSerializer::class)
 @SerialName("resource-metadata")
-internal sealed interface ResourceMetadata {
+sealed interface ResourceMetadata {
     val resourceType: String
 
     val key: String
@@ -240,7 +240,7 @@ internal data class AssetMetadata(
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
-internal interface HierarchyMetadata : ResourceMetadata {
+interface HierarchyMetadata : ResourceMetadata {
     val path: List<String>
 }
 
