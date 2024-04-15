@@ -253,7 +253,7 @@ jobs:
 
       - *publish_test_report
       - *upload_reports
-      -
+
   check-cm-resources-sample:
     runs-on: macOS-latest
     needs: build-library
