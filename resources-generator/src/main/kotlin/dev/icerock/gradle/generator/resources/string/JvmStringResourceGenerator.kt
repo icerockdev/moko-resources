@@ -18,6 +18,7 @@ import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
+import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
 import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 
@@ -84,21 +85,13 @@ internal class JvmStringResourceGenerator(
         val stringsFile = File(localizationDir, "$fileDirName.properties")
 
         val content: String = strings.map { (key, value) ->
-            "$key = ${convertXmlStringToJvmLocalization(value)}"
+            "$key = ${value.convertXmlStringToLocalizationValue()}"
         }.joinToString("\n")
 
         stringsFile.writeText(content)
     }
 
     private fun getBundlePath(): String = "${flattenClassPackage}_$stringsBundleName"
-
-    // FIXME duplication
-    // TODO should we do that?
-    private fun convertXmlStringToJvmLocalization(input: String): String {
-        return StringEscapeUtils.unescapeXml(input)
-            .replace("\n", "\\n")
-            .replace("\"", "\\\"")
-    }
 
     private companion object {
         const val stringsBundlePropertyName = "stringsBundle"

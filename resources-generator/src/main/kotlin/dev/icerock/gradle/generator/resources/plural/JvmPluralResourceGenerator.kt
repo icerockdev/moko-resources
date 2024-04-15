@@ -91,7 +91,7 @@ internal class JvmPluralResourceGenerator(
                 "$key.$quantity" to value
             }
             keysWithPlurals.joinToString("\n") { (key, value) ->
-                "$key = ${convertXmlStringToJvmLocalization(value)}"
+                "$key = ${value.convertXmlStringToLocalizationValue()}"
             }
         }.joinToString("\n")
 
@@ -99,14 +99,6 @@ internal class JvmPluralResourceGenerator(
     }
 
     private fun getBundlePath(): String = "${flattenClassPackage}_$pluralsBundleName"
-
-    // FIXME duplication
-    // TODO should we do that?
-    private fun convertXmlStringToJvmLocalization(input: String): String {
-        return StringEscapeUtils.unescapeXml(input)
-            .replace("\n", "\\n")
-            .replace("\"", "\\\"")
-    }
 
     private companion object {
         const val pluralsBundlePropertyName = "pluralsBundle"

@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
+import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
 import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 
@@ -66,7 +67,7 @@ internal class AppleStringResourceGenerator(
         resDir.mkdirs()
 
         val content = strings.mapValues { (_, value) ->
-            convertXmlStringToAppleLocalization(value)
+            value.convertXmlStringToLocalizationValue()
         }.map { (key, value) ->
             "\"$key\" = \"$value\";"
         }.joinToString("\n")
@@ -78,12 +79,5 @@ internal class AppleStringResourceGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
-    }
-
-    // TODO should we do that?
-    private fun convertXmlStringToAppleLocalization(input: String): String {
-        return StringEscapeUtils.unescapeXml(input)
-            .replace("\n", "\\n")
-            .replace("\"", "\\\"")
     }
 }

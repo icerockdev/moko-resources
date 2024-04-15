@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.utils
 
+import org.apache.commons.text.StringEscapeUtils
 import java.util.Locale
 
 /**
@@ -37,3 +38,15 @@ internal fun String.remove(char: String): String {
 
 internal val String.flatName: String
     get() = this.remove('.')
+
+internal fun String.convertXmlStringToLocalizationValue(): String {
+    return StringEscapeUtils.unescapeXml(this).let {
+        StringEscapeUtils.escapeJava(it)
+    }
+}
+
+internal fun String.convertXmlStringToAndroidLocalization(): String {
+    return StringEscapeUtils.unescapeXml(this).let {
+        StringEscapeUtils.escapeXml11(it)
+    }
+}

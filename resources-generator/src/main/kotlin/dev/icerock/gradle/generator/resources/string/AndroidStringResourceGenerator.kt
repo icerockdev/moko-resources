@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
+import dev.icerock.gradle.utils.convertXmlStringToAndroidLocalization
 import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 
@@ -70,7 +71,7 @@ internal class AndroidStringResourceGenerator(
             """.trimIndent()
 
         val content = strings.map { (key, value) ->
-            val processedValue = convertXmlStringToAndroidLocalization(value)
+            val processedValue = value.convertXmlStringToAndroidLocalization()
             "\t<string name=\"$key\">$processedValue</string>"
         }.joinToString("\n")
 
@@ -82,12 +83,5 @@ internal class AndroidStringResourceGenerator(
         stringsFile.writeText(header + "\n")
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
-    }
-
-    // TODO should we do that?
-    private fun convertXmlStringToAndroidLocalization(input: String): String {
-        val xmlDecoded = StringEscapeUtils.unescapeXml(input)
-        return xmlDecoded.replace("\n", "\\n")
-            .replace("\"", "\\\"").let { StringEscapeUtils.escapeXml11(it) }
     }
 }
