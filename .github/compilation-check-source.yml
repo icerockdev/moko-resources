@@ -58,12 +58,15 @@ on:
     restore-keys: |
       ${{ runner.os }}-konan-
 
+.runner_matrix: &runner_matrix
+  os: [ macOS-latest, windows-latest, ubuntu-latest ]
+
 jobs:
   build-library:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
 
     steps:
       - *checkout
@@ -91,7 +94,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -111,7 +114,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -131,7 +134,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -151,7 +154,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -171,7 +174,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -191,7 +194,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -211,7 +214,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -231,7 +234,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -251,7 +254,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -271,7 +274,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -291,7 +294,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, windows-latest, ubuntu-latest ]
+        <<: *runner_matrix
     needs: build-library
 
     steps:
