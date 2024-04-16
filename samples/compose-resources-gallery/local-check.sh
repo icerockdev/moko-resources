@@ -14,6 +14,14 @@ log "compose-resources-gallery android success"
 ./gradlew clean jvmJar
 log "compose-resources-gallery jvm success"
 
+if ! command -v xcodebuild &> /dev/null
+then
+    echo "xcodebuild could not be found, skip ios checks"
+    log "compose-resources-gallery checked"
+
+    exit 0
+fi
+
 ./gradlew clean compileKotlinIosX64
 log "compose-resources-gallery ios success"
 

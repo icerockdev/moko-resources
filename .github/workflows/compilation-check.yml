@@ -12,7 +12,10 @@ on:
 
 jobs:
   build-library:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 17
@@ -55,7 +58,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-android-mpp-app:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -95,7 +101,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-auto-manifest:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -135,7 +144,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-compose-jvm-app:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -175,7 +187,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-resources-gallery:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -215,7 +230,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-default-hierarchy-resources-gallery-mobile:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -255,7 +273,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-ios-static-xcframework:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -295,7 +316,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-ios-cocoapods-static-framework:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -335,7 +359,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-kotlin-ios-app:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -375,7 +402,10 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-compose-resources-gallery:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -416,7 +446,10 @@ jobs:
           path: "**/build/reports/**/*"
 
   check-cm-resources-sample:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -457,7 +490,10 @@ jobs:
           path: "**/build/reports/**/*"
 
   check-kotlin-2-sample:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, windows-latest, ubuntu-latest ]
     needs: build-library
     steps:
       - uses: actions/checkout@v1

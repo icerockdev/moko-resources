@@ -11,6 +11,14 @@ log() {
 ./gradlew clean build
 log "kotlin-ios-app gradle build success"
 
+if ! command -v xcodebuild &> /dev/null
+then
+    echo "xcodebuild could not be found, skip ios checks"
+    log "kotlin-ios-app checked"
+
+    exit 0
+fi
+
 (
 cd xcode-project &&
 set -o pipefail &&

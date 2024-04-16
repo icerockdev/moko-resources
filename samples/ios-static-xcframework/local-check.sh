@@ -8,6 +8,14 @@ log() {
   echo "\033[0;32m> $1\033[0m"
 }
 
+if ! command -v xcodebuild &> /dev/null
+then
+    echo "xcodebuild could not be found, skip ios checks"
+    log "ios-static-xcframework checked"
+
+    exit 0
+fi
+
 ./gradlew clean build assembleMultiPlatformLibraryXCFramework
 log "ios-static-xcframework gradle build success"
 

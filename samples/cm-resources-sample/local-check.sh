@@ -14,6 +14,14 @@ log "cm-resources-sample android success"
 ./gradlew clean jvmJar
 log "cm-resources-sample jvm success"
 
+if ! command -v xcodebuild &> /dev/null
+then
+    echo "xcodebuild could not be found, skip ios checks"
+    log "cm-resources-sample checked"
+
+    exit 0
+fi
+
 ./gradlew clean compileKotlinIosX64
 log "cm-resources-sample ios success"
 

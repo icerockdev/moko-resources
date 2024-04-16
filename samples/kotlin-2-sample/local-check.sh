@@ -9,14 +9,22 @@ log() {
 }
 
 ./gradlew clean assembleDebug
-log "kotlin2sample mobile android success"
+log "kotlin-2-sample mobile android success"
+
+if ! command -v xcodebuild &> /dev/null
+then
+    echo "xcodebuild could not be found, skip ios checks"
+    log "kotlin-2-sample checked"
+
+    exit 0
+fi
 
 ./gradlew clean compileKotlinIosX64
-log "kotlin2sample mobile ios success"
+log "kotlin-2-sample mobile ios success"
 
 (
 cd iosApp &&
 set -o pipefail &&
 xcodebuild -scheme iosApp -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
 )
-log "kotlin2sample mobile ios xcode success"
+log "kotlin-2-sample mobile ios xcode success"

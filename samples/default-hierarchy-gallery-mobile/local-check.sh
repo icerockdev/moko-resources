@@ -11,6 +11,14 @@ log() {
 ./gradlew clean assembleDebug
 log "default-hierarchy-gallery-mobile android success"
 
+if ! command -v xcodebuild &> /dev/null
+then
+    echo "xcodebuild could not be found, skip ios checks"
+    log "default-hierarchy-gallery-mobile checked"
+
+    exit 0
+fi
+
 ./gradlew clean compileKotlinIosX64
 log "default-hierarchy-gallery-mobile ios success"
 
