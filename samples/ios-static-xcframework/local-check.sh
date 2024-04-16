@@ -10,18 +10,18 @@ log() {
 
 if ! command -v xcodebuild &> /dev/null
 then
-    echo "xcodebuild could not be found, skip ios checks"
-    log "ios-static-xcframework checked"
+    log "xcodebuild could not be found, skip ios checks"
 
-    exit 0
+    ./gradlew build
+    log "ios-static-xcframework full build success"
+else
+    ./gradlew clean build assembleMultiPlatformLibraryXCFramework
+    log "ios-static-xcframework gradle build success"
+
+    (
+    cd ios-app &&
+    set -o pipefail &&
+    xcodebuild -scheme TestStaticXCFramework -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+    )
+    log "ios-static-xcframework ios xcode success"
 fi
-
-./gradlew clean build assembleMultiPlatformLibraryXCFramework
-log "ios-static-xcframework gradle build success"
-
-(
-cd ios-app &&
-set -o pipefail &&
-xcodebuild -scheme TestStaticXCFramework -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
-)
-log "ios-static-xcframework ios xcode success"

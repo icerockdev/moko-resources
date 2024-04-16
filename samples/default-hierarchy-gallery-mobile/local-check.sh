@@ -14,21 +14,21 @@ log "default-hierarchy-gallery-mobile android success"
 if ! command -v xcodebuild &> /dev/null
 then
     echo "xcodebuild could not be found, skip ios checks"
-    log "default-hierarchy-gallery-mobile checked"
 
-    exit 0
+    ./gradlew build
+    log "default-hierarchy-gallery-mobile full build success"
+else
+    ./gradlew clean compileKotlinIosX64
+    log "default-hierarchy-gallery-mobile ios success"
+
+    ./gradlew clean podspec build generateDummyFramework --rerun-tasks
+    log "default-hierarchy-gallery-mobile full build success"
+
+    (
+    cd ios-app &&
+    pod install &&
+    set -o pipefail &&
+    xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+    )
+    log "default-hierarchy-gallery-mobile ios xcode success"
 fi
-
-./gradlew clean compileKotlinIosX64
-log "default-hierarchy-gallery-mobile ios success"
-
-./gradlew clean podspec build generateDummyFramework --rerun-tasks
-log "default-hierarchy-gallery-mobile full build success"
-
-(
-cd ios-app &&
-pod install &&
-set -o pipefail &&
-xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
-)
-log "default-hierarchy-gallery-mobile ios xcode success"

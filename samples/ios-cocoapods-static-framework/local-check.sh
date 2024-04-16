@@ -11,22 +11,22 @@ log() {
 if ! command -v xcodebuild &> /dev/null
 then
     echo "xcodebuild could not be found, skip ios checks"
-    log "ios-cocoapods-static-framework not checked"
 
-    exit 0
+    ./gradlew build
+    log "ios-cocoapods-static-framework full build success"
+else
+    ./gradlew clean compileKotlinIosX64
+    log "ios-cocoapods-static-framework ios success"
+
+    ./gradlew clean podspec build generateDummyFramework
+    log "ios-cocoapods-static-framework full build success"
+
+    (
+    cd iosApp &&
+    pod install &&
+    set -o pipefail &&
+    xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    )
+
+    log "ios-cocoapods-static-framework ios xcode success"
 fi
-
-./gradlew clean compileKotlinIosX64
-log "ios-cocoapods-static-framework ios success"
-
-./gradlew clean podspec build generateDummyFramework
-log "ios-cocoapods-static-framework full build success"
-
-(
-cd iosApp &&
-pod install &&
-set -o pipefail &&
-xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-)
-
-log "ios-cocoapods-static-framework ios xcode success"

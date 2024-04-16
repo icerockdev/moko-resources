@@ -13,15 +13,15 @@ log "kotlin-ios-app gradle build success"
 
 if ! command -v xcodebuild &> /dev/null
 then
-    echo "xcodebuild could not be found, skip ios checks"
-    log "kotlin-ios-app checked"
+    log "xcodebuild could not be found, skip ios checks"
 
-    exit 0
+    ./gradlew build
+    log "kotlin-ios-app full build success"
+else
+    (
+    cd xcode-project &&
+    set -o pipefail &&
+    xcodebuild -scheme TestKotlinApp -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+    )
+    log "kotlin-ios-app ios xcode success"
 fi
-
-(
-cd xcode-project &&
-set -o pipefail &&
-xcodebuild -scheme TestKotlinApp -project TestProj.xcodeproj -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
-)
-log "kotlin-ios-app ios xcode success"
