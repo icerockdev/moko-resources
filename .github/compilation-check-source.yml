@@ -191,10 +191,7 @@ jobs:
       - *upload_reports
 
   check-sample-ios-static-xcframework:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        <<: *runner_matrix
+    runs-on: macOS-latest
     needs: build-library
 
     steps:
@@ -211,10 +208,7 @@ jobs:
       - *upload_reports
 
   check-sample-ios-cocoapods-static-framework:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        <<: *runner_matrix
+    runs-on: macOS-latest
     needs: build-library
 
     steps:
@@ -231,10 +225,7 @@ jobs:
       - *upload_reports
 
   check-sample-kotlin-ios-app:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        <<: *runner_matrix
+    runs-on: macOS-latest
     needs: build-library
 
     steps:

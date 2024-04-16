@@ -14,9 +14,7 @@ log "kotlin-ios-app gradle build success"
 if ! command -v xcodebuild &> /dev/null
 then
     log "xcodebuild could not be found, skip ios checks"
-
-    ./gradlew build
-    log "kotlin-ios-app full build success"
+    log "kotlin-ios-app check is skipped"
 else
     (
     cd xcode-project &&

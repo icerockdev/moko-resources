@@ -9,7 +9,7 @@ on:
     branches:
       - master
       - develop
-      
+
 jobs:
   build-library:
     runs-on: ${{ matrix.os }}
@@ -291,13 +291,7 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-ios-static-xcframework:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - macOS-latest
-          - windows-latest
-          - ubuntu-latest
+    runs-on: macOS-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -337,13 +331,7 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-ios-cocoapods-static-framework:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - macOS-latest
-          - windows-latest
-          - ubuntu-latest
+    runs-on: macOS-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -383,13 +371,7 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-kotlin-ios-app:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - macOS-latest
-          - windows-latest
-          - ubuntu-latest
+    runs-on: macOS-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1

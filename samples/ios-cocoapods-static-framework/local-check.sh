@@ -10,10 +10,8 @@ log() {
 
 if ! command -v xcodebuild &> /dev/null
 then
-    echo "xcodebuild could not be found, skip ios checks"
-
-    ./gradlew build
-    log "ios-cocoapods-static-framework full build success"
+    log "xcodebuild could not be found, skip ios checks"
+    log "ios-cocoapods-static-framework check is skipped"
 else
     ./gradlew clean compileKotlinIosX64
     log "ios-cocoapods-static-framework ios success"

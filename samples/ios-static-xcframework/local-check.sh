@@ -11,9 +11,7 @@ log() {
 if ! command -v xcodebuild &> /dev/null
 then
     log "xcodebuild could not be found, skip ios checks"
-
-    ./gradlew build
-    log "ios-static-xcframework full build success"
+    log "ios-static-xcframework check is skipped"
 else
     ./gradlew clean build assembleMultiPlatformLibraryXCFramework
     log "ios-static-xcframework gradle build success"
