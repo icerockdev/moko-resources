@@ -12,7 +12,7 @@ actual interface StringDesc {
     actual sealed class LocaleType {
         abstract val currentLocale: Locale
 
-        actual object System : LocaleType() {
+        actual data object System : LocaleType() {
             override val currentLocale: Locale get() = Locale.getDefault()
         }
 

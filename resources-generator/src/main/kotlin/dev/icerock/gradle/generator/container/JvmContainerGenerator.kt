@@ -10,14 +10,12 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
 import dev.icerock.gradle.generator.addJvmClassLoaderProperty
 
-internal class JvmContainerGenerator(
-    private val resourcesClassName: String
-) : PlatformContainerGenerator {
+internal class JvmContainerGenerator : PlatformContainerGenerator {
     override fun getImports(): List<ClassName> {
         return listOf(Constants.Jvm.classLoaderName)
     }
 
-    override fun generateBeforeTypes(builder: TypeSpec.Builder) {
-        builder.addJvmClassLoaderProperty(resourcesClassName)
+    override fun generateBeforeTypes(objectName: String, builder: TypeSpec.Builder) {
+        builder.addJvmClassLoaderProperty(objectName)
     }
 }

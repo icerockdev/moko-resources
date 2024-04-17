@@ -6,17 +6,17 @@ package dev.icerock.gradle.generator.resources.asset
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
 internal class JsAssetResourceGenerator(
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<AssetMetadata> {
 
     override fun imports(): List<ClassName> = emptyList()
@@ -33,6 +33,14 @@ internal class JsAssetResourceGenerator(
         )
     }
 
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<AssetMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifier)
+    }
+
     override fun generateResourceFiles(data: List<AssetMetadata>) {
         val targetDir = File(resourcesGenerationDir, ASSETS_DIR)
         targetDir.mkdirs()
@@ -43,22 +51,15 @@ internal class JsAssetResourceGenerator(
     }
 
     override fun generateAfterProperties(
-        builder: TypeSpec.Builder,
-        metadata: List<AssetMetadata>
+        builder: Builder,
+        metadata: List<AssetMetadata>,
+        modifier: KModifier?,
     ) {
-        // FIXME duplicate
-        val values: String = metadata.joinToString { it.key }
-
-        val valuesFun: FunSpec = FunSpec.builder("values")
-            .addModifiers(KModifier.OVERRIDE)
-            .addStatement("return listOf($values)")
-            .returns(
-                ClassName("kotlin.collections", "List")
-                    .parameterizedBy(Constants.assetResourceName)
-            )
-            .build()
-
-        builder.addFunction(valuesFun)
+        builder.addValuesFunction(
+            modifier = modifier,
+            metadata = metadata,
+            classType = Constants.assetResourceName
+        )
     }
 
     private companion object {

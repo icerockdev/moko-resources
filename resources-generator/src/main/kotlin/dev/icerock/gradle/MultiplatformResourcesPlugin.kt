@@ -4,7 +4,9 @@
 
 package dev.icerock.gradle
 
+import com.android.build.api.dsl.AndroidSourceSet
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
+import dev.icerock.gradle.generator.platform.android.getAndroidSourceSetOrNull
 import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
 import dev.icerock.gradle.generator.platform.android.setupAndroidVariantsSync
 import dev.icerock.gradle.generator.platform.apple.registerCopyFrameworkResourcesToAppTask
@@ -26,6 +28,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -154,7 +157,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                     it.outputResourcesDir.asFile
                                 },
                                 iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
-                                acToolMinimalDeploymentTarget = mrExtension.acToolMinimalDeploymentTarget,
+                                iosMinimalDeploymentTarget = mrExtension.iosMinimalDeploymentTarget,
                                 appleBundleIdentifier = appleIdentifier
                             )
                         }
@@ -183,8 +186,21 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputResourcesDir })
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
+            KotlinPlatformType.androidJvm -> {
+                // Fix: android sourceSets indexation in IDE
+                // Usage of api of v2.model in AGP broken for IDE resources indexing
+                // For correct indexing of resources set resource directory
+                // https://issuetracker.google.com/issues/329702045
+                @OptIn(ExperimentalKotlinGradlePluginApi::class)
+                val androidSourceSet: AndroidSourceSet =
+                    target.project.getAndroidSourceSetOrNull(sourceSet) ?: return
+                androidSourceSet.res.srcDir(genTaskProvider.map { it.outputResourcesDir })
 
-            KotlinPlatformType.androidJvm, KotlinPlatformType.common, KotlinPlatformType.native,
+                // Assets added in variants for correct generation
+                // see: dev.icerock.gradle.generator.platform.android.SetupAndroidUtilsKt.addGenerationTaskDependency
+                // androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
+            }
+            KotlinPlatformType.common, KotlinPlatformType.native,
             KotlinPlatformType.wasm -> Unit
         }
     }

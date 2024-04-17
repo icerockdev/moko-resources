@@ -37,7 +37,6 @@ android {
 }
 
 dependencies {
-    commonMainApi(libs.mokoParcelize)
     commonMainApi(libs.mokoGraphics)
 
     jvmMainImplementation(libs.icu4j)

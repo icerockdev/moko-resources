@@ -21,7 +21,7 @@ internal class PackAppleResourcesToKLibAction(
     private val baseLocalizationRegion: Provider<String>,
     private val bundleIdentifier: Provider<String>,
     private val resourcesGenerationDir: Provider<File>,
-    private val acToolMinimalDeploymentTarget: Provider<String>
+    private val iosMinimalDeploymentTarget: Provider<String>
 ) : Action<Task> {
     override fun execute(task: Task) {
         task as KotlinNativeCompile
@@ -102,7 +102,7 @@ internal class PackAppleResourcesToKLibAction(
                 append("xcrun actool ")
                 append(rawAssetsDir.name)
                 append(" --compile . --platform iphoneos --minimum-deployment-target ")
-                append(acToolMinimalDeploymentTarget.get())
+                append(iosMinimalDeploymentTarget.get())
             },
             emptyArray(),
             rawAssetsDir.parentFile

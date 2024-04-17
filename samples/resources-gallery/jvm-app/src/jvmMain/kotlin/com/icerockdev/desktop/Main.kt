@@ -11,15 +11,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.icerockdev.library.MR
+import com.icerockdev.library.MR.images
 import com.icerockdev.library.Testing
+import dev.icerock.moko.resources.compose.stringResource
+import org.jetbrains.skia.Bitmap
 
 fun main() {
     val testing = Testing
@@ -40,11 +49,25 @@ fun main() {
                     modifier = Modifier.size(56.dp)
                 )
 
-                Image(
-                    bitmap = testing.getVectorDrawable().image.toComposeImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp).padding(8.dp)
-                )
+                Text(text = stringResource(com.icerockdev.app.AppMR.strings.customHelloWorld))
+
+                val image by produceState <ImageBitmap?>(null){
+                    try {
+                        val value = testing.getVectorDrawable().image.toComposeImageBitmap()
+                        this.value = value
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                if (image != null) {
+                    Image(
+                        bitmap = image!!,
+                        contentDescription = null,
+                        modifier = Modifier.size(56.dp).padding(8.dp)
+                    )
+                }
+
 
                 testing.getStrings().forEach { stringDesc ->
                     Text(

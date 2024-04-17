@@ -49,7 +49,7 @@ internal fun setupAppleKLibResources(
     resourcesGenerationDir: Provider<File>,
     iosLocalizationRegion: Provider<String>,
     appleBundleIdentifier: Provider<String>,
-    acToolMinimalDeploymentTarget: Provider<String>,
+    iosMinimalDeploymentTarget: Provider<String>,
 ) {
     compileTask.doLast(
         PackAppleResourcesToKLibAction(
@@ -57,7 +57,7 @@ internal fun setupAppleKLibResources(
             bundleIdentifier = appleBundleIdentifier,
             assetsDirectory = assetsDirectory,
             resourcesGenerationDir = resourcesGenerationDir,
-            acToolMinimalDeploymentTarget = acToolMinimalDeploymentTarget
+            iosMinimalDeploymentTarget = iosMinimalDeploymentTarget
         )
     )
 }

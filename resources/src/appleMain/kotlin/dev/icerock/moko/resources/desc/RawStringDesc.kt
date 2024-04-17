@@ -4,12 +4,8 @@
 
 package dev.icerock.moko.resources.desc
 
-import dev.icerock.moko.parcelize.Parcelable
-import dev.icerock.moko.parcelize.Parcelize
-
-@Parcelize
 actual data class RawStringDesc actual constructor(
     val string: String
-) : StringDesc, Parcelable {
+) : StringDesc {
     override fun localized(): String = string
 }

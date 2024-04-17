@@ -6,17 +6,17 @@ package dev.icerock.gradle.generator.resources.file
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
 internal class JsFileResourceGenerator(
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FileMetadata> {
 
     override fun imports(): List<ClassName> = emptyList()
@@ -38,23 +38,24 @@ internal class JsFileResourceGenerator(
         }
     }
 
-    override fun generateAfterProperties(
-        builder: TypeSpec.Builder,
-        metadata: List<FileMetadata>
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<FileMetadata>,
+        modifier: KModifier?,
     ) {
-        // FIXME duplicate
-        val values: String = metadata.joinToString { it.key }
+        builder.addEmptyPlatformResourceProperty(modifier)
+    }
 
-        val valuesFun: FunSpec = FunSpec.builder("values")
-            .addModifiers(KModifier.OVERRIDE)
-            .addStatement("return listOf($values)")
-            .returns(
-                ClassName("kotlin.collections", "List")
-                    .parameterizedBy(Constants.fileResourceName)
-            )
-            .build()
-
-        builder.addFunction(valuesFun)
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<FileMetadata>,
+        modifier: KModifier?
+    ) {
+        builder.addValuesFunction(
+            modifier = modifier,
+            metadata = metadata,
+            classType = Constants.fileResourceName
+        )
     }
 
     private companion object {

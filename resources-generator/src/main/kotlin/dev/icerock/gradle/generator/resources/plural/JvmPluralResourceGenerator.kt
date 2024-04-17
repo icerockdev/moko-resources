@@ -7,28 +7,29 @@ package dev.icerock.gradle.generator.resources.plural
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.STRING
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
+import dev.icerock.gradle.generator.Constants.Jvm
+import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
-import dev.icerock.gradle.generator.addJvmResourcesClassLoaderProperty
+import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
+import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
-import org.apache.commons.text.StringEscapeUtils
+import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
 import java.io.File
 
 internal class JvmPluralResourceGenerator(
     private val flattenClassPackage: String,
-    private val className: String,
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<PluralMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: PluralMetadata): CodeBlock {
         return CodeBlock.of(
             "PluralsResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
-            Constants.Jvm.resourcesClassLoaderPropertyName,
+            "${PlatformDetails.platformDetailsPropertyName}.${Jvm.resourcesClassLoaderPropertyName}",
             pluralsBundlePropertyName,
             metadata.key
         )
@@ -44,25 +45,33 @@ internal class JvmPluralResourceGenerator(
     }
 
     override fun generateBeforeProperties(
-        builder: TypeSpec.Builder,
-        metadata: List<PluralMetadata>
+        builder: Builder,
+        metadata: List<PluralMetadata>,
+        modifier: KModifier?,
     ) {
-        builder.addJvmResourcesClassLoaderProperty(className)
+        builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
 
-        // FIXME duplication
-        val property: PropertySpec = PropertySpec.builder(
-            pluralsBundlePropertyName,
-            STRING,
-            KModifier.PRIVATE
-        ).initializer(CodeBlock.of("\"%L/%L\"", Constants.Jvm.localizationDir, getBundlePath()))
-            .build()
+        builder.addJvmPlatformResourceBundleProperty(
+            bundlePropertyName = pluralsBundlePropertyName,
+            bundlePath = getBundlePath()
+        )
+    }
 
-        builder.addProperty(property)
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<PluralMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addValuesFunction(
+            modifier = modifier,
+            metadata = metadata,
+            classType = Constants.pluralsResourceName
+        )
     }
 
     private fun generateLanguageFile(
         language: LanguageType,
-        strings: Map<String, Map<String, String>>
+        strings: Map<String, Map<String, String>>,
     ) {
         val fileDirName = "${getBundlePath()}${language.jvmResourcesSuffix}"
 
@@ -76,7 +85,7 @@ internal class JvmPluralResourceGenerator(
                 "$key.$quantity" to value
             }
             keysWithPlurals.joinToString("\n") { (key, value) ->
-                "$key = ${convertXmlStringToJvmLocalization(value)}"
+                "$key = ${value.convertXmlStringToLocalizationValue()}"
             }
         }.joinToString("\n")
 
@@ -84,14 +93,6 @@ internal class JvmPluralResourceGenerator(
     }
 
     private fun getBundlePath(): String = "${flattenClassPackage}_$pluralsBundleName"
-
-    // FIXME duplication
-    // TODO should we do that?
-    private fun convertXmlStringToJvmLocalization(input: String): String {
-        return StringEscapeUtils.unescapeXml(input)
-            .replace("\n", "\\n")
-            .replace("\"", "\\\"")
-    }
 
     private companion object {
         const val pluralsBundlePropertyName = "pluralsBundle"

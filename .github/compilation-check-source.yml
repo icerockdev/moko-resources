@@ -58,9 +58,15 @@ on:
     restore-keys: |
       ${{ runner.os }}-konan-
 
+.runner_matrix: &runner_matrix
+  os: [ macOS-latest, windows-latest, ubuntu-latest ]
+
 jobs:
   build-library:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
 
     steps:
       - *checkout
@@ -85,7 +91,10 @@ jobs:
       - *upload_reports
 
   check-sample-android-mpp-app:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -102,7 +111,10 @@ jobs:
       - *upload_reports
 
   check-sample-auto-manifest:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -119,7 +131,10 @@ jobs:
       - *upload_reports
 
   check-sample-compose-jvm-app:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -136,7 +151,10 @@ jobs:
       - *upload_reports
 
   check-sample-resources-gallery:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -153,7 +171,10 @@ jobs:
       - *upload_reports
 
   check-sample-default-hierarchy-resources-gallery-mobile:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -221,7 +242,10 @@ jobs:
       - *upload_reports
 
   check-sample-compose-resources-gallery:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
     needs: build-library
 
     steps:
@@ -233,6 +257,46 @@ jobs:
 
       - name: Sample - compose-resources-gallery
         run: cd samples/compose-resources-gallery && ./local-check.sh
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-kotlin-2-sample:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - kotlin-2-sample
+        run: cd samples/kotlin-2-sample && ./local-check.sh
+
+      - *publish_test_report
+      - *upload_reports
+
+  check-cm-resources-sample:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - cm-resources-sample
+        run: cd samples/cm-resources-sample && ./local-check.sh
 
       - *publish_test_report
       - *upload_reports

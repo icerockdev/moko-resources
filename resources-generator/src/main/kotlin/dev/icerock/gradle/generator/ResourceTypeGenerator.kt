@@ -9,26 +9,23 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.metadata.container.ActualInterfaceMetadata
-import dev.icerock.gradle.metadata.container.ExpectInterfaceMetadata
-import dev.icerock.gradle.metadata.container.ObjectMetadata
+import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
-import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.filterClass
 import org.gradle.api.tasks.util.PatternFilterable
 import kotlin.reflect.KClass
 
-@Suppress("LongParameterList", "TooManyFunctions")
+@Suppress("LongParameterList", "TooManyFunctions", "UnusedPrivateMember")
 internal class ResourceTypeGenerator<T : ResourceMetadata>(
-    private val generationPackage: String,
+    private val propertiesGenerationStrategy: PropertiesGenerationStrategy<T>,
     private val resourceClass: ClassName,
     private val resourceType: ResourceType,
     private val metadataClass: KClass<T>,
     private val visibilityModifier: KModifier,
     private val generator: ResourceGenerator<T>,
     private val platformResourceGenerator: PlatformResourceGenerator<T>,
-    private val filter: PatternFilterable.() -> Unit
+    private val filter: PatternFilterable.() -> Unit,
 ) {
     fun generateMetadata(files: ResourcesFiles): List<T> {
         return generator.generateMetadata(files.matching(filter).ownSourceSet.fileTree.files)
@@ -36,146 +33,107 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
 
     fun getImports(): List<ClassName> = platformResourceGenerator.imports()
 
-    fun generateExpectInterfaces(files: ResourcesFiles): List<GenerationResult> {
-        // we should generate expect interface only if we have resources of our type upper
-        return files.matching(filter).upperSourceSets.mapNotNull { sourceSetResources ->
-            if (sourceSetResources.fileTree.isEmpty) return@mapNotNull null
-
-            val interfaceName: String = buildString {
-                append(sourceSetResources.sourceSetName.capitalize())
-                append(resourceType.name.lowercase().capitalize())
-            }
-
-            GenerationResult(
-                typeSpec = TypeSpec.interfaceBuilder(interfaceName)
-                    .addModifiers(visibilityModifier)
-                    .addModifiers(KModifier.EXPECT)
-                    .build(),
-                metadata = ExpectInterfaceMetadata(
-                    name = interfaceName,
-                    sourceSet = sourceSetResources.sourceSetName,
-                    resourceType = resourceType
-                )
-            )
-        }
-    }
-
     fun generateExpectObject(
-        metadata: List<ResourceMetadata>,
-        interfaces: List<ExpectInterfaceMetadata>
+        parentObjectName: String,
+        resources: List<ResourceMetadata>,
     ): GenerationResult? {
-        val typeMetadata: List<T> = metadata.filterClass(typeClass = metadataClass)
-        val typeInterfaces: List<ExpectInterfaceMetadata> = interfaces
-            .filter { it.resourceType == resourceType }
+        val typeMetadata: List<T> = resources.filterClass(typeClass = metadataClass)
 
         // if we not have any resources of our type at all - not generate object
-        if (typeMetadata.isEmpty() && typeInterfaces.isEmpty()) return null
+        if (typeMetadata.isEmpty()) return null
 
         val objectName: String = resourceType.name.lowercase()
-
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
             // implement ResourceType<**Resource> for extensions
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
-            // implement interfaces for generated expect object
-            .addSuperinterfaces(
-                typeInterfaces.map { ClassName(packageName = generationPackage, it.name) }
-            )
+            // implement ResourceContainer platform property
+            .addOverridePlatformProperty()
             // add all properties of available resources
-            .addProperties(typeMetadata.map { generator.generateProperty(it).build() })
+            .also { builder ->
+                propertiesGenerationStrategy.generateProperties(
+                    builder = builder,
+                    resources = typeMetadata,
+                    modifier = null,
+                    generateProperty = {
+                        generator.generateProperty(it).build()
+                    }
+                )
+            }
+            // implement ResourceContainer values function
+            .addOverrideAbstractValuesFunction(resourceClass)
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
-            metadata = ObjectMetadata(
+            metadata = ContainerMetadata(
+                parentObjectName = parentObjectName,
                 name = objectName,
                 resourceType = resourceType,
-                interfaces = typeInterfaces.map { it.name },
-                resources = typeMetadata
-            )
-        )
-    }
-
-    fun generateActualInterface(
-        interfaces: List<ExpectInterfaceMetadata>,
-        metadata: List<ResourceMetadata>,
-        sourceSet: String
-    ): GenerationResult? {
-        val typeMetadata: List<T> = metadata.filterClass(typeClass = metadataClass)
-        val typeInterface: ExpectInterfaceMetadata = interfaces
-            .filter { it.resourceType == resourceType }
-            .singleOrNull { it.sourceSet == sourceSet }
-            ?: return null
-
-        return GenerationResult(
-            typeSpec = TypeSpec.interfaceBuilder(typeInterface.name)
-                .addModifiers(visibilityModifier)
-                .addModifiers(KModifier.ACTUAL)
-                // add all properties of available resources
-                .addProperties(typeMetadata.map { generator.generateProperty(it).build() })
-                .build(),
-            metadata = ActualInterfaceMetadata(
-                name = typeInterface.name,
                 resources = typeMetadata
             )
         )
     }
 
     fun generateActualObject(
-        objects: List<ObjectMetadata>,
-        interfaces: List<ActualInterfaceMetadata>
+        parentObjectName: String,
+        objects: List<ContainerMetadata>,
     ): GenerationResult? {
-        val typeObject: ObjectMetadata = objects
+        val typeObject: ContainerMetadata = objects
             .singleOrNull { it.resourceType == resourceType } ?: return null
-        val typeInterfaces: List<ActualInterfaceMetadata> = interfaces
-            .filter { typeObject.interfaces.contains(it.name) }
-
-        val interfaceResources: List<T> = typeInterfaces
-            .flatMap { it.resources }
-            .filterClass(metadataClass)
 
         val typeResources: List<T> = typeObject.resources.filterClass(metadataClass)
-        val resources: List<T> = (interfaceResources + typeResources)
-
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(typeObject.name)
             .addModifiers(visibilityModifier)
             .addModifiers(KModifier.ACTUAL)
             // implement ResourceType<**Resource> for extensions
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
-            // implement interfaces for generated expect object
-            .addSuperinterfaces(
-                typeInterfaces.map { ClassName(packageName = generationPackage, it.name) }
-            ).also { builder ->
-                platformResourceGenerator.generateBeforeProperties(builder, resources)
-            }
-            // add all properties of interfaces
-            .addProperties(interfaceResources.map(::createOverrideProperty))
-            // add all properties of object
-            .addProperties(typeResources.map(::createActualProperty))
             .also { builder ->
-                platformResourceGenerator.generateAfterProperties(builder, resources)
+                platformResourceGenerator.generateBeforeProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                    modifier = KModifier.ACTUAL,
+                )
+            }
+            // add all properties of object
+            .also { builder ->
+                propertiesGenerationStrategy.generateProperties(
+                    builder = builder,
+                    resources = typeResources,
+                    modifier = KModifier.ACTUAL,
+                    generateProperty = ::createActualProperty
+                )
+            }
+            .also { builder ->
+                platformResourceGenerator.generateAfterProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                    modifier = KModifier.ACTUAL,
+                )
             }
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
-            metadata = ObjectMetadata(
+            metadata = ContainerMetadata(
+                parentObjectName = parentObjectName,
                 name = typeObject.name,
                 resourceType = resourceType,
-                interfaces = typeInterfaces.map { it.name },
-                resources = typeObject.resources + interfaceResources
+                resources = typeObject.resources
             )
         )
     }
 
     fun generateObject(
-        metadata: List<ResourceMetadata>
+        parentObjectName: String,
+        resources: List<ResourceMetadata>,
     ): GenerationResult? {
-        val typeResources: List<T> = metadata.filterClass(metadataClass)
+        val typeResources: List<T> = resources.filterClass(metadataClass)
+
+        // if we not have any resources of our type at all - not generate object
         if (typeResources.isEmpty()) return null
 
         val objectName: String = resourceType.name.lowercase()
-
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
@@ -183,20 +141,33 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .also { builder ->
-                platformResourceGenerator.generateBeforeProperties(builder, typeResources)
+                platformResourceGenerator.generateBeforeProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                )
             }
             // add all properties of object
-            .addProperties(typeResources.map(::createSimpleProperty))
             .also { builder ->
-                platformResourceGenerator.generateAfterProperties(builder, typeResources)
+                propertiesGenerationStrategy.generateProperties(
+                    builder = builder,
+                    resources = typeResources,
+                    modifier = null,
+                    generateProperty = ::createSimpleProperty
+                )
+            }
+            .also { builder ->
+                platformResourceGenerator.generateAfterProperties(
+                    builder = builder,
+                    metadata = typeResources,
+                )
             }
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
-            metadata = ObjectMetadata(
+            metadata = ContainerMetadata(
+                parentObjectName = parentObjectName,
                 name = objectName,
                 resourceType = resourceType,
-                interfaces = emptyList(),
                 resources = typeResources
             )
         )
@@ -216,13 +187,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         return createProperty(resource, KModifier.ACTUAL)
     }
 
-    private fun createOverrideProperty(resource: T): PropertySpec {
-        return createProperty(resource, KModifier.OVERRIDE)
-    }
-
     private fun createProperty(
         resource: T,
-        modifier: KModifier? = null
+        modifier: KModifier? = null,
     ): PropertySpec {
         return generator.generateProperty(resource)
             .apply {

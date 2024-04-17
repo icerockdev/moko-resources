@@ -11,11 +11,11 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
-import com.icerockdev.app.MR
+import com.icerockdev.app.MRdesktopMain
 
 fun main() {
     singleWindowApplication(
-        title = MR.strings.title.localized(),
+        title = MRdesktopMain.strings.title.localized(),
         state = WindowState(size = DpSize(1080.dp, 960.dp))
     ) {
         Surface(Modifier.fillMaxSize()) {

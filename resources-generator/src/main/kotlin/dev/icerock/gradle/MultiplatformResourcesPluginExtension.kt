@@ -4,7 +4,9 @@
 
 package dev.icerock.gradle
 
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Property
 
 @Suppress("UnnecessaryAbstractClass")
@@ -13,7 +15,8 @@ abstract class MultiplatformResourcesPluginExtension {
     abstract val resourcesClassName: Property<String>
     abstract val iosBaseLocalizationRegion: Property<String>
     abstract val resourcesVisibility: Property<MRVisibility>
-    abstract val acToolMinimalDeploymentTarget: Property<String>
+    abstract val iosMinimalDeploymentTarget: Property<String>
+    abstract val resourcesSourceSets: NamedDomainObjectContainer<SourceDirectorySet>
 }
 
 internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Project) {
@@ -21,5 +24,5 @@ internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Proj
     resourcesClassName.convention("MR")
     iosBaseLocalizationRegion.convention("en")
     resourcesVisibility.convention(MRVisibility.Public)
-    acToolMinimalDeploymentTarget.convention("9.0")
+    iosMinimalDeploymentTarget.convention("9.0")
 }

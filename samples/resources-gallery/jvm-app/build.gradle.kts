@@ -18,6 +18,7 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 implementation(moko.resources)
+                implementation(moko.resourcesCompose)
                 implementation(compose.desktop.currentOs)
                 implementation(project(":mpp-library"))
             }
@@ -39,5 +40,11 @@ compose {
 }
 
 multiplatformResources {
+    resourcesClassName.set("AppMR")
     resourcesPackage.set("com.icerockdev.app")
+    resourcesSourceSets {
+        getByName("jvmMain").srcDirs(
+            File(projectDir, "customResources")
+        )
+    }
 }

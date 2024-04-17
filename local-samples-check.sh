@@ -13,3 +13,5 @@ set -e
 (cd samples/resources-gallery && ./local-check.sh)
 (cd samples/compose-resources-gallery && ./local-check.sh)
 (cd samples/default-hierarchy-gallery-mobile && ./local-check.sh)
+(cd samples/kotlin-2-sample && ./local-check.sh)
+(cd samples/cm-resources-sample && ./local-check.sh)
