@@ -7,6 +7,7 @@
 package dev.icerock.gradle.metadata.resource
 
 import dev.icerock.gradle.generator.normalizePathName
+import dev.icerock.gradle.metadata.InvalidResourceKeyException
 import dev.icerock.gradle.serialization.ColorResourceSerializer
 import dev.icerock.gradle.serialization.FileSerializer
 import dev.icerock.gradle.serialization.ResourceMetadataSerializer
@@ -29,7 +30,11 @@ sealed interface ResourceMetadata {
     fun contentHash(): String?
 
     fun assertKeyValue() {
-        assert(key.isNotEmpty())
+        val validKeyRegex = Regex("[a-zA-Z_][a-zA-Z_0-9]*")
+
+        if (!validKeyRegex.matches(key)) {
+            throw InvalidResourceKeyException(key)
+        }
     }
 }
 
