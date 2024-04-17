@@ -1,11 +1,12 @@
 /*
- * Copyright 2023 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.moko.resources
 
 import cnames.structs.__CFData
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
@@ -36,6 +37,7 @@ actual class FontResource(
     val fontName: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {
+    @OptIn(ExperimentalForeignApi::class)
     internal val fontRef: CGFontRef by lazy {
         val fontData: NSData = this.data
         val cfDataRef: CPointer<__CFData>? = CFDataCreate(
@@ -67,6 +69,7 @@ actual class FontResource(
                 ?: error("can't read $filePath file")
         }
 
+    @OptIn(ExperimentalForeignApi::class)
     @Throws(NSErrorException::class)
     @Suppress("unused")
     fun registerFont() {
