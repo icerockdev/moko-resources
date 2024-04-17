@@ -22,7 +22,7 @@ kotlinPoetVersion = "1.13.1"
 detektVersion = "1.22.0"
 icu4jVersion = "73.1"
 commonsCodecVersion = "1.15"
-batikVersion = "1.16"
+batikVersion = "1.17"
 
 # moko
 mokoGraphicsVersion = "0.9.0"
