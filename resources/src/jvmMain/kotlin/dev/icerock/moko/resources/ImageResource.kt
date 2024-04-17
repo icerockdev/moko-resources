@@ -9,6 +9,7 @@ import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
 import java.awt.image.BufferedImage
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.PipedInputStream
@@ -41,14 +42,20 @@ actual data class ImageResource(
         val input = TranscoderInput(inputStream)
 
         // Create the transcoder output.
-        val outputStream = PipedOutputStream()
-        outputStream.use {
-            val output = TranscoderOutput(it)
 
-            // Save the image.
-            t.transcode(input, output)
+        val tempFile: File = File.createTempFile("moko-resources", ".png")
+
+        try {
+            tempFile.outputStream().use {
+                val output = TranscoderOutput(it)
+                t.transcode(input, output)
+            }
+
+            return tempFile.inputStream().use {
+                ImageIO.read(it)
+            }
+        } finally {
+            tempFile.delete()
         }
-
-        return ImageIO.read(PipedInputStream(outputStream))
     }
 }
