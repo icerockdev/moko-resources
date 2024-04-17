@@ -6,10 +6,6 @@ package dev.icerock.moko.resources
 
 actual fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String): ImageResource? {
     return ImageResource(fileName).let { imgRes ->
-        if (imgRes.toUIImage() != null) {
-            imgRes
-        } else {
-            null
-        }
+        if (imgRes.toUIImage() != null) imgRes else null
     }
 }

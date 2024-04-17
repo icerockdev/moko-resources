@@ -4,12 +4,9 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.parcelize.Parcelable
 import platform.UIKit.UIImage
 
-actual class ImageResource(
-    val assetImageName: String
-) : Parcelable {
+actual class ImageResource(val assetImageName: String) {
     fun toUIImage(): UIImage? {
         return UIImage.imageNamed(name = assetImageName)
     }
