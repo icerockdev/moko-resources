@@ -18,7 +18,6 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 implementation(moko.resources)
-                implementation(moko.resourcesCompose)
                 implementation(compose.desktop.currentOs)
                 implementation(project(":mpp-library"))
             }
