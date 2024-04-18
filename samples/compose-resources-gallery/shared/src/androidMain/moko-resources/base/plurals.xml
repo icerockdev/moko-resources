@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="android_chars_count">
+        <item quantity="zero">zero chars, android</item>
+        <item quantity="one">%d char, android</item>
+        <item quantity="two">%d chars, android</item>
+        <item quantity="other">%d chars, android</item>
+    </plural>
+</resources>

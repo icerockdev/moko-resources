@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinNativeCompile
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
-val KotlinNativeLink.klibs: FileCollection
+internal val KotlinNativeLink.klibs: FileCollection
     get() {
         return try {
             val getLibraries =
@@ -28,7 +28,7 @@ val KotlinNativeLink.klibs: FileCollection
         }
     }
 
-val Kotlin2JsCompile.klibs: FileCollection
+internal val Kotlin2JsCompile.klibs: FileCollection
     get() {
         return try {
             val getClasspath =

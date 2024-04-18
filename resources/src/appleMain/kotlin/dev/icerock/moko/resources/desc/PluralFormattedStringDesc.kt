@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.PluralsResource
+import kotlinx.cinterop.BetaInteropApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSLocale
 import platform.Foundation.NSString
@@ -30,6 +31,7 @@ actual data class PluralFormattedStringDesc actual constructor(
     }
 }
 
+@OptIn(BetaInteropApi::class)
 internal fun pluralizedString(
     bundle: NSBundle,
     baseBundle: NSBundle,

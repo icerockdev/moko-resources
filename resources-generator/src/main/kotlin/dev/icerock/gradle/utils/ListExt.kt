@@ -5,6 +5,7 @@
 package dev.icerock.gradle.utils
 
 import java.util.Enumeration
+import kotlin.reflect.KClass
 
 internal fun <T> List<T>.toEnumeration(): Enumeration<T> {
     return object : Enumeration<T> {
@@ -21,4 +22,12 @@ internal fun <T> List<T>.toEnumeration(): Enumeration<T> {
             throw NoSuchElementException("List enumeration asked for more elements than present")
         }
     }
+}
+
+internal fun <B : Any, T : B> List<B>.filterClass(typeClass: KClass<T>): List<T> {
+    return this.filter { it::class == typeClass }
+        .map {
+            @Suppress("UNCHECKED_CAST")
+            it as T
+        }
 }

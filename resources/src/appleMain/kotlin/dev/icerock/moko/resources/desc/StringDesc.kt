@@ -18,7 +18,7 @@ actual interface StringDesc {
     fun localized(): String
 
     actual sealed class LocaleType {
-        actual object System : LocaleType() {
+        actual data object System : LocaleType() {
             override val locale: NSLocale
                 get() = NSLocale.currentLocale
 
@@ -28,8 +28,6 @@ actual interface StringDesc {
         }
 
         actual class Custom actual constructor(locale: String) : LocaleType() {
-
-
             override val locale: NSLocale = NSLocale(
                 NSLocale.localeIdentifierFromComponents(
                     buildMap {

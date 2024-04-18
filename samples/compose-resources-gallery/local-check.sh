@@ -14,17 +14,27 @@ log "compose-resources-gallery android success"
 ./gradlew clean jvmJar
 log "compose-resources-gallery jvm success"
 
-./gradlew clean compileKotlinIosX64
-log "compose-resources-gallery ios success"
+if ! command -v xcodebuild &> /dev/null
+then
+    echo "xcodebuild could not be found, skip ios checks"
 
-# rerun tasks because kotlinjs compilation broken with build cache :(
-./gradlew clean podspec build --rerun-tasks
-log "compose-resources-gallery full build success"
+    ./gradlew build
+    log "compose-resources-gallery full build success"
+else
 
-(
-cd iosApp &&
-pod install &&
-set -o pipefail &&
-xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
-)
-log "compose-resources-gallery ios xcode success"
+    ./gradlew clean compileKotlinIosX64
+    log "compose-resources-gallery ios success"
+
+    # rerun tasks because kotlinjs compilation broken with build cache :(
+    ./gradlew clean podspec build generateDummyFramework --rerun-tasks
+    log "compose-resources-gallery full build success"
+
+    (
+    cd iosApp &&
+    pod install &&
+    set -o pipefail &&
+    xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+    )
+    log "compose-resources-gallery ios xcode success"
+fi
+

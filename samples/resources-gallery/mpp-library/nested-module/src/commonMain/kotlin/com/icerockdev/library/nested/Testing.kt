@@ -13,5 +13,5 @@ public fun nestedTest(): StringDesc {
 }
 
 public fun nestedFileRes(): FileResource {
-    return NestedMR.files.nested_test
+    return NestedMR.files.nested_test_json
 }

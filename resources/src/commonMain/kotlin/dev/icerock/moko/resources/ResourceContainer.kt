@@ -4,7 +4,11 @@
 
 package dev.icerock.moko.resources
 
-expect interface ResourceContainer<T>
-
 expect fun ResourceContainer<ImageResource>.getImageByFileName(fileName: String): ImageResource?
 expect fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String): AssetResource?
+
+interface ResourceContainer<T> {
+    @Suppress("VariableNaming")
+    val __platformDetails: ResourcePlatformDetails
+    fun values(): List<T>
+}
