@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id("multiplatform-library-convention")
+    id("multiplatform-library-extended-convention")
     id("multiplatform-android-publish-convention")
     id("apple-main-convention")
     id("kotlin-parcelize")
@@ -13,10 +13,6 @@ plugins {
 }
 
 kotlin {
-    watchosX64()
-    watchosArm64()
-    watchosSimulatorArm64()
-
     sourceSets {
         getByName("jsMain") {
             dependencies {

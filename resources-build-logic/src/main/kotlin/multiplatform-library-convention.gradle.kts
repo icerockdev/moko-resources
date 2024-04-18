@@ -26,6 +26,8 @@ kotlin {
     }
 
     sourceSets {
+        val commonMain by getting
+
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -46,19 +48,6 @@ kotlin {
             iosSimulatorArm64Test.dependsOn(this)
         }
 
-        val watchosMain by creating
-        val watchos64Main by creating
-        val watchos32Main by creating
-        val watchosX64Main by creating
-        val watchosArm64Main by creating
-        val watchosSimulatorArm64Main by creating
-        watchos64Main.dependsOn(watchosMain)
-        watchos32Main.dependsOn(watchosMain)
-        watchosX64Main.dependsOn(watchos64Main)
-        watchosArm64Main.dependsOn(watchos32Main)
-        watchosSimulatorArm64Main.dependsOn(watchos64Main)
-
-        val commonMain by getting
         val macosArm64Main by getting
         val macosX64Main by getting
 
