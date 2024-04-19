@@ -10,7 +10,6 @@ import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.refTo
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType

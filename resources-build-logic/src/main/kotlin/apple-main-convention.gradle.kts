@@ -31,4 +31,10 @@ kotlin {
             dependsOn(appleTest)
         }
     }
+
+    sourceSets.matching {
+        it.name == "watchosMain"
+    }.configureEach {
+        this.dependsOn(sourceSets.getByName("appleMain"))
+    }
 }

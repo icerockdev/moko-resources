@@ -4,7 +4,11 @@
 
 package dev.icerock.moko.resources
 
+import cnames.structs.CGDataProvider
+import cnames.structs.CGFont
 import cnames.structs.__CFData
+import cnames.structs.__CFString
+import cnames.structs.__CFURL
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -45,12 +49,12 @@ actual class FontResource(
     internal val fontRef: CGFontRef by lazy {
         val fontData: NSData = this.data
         val cfDataRef: CPointer<__CFData>? = CFDataCreate(
-            kCFAllocatorDefault,
-            fontData.bytes() as CPointer<UInt8Var>,
-            fontData.length.toLong().convert()
+            allocator = kCFAllocatorDefault,
+            bytes = fontData.bytes() as CPointer<UInt8Var>,
+            length = fontData.length.toLong().convert()
         )
-        val dataProvider = CGDataProviderCreateWithCFData(cfDataRef)
-        val cgFont = CGFontCreateWithDataProvider(dataProvider)!!
+        val dataProvider: CPointer<CGDataProvider>? = CGDataProviderCreateWithCFData(cfDataRef)
+        val cgFont: CPointer<CGFont> = CGFontCreateWithDataProvider(dataProvider)!!
 
         CGDataProviderRelease(dataProvider)
         CFRelease(cfDataRef)
@@ -82,12 +86,13 @@ actual class FontResource(
         //  an NSString so `as NSString` is fine.
         // UNCHECKED_CAST - NSString and CFStringRef are toll-free bridged
         @Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST")
-        val cfStringFilePath = CFBridgingRetain(filePath as NSString) as CFStringRef
-        val cfFontUrlRef = CFURLCreateWithFileSystemPath(
-            kCFAllocatorDefault,
-            cfStringFilePath,
-            kCFURLPOSIXPathStyle,
-            false
+        val cfStringFilePath: CPointer<__CFString> =
+            CFBridgingRetain(filePath as NSString) as CFStringRef
+        val cfFontUrlRef: CPointer<__CFURL>? = CFURLCreateWithFileSystemPath(
+            allocator = kCFAllocatorDefault,
+            filePath = cfStringFilePath,
+            pathStyle = kCFURLPOSIXPathStyle,
+            isDirectory = false
         )
 
         var nsError: NSError? = null
@@ -95,9 +100,9 @@ actual class FontResource(
         memScoped {
             val error = alloc<CFErrorRefVar>()
             if (!CTFontManagerRegisterFontsForURL(
-                    cfFontUrlRef,
-                    kCTFontManagerScopeProcess,
-                    error.ptr
+                    fontURL = cfFontUrlRef,
+                    scope = kCTFontManagerScopeProcess,
+                    error = error.ptr
                 )
             ) {
                 error.value?.let {

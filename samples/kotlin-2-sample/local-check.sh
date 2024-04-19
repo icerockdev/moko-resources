@@ -24,7 +24,7 @@ else
     (
     cd iosApp &&
     set -o pipefail &&
-    xcodebuild -scheme iosApp -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+    xcodebuild -scheme iosApp -configuration Debug -destination "generic/platform=iOS Simulator" build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
     )
     log "kotlin-2-sample mobile ios xcode success"
 fi
