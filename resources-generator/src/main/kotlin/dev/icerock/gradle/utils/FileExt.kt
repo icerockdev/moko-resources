@@ -20,7 +20,7 @@ internal val File.nameWithoutScale: String
     get() =
         nameWithoutExtension.withoutScale
 
-internal val File.appearance: Appearance?
+internal val File.appearance: Appearance
     get() =
         nameWithoutExtension.appearance
 

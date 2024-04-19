@@ -11,12 +11,15 @@ import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
-internal class FileResourceGenerator : ResourceGenerator<FileMetadata> {
+internal class FileResourceGenerator(
+    private val fileDirs: Set<File>
+) : ResourceGenerator<FileMetadata> {
 
     override fun generateMetadata(files: Set<File>): List<FileMetadata> {
         return files.map { file ->
             FileMetadata(
-                key = generateKey(file.nameWithoutExtension),
+                key = generateKey(file.name),
+                relativePath = fileDirs.single { file.absolutePath.contains(it.absolutePath) },
                 filePath = file,
             )
         }

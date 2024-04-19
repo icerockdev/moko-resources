@@ -4,10 +4,8 @@
 
 package dev.icerock.moko.resources.desc.image
 
-import dev.icerock.moko.parcelize.Parcelize
 import dev.icerock.moko.resources.ImageResource
 
-@Parcelize
 data class ImageDescResource(val resource: ImageResource) : ImageDesc
 
 @Suppress("FunctionName")

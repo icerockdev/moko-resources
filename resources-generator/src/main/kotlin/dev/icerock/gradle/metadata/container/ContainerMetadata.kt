@@ -10,39 +10,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal sealed interface ContainerMetadata {
-    fun contentHash(): String?
-}
-
-@Serializable
-@SerialName("expect-interface")
-internal data class ExpectInterfaceMetadata(
-    val name: String,
-    val resourceType: ResourceType,
-    val sourceSet: String
-) : ContainerMetadata {
-    override fun contentHash() = null
-}
-
-@Serializable
-@SerialName("actual-interface")
-internal data class ActualInterfaceMetadata(
-    val name: String,
-    val resources: List<ResourceMetadata>
-) : ContainerMetadata {
-    override fun contentHash(): String = resources.mapNotNull { it.contentHash() }.calculateHash()
-}
-
-@Serializable
 @SerialName("object")
-internal data class ObjectMetadata(
+internal data class ContainerMetadata(
     val name: String,
+    val parentObjectName: String,
     val resourceType: ResourceType,
-    val interfaces: List<String>,
-    val resources: List<ResourceMetadata>
-) : ContainerMetadata {
-
-    override fun contentHash(): String = resources.mapNotNull { it.contentHash() }.calculateHash()
+    val resources: List<ResourceMetadata>,
+) {
+    fun contentHash(): String = resources.mapNotNull { it.contentHash() }.calculateHash()
 }
 
 internal enum class ResourceType {

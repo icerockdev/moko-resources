@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        tools:srcCompat="@drawable/home_black_18" />
+
+    <ImageView
+        android:id="@+id/svgImageView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        tools:srcCompat="@drawable/car_black" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="@string/test_simple" />
+
+    <TextView
+        android:id="@+id/stringDescTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="@string/nested_test"
+        tools:textColor="@color/textColor" />
+
+
+    <TextView
+        android:id="@+id/stringOtfFontsTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="Testing otf fonts"/>
+</LinearLayout>

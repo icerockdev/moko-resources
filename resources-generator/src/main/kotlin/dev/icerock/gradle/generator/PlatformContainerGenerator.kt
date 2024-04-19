@@ -9,6 +9,6 @@ import com.squareup.kotlinpoet.TypeSpec
 
 internal interface PlatformContainerGenerator {
     fun getImports(): List<ClassName> = emptyList()
-    fun generateBeforeTypes(builder: TypeSpec.Builder) = Unit
+    fun generateBeforeTypes(objectName: String, builder: TypeSpec.Builder) = Unit
     fun generateAfterTypes(builder: TypeSpec.Builder) = Unit
 }

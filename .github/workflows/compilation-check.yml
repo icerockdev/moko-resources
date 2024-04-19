@@ -12,7 +12,13 @@ on:
 
 jobs:
   build-library:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 17
@@ -55,7 +61,13 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-android-mpp-app:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -95,7 +107,13 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-auto-manifest:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -135,7 +153,13 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-compose-jvm-app:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -175,7 +199,13 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-resources-gallery:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -202,6 +232,52 @@ jobs:
           path: ~/.m2/repository/dev/icerock
       - name: Sample - resources-gallery
         run: cd samples/resources-gallery && ./local-check.sh
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: ${{ always() }}
+        with:
+          report_paths: "**/build/test-results/**/TEST-*.xml"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive reports
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: code-coverage-report-${{ github.job }}
+          path: "**/build/reports/**/*"
+  check-sample-default-hierarchy-resources-gallery-mobile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
+    needs: build-library
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
+            'refs/heads/develop' }}
+      - name: Cache .konan
+        uses: actions/cache@v2
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+      - name: Download maven artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: maven
+          path: ~/.m2/repository/dev/icerock
+      - name: Sample - default-hierarchy-gallery-mobile
+        run: cd samples/default-hierarchy-gallery-mobile && ./local-check.sh
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         if: ${{ always() }}
@@ -242,6 +318,46 @@ jobs:
           path: ~/.m2/repository/dev/icerock
       - name: Sample - ios-static-xcframework
         run: cd samples/ios-static-xcframework && ./local-check.sh
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: ${{ always() }}
+        with:
+          report_paths: "**/build/test-results/**/TEST-*.xml"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive reports
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: code-coverage-report-${{ github.job }}
+          path: "**/build/reports/**/*"
+  check-sample-ios-cocoapods-static-framework:
+    runs-on: macOS-latest
+    needs: build-library
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
+            'refs/heads/develop' }}
+      - name: Cache .konan
+        uses: actions/cache@v2
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+      - name: Download maven artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: maven
+          path: ~/.m2/repository/dev/icerock
+      - name: Sample - ios-cocoapods-static-framework
+        run: cd samples/ios-cocoapods-static-framework && ./local-check.sh
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         if: ${{ always() }}
@@ -295,7 +411,13 @@ jobs:
           name: code-coverage-report-${{ github.job }}
           path: "**/build/reports/**/*"
   check-sample-compose-resources-gallery:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
     needs: build-library
     steps:
       - uses: actions/checkout@v1
@@ -322,6 +444,98 @@ jobs:
           path: ~/.m2/repository/dev/icerock
       - name: Sample - compose-resources-gallery
         run: cd samples/compose-resources-gallery && ./local-check.sh
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: ${{ always() }}
+        with:
+          report_paths: "**/build/test-results/**/TEST-*.xml"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive reports
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: code-coverage-report-${{ github.job }}
+          path: "**/build/reports/**/*"
+  check-kotlin-2-sample:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
+    needs: build-library
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
+            'refs/heads/develop' }}
+      - name: Cache .konan
+        uses: actions/cache@v2
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+      - name: Download maven artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: maven
+          path: ~/.m2/repository/dev/icerock
+      - name: Sample - kotlin-2-sample
+        run: cd samples/kotlin-2-sample && ./local-check.sh
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: ${{ always() }}
+        with:
+          report_paths: "**/build/test-results/**/TEST-*.xml"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive reports
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: code-coverage-report-${{ github.job }}
+          path: "**/build/reports/**/*"
+  check-cm-resources-sample:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macOS-latest
+          - windows-latest
+          - ubuntu-latest
+    needs: build-library
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
+            'refs/heads/develop' }}
+      - name: Cache .konan
+        uses: actions/cache@v2
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+      - name: Download maven artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: maven
+          path: ~/.m2/repository/dev/icerock
+      - name: Sample - cm-resources-sample
+        run: cd samples/cm-resources-sample && ./local-check.sh
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         if: ${{ always() }}

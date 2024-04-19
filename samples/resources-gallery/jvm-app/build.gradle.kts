@@ -39,5 +39,11 @@ compose {
 }
 
 multiplatformResources {
+    resourcesClassName.set("AppMR")
     resourcesPackage.set("com.icerockdev.app")
+    resourcesSourceSets {
+        getByName("jvmMain").srcDirs(
+            File(projectDir, "customResources")
+        )
+    }
 }

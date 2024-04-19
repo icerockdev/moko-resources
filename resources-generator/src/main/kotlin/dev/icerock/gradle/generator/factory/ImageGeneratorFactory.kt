@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.factory
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
+import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -25,8 +26,6 @@ import java.io.File
 
 @Suppress("LongParameterList")
 internal class ImageGeneratorFactory(
-    private val resourcesPackageName: String,
-    private val resourcesClassName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val outputAssetsDir: File,
@@ -37,7 +36,7 @@ internal class ImageGeneratorFactory(
 ) {
     fun create(): ResourceTypeGenerator<ImageMetadata> {
         return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName,
+            propertiesGenerationStrategy = FlatPropertiesGenerationStrategy(),
             resourceClass = Constants.imageResourceName,
             resourceType = ResourceType.IMAGES,
             metadataClass = ImageMetadata::class,
@@ -70,7 +69,6 @@ internal class ImageGeneratorFactory(
             },
             createJvm = {
                 JvmImageResourceGenerator(
-                    className = resourcesClassName,
                     resourcesGenerationDir = outputResourcesDir
                 )
             },

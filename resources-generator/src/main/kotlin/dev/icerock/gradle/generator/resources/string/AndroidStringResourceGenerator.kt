@@ -6,15 +6,20 @@ package dev.icerock.gradle.generator.resources.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec.Builder
+import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
-import org.apache.commons.text.StringEscapeUtils
+import dev.icerock.gradle.utils.convertXmlStringToAndroidLocalization
 import java.io.File
 
 internal class AndroidStringResourceGenerator(
     private val androidRClassPackage: String,
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = listOf(
         ClassName(androidRClassPackage, "R")
@@ -22,6 +27,26 @@ internal class AndroidStringResourceGenerator(
 
     override fun generateInitializer(metadata: StringMetadata): CodeBlock {
         return CodeBlock.of("StringResource(R.string.%L)", metadata.key)
+    }
+
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<StringMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifier)
+    }
+
+    override fun generateAfterProperties(
+        builder: Builder,
+        metadata: List<StringMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addValuesFunction(
+            modifier = modifier,
+            metadata = metadata,
+            classType = Constants.stringResourceName
+        )
     }
 
     override fun generateResourceFiles(data: List<StringMetadata>) {
@@ -45,7 +70,7 @@ internal class AndroidStringResourceGenerator(
             """.trimIndent()
 
         val content = strings.map { (key, value) ->
-            val processedValue = convertXmlStringToAndroidLocalization(value)
+            val processedValue = value.convertXmlStringToAndroidLocalization()
             "\t<string name=\"$key\">$processedValue</string>"
         }.joinToString("\n")
 
@@ -57,12 +82,5 @@ internal class AndroidStringResourceGenerator(
         stringsFile.writeText(header + "\n")
         stringsFile.appendText(content)
         stringsFile.appendText("\n" + footer)
-    }
-
-    // TODO should we do that?
-    private fun convertXmlStringToAndroidLocalization(input: String): String {
-        val xmlDecoded = StringEscapeUtils.unescapeXml(input)
-        return xmlDecoded.replace("\n", "\\n")
-            .replace("\"", "\\\"").let { StringEscapeUtils.escapeXml11(it) }
     }
 }

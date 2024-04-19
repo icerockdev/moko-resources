@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.factory
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
+import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -25,7 +26,6 @@ import java.io.File
 @Suppress("LongParameterList")
 internal class FontGeneratorFactory(
     private val resourcesPackageName: String,
-    private val resourcesClassName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val kotlinPlatformType: KotlinPlatformType,
@@ -34,7 +34,7 @@ internal class FontGeneratorFactory(
 ) {
     fun create(): ResourceTypeGenerator<FontMetadata> {
         return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName,
+            propertiesGenerationStrategy = FlatPropertiesGenerationStrategy(),
             resourceClass = Constants.fontResourceName,
             resourceType = ResourceType.FONTS,
             metadataClass = FontMetadata::class,
@@ -64,7 +64,6 @@ internal class FontGeneratorFactory(
             },
             createJvm = {
                 JvmFontResourceGenerator(
-                    className = resourcesClassName,
                     resourcesGenerationDir = outputResourcesDir
                 )
             },

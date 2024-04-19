@@ -6,30 +6,55 @@
 
 package dev.icerock.gradle.metadata.resource
 
+import dev.icerock.gradle.generator.normalizePathName
+import dev.icerock.gradle.metadata.InvalidResourceKeyException
+import dev.icerock.gradle.serialization.ColorResourceSerializer
 import dev.icerock.gradle.serialization.FileSerializer
+import dev.icerock.gradle.serialization.ResourceMetadataSerializer
 import dev.icerock.gradle.utils.calculateHash
 import dev.icerock.gradle.utils.calculateResourcesHash
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import java.io.File
 
-@Serializable
-internal sealed interface ResourceMetadata {
-    // TODO validate key at create
+@Serializable(with = ResourceMetadataSerializer::class)
+@SerialName("resource-metadata")
+sealed interface ResourceMetadata {
+    val resourceType: String
+
     val key: String
 
     fun contentHash(): String?
+
+    fun assertKeyValue() {
+        val validKeyRegex = Regex("[a-zA-Z_][a-zA-Z_0-9]*")
+
+        if (!validKeyRegex.matches(key)) {
+            throw InvalidResourceKeyException(key)
+        }
+    }
 }
 
 @Serializable
 internal data class StringMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = StringMetadata::class.java.name,
     override val key: String,
-    val values: List<LocaleItem>
+    val values: List<LocaleItem>,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     @Serializable
     data class LocaleItem(
         val locale: String,
-        val value: String
+        val value: String,
     )
 
     @Suppress("MagicNumber")
@@ -38,19 +63,27 @@ internal data class StringMetadata(
 
 @Serializable
 internal data class PluralMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = PluralMetadata::class.java.name,
     override val key: String,
-    val values: List<LocaleItem>
+    val values: List<LocaleItem>,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     @Serializable
     data class LocaleItem(
         val locale: String,
-        val values: List<PluralItem>
+        val values: List<PluralItem>,
     )
 
     @Serializable
     data class PluralItem(
         val quantity: Quantity,
-        val value: String
+        val value: String,
     ) {
         enum class Quantity {
             ZERO, ONE, TWO, FEW, MANY, OTHER
@@ -63,13 +96,21 @@ internal data class PluralMetadata(
 
 @Serializable
 internal data class ImageMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = ImageMetadata::class.java.name,
     override val key: String,
     val values: List<ImageItem>
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
     @Serializable
     data class ImageItem(
         val quality: String?,
-        val appearance: Appearance?,
+        val appearance: Appearance,
         val filePath: File
     )
 
@@ -79,34 +120,65 @@ internal data class ImageMetadata(
 
 @Serializable
 internal data class FontMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = FontMetadata::class.java.name,
     override val key: String,
-    val filePath: File
+    val filePath: File,
 ) : ResourceMetadata {
+
+    init {
+        assertKeyValue()
+    }
 
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
 @Serializable
-internal data class FileMetadata(
+data class ColorMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = ColorMetadata::class.java.name,
     override val key: String,
-    val filePath: File
+    val value: ColorItem,
 ) : ResourceMetadata {
 
-    override fun contentHash(): String = filePath.calculateResourcesHash()
-}
+    init {
+        assertKeyValue()
+    }
 
-@Serializable
-internal data class ColorMetadata(
-    override val key: String,
-    val value: ColorItem
-) : ResourceMetadata {
-    @Serializable
+    @Serializable(with = ColorResourceSerializer::class)
     sealed interface ColorItem {
-        @Serializable
-        data class Single(val color: Color) : ColorItem
+        val colorType: String
 
         @Serializable
-        data class Themed(val light: Color, val dark: Color) : ColorItem
+        data class Single(
+            @OptIn(ExperimentalSerializationApi::class)
+            @EncodeDefault
+            override val colorType: String = getJavaName(),
+            val color: Color,
+        ) : ColorItem {
+            companion object {
+                internal fun getJavaName(): String {
+                    return Single::class.java.name.replace('$', '.')
+                }
+            }
+        }
+
+        @Serializable
+        data class Themed(
+            @OptIn(ExperimentalSerializationApi::class)
+            @EncodeDefault
+            override val colorType: String = getJavaName(),
+            val light: Color,
+            val dark: Color,
+        ) : ColorItem {
+            companion object {
+                internal fun getJavaName(): String {
+                    return Themed::class.java.name.replace('$', '.')
+                }
+            }
+        }
     }
 
     @Serializable
@@ -114,7 +186,7 @@ internal data class ColorMetadata(
         val red: Int,
         val green: Int,
         val blue: Int,
-        val alpha: Int
+        val alpha: Int,
     ) {
         @Suppress("MagicNumber")
         fun toArgbHex(): String {
@@ -134,18 +206,57 @@ internal data class ColorMetadata(
 }
 
 @Serializable
-internal data class AssetMetadata(
+internal data class FileMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = FileMetadata::class.java.name,
     override val key: String,
     val relativePath: File,
-    val filePath: File
-) : ResourceMetadata {
-    val pathRelativeToBase: File
-        get() = filePath.relativeTo(relativePath)
+    val filePath: File,
+) : ResourceMetadata, HierarchyMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
+    override val path: List<String> = getFilePath(filePath, relativePath)
 
     override fun contentHash(): String = filePath.calculateResourcesHash()
 }
 
 @Serializable
+internal data class AssetMetadata(
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val resourceType: String = AssetMetadata::class.java.name,
+    override val key: String,
+    val relativePath: File,
+    val filePath: File,
+) : ResourceMetadata, HierarchyMetadata {
+
+    init {
+        assertKeyValue()
+    }
+
+    val pathRelativeToBase: File
+        get() = filePath.relativeTo(relativePath)
+
+    override val path: List<String> = getFilePath(filePath, relativePath)
+
+    override fun contentHash(): String = filePath.calculateResourcesHash()
+}
+
+interface HierarchyMetadata : ResourceMetadata {
+    val path: List<String>
+}
+
+private fun getFilePath(filePath: File, relativePath: File): List<String> {
+    return filePath.relativeTo(relativePath).path
+        .split(File.separatorChar)
+        .dropLast(1)
+        .map(::normalizePathName)
+}
+
 internal enum class Appearance {
     LIGHT,
     DARK

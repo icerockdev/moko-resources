@@ -1,13 +1,15 @@
 /*
- * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
-import com.android.build.gradle.api.BaseVariant
-import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
+import dev.icerock.gradle.generator.platform.android.getAndroidSourceSetOrNull
+import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
+import dev.icerock.gradle.generator.platform.android.setupAndroidVariantsSync
+import dev.icerock.gradle.generator.platform.apple.registerCopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
 import dev.icerock.gradle.generator.platform.apple.setupCopyXCFrameworkResourcesTask
 import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
@@ -18,25 +20,21 @@ import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
 import dev.icerock.gradle.generator.platform.js.setupJsResources
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskCollection
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
@@ -61,6 +59,16 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             setupCopyXCFrameworkResourcesTask(project = project)
             setupFatFrameworkTasks(project = project)
             registerGenerateAllResources(project = project)
+            registerCopyFrameworkResourcesToAppTask(project = project)
+            setupAndroidVariantsSync(project = project)
+            setupGradleSync(project = project)
+        }
+    }
+
+    private fun setupGradleSync(project: Project) {
+        val tasks: TaskCollection<GenerateMultiplatformResourcesTask> = project.tasks.withType()
+        project.tasks.matching { it.name == "prepareKotlinIdeaImport" }.configureEach {
+            it.dependsOn(tasks)
         }
     }
 
@@ -98,8 +106,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                     setupSourceSets(
                         target = target,
                         sourceSet = sourceSet,
-                        genTaskProvider = genTaskProvider,
-                        compilation = compilation
+                        genTaskProvider = genTaskProvider
                     )
 
                     // Setup android specific tasks
@@ -150,7 +157,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                     it.outputResourcesDir.asFile
                                 },
                                 iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
-                                acToolMinimalDeploymentTarget = mrExtension.acToolMinimalDeploymentTarget,
+                                iosMinimalDeploymentTarget = mrExtension.iosMinimalDeploymentTarget,
                                 appleBundleIdentifier = appleIdentifier
                             )
                         }
@@ -167,15 +174,11 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
     private fun setupSourceSets(
         target: KotlinTarget,
         sourceSet: KotlinSourceSet,
         genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
-        compilation: KotlinCompilation<*>,
     ) {
-        val project: Project = target.project
-
         sourceSet.kotlin.srcDir(genTaskProvider.map { it.outputSourcesDir })
 
         when (target.platformType) {
@@ -183,54 +186,22 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputResourcesDir })
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
-
             KotlinPlatformType.androidJvm -> {
-                target as KotlinAndroidTarget
-                compilation as KotlinJvmAndroidCompilation
-
-                val androidSourceSet: AndroidSourceSet = project.findAndroidSourceSet(sourceSet)
-                    ?: throw GradleException("can't find android source set for $sourceSet")
-
-                @Suppress("UnstableApiUsage")
-                androidSourceSet.kotlin.srcDir(genTaskProvider.map { it.outputSourcesDir })
-                @Suppress("UnstableApiUsage")
+                // Fix: android sourceSets indexation in IDE
+                // Usage of api of v2.model in AGP broken for IDE resources indexing
+                // For correct indexing of resources set resource directory
+                // https://issuetracker.google.com/issues/329702045
+                @OptIn(ExperimentalKotlinGradlePluginApi::class)
+                val androidSourceSet: AndroidSourceSet =
+                    target.project.getAndroidSourceSetOrNull(sourceSet) ?: return
                 androidSourceSet.res.srcDir(genTaskProvider.map { it.outputResourcesDir })
-                @Suppress("UnstableApiUsage")
-                androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
+
+                // Assets added in variants for correct generation
+                // see: dev.icerock.gradle.generator.platform.android.SetupAndroidUtilsKt.addGenerationTaskDependency
+                // androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
-
-            KotlinPlatformType.common, KotlinPlatformType.native, KotlinPlatformType.wasm -> Unit
-        }
-    }
-
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    private fun setupAndroidTasks(
-        target: KotlinTarget,
-        sourceSet: KotlinSourceSet,
-        genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
-        compilation: KotlinCompilation<*>,
-    ) {
-        if (target !is KotlinAndroidTarget) return
-
-        compilation as KotlinJvmAndroidCompilation
-
-        val project: Project = target.project
-
-        val androidSourceSet: AndroidSourceSet = project.findAndroidSourceSet(sourceSet)
-            ?: throw GradleException("can't find android source set for $sourceSet")
-
-        // save android sourceSet name to skip build type specific tasks
-        @Suppress("UnstableApiUsage")
-        genTaskProvider.configure { it.androidSourceSetName.set(androidSourceSet.name) }
-
-        // connect generateMR task with android preBuild
-        @Suppress("DEPRECATION")
-        val androidVariant: BaseVariant = compilation.androidVariant
-        androidVariant.preBuildProvider.configure { it.dependsOn(genTaskProvider) }
-
-        // TODO this way do more than required - we trigger generate all android related resources at all
-        project.tasks.withType<AndroidLintAnalysisTask>().configureEach {
-            it.dependsOn(genTaskProvider)
+            KotlinPlatformType.common, KotlinPlatformType.native,
+            KotlinPlatformType.wasm -> Unit
         }
     }
 }

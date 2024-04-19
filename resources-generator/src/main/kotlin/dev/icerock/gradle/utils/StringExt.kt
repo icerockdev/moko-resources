@@ -5,6 +5,8 @@
 package dev.icerock.gradle.utils
 
 import dev.icerock.gradle.metadata.resource.Appearance
+import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.translate.UnicodeUnescaper
 import java.util.Locale
 
 /**
@@ -39,8 +41,23 @@ internal fun String.remove(char: String): String {
 internal val String.flatName: String
     get() = this.remove('.')
 
-internal val String.appearance: Appearance?
-    get() = Appearance.values().firstOrNull { this.contains("_${it.name}", true) }
+internal fun String.convertXmlStringToLocalizationValue(): String {
+    return StringEscapeUtils.unescapeXml(this).let {
+        UnicodeUnescaper().translate(
+            StringEscapeUtils.escapeJava(it)
+        )
+    }
+}
+
+internal fun String.convertXmlStringToAndroidLocalization(): String {
+    return StringEscapeUtils.unescapeXml(this).let {
+        StringEscapeUtils.escapeXml11(it)
+    }
+}
+internal val String.appearance: Appearance
+    get() = Appearance.values().firstOrNull {
+        this.contains("_${it.name}", true)
+    } ?: Appearance.LIGHT
 
 internal val String.withoutAppearance: String
     get() {

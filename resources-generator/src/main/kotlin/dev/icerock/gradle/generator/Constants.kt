@@ -5,8 +5,10 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
+import dev.icerock.gradle.generator.Constants.PlatformDetails.platformDetailsPropertyName
 
 internal object Constants {
+    val resourcePlatformDetailsName = ClassName("dev.icerock.moko.resources", "ResourcePlatformDetails")
     val resourceContainerName = ClassName("dev.icerock.moko.resources", "ResourceContainer")
     val stringResourceName = ClassName("dev.icerock.moko.resources", "StringResource")
     val pluralsResourceName = ClassName("dev.icerock.moko.resources", "PluralsResource")
@@ -18,6 +20,11 @@ internal object Constants {
 
     val graphicsColorName = ClassName("dev.icerock.moko.graphics", "Color")
 
+    object PlatformDetails {
+        const val platformDetailsPropertyName = "__platformDetails"
+        const val platformDetailsClass: String = "ResourcePlatformDetails"
+    }
+
     object Apple {
         val nsBundleName = ClassName("platform.Foundation", "NSBundle")
         val loadableBundleName = ClassName("dev.icerock.moko.resources.utils", "loadableBundle")
@@ -25,7 +32,8 @@ internal object Constants {
         const val assetsDirectoryName = "Assets.xcassets"
 
         const val resourcesBundlePropertyName = "bundle"
-        const val containerBundlePropertyName = "nsBundle"
+        private const val containerBundlePropertyName = "nsBundle"
+        val platformContainerBundlePropertyName = "$platformDetailsPropertyName.$containerBundlePropertyName"
     }
 
     object Jvm {

@@ -9,16 +9,17 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import dev.icerock.gradle.utils.flatName
 import java.io.File
 
 internal class JsFontResourceGenerator(
     resourcesPackageName: String,
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FontMetadata> {
     private val flattenClassPackage: String = resourcesPackageName.flatName
     private val cssDeclarationsFileName: String = "$flattenClassPackage-generated-declarations.css"
@@ -45,7 +46,7 @@ internal class JsFontResourceGenerator(
         val cssDeclarationsFile = File(fontsDir, cssDeclarationsFileName)
 
         val declarations: String = data
-            .joinToString(separator = "\n") { (family, file) ->
+            .joinToString(separator = "\n") { (_, family, file) ->
                 // language=css
                 """
                     @font-face {
@@ -58,13 +59,27 @@ internal class JsFontResourceGenerator(
         cssDeclarationsFile.writeText(declarations)
     }
 
+    override fun generateBeforeProperties(
+        builder: Builder,
+        metadata: List<FontMetadata>,
+        modifier: KModifier?,
+    ) {
+        builder.addEmptyPlatformResourceProperty(modifier)
+    }
+
     override fun generateAfterProperties(
-        builder: TypeSpec.Builder,
-        metadata: List<FontMetadata>
+        builder: Builder,
+        metadata: List<FontMetadata>,
+        modifier: KModifier?
     ) {
         val languageKeysList: String = metadata.joinToString { it.key }
 
         val valuesFun: FunSpec = FunSpec.builder("values")
+            .also {
+                if (modifier != null) {
+                    it.addModifiers(modifier)
+                }
+            }
             .addModifiers(KModifier.OVERRIDE)
             .addStatement("return listOf($languageKeysList)")
             .returns(

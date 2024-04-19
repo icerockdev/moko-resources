@@ -46,7 +46,7 @@ kotlin {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>()
     .configureEach {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_8)
+        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_7)
     }
 
 gradlePlugin {

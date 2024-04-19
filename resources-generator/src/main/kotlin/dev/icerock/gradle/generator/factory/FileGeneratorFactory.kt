@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.factory
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
+import dev.icerock.gradle.generator.HierarchyPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -18,28 +19,35 @@ import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.internal.file.collections.FileCollectionAdapter
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 @Suppress("LongParameterList")
 internal class FileGeneratorFactory(
-    private val resourcesPackageName: String,
-    private val resourcesClassName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
+    private val ownResources: ConfigurableFileCollection
 ) {
     fun create(): ResourceTypeGenerator<FileMetadata> {
         return ResourceTypeGenerator(
-            generationPackage = resourcesPackageName,
+            propertiesGenerationStrategy = HierarchyPropertiesGenerationStrategy(),
             resourceClass = Constants.fileResourceName,
             resourceType = ResourceType.FILES,
             metadataClass = FileMetadata::class,
             visibilityModifier = resourcesVisibility.toModifier(),
-            generator = FileResourceGenerator(),
+            generator = FileResourceGenerator(
+                fileDirs = ownResources.from
+                    .map { it as FileCollectionAdapter }
+                    .flatMap { it.files }
+                    .map { File(it, "files") }
+                    .toSet()
+            ),
             platformResourceGenerator = createPlatformFileGenerator(),
             filter = { include("files/**") }
         )
@@ -64,7 +72,6 @@ internal class FileGeneratorFactory(
             },
             createJvm = {
                 JvmFileResourceGenerator(
-                    className = resourcesClassName,
                     resourcesGenerationDir = outputResourcesDir
                 )
             },

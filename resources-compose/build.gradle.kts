@@ -26,7 +26,8 @@ android {
 kotlin {
     jvm()
     androidTarget()
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
@@ -52,7 +53,6 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 api(compose.desktop.common)
-                implementation(compose.desktop.currentOs)
             }
         }
     }

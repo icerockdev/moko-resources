@@ -23,13 +23,14 @@ private fun mokoResourcesGenTaskKey() =
     extrasKeyOf<TaskProvider<GenerateMultiplatformResourcesTask>>("moko-resources-generate-task")
 
 internal fun KotlinSourceSet.getOrRegisterGenerateResourcesTask(
-    mrExtension: MultiplatformResourcesPluginExtension
+    mrExtension: MultiplatformResourcesPluginExtension,
 ): TaskProvider<GenerateMultiplatformResourcesTask> {
     val currentProvider: TaskProvider<GenerateMultiplatformResourcesTask>? =
         this.extras[mokoResourcesGenTaskKey()]
     if (currentProvider != null) return currentProvider
 
-    val resourcesSourceDirectory: SourceDirectorySet = getOrCreateResourcesSourceDirectory()
+    val resourcesSourceDirectory: SourceDirectorySet =
+        getOrCreateResourcesSourceDirectory(mrExtension)
 
     val genTask: TaskProvider<GenerateMultiplatformResourcesTask> = registerGenerateTask(
         kotlinSourceSet = this,
@@ -39,6 +40,7 @@ internal fun KotlinSourceSet.getOrRegisterGenerateResourcesTask(
     )
 
     configureLowerDependencies(
+        mrExtension = mrExtension,
         kotlinSourceSet = this,
         genTask = genTask
     )
@@ -117,12 +119,13 @@ private fun registerGenerateTask(
 }
 
 private fun configureLowerDependencies(
+    mrExtension: MultiplatformResourcesPluginExtension,
     kotlinSourceSet: KotlinSourceSet,
     genTask: TaskProvider<GenerateMultiplatformResourcesTask>,
 ) {
     kotlinSourceSet.dependsOnObservable.forAll { dependsSourceSet ->
         val resourcesDir: SourceDirectorySet = dependsSourceSet
-            .getOrCreateResourcesSourceDirectory()
+            .getOrCreateResourcesSourceDirectory(mrExtension)
 
         genTask.configure {
             val files: Set<File> = resourcesDir.srcDirs
@@ -130,6 +133,7 @@ private fun configureLowerDependencies(
         }
 
         configureLowerDependencies(
+            mrExtension = mrExtension,
             kotlinSourceSet = dependsSourceSet,
             genTask = genTask
         )
@@ -172,5 +176,11 @@ private fun configureTaskDependencies(
         genTask.configure { resourceTask ->
             resourceTask.inputMetadataFiles.from(dependsGenTask.flatMap { it.outputMetadataFile })
         }
+
+        configureTaskDependencies(
+            kotlinSourceSet = dependsSourceSet,
+            genTask = genTask,
+            mrExtension = mrExtension
+        )
     }
 }
