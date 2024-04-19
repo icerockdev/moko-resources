@@ -15,6 +15,7 @@ import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
+import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import java.io.File
 
 internal class JvmImageResourceGenerator(
@@ -23,10 +24,27 @@ internal class JvmImageResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: ImageMetadata): CodeBlock {
-        val item: ImageMetadata.ImageItem = metadata.getHighestQualityItem()
-        val fileName = "${metadata.key}.${item.filePath.extension}"
+        var fileName: String = ""
+        var darkFileName: String? = null
+
+        metadata.values.groupBy { it.appearance }.forEach { (theme, resources) ->
+            val item: ImageMetadata.ImageItem = resources.getHighestQualityItem(theme)
+
+            if (theme == Appearance.DARK) {
+                darkFileName = "${metadata.key}${theme.suffix}.${item.filePath.extension}"
+            } else {
+                fileName = "${metadata.key}.${item.filePath.extension}"
+            }
+        }
+
+        val darkFilePath: String = if (darkFileName != null) {
+            "$IMAGES_DIR/$darkFileName"
+        } else {
+            "null"
+        }
+
         return CodeBlock.of(
-            "ImageResource(resourcesClassLoader = %L, filePath = %S)",
+            "ImageResource(resourcesClassLoader = %L, filePath = %S, darkFilePath = $darkFilePath)",
             "${PlatformDetails.platformDetailsPropertyName}.${Jvm.resourcesClassLoaderPropertyName}",
             "$IMAGES_DIR/$fileName"
         )

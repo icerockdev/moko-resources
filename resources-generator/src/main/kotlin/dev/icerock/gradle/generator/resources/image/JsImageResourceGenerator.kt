@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.metadata.resource.ImageMetadata
+import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import java.io.File
 
 internal class JsImageResourceGenerator(
@@ -23,14 +24,36 @@ internal class JsImageResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: ImageMetadata): CodeBlock {
-        val item: ImageMetadata.ImageItem = metadata.getHighestQualityItem()
-        val fileName = "${metadata.key}.${item.filePath.extension}"
-        val requireDeclaration = """require("$IMAGES_DIR/$fileName")"""
-        return CodeBlock.of(
-            "ImageResource(fileUrl = js(%S) as String, fileName = %S)",
-            requireDeclaration,
-            fileName
-        )
+        var fileName: String = ""
+        var darkFileName: String? = null
+
+        metadata.values.groupBy { it.appearance }.forEach { (theme, resources) ->
+            val item: ImageMetadata.ImageItem = resources.getHighestQualityItem(theme)
+
+            if (theme == Appearance.DARK) {
+                darkFileName = "${metadata.key}${theme.themeSuffix}.${item.filePath.extension}"
+            } else {
+                fileName = "${metadata.key}.${item.filePath.extension}"
+            }
+        }
+
+        val requireDeclaration: String = """require("$IMAGES_DIR/$fileName")"""
+        val darkRequireDeclaration: String = """require("$IMAGES_DIR/$darkFileName")"""
+
+        return if (darkFileName != null) {
+            CodeBlock.of(
+                "ImageResource(fileUrl = js(%S) as String, darkFileUrl = js(%S) as String, fileName = %S)",
+                requireDeclaration,
+                darkRequireDeclaration,
+                fileName
+            )
+        } else {
+            CodeBlock.of(
+                "ImageResource(fileUrl = js(%S) as String, fileName = %S)",
+                requireDeclaration,
+                fileName
+            )
+        }
     }
 
     override fun generateBeforeProperties(
@@ -52,7 +75,7 @@ internal class JsImageResourceGenerator(
     override fun generateAfterProperties(
         builder: Builder,
         metadata: List<ImageMetadata>,
-        modifier: KModifier?
+        modifier: KModifier?,
     ) {
         val languageKeysList: String = metadata.joinToString { it.key }
 

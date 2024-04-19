@@ -118,10 +118,11 @@ internal data class ImageMetadata(
     @Serializable
     enum class Appearance(
         val suffix: String,
+        val themeSuffix: String,
         val resourceSuffix: String,
     ) {
-        LIGHT(suffix = "-light", resourceSuffix = ""),
-        DARK(suffix = "-dark", resourceSuffix = "-night");
+        LIGHT(suffix = "-light", themeSuffix = "", resourceSuffix = ""),
+        DARK(suffix = "-dark", themeSuffix = "_dark", resourceSuffix = "-night");
 
         companion object {
             fun getFromFile(file: File): Appearance {

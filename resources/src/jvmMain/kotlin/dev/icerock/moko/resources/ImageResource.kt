@@ -12,18 +12,32 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
 import javax.imageio.ImageIO
 
 actual data class ImageResource(
     val resourcesClassLoader: ClassLoader,
-    val filePath: String
+    val filePath: String,
+    val darkFilePath: String?
 ) {
+    constructor(
+        resourcesClassLoader: ClassLoader,
+        filePath: String
+    ) : this(resourcesClassLoader, filePath, null)
+
+    fun getThemedImage(isDark: Boolean): BufferedImage {
+        return readImage(
+            filePath = if (isDark) (darkFilePath ?: filePath) else filePath
+        )
+    }
+
     val image: BufferedImage by lazy {
+        readImage(filePath)
+    }
+
+    private fun readImage(filePath: String): BufferedImage {
         val stream = resourcesClassLoader.getResourceAsStream(filePath)
             ?: throw FileNotFoundException("Couldn't open resource as stream at: $filePath")
-        stream.use {
+        return stream.use {
             if (filePath.endsWith(".svg", ignoreCase = true)) {
                 readSvg(it)
             } else {
