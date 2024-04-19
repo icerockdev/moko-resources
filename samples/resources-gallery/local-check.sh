@@ -26,7 +26,7 @@ else
 
     # rerun tasks because kotlinjs compilation broken with build cache :(
     ./gradlew clean build --rerun-tasks
-    log "resources-gallery full build success"
+    log "resources-gallery clean build success"
 
     (
     cd ios-app &&

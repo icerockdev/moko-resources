@@ -23,7 +23,7 @@ else
     cd iosApp &&
     pod install &&
     set -o pipefail &&
-    xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    xcodebuild -scheme iosApp -workspace iosApp.xcworkspace -configuration Debug -destination "generic/platform=iOS Simulator" build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
     )
 
     log "ios-cocoapods-static-framework ios xcode success"
