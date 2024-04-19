@@ -63,10 +63,7 @@ on:
 
 jobs:
   build-library:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        <<: *runner_matrix
+    runs-on: macOS-latest
 
     steps:
       - *checkout
