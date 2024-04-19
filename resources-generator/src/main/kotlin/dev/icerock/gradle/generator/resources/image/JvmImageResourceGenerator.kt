@@ -31,14 +31,14 @@ internal class JvmImageResourceGenerator(
             val item: ImageMetadata.ImageItem = resources.getHighestQualityItem(theme)
 
             if (theme == Appearance.DARK) {
-                darkFileName = "${metadata.key}${theme.suffix}.${item.filePath.extension}"
+                darkFileName = "${metadata.key}${theme.themeSuffix}.${item.filePath.extension}"
             } else {
                 fileName = "${metadata.key}.${item.filePath.extension}"
             }
         }
 
         val darkFilePath: String = if (darkFileName != null) {
-            "$IMAGES_DIR/$darkFileName"
+            "\"$IMAGES_DIR/$darkFileName\""
         } else {
             "null"
         }
