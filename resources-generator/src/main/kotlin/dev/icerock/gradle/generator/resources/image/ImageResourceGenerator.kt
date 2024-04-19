@@ -9,7 +9,7 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.metadata.resource.ImageMetadata
-import dev.icerock.gradle.utils.appearance
+import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import dev.icerock.gradle.utils.nameWithoutScale
 import dev.icerock.gradle.utils.scale
 import dev.icerock.gradle.utils.svg
@@ -25,7 +25,7 @@ internal class ImageResourceGenerator : ResourceGenerator<ImageMetadata> {
                 values = files.map { file ->
                     ImageMetadata.ImageItem(
                         quality = if (file.svg) null else file.scale,
-                        appearance = file.appearance,
+                        appearance = Appearance.getFromFile(file),
                         filePath = file
                     )
                 }

@@ -13,6 +13,7 @@ import dev.icerock.gradle.serialization.FileSerializer
 import dev.icerock.gradle.serialization.ResourceMetadataSerializer
 import dev.icerock.gradle.utils.calculateHash
 import dev.icerock.gradle.utils.calculateResourcesHash
+import dev.icerock.gradle.utils.nameWithoutScale
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
@@ -100,7 +101,7 @@ internal data class ImageMetadata(
     @EncodeDefault
     override val resourceType: String = ImageMetadata::class.java.name,
     override val key: String,
-    val values: List<ImageItem>
+    val values: List<ImageItem>,
 ) : ResourceMetadata {
 
     init {
@@ -111,11 +112,27 @@ internal data class ImageMetadata(
     data class ImageItem(
         val quality: String?,
         val appearance: Appearance,
-        val filePath: File
+        val filePath: File,
     )
 
-    override fun contentHash(): String = values.map { it.filePath.calculateResourcesHash() }
-        .calculateHash()
+    @Serializable
+    enum class Appearance(
+        val suffix: String,
+        val resourceSuffix: String,
+    ) {
+        LIGHT(suffix = "-light", resourceSuffix = ""),
+        DARK(suffix = "-dark", resourceSuffix = "-night");
+
+        companion object {
+            fun getFromFile(file: File): Appearance {
+                return if (file.nameWithoutScale.endsWith(Appearance.DARK.suffix)) DARK else LIGHT
+            }
+        }
+    }
+
+    override fun contentHash(): String = values.map {
+        it.filePath.calculateResourcesHash()
+    }.calculateHash()
 }
 
 @Serializable
@@ -190,14 +207,16 @@ data class ColorMetadata(
     ) {
         @Suppress("MagicNumber")
         fun toArgbHex(): String {
-            return listOf(alpha, red, green, blue)
-                .joinToString(separator = "") { it.toString(16).padStart(2, '0') }
+            return listOf(alpha, red, green, blue).joinToString(separator = "") {
+                it.toString(16).padStart(2, '0')
+            }
         }
 
         @Suppress("MagicNumber")
         fun toRgbaHex(): String {
-            return listOf(red, green, blue, alpha)
-                .joinToString(separator = "") { it.toString(16).padStart(2, '0') }
+            return listOf(red, green, blue, alpha).joinToString(separator = "") {
+                it.toString(16).padStart(2, '0')
+            }
         }
     }
 
@@ -255,9 +274,4 @@ private fun getFilePath(filePath: File, relativePath: File): List<String> {
         .split(File.separatorChar)
         .dropLast(1)
         .map(::normalizePathName)
-}
-
-internal enum class Appearance {
-    LIGHT,
-    DARK
 }

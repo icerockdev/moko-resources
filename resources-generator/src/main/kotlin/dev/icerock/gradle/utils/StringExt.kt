@@ -4,7 +4,7 @@
 
 package dev.icerock.gradle.utils
 
-import dev.icerock.gradle.metadata.resource.Appearance
+import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.translate.UnicodeUnescaper
 import java.util.Locale
@@ -54,17 +54,29 @@ internal fun String.convertXmlStringToAndroidLocalization(): String {
         StringEscapeUtils.escapeXml11(it)
     }
 }
+
 internal val String.appearance: Appearance
-    get() = Appearance.values().firstOrNull {
-        this.contains("_${it.name}", true)
-    } ?: Appearance.LIGHT
+    get() {
+        return if (withoutScale.endsWith(suffix = Appearance.DARK.suffix, ignoreCase = true)) {
+            Appearance.DARK
+        } else {
+            Appearance.LIGHT
+        }
+    }
 
 internal val String.withoutAppearance: String
     get() {
-        var result = this
-        Appearance.values()
-            .forEach {
-                result = result.replace("_${it.name}", "", true)
-            }
-        return result
+        Appearance.values().forEach { type ->
+            val typeSuffix: String = type.suffix
+            val latestIncludeIndex: Int = lastIndexOf(string = typeSuffix, ignoreCase = true)
+            val nameWithAppearanceLength: Int = latestIncludeIndex + typeSuffix.length
+            val latestSuffixIsTheme: Boolean = length == nameWithAppearanceLength
+
+            if (latestSuffixIsTheme) return removeRange(
+                startIndex = latestIncludeIndex,
+                endIndex = nameWithAppearanceLength
+            )
+        }
+
+        return this
     }

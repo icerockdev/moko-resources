@@ -16,8 +16,6 @@ internal fun generateHighestQualityImageResources(
     imagesDir.mkdirs()
 
     data.forEach { metadata ->
-        println("GENHIGHT: $metadata")
-        println("GENHIGHT: ---")
         val item: ImageMetadata.ImageItem = metadata.getHighestQualityItem()
         val file: File = item.filePath
         val key: String = metadata.key

@@ -4,7 +4,6 @@
 
 package dev.icerock.gradle.utils
 
-import dev.icerock.gradle.metadata.resource.Appearance
 import java.io.File
 import org.jetbrains.kotlin.konan.file.File as KonanFile
 
@@ -19,9 +18,5 @@ internal val File.scale: String
 internal val File.nameWithoutScale: String
     get() =
         nameWithoutExtension.withoutScale
-
-internal val File.appearance: Appearance
-    get() =
-        nameWithoutExtension.appearance
 
 internal fun File.toKonanFile(): KonanFile = KonanFile(this.path)

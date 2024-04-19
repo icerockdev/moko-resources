@@ -13,7 +13,6 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addValuesFunction
-import dev.icerock.gradle.metadata.resource.Appearance
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import org.slf4j.Logger
 import java.io.File
@@ -73,11 +72,8 @@ internal class AndroidImageResourceGenerator(
                     return@forEach
                 }
             }
-            val themeRes = when(item.appearance) {
-                Appearance.LIGHT, null -> ""
-                Appearance.DARK -> "-night"
-            }
-            val drawableDirName = "drawable$themeRes$densityRes"
+            val themeSuffix = item.appearance.resourceSuffix
+            val drawableDirName = "drawable$themeSuffix$densityRes"
 
             val drawableDir = File(resourcesGenerationDir, drawableDirName)
             val processedKey: String = processKey(key)

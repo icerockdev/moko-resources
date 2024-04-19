@@ -69,14 +69,12 @@ internal class AppleImageResourceGenerator(
                         item.quality?.let { quality ->
                             put("scale", JsonPrimitive(quality + "x"))
                         }
-                        item.appearance?.let { appearance ->
-                            put("appearances", buildJsonArray {
-                                add(buildJsonObject {
-                                    put("appearance", JsonPrimitive("luminosity"))
-                                    put("value", JsonPrimitive(appearance.name.lowercase()))
-                                })
+                        put("appearances", buildJsonArray {
+                            add(buildJsonObject {
+                                put("appearance", JsonPrimitive("luminosity"))
+                                put("value", JsonPrimitive(item.appearance.name.lowercase()))
                             })
-                        }
+                        })
                     }
                 }.forEach { add(it) }
             }
