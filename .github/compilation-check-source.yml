@@ -76,10 +76,13 @@ jobs:
 
       - name: Check
         run: ./local-check.sh
+        shell: bash
       - name: Plugin local publish
         run: ./gradlew -p resources-generator publishToMavenLocal
+        shell: bash
       - name: Library local publish
         run: ./gradlew publishToMavenLocal
+        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -106,6 +109,7 @@ jobs:
 
       - name: Sample - android-mpp-app
         run: cd samples/android-mpp-app && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -126,6 +130,7 @@ jobs:
 
       - name: Sample - auto-manifest
         run: cd samples/auto-manifest && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -146,6 +151,7 @@ jobs:
 
       - name: Sample - compose-jvm-app
         run: cd samples/compose-jvm-app && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -166,6 +172,7 @@ jobs:
 
       - name: Sample - resources-gallery
         run: cd samples/resources-gallery && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -186,6 +193,7 @@ jobs:
 
       - name: Sample - default-hierarchy-gallery-mobile
         run: cd samples/default-hierarchy-gallery-mobile && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -203,6 +211,7 @@ jobs:
 
       - name: Sample - ios-static-xcframework
         run: cd samples/ios-static-xcframework && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -220,6 +229,7 @@ jobs:
 
       - name: Sample - ios-cocoapods-static-framework
         run: cd samples/ios-cocoapods-static-framework && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -237,6 +247,7 @@ jobs:
 
       - name: Sample - kotlin-ios-app
         run: cd samples/kotlin-ios-app && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -257,6 +268,7 @@ jobs:
 
       - name: Sample - compose-resources-gallery
         run: cd samples/compose-resources-gallery && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -277,6 +289,7 @@ jobs:
 
       - name: Sample - kotlin-2-sample
         run: cd samples/kotlin-2-sample && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
@@ -297,6 +310,7 @@ jobs:
 
       - name: Sample - cm-resources-sample
         run: cd samples/cm-resources-sample && ./local-check.sh
+        shell: bash
 
       - *publish_test_report
       - *upload_reports
