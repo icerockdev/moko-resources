@@ -72,10 +72,12 @@ internal val String.withoutAppearance: String
             val nameWithAppearanceLength: Int = latestIncludeIndex + typeSuffix.length
             val latestSuffixIsTheme: Boolean = length == nameWithAppearanceLength
 
-            if (latestSuffixIsTheme) return removeRange(
-                startIndex = latestIncludeIndex,
-                endIndex = nameWithAppearanceLength
-            )
+            if (latestSuffixIsTheme) {
+                return removeRange(
+                    startIndex = latestIncludeIndex,
+                    endIndex = nameWithAppearanceLength
+                )
+            }
         }
 
         return this
