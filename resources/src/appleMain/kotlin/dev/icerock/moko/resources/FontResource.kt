@@ -39,6 +39,7 @@ import platform.Foundation.NSError
 import platform.Foundation.NSString
 import platform.Foundation.create
 import platform.darwin.UInt8Var
+import kotlin.native.internal.ObjCErrorException
 
 actual class FontResource(
     val fontName: String,
@@ -78,7 +79,7 @@ actual class FontResource(
         }
 
     @OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
-    @Throws(NSErrorException::class)
+    @Throws(ObjCErrorException::class)
     @Suppress("unused")
     fun registerFont() {
         // CAST_NEVER_SUCCEEDS - String is final and isn't castable, but on iOS it's
@@ -114,7 +115,7 @@ actual class FontResource(
         CFRelease(cfStringFilePath)
 
         nsError?.let {
-            throw NSErrorException(it)
+            throw ObjCErrorException(it.localizedDescription, it)
         }
     }
 }
