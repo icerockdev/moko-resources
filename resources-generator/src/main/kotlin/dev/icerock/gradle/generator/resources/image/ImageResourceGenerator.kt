@@ -9,9 +9,11 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.metadata.resource.ImageMetadata
+import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import dev.icerock.gradle.utils.nameWithoutScale
 import dev.icerock.gradle.utils.scale
 import dev.icerock.gradle.utils.svg
+import dev.icerock.gradle.utils.withoutAppearance
 import java.io.File
 
 internal class ImageResourceGenerator : ResourceGenerator<ImageMetadata> {
@@ -21,8 +23,9 @@ internal class ImageResourceGenerator : ResourceGenerator<ImageMetadata> {
             ImageMetadata(
                 key = generateKey(key),
                 values = files.map { file ->
-                    ImageMetadata.ImageQualityItem(
+                    ImageMetadata.ImageItem(
                         quality = if (file.svg) null else file.scale,
+                        appearance = Appearance.getFromFile(file),
                         filePath = file
                     )
                 }
@@ -39,6 +42,6 @@ internal class ImageResourceGenerator : ResourceGenerator<ImageMetadata> {
             file.nameWithoutExtension
         } else {
             file.nameWithoutScale
-        }
+        }.withoutAppearance
     }
 }

@@ -58,8 +58,8 @@ internal class AndroidImageResourceGenerator(
     override fun generateResourceFiles(data: List<ImageMetadata>) {
         data.flatMap { imageMetadata ->
             imageMetadata.values.map { imageMetadata.key to it }
-        }.forEach { (key: String, item: ImageMetadata.ImageQualityItem) ->
-            val drawableDirName: String = "drawable" + when (item.quality) {
+        }.forEach { (key: String, item: ImageMetadata.ImageItem) ->
+            val densityRes = when (item.quality) {
                 "0.75" -> "-ldpi"
                 "1" -> "-mdpi"
                 "1.5" -> "-hdpi"
@@ -72,6 +72,8 @@ internal class AndroidImageResourceGenerator(
                     return@forEach
                 }
             }
+            val themeSuffix = item.appearance.resourceSuffix
+            val drawableDirName = "drawable$themeSuffix$densityRes"
 
             val drawableDir = File(resourcesGenerationDir, drawableDirName)
             val processedKey: String = processKey(key)
