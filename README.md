@@ -95,6 +95,34 @@ multiplatformResources {
 }
 ```
 
+#### Custom resource sourceSet
+
+If you need custom path for source of resources, you need add in plugin configuration resourcesSourceSets option:
+project build.gradle
+
+```groovy
+multiplatformResources {
+    resourcesPackage.set("org.example.library.customResource") // required
+    resourcesSourceSets {
+        getByName("jvmMain").srcDirs(
+            File(projectDir, "customResources")
+        )
+    }  
+}
+```
+
+On next step, you must create inside of project directory folder with name: `customResources`, and moved your resources there. 
+
+```
+- projectDirectory
+-- customResources
+--- assets
+--- base
+--- image
+```
+
+Example of custom sourceSet in: `resources-gallery` sample, inside `jvm-app`
+
 #### Export classes to Swift
 
 To use `toUIColor()`, `toUIImage()`, `desc()` and other iOS extensions from Swift - you
