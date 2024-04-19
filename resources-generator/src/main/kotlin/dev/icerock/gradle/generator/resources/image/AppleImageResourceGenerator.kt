@@ -33,6 +33,7 @@ internal class AppleImageResourceGenerator(
         )
     }
 
+    @Suppress("LongMethod")
     override fun generateResourceFiles(data: List<ImageMetadata>) {
         val assetsDirectory = File(assetsGenerationDir, Constants.Apple.assetsDirectoryName)
 
@@ -41,7 +42,7 @@ internal class AppleImageResourceGenerator(
             assetDir.mkdirs()
             val contentsFile = File(assetDir, "Contents.json")
 
-            val validItems: List<ImageMetadata.ImageQualityItem> =
+            val validItems: List<ImageMetadata.ImageItem> =
                 imageMetadata.values.filter { item ->
                     item.quality == null || VALID_SIZES.any { item.quality == it.toString() }
                 }
@@ -64,30 +65,59 @@ internal class AppleImageResourceGenerator(
             val imagesContent: JsonArray = buildJsonArray {
                 validItems.map { item ->
                     buildJsonObject {
-                        put("idiom", JsonPrimitive("universal"))
-                        put("filename", JsonPrimitive(item.filePath.name))
+                        put(
+                            key = "idiom",
+                            element = JsonPrimitive("universal")
+                        )
+                        put(
+                            key = "filename",
+                            element = JsonPrimitive(item.filePath.name)
+                        )
                         item.quality?.let { quality ->
-                            put("scale", JsonPrimitive(quality + "x"))
+                            put(
+                                key = "scale",
+                                element = JsonPrimitive(quality + "x")
+                            )
                         }
+                        put(
+                            key = "appearances",
+                            element = buildJsonArray {
+                                add(
+                                    buildJsonObject {
+                                        put(
+                                            key = "appearance",
+                                            element = JsonPrimitive("luminosity")
+                                        )
+                                        put(
+                                            key = "value",
+                                            element = JsonPrimitive(item.appearance.name.lowercase())
+                                        )
+                                    }
+                                )
+                            }
+                        )
                     }
                 }.forEach { add(it) }
             }
 
             val content: String = buildJsonObject {
-                put("images", imagesContent)
+                put(key = "images", element = imagesContent)
                 put(
-                    "info",
-                    buildJsonObject {
-                        put("version", JsonPrimitive(1))
-                        put("author", JsonPrimitive("xcode"))
+                    key = "info",
+                    element = buildJsonObject {
+                        put(key = "version", element = JsonPrimitive(1))
+                        put(key = "author", element = JsonPrimitive("xcode"))
                     }
                 )
 
                 if (validItems.any { it.quality == null }) {
                     put(
-                        "properties",
-                        buildJsonObject {
-                            put("preserves-vector-representation", JsonPrimitive(true))
+                        key = "properties",
+                        element = buildJsonObject {
+                            put(
+                                key = "preserves-vector-representation",
+                                element = JsonPrimitive(true)
+                            )
                         }
                     )
                 }
