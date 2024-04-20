@@ -66,12 +66,22 @@ internal val String.appearance: Appearance
 
 internal val String.withoutAppearance: String
     get() {
+        // If name doesn't contains potential suffix - early return
+        if (!this.contains('-')) return this
+
         Appearance.values().forEach { type ->
             val typeSuffix: String = type.suffix
+            // Find theme suffix in end of file name
+            // that exclude invalid result for names like: samurai-dark-japan-dark.svg
             val latestIncludeIndex: Int = lastIndexOf(string = typeSuffix, ignoreCase = true)
-            val nameWithAppearanceLength: Int = latestIncludeIndex + typeSuffix.length
-            val latestSuffixIsTheme: Boolean = length == nameWithAppearanceLength
 
+            // Skip value if not found
+            if (latestIncludeIndex == -1) return@forEach
+
+            val nameWithAppearanceLength: Int = latestIncludeIndex + typeSuffix.length
+            // Check correct is founded suffix
+            val latestSuffixIsTheme: Boolean = length == nameWithAppearanceLength
+            // If theme suffix is found return clean name
             if (latestSuffixIsTheme) {
                 return removeRange(
                     startIndex = latestIncludeIndex,
