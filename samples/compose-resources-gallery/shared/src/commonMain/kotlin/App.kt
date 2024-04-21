@@ -1,3 +1,4 @@
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -20,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.icerockdev.library.MR
 import dev.icerock.moko.resources.compose.colorResource
@@ -65,7 +65,8 @@ internal fun App() {
 
             val counter: Int = text.length
             Text(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 text = stringResource(MR.plurals.chars_count, counter, counter),
                 color = colorResource(MR.colors.textColor),
@@ -75,6 +76,12 @@ internal fun App() {
             Button(onClick = { text = "Hello, ${getPlatformName()}" }) {
                 Text(text = stringResource(MR.strings.hello_world))
             }
+
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = stringResource(MR.strings.new_line_test),
+                color = MaterialTheme.colors.onBackground,
+            )
 
             val fileContent: String? by MR.files.some_file_txt.readTextAsState()
             Text(
