@@ -6,7 +6,6 @@ package dev.icerock.gradle.utils
 
 import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import org.apache.commons.text.StringEscapeUtils
-import org.apache.commons.text.translate.UnicodeUnescaper
 import java.util.Locale
 
 /**
@@ -42,11 +41,7 @@ internal val String.flatName: String
     get() = this.remove('.')
 
 internal fun String.convertXmlStringToLocalizationValue(): String {
-    return StringEscapeUtils.unescapeXml(this).let {
-        UnicodeUnescaper().translate(
-            StringEscapeUtils.escapeJava(it)
-        )
-    }
+    return StringEscapeUtils.unescapeXml(this)
 }
 
 internal fun String.convertXmlStringToAndroidLocalization(): String {
