@@ -2,4 +2,5 @@
 <resources>
     <string name="hello_world">Hello moko-resources World</string>
     <string name="new_line_test">Text with\nnewline</string>
+    <string name="symbols_text">Text \n with \" \' % @ * {} </string>
 </resources>
