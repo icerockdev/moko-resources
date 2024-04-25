@@ -77,8 +77,9 @@ internal class PluralResourceGenerator(
 
                 val quantity: String = item.attributes.getNamedItem("quantity").textContent.trim()
                 val value: String = item.textContent
+                val strictValue: String = if (strictLineBreaks) value else value.removeLineWraps()
 
-                pluralMap[quantity] = if (strictLineBreaks) value else value.removeLineWraps()
+                pluralMap[quantity] = strictValue.replace("\\n", "\n")
             }
 
             resultMap[name] = pluralMap

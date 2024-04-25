@@ -66,8 +66,9 @@ internal class StringResourceGenerator(
             val stringNode: Node = stringNodes.item(i)
             val name: String = stringNode.attributes.getNamedItem("name").textContent
             val value: String = stringNode.textContent
+            val strictValue: String = if (strictLineBreaks) value else value.removeLineWraps()
 
-            resultMap[name] = if (strictLineBreaks) value else value.removeLineWraps()
+            resultMap[name] = strictValue.replace("\\n", "\n")
         }
 
         return resultMap
