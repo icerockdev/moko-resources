@@ -25,7 +25,7 @@ actual fun colorResource(resource: ColorResource): Color {
     // TODO https://github.com/icerockdev/moko-resources/issues/443
     //  recompose when appearance changed (now not works in runtime!)
     val darkMode: Boolean = isSystemInDarkTheme()
-    return remember(darkMode) {
+    return remember(resource, darkMode) {
         val uiColor: UIColor = resource.getUIColor()
 
         memScoped {
