@@ -506,6 +506,20 @@ iOS:
 let string = getMyPluralFormattedDesc(quantity: 10).localized()
 ```
 
+Compose:
+
+With compose, you can simply use `pluralStringResource`
+
+```kotlin
+Text(
+    text = pluralStringResource(
+        MR.plurals.runtime_format,
+        quantity,
+        quantity
+    )
+)
+```
+
 ### Example 5 - pass raw string or resource
 
 If we already use some resources as a placeholder value, we can use `StringDesc` to change the
