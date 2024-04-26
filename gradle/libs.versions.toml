@@ -52,7 +52,7 @@ mokoGraphics = { module = "dev.icerock.moko:graphics", version.ref = "mokoGraphi
 mokoTestCore = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestVersion" }
 
 # android
-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
+appCompatResources = { module = "androidx.appcompat:appcompat-resources", version.ref = "androidAppCompatVersion" }
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayoutVersion" }
 
 # android compose
