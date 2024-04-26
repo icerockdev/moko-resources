@@ -21,8 +21,7 @@ import platform.UIKit.UIImage
 @OptIn(ExperimentalForeignApi::class, InternalComposeApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-    val isDarkTheme = LocalSystemTheme.current
-    return remember(isDarkTheme, imageResource) {
+    return remember(LocalSystemTheme.current, imageResource) {
         val uiImage: UIImage = imageResource.toUIImage()
             ?: throw IllegalArgumentException("can't read UIImage of $imageResource")
 

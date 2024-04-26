@@ -22,9 +22,7 @@ import platform.CoreGraphics.CGImageRelease
 @OptIn(ExperimentalForeignApi::class, InternalComposeApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-    val isDarkTheme = LocalSystemTheme.current
-
-    return remember(isDarkTheme, imageResource) {
+    return remember(LocalSystemTheme.current, imageResource) {
         val nsImage: NSImage = imageResource.toNSImage()
             ?: throw IllegalArgumentException("can't read NSImage of $imageResource")
 
