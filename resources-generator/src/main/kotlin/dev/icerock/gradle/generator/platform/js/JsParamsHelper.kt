@@ -4,7 +4,7 @@
 
 package dev.icerock.gradle.generator.platform.js
 
-private val messageFormatRegex = "(%[a-z])|(%[.][a-z])".toRegex()
+private val messageFormatRegex = "(%[a-z])|(%[.][a-z])|(%[$][0-9]+[a-z])".toRegex()
 
 internal fun String.convertToMessageFormat(): String {
     val allMatches = messageFormatRegex.findAll(this)
