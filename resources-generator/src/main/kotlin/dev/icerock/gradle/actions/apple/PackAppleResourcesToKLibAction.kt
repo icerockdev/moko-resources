@@ -112,7 +112,7 @@ internal class PackAppleResourcesToKLibAction(
         val result: Int = process.waitFor()
         if (result != 0) {
             task.logger.error("can't compile assets - $result")
-            task.logger.info(input)
+            task.logger.error(input)
             task.logger.error(errors)
             throw GradleException("Assets compilation failed: $errors")
         } else {
