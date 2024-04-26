@@ -41,12 +41,10 @@ class JsMessageFormatTest {
         )
     }
 
-    // That case doesn't supported in js target,
-    // but so close with regex of message format
     @Test
     fun textWithSingleWithDecimalArgumentTest() {
         assertEquals(
-            expected = "Only %.2d percents of people like animals",
+            expected = "Only {0} percents of people like animals",
             actual = "Only %.2d percents of people like animals".convertToMessageFormat()
         )
     }
@@ -56,6 +54,14 @@ class JsMessageFormatTest {
         assertEquals(
             expected = "If you find {0} pickles in this garden, you can get {1} as a present",
             actual = "If you find %$1d pickles in this garden, you can get %$2s as a present".convertToMessageFormat()
+        )
+    }
+
+    @Test
+    fun formattedTextWithDecimalArgumentsTest() {
+        assertEquals(
+            expected = "On your cashback: {0}",
+            actual = "On your cashback: %5.2$1d".convertToMessageFormat()
         )
     }
 }
