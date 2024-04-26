@@ -7,7 +7,9 @@
 package dev.icerock.gradle.metadata.resource
 
 import dev.icerock.gradle.generator.normalizePathName
+import dev.icerock.gradle.metadata.InvalidImageResourceConfiguration
 import dev.icerock.gradle.metadata.InvalidResourceKeyException
+import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance.LIGHT
 import dev.icerock.gradle.serialization.ColorResourceSerializer
 import dev.icerock.gradle.serialization.FileSerializer
 import dev.icerock.gradle.serialization.ResourceMetadataSerializer
@@ -106,7 +108,20 @@ internal data class ImageMetadata(
 
     init {
         assertKeyValue()
+
+        if (values.none { it.appearance == LIGHT }) {
+            val imageName: String = values.first().filePath.nameWithoutScale
+            throw InvalidImageResourceConfiguration(imageName)
+        }
     }
+
+    val isThemed: Boolean
+        get() {
+            val groupedValidItems: Map<Appearance, List<ImageItem>> =
+                values.groupBy { it.appearance }
+            return groupedValidItems.containsKey(ImageMetadata.Appearance.DARK) &&
+                groupedValidItems.containsKey(ImageMetadata.Appearance.LIGHT)
+        }
 
     @Serializable
     data class ImageItem(
