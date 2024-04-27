@@ -11,11 +11,11 @@ import dev.icerock.moko.resources.PluralsResource
 // in order to more closely match vanilla Compose, improving discoverability.
 
 @Composable
-fun pluralStringResource(resource: PluralsResource, count: Int): String {
-    return stringResource(resource, count)
+fun pluralStringResource(resource: PluralsResource, quantity: Int): String {
+    return stringResource(resource, quantity)
 }
 
 @Composable
-fun pluralStringResource(resource: PluralsResource, count: Int, vararg formatArgs: Any): String {
-    return stringResource(resource, count, *formatArgs)
+fun pluralStringResource(resource: PluralsResource, quantity: Int, vararg formatArgs: Any): String {
+    return stringResource(resource, quantity, *formatArgs)
 }
