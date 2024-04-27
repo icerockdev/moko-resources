@@ -10,7 +10,7 @@ import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
-import dev.icerock.gradle.utils.removeLineWraps
+import dev.icerock.gradle.utils.processXmlTextContent
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -23,7 +23,7 @@ private typealias KeyType = String
 private typealias PluralMap = Map<String, String>
 
 internal class PluralResourceGenerator(
-    private val strictLineBreaks: Boolean
+    private val strictLineBreaks: Boolean,
 ) : ResourceGenerator<PluralMetadata> {
 
     override fun generateMetadata(files: Set<File>): List<PluralMetadata> {
@@ -78,7 +78,7 @@ internal class PluralResourceGenerator(
                 val quantity: String = item.attributes.getNamedItem("quantity").textContent.trim()
                 val value: String = item.textContent
 
-                pluralMap[quantity] = if (strictLineBreaks) value else value.removeLineWraps()
+                pluralMap[quantity] = value.processXmlTextContent(strictLineBreaks)
             }
 
             resultMap[name] = pluralMap

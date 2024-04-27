@@ -10,7 +10,7 @@ import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
-import dev.icerock.gradle.utils.removeLineWraps
+import dev.icerock.gradle.utils.processXmlTextContent
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -21,7 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 private typealias KeyType = String
 
 internal class StringResourceGenerator(
-    private val strictLineBreaks: Boolean
+    private val strictLineBreaks: Boolean,
 ) : ResourceGenerator<StringMetadata> {
 
     override fun generateMetadata(files: Set<File>): List<StringMetadata> {
@@ -67,7 +67,7 @@ internal class StringResourceGenerator(
             val name: String = stringNode.attributes.getNamedItem("name").textContent
             val value: String = stringNode.textContent
 
-            resultMap[name] = if (strictLineBreaks) value else value.removeLineWraps()
+            resultMap[name] = value.processXmlTextContent(strictLineBreaks)
         }
 
         return resultMap

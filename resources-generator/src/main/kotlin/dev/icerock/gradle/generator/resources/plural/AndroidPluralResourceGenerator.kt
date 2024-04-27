@@ -14,7 +14,7 @@ import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
-import dev.icerock.gradle.utils.convertXmlStringToAndroidLocalization
+import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
 import java.io.File
 
 internal class AndroidPluralResourceGenerator(
@@ -75,7 +75,7 @@ internal class AndroidPluralResourceGenerator(
         val content = strings.map { (key, pluralMap) ->
             val start = "\t<plurals name=\"$key\">\n"
             val items: String = pluralMap.map { (quantity, value) ->
-                val processedValue = value.convertXmlStringToAndroidLocalization()
+                val processedValue = value.convertXmlStringToLocalizationValue()
                 "\t\t<item quantity=\"$quantity\">$processedValue</item>"
             }.joinToString("\n")
             val end = "\n\t</plurals>"

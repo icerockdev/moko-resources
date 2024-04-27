@@ -6,7 +6,6 @@ package dev.icerock.gradle.utils
 
 import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import org.apache.commons.text.StringEscapeUtils
-import org.apache.commons.text.translate.UnicodeUnescaper
 import java.util.Locale
 
 /**
@@ -15,6 +14,14 @@ import java.util.Locale
  */
 internal fun String.removeLineWraps(): String {
     return replace(Regex("\\s*\n\\s*"), " ")
+}
+
+internal fun String.processXmlTextContent(strictLineBreaks: Boolean): String {
+    return if (strictLineBreaks) {
+        this
+    } else {
+        this.removeLineWraps()
+    }.replace("\\n", "\n")
 }
 
 internal val String.withoutScale
@@ -43,15 +50,7 @@ internal val String.flatName: String
 
 internal fun String.convertXmlStringToLocalizationValue(): String {
     return StringEscapeUtils.unescapeXml(this).let {
-        UnicodeUnescaper().translate(
-            StringEscapeUtils.escapeJava(it)
-        )
-    }
-}
-
-internal fun String.convertXmlStringToAndroidLocalization(): String {
-    return StringEscapeUtils.unescapeXml(this).let {
-        StringEscapeUtils.escapeXml11(it)
+        StringEscapeUtils.escapeEcmaScript(it)
     }
 }
 

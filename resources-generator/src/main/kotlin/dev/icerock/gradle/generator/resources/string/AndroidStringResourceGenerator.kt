@@ -14,7 +14,7 @@ import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
-import dev.icerock.gradle.utils.convertXmlStringToAndroidLocalization
+import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
 import java.io.File
 
 internal class AndroidStringResourceGenerator(
@@ -70,7 +70,7 @@ internal class AndroidStringResourceGenerator(
             """.trimIndent()
 
         val content = strings.map { (key, value) ->
-            val processedValue = value.convertXmlStringToAndroidLocalization()
+            val processedValue = value.convertXmlStringToLocalizationValue()
             "\t<string name=\"$key\">$processedValue</string>"
         }.joinToString("\n")
 

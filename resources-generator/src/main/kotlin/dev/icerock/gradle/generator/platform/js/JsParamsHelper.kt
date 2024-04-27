@@ -4,7 +4,10 @@
 
 package dev.icerock.gradle.generator.platform.js
 
-private val messageFormatRegex = "%(.)(?:\\\$(.))?".toRegex()
+import dev.icerock.gradle.utils.remove
+
+private val messageFormatRegex =
+    "%(\\d+\\\$)?(\\d*\\.?\\d+)?[bBhHsScCdoxXeEfgGaAtT]+".toRegex()
 
 internal fun String.convertToMessageFormat(): String {
     val allMatches = messageFormatRegex.findAll(this)
@@ -16,12 +19,19 @@ internal fun String.convertToMessageFormat(): String {
 
     // First go through the positioned args
     allMatches
-        .filter { matchResult -> matchResult.groupValues[2].isNotEmpty() }
-        .map { matchResult -> matchResult.groupValues[0] to matchResult.groupValues[1] }
+        .filter { matchResult: MatchResult ->
+            matchResult.groupValues[1].isNotEmpty()
+        }
+        .map { matchResult ->
+            matchResult.groupValues[0] to matchResult.groupValues[1].remove('$')
+        }
         .distinctBy { it.second }
         .forEach { (wholeMatch, index) ->
             val intIndex = index.toIntOrNull()
-                ?: error("Localized string $this uses positioned argument $wholeMatch but $index is not an integer.")
+                ?: error(
+                    "Localized string:\n{$this}\nuses positioned argument" +
+                        " $wholeMatch but $index is not an integer."
+                )
 
             result = result.replace(wholeMatch, "{${intIndex - 1}}")
             counter = intIndex
