@@ -16,7 +16,7 @@ internal fun String.removeLineWraps(): String {
     return replace(Regex("\\s*\n\\s*"), " ")
 }
 
-internal fun String.processXmlTextContent(strictLineBreaks: Boolean) : String {
+internal fun String.processXmlTextContent(strictLineBreaks: Boolean): String {
     return if (strictLineBreaks) {
         this
     } else {

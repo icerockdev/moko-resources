@@ -21,7 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 private typealias KeyType = String
 
 internal class StringResourceGenerator(
-    private val strictLineBreaks: Boolean
+    private val strictLineBreaks: Boolean,
 ) : ResourceGenerator<StringMetadata> {
 
     override fun generateMetadata(files: Set<File>): List<StringMetadata> {
