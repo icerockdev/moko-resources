@@ -64,4 +64,12 @@ class JsMessageFormatTest {
             actual = "On your cashback: %1$5.2f".convertToMessageFormat()
         )
     }
+
+    @Test
+    fun sameNonPositionalArgumentsTest() {
+        assertEquals(
+            expected = "If you grab same artefacts: {0}, {1} and only {2} Gravy with {3} percents you be safety",
+            actual = "If you grab same artefacts: %s, %s and only %d Gravy with %.2f percents you be safety".convertToMessageFormat()
+        )
+    }
 }
