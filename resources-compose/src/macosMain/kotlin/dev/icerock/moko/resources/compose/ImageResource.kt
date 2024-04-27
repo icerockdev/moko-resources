@@ -5,7 +5,9 @@
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.remember
+import androidx.compose.ui.LocalSystemTheme
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -17,10 +19,10 @@ import platform.AppKit.NSImage
 import platform.CoreGraphics.CGImageRef
 import platform.CoreGraphics.CGImageRelease
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, InternalComposeApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-    return remember(imageResource) {
+    return remember(LocalSystemTheme.current, imageResource) {
         val nsImage: NSImage = imageResource.toNSImage()
             ?: throw IllegalArgumentException("can't read NSImage of $imageResource")
 
