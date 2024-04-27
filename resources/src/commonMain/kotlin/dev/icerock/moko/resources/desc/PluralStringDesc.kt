@@ -4,7 +4,6 @@
 
 package dev.icerock.moko.resources.desc
 
-import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.PluralsResource
 
 @Suppress("FunctionName")
@@ -13,4 +12,4 @@ fun StringDesc.Companion.Plural(
     number: Int
 ) = PluralStringDesc(pluralsRes, number)
 
-expect class PluralStringDesc(pluralsRes: PluralsResource, number: Int) : StringDesc, Parcelable
+expect class PluralStringDesc(pluralsRes: PluralsResource, number: Int) : StringDesc

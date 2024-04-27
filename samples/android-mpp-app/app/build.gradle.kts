@@ -33,7 +33,7 @@ android {
 }
 
 kotlin {
-    android()
+    androidTarget()
     ios()
 }
 
@@ -44,5 +44,5 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
 }

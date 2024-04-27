@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -14,8 +14,9 @@ plugins {
 
 kotlin {
     jvm()
-    android()
-    ios()
+    androidTarget()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
@@ -25,31 +26,50 @@ kotlin {
     }
 
     sourceSets {
-        val iosMain by getting
-        val iosSimulatorArm64Main by getting
-        iosSimulatorArm64Main.dependsOn(iosMain)
-
-        val iosTest by getting
-        val iosSimulatorArm64Test by getting
-        iosSimulatorArm64Test.dependsOn(iosTest)
-
         val commonMain by getting
-        val macosMain by creating
+
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+
+        val iosMain by creating {
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
+
+        val iosX64Test by getting
+        val iosArm64Test by getting
+        val iosSimulatorArm64Test by getting
+
+        val iosTest by creating {
+            iosX64Test.dependsOn(this)
+            iosArm64Test.dependsOn(this)
+            iosSimulatorArm64Test.dependsOn(this)
+        }
+
         val macosArm64Main by getting
         val macosX64Main by getting
-        macosArm64Main.dependsOn(macosMain)
-        macosX64Main.dependsOn(macosMain)
-        macosMain.dependsOn(commonMain)
+
+        val macosMain by creating {
+            dependsOn(commonMain)
+            macosArm64Main.dependsOn(this)
+            macosX64Main.dependsOn(this)
+        }
 
         val commonTest by getting
-        val macosTest by creating
         val macosArm64Test by getting
         val macosX64Test by getting
-        val jsTest by getting
-        macosArm64Test.dependsOn(macosTest)
-        macosX64Test.dependsOn(macosTest)
-        macosTest.dependsOn(commonTest)
-        jsTest.dependsOn(commonTest)
+
+        val macosTest by creating {
+            dependsOn(commonTest)
+            macosArm64Test.dependsOn(this)
+            macosX64Test.dependsOn(this)
+        }
+        
+        val jsTest by getting {
+            dependsOn(commonTest)
+        }
     }
 
     jvmToolchain(11)

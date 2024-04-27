@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="hello_world">Hello moko-resources World</string>
+    <string name="new_line_test">Text with
+        newline w/o new line</string>
+    <string name="symbols_text">Text \n with " ' % @ * {} </string>
+</resources>

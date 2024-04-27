@@ -1,35 +1,56 @@
 /*
- * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.gradle.tasks
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import java.io.File
 import java.io.FileFilter
 
-open class CopyFrameworkResourcesToAppTask : DefaultTask() {
+abstract class CopyFrameworkResourcesToAppTask : DefaultTask() {
     init {
         group = "moko-resources"
     }
 
-    @Internal
-    lateinit var framework: Framework
+    @get:InputDirectory
+    abstract val inputFrameworkDirectory: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @get:Internal
+    internal abstract var configuration: String
+
+    @get:Internal
+    internal abstract var konanTarget: String
+
+    @get:Internal
+    internal abstract var frameworkPrefix: String
+
+    @get:Input
+    abstract val frameworkIsStatic: Property<Boolean>
 
     @TaskAction
     fun copyResources() {
-        val buildProductsDir =
-            project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
-        val contentsFolderPath =
-            project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
-        val outputDir = File("$buildProductsDir/$contentsFolderPath")
+        if (!frameworkIsStatic.get()) {
+            logger.info("Framework is not static. Copy resources task is skipped.")
+            return
+        }
 
-        val inputDir = framework.outputFile
+        val outputDir: File = outputDirectory.get().asFile
+
+        val inputDir: File = inputFrameworkDirectory.get().asFile
+
         inputDir.listFiles(FileFilter { it.extension == "bundle" })?.forEach {
-            project.logger.info("copy resources bundle $it to $outputDir")
+            logger.info("copy resources bundle $it to $outputDir")
             it.copyRecursively(File(outputDir, it.name), overwrite = true)
         }
     }
