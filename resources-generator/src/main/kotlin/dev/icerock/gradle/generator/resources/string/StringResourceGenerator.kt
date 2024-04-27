@@ -10,7 +10,7 @@ import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
-import dev.icerock.gradle.utils.removeLineWraps
+import dev.icerock.gradle.utils.processXmlTextContent
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -66,9 +66,8 @@ internal class StringResourceGenerator(
             val stringNode: Node = stringNodes.item(i)
             val name: String = stringNode.attributes.getNamedItem("name").textContent
             val value: String = stringNode.textContent
-            val strictValue: String = if (strictLineBreaks) value else value.removeLineWraps()
 
-            resultMap[name] = strictValue.replace("\\n", "\n")
+            resultMap[name] = value.processXmlTextContent(strictLineBreaks)
         }
 
         return resultMap

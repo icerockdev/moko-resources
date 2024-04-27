@@ -16,6 +16,14 @@ internal fun String.removeLineWraps(): String {
     return replace(Regex("\\s*\n\\s*"), " ")
 }
 
+internal fun String.processXmlTextContent(strictLineBreaks: Boolean) : String {
+    return if (strictLineBreaks) {
+        this
+    } else {
+        this.removeLineWraps()
+    }.replace("\\n", "\n")
+}
+
 internal val String.withoutScale
     get() = substringBefore("@")
 

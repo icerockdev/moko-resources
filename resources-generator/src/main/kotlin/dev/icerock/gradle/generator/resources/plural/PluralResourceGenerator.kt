@@ -10,6 +10,7 @@ import dev.icerock.gradle.generator.ResourceGenerator
 import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
+import dev.icerock.gradle.utils.processXmlTextContent
 import dev.icerock.gradle.utils.removeLineWraps
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -77,9 +78,8 @@ internal class PluralResourceGenerator(
 
                 val quantity: String = item.attributes.getNamedItem("quantity").textContent.trim()
                 val value: String = item.textContent
-                val strictValue: String = if (strictLineBreaks) value else value.removeLineWraps()
 
-                pluralMap[quantity] = strictValue.replace("\\n", "\n")
+                pluralMap[quantity] = value.processXmlTextContent(strictLineBreaks)
             }
 
             resultMap[name] = pluralMap
