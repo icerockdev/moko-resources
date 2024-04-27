@@ -38,7 +38,7 @@ dependencies {
     jvmMainImplementation(libs.batikRasterizer)
     jvmMainImplementation(libs.batikTranscoder)
 
-    androidMainImplementation(libs.appCompat)
+    androidMainImplementation(libs.appCompatResources)
 
     iosTestImplementation(libs.mokoTestCore)
 }

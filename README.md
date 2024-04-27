@@ -16,7 +16,7 @@ macOS, iOS, Android the JVM and JS/Browser with the support of the default syste
 
 Also MOKO resources
 supports [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) so you can
-implement all you UI in Kotlin with Jetpack Compose and MOKO resources.
+implement all your UI in Kotlin with Jetpack Compose and MOKO resources.
 
 ## Table of Contents
 
@@ -564,6 +564,20 @@ and return to system behaviour (when localization depends on device settings):
 StringDesc.localeType = StringDesc.LocaleType.System
 ```
 
+Android:
+
+Add this to your app's `build.gradle` to keep all locales in resulting [App Bundle](https://www.youtube.com/watch?v=IPLhLu0kvYw&ab_channel=AndroidDevelopers) if you want them all to be available in runtime (Otherwise, when the user downloads the app from PlayMarket, resources for his system locale only will be available).
+
+```
+android {
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+}
+```
+
 ### Example 7 - Shared Images
 
 Place images in the `commonMain/moko-resources/images` directory. Nested directories are also supported.
@@ -838,6 +852,16 @@ with compose you can just call in `commonMain`
 ```kotlin
 val assetContent: String? by MR.assets.test.readTextAsState()
 ```
+
+## Known issues
+
+### iOS shows key instead of localized text
+
+1. check that generated `Localizable.strings` file is valid - open it by Xcode (located in `shared/shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework/<project-name>:shared.bundle/Contents/Resources/Base.lproj/Localizable.strings` and in other `.lproj` directories. If Xcode show error in file - you should fix content of strings.xml (for example you use some special character that broke file).
+
+2. check that your generated `.bundle` exist inside application at runtime. In Xcode inside group `Products` select your application and click `Show in Finder`. Then click `Show Package Contents`. Inside `.app` you should see `.bundle` in root directory if you use static framework. And in `Frameworks/shared.framework` if you use dynamic framework. If `bundle` missed - check installation guide. Specifically xcode build phase part if you use static framework. And check that you apply moko-resources plugin in `shared` gradle module.
+
+3. check that your `strings.xml` contains all keys for language that you use. If you have keys `test1`, `test2` in `Base/strings.xml`, and only `test1` in `ru/strings.xml` then you got key instead of text in ru locale for `test2` key. iOS not fallback to base locale now
 
 ## Samples
 
