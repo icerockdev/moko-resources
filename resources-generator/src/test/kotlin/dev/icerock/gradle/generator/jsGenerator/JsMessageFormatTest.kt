@@ -52,8 +52,8 @@ class JsMessageFormatTest {
     @Test
     fun textWithPositionalArgumentsTest() {
         assertEquals(
-            expected = "If you find {0} pickles in this garden, you can get {1} as a present",
-            actual = "If you find %$1d pickles in this garden, you can get %$2s as a present".convertToMessageFormat()
+            expected = "If you find {1} pickles in this garden, you can get {0} as a present",
+            actual = "If you find %2$.3f pickles in this garden, you can get %1\$s as a present".convertToMessageFormat()
         )
     }
 
@@ -61,7 +61,7 @@ class JsMessageFormatTest {
     fun formattedTextWithDecimalArgumentsTest() {
         assertEquals(
             expected = "On your cashback: {0}",
-            actual = "On your cashback: %5.2$1d".convertToMessageFormat()
+            actual = "On your cashback: %1$5.2f".convertToMessageFormat()
         )
     }
 }
