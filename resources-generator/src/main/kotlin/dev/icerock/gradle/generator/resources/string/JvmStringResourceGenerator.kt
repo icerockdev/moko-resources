@@ -17,7 +17,7 @@ import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
-import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
+import dev.icerock.gradle.utils.convertXmlStringToLocalization
 import java.io.File
 
 internal class JvmStringResourceGenerator(
@@ -78,7 +78,7 @@ internal class JvmStringResourceGenerator(
         val stringsFile = File(localizationDir, "$fileDirName.properties")
 
         val content: String = strings.map { (key, value) ->
-            "$key = ${value.convertXmlStringToLocalizationValue()}"
+            "$key = ${value.convertXmlStringToLocalization()}"
         }.joinToString("\n")
 
         stringsFile.writeText(content)

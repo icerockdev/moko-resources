@@ -14,7 +14,7 @@ import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
-import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
+import dev.icerock.gradle.utils.convertXmlStringToLocalization
 import java.io.File
 
 internal class ApplePluralResourceGenerator(
@@ -121,7 +121,7 @@ internal class ApplePluralResourceGenerator(
 
     private fun String.escapeFormatArguments(): String {
         return this
-            .convertXmlStringToLocalizationValue()
+            .convertXmlStringToLocalization()
             .replace(Regex("%(((?:\\.|\\d|\\$)*)[abcdefs])"), "%%$1")
     }
 }
