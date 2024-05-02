@@ -185,7 +185,9 @@ For more details about JS see `samples/resources-gallery/web-app` sample
 Static framework can't have own resources, so we should setup additional `Build Phase` in Xcode
 that will copy resources to application. 
 
-> [!IMPORTANT] This phase should be placed after Kotlin Framework Compilation phase.
+> **⚠ Warning**  
+> 
+> This phase should be placed after Kotlin Framework Compilation phase.
 
 Please replace `:yourframeworkproject` to kotlin project gradle path, and set correct relative
 path (`$SRCROOT/../` in example).
