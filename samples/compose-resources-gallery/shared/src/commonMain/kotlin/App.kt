@@ -97,6 +97,12 @@ internal fun App() {
                 color = MaterialTheme.colors.onBackground,
             )
 
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = stringResource(MR.strings.font_style_text),
+                color = MaterialTheme.colors.onBackground,
+            )
+
             val fileContent: String? by MR.files.some_file_txt.readTextAsState()
             Text(
                 modifier = Modifier.padding(top = 16.dp),
