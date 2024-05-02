@@ -83,6 +83,9 @@ private fun registerGenerateTask(
 
         val files: Set<File> = resourcesSourceDirectory.srcDirs
         generateTask.ownResources.setFrom(files)
+        // make the generate task depend on tasks that the resourcesSourceDirectory depends on, e.g.
+        // resource generating tasks.
+        generateTask.dependsOn(resourcesSourceDirectory)
 
         generateTask.iosBaseLocalizationRegion.set(mrExtension.iosBaseLocalizationRegion)
         generateTask.resourcesClassName.set(mrExtension.resourcesClassName)
