@@ -249,6 +249,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				$TARGET_BUILD_DIR/$EXECUTABLE_PATH,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
