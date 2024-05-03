@@ -14,7 +14,7 @@ import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
-import dev.icerock.gradle.utils.convertXmlStringToLocalizationValue
+import dev.icerock.gradle.utils.convertXmlStringToLocalization
 import java.io.File
 
 internal class AppleStringResourceGenerator(
@@ -66,7 +66,7 @@ internal class AppleStringResourceGenerator(
         resDir.mkdirs()
 
         val content = strings.mapValues { (_, value) ->
-            value.convertXmlStringToLocalizationValue()
+            value.convertXmlStringToLocalization()
         }.map { (key, value) ->
             "\"$key\" = \"$value\";"
         }.joinToString("\n")

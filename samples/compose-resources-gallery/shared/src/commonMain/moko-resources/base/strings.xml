@@ -3,5 +3,6 @@
     <string name="hello_world">Hello moko-resources World</string>
     <string name="new_line_test">Text with
         newline w/o new line</string>
-    <string name="symbols_text">Text \n with " ' % @ * {} </string>
+    <string name="symbols_text">Text \n with " ' % @ * &amp; {} same inch's</string>
+    <string name="font_style_text">Text with &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;</string>
 </resources>

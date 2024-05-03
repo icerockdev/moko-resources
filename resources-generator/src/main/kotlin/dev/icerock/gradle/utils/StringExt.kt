@@ -48,7 +48,13 @@ internal fun String.remove(char: String): String {
 internal val String.flatName: String
     get() = this.remove('.')
 
-internal fun String.convertXmlStringToLocalizationValue(): String {
+internal fun String.convertXmlStringToAndroidLocalization(): String {
+    return convertXmlStringToLocalization().let {
+        StringEscapeUtils.escapeXml11(it)
+    }
+}
+
+internal fun String.convertXmlStringToLocalization(): String {
     return StringEscapeUtils.unescapeXml(this).let {
         StringEscapeUtils.escapeEcmaScript(it)
     }
