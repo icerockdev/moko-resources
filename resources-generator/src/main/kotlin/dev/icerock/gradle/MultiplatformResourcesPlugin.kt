@@ -92,7 +92,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 setupTestsResources(target = target)
             }
 
-
             if (target is KotlinJsIrTarget) {
                 target.compilations.withType<KotlinJsIrCompilation>().configureEach { compilation ->
                     compilation.binaries.withType<JsIrBinary>()
