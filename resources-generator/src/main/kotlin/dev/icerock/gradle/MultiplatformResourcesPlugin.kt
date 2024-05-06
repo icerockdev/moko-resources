@@ -16,8 +16,8 @@ import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
 import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
 import dev.icerock.gradle.generator.platform.apple.setupTestsResources
-import dev.icerock.gradle.generator.platform.js.setupJsExecutableResources
 import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
+import dev.icerock.gradle.generator.platform.js.setupJsResourcesWithLinkTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
@@ -35,8 +35,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.targets.js.ir.JsIrBinary
-import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
@@ -93,17 +91,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             }
 
             if (target is KotlinJsIrTarget) {
-                target.compilations.withType<KotlinJsIrCompilation>().configureEach { compilation ->
-                    compilation.binaries.withType<JsIrBinary>()
-                        .configureEach { binary: JsIrBinary ->
-                            binary.linkTask.configure { linkTask ->
-                                setupJsExecutableResources(
-                                    linkTask = linkTask,
-                                    projectDir = project.provider { project.projectDir }
-                                )
-                            }
-                        }
-                }
+                setupJsResourcesWithLinkTask(target = target, project = project)
             }
 
             target.compilations.configureEach { compilation ->
