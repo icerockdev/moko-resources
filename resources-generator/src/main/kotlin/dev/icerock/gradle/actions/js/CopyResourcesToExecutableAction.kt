@@ -14,11 +14,11 @@ import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 internal class CopyResourcesToExecutableAction(
-    private val resourcesGeneratedDir: Provider<File>,
+    private val outputDir: Provider<File>,
     private val projectDir: Provider<File>
 ) : Action<Kotlin2JsCompile> {
     override fun execute(task: Kotlin2JsCompile) {
-        val resourceDir = resourcesGeneratedDir.get()
+        val resourceDir = outputDir.get()
 
         task.klibs.forEach { dependency ->
             copyResourcesFromLibraries(
@@ -129,13 +129,16 @@ internal class CopyResourcesToExecutableAction(
         outputDir: File,
         logger: Logger
     ) {
-        if (inputFile.extension != "klib") return
         if (inputFile.exists().not()) return
 
         logger.info("copy resources from $inputFile into $outputDir")
         val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
         val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-        val layout: KotlinLibraryLayout = klib.extractingToTemp
+        val layout: KotlinLibraryLayout = if (klib.isZipped) {
+            klib.extractingToTemp
+        } else {
+            klib
+        }
 
         try {
             File(layout.resourcesDir.path, "moko-resources-js").copyRecursively(

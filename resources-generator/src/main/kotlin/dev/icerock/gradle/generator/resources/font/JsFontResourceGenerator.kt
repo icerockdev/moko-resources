@@ -36,6 +36,8 @@ internal class JsFontResourceGenerator(
     }
 
     override fun generateResourceFiles(data: List<FontMetadata>) {
+        if (data.isEmpty()) return
+
         val fontsDir = File(resourcesGenerationDir, FONTS_DIR)
         fontsDir.mkdirs()
 

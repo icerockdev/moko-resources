@@ -16,8 +16,8 @@ import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
 import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
 import dev.icerock.gradle.generator.platform.apple.setupTestsResources
+import dev.icerock.gradle.generator.platform.js.setupJsExecutableResources
 import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
-import dev.icerock.gradle.generator.platform.js.setupJsResources
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
@@ -35,6 +35,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.ir.JsIrBinary
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrCompilation
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
@@ -89,6 +92,21 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 setupTestsResources(target = target)
             }
 
+
+            if (target is KotlinJsIrTarget) {
+                target.compilations.withType<KotlinJsIrCompilation>().configureEach { compilation ->
+                    compilation.binaries.withType<JsIrBinary>()
+                        .configureEach { binary: JsIrBinary ->
+                            binary.linkTask.configure { linkTask ->
+                                setupJsExecutableResources(
+                                    linkTask = linkTask,
+                                    projectDir = project.provider { project.projectDir }
+                                )
+                            }
+                        }
+                }
+            }
+
             target.compilations.configureEach { compilation ->
                 compilation.kotlinSourceSetsObservable.forAll { sourceSet: KotlinSourceSet ->
                     val genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask> =
@@ -119,15 +137,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 
                     compilation.compileTaskProvider.configure { compileTask: KotlinCompilationTask<*> ->
                         compileTask.dependsOn(genTaskProvider)
+                    }
 
-                        if (compileTask is Kotlin2JsCompile) {
-                            setupJsResources(
-                                compileTask = compileTask,
-                                resourcesGenerationDir = genTaskProvider.flatMap {
-                                    it.outputResourcesDir.asFile
-                                },
-                                projectDir = project.provider { project.projectDir }
-                            )
+                    if (target is KotlinJsIrTarget) {
+                        compilation.compileTaskProvider.configure { compileTask ->
+                            compileTask as Kotlin2JsCompile
+
                             setupJsKLibResources(
                                 compileTask = compileTask,
                                 resourcesGenerationDir = genTaskProvider.flatMap {
