@@ -10,12 +10,12 @@ actual data class CompositionStringDesc actual constructor(
     val args: Iterable<StringDesc>,
     val separator: String?
 ) : StringDesc {
-    override suspend fun localized(): String = args
-        .map { child -> child.localized() }
+    override suspend fun toLocalizedString(): String = args
+        .map { child -> child.toLocalizedString() }
         .joinToString(separator = separator ?: "")
 
-    override fun localized(provider: JsStringProvider): String = args
+    override fun toLocalizedString(provider: JsStringProvider): String = args
         .joinToString(separator = separator ?: "") { child ->
-            child.localized(provider)
+            child.toLocalizedString(provider)
         }
 }

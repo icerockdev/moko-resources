@@ -1,5 +1,5 @@
 [versions]
-kotlinVersion = "1.9.10"
+kotlinVersion = "1.9.20"
 androidGradleVersion = "8.1.4"
 androidSdkCommonVersion = "31.1.2"
 
@@ -14,7 +14,7 @@ androidAppCompatVersion = "1.6.1"
 composeUiVersion = "1.5.1"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.5.1"
+composeJetbrainsVersion = "1.6.0"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
