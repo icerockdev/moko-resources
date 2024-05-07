@@ -52,7 +52,7 @@ suspend fun main() {
                         }
                     }
                 ) {
-                    Text(Testing.getStringDesc().localized(strings))
+                    Text(Testing.getStringDesc().toLocalizedString(strings))
                 }
                 Br()
                 val color by remember(window) {
