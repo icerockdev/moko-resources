@@ -4,16 +4,18 @@
 
 package com.icerockdev.web
 
-import MainView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.CanvasBasedWindow
+import MainView
 import org.jetbrains.skiko.wasm.onWasmReady
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     onWasmReady {
-        Window("moko-resources") {
+        androidx.compose.ui.window.Window("moko-resources") {
             Column(modifier = Modifier.fillMaxSize()) {
                 MainView()
             }
