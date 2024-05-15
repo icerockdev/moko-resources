@@ -21,7 +21,7 @@ else
     ./gradlew clean compileKotlinIosX64
     log "default-hierarchy-gallery-mobile ios success"
 
-    ./gradlew clean podspec build generateDummyFramework --rerun-tasks
+    ./gradlew clean podspec build generateDummyFramework
     log "default-hierarchy-gallery-mobile full build success"
 
     (

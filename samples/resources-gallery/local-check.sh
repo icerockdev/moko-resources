@@ -27,8 +27,7 @@ else
     ./gradlew clean compileKotlinIosX64
     log "resources-gallery ios success"
 
-    # rerun tasks because kotlinjs compilation broken with build cache :(
-    ./gradlew clean podspec build generateDummyFramework --rerun-tasks
+    ./gradlew clean podspec build generateDummyFramework
     log "resources-gallery clean build success"
 
     (
