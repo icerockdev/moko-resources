@@ -36,7 +36,10 @@ internal class PluralResourceGenerator(
         }.groupBy(
             keySelector = { it.first },
             valueTransform = { it.second }
-        ).mapValues { it.value.toMap() }
+        ).mapValues { it.value.toMap() }.filter { entry ->
+            // #697 if we not have base locale - we can't use this key at all
+            entry.value[LanguageType.Base] != null
+        }
 
         return keyLangText.map { (key: KeyType, langText: Map<LanguageType, PluralMap>) ->
             PluralMetadata(
