@@ -14,6 +14,9 @@ log "resources-gallery android success"
 ./gradlew clean jvmJar
 log "resources-gallery jvm success"
 
+./gradlew clean jsBrowserDistribution
+log "resources-gallery js success"
+
 if ! command -v xcodebuild &> /dev/null
 then
     log "xcodebuild could not be found, skip ios checks"

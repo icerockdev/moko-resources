@@ -48,16 +48,14 @@ internal class CopyResourcesToExecutableAction(
     const path = require('path');
     const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-    const mokoResourcePath = path.resolve("$webpackResourcesDir");
-
     config.module.rules.push(
         {
             test: /\.(.*)/,
             resource: [
-                path.resolve(mokoResourcePath, "assets"),
-                path.resolve(mokoResourcePath, "files"),
-                path.resolve(mokoResourcePath, "images"),
-                path.resolve(mokoResourcePath, "localization"),
+                path.resolve(__dirname, "kotlin/assets"),
+                path.resolve(__dirname, "kotlin/files"),
+                path.resolve(__dirname, "kotlin/images"),
+                path.resolve(__dirname, "kotlin/localization"),
             ],
             type: 'asset/resource'
         }
@@ -68,7 +66,7 @@ internal class CopyResourcesToExecutableAction(
         {
             test: /\.css${'$'}/,
             resource: [
-                path.resolve(mokoResourcePath, "fonts"),
+                path.resolve(__dirname, "kotlin/fonts"),
             ],
             use: ['style-loader', 'css-loader']
         }
@@ -78,13 +76,11 @@ internal class CopyResourcesToExecutableAction(
         {
             test: /\.(otf|ttf)?${'$'}/,
             resource: [
-                path.resolve(mokoResourcePath, "fonts"),
+                path.resolve(__dirname, "kotlin/fonts"),
             ],
             type: 'asset/resource',
         }
     )
-    
-    config.resolve.modules.push(mokoResourcePath);
 })(config);
             """.trimIndent()
         )
