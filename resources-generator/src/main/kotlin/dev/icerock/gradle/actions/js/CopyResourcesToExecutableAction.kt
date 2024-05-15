@@ -28,17 +28,15 @@ internal class CopyResourcesToExecutableAction(
             )
         }
 
-        generateWebpackConfig(resourceDir)
+        generateWebpackConfig()
         generateKarmaConfig()
     }
 
-    private fun generateWebpackConfig(resourcesOutput: File) {
+    private fun generateWebpackConfig() {
         val webpackDir = File(projectDir.get(), "webpack.config.d")
         webpackDir.mkdirs()
 
         val webpackConfig = File(webpackDir, "moko-resources-generated.js")
-        val webpackResourcesDir: String = resourcesOutput.absolutePath
-            .replace("\\", "\\\\")
 
         webpackConfig.writeText(
             // language=js
