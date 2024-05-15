@@ -27,7 +27,7 @@ internal class JsFontResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: FontMetadata): CodeBlock {
-        val requireDeclaration = """require("$FONTS_DIR/${metadata.filePath.name}")"""
+        val requireDeclaration = """require("./$FONTS_DIR/${metadata.filePath.name}")"""
         return CodeBlock.of(
             "FontResource(fileUrl = js(%S) as String, fontFamily = %S)",
             requireDeclaration,
@@ -36,6 +36,8 @@ internal class JsFontResourceGenerator(
     }
 
     override fun generateResourceFiles(data: List<FontMetadata>) {
+        if (data.isEmpty()) return
+
         val fontsDir = File(resourcesGenerationDir, FONTS_DIR)
         fontsDir.mkdirs()
 
@@ -93,7 +95,7 @@ internal class JsFontResourceGenerator(
         val addFontsFun: FunSpec = FunSpec.builder("addFontsToPage")
             .addCode(
                 "js(%S)",
-                """require("$FONTS_DIR/$cssDeclarationsFileName")"""
+                """require("./$FONTS_DIR/$cssDeclarationsFileName")"""
             ).build()
         builder.addFunction(addFontsFun)
     }

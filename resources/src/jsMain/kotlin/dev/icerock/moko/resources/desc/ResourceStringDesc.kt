@@ -10,10 +10,10 @@ import dev.icerock.moko.resources.provider.JsStringProvider
 actual data class ResourceStringDesc actual constructor(
     val stringRes: StringResource
 ) : StringDesc {
-    override suspend fun localized(): String =
-        localized(stringRes.loader.getOrLoad())
+    override suspend fun toLocalizedString(): String =
+        toLocalizedString(stringRes.loader.getOrLoad())
 
-    override fun localized(provider: JsStringProvider): String {
+    override fun toLocalizedString(provider: JsStringProvider): String {
         return stringRes.localized(
             provider = provider,
             locale = StringDesc.localeType.locale

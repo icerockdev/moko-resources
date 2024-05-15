@@ -14,11 +14,11 @@ import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 internal class CopyResourcesToExecutableAction(
-    private val resourcesGeneratedDir: Provider<File>,
+    private val outputDir: Provider<File>,
     private val projectDir: Provider<File>
 ) : Action<Kotlin2JsCompile> {
     override fun execute(task: Kotlin2JsCompile) {
-        val resourceDir = resourcesGeneratedDir.get()
+        val resourceDir = outputDir.get()
 
         task.klibs.forEach { dependency ->
             copyResourcesFromLibraries(
@@ -28,17 +28,15 @@ internal class CopyResourcesToExecutableAction(
             )
         }
 
-        generateWebpackConfig(resourceDir)
+        generateWebpackConfig()
         generateKarmaConfig()
     }
 
-    private fun generateWebpackConfig(resourcesOutput: File) {
+    private fun generateWebpackConfig() {
         val webpackDir = File(projectDir.get(), "webpack.config.d")
         webpackDir.mkdirs()
 
         val webpackConfig = File(webpackDir, "moko-resources-generated.js")
-        val webpackResourcesDir: String = resourcesOutput.absolutePath
-            .replace("\\", "\\\\")
 
         webpackConfig.writeText(
             // language=js
@@ -48,16 +46,14 @@ internal class CopyResourcesToExecutableAction(
     const path = require('path');
     const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-    const mokoResourcePath = path.resolve("$webpackResourcesDir");
-
     config.module.rules.push(
         {
             test: /\.(.*)/,
             resource: [
-                path.resolve(mokoResourcePath, "assets"),
-                path.resolve(mokoResourcePath, "files"),
-                path.resolve(mokoResourcePath, "images"),
-                path.resolve(mokoResourcePath, "localization"),
+                path.resolve(__dirname, "kotlin/assets"),
+                path.resolve(__dirname, "kotlin/files"),
+                path.resolve(__dirname, "kotlin/images"),
+                path.resolve(__dirname, "kotlin/localization"),
             ],
             type: 'asset/resource'
         }
@@ -68,7 +64,7 @@ internal class CopyResourcesToExecutableAction(
         {
             test: /\.css${'$'}/,
             resource: [
-                path.resolve(mokoResourcePath, "fonts"),
+                path.resolve(__dirname, "kotlin/fonts"),
             ],
             use: ['style-loader', 'css-loader']
         }
@@ -78,13 +74,11 @@ internal class CopyResourcesToExecutableAction(
         {
             test: /\.(otf|ttf)?${'$'}/,
             resource: [
-                path.resolve(mokoResourcePath, "fonts"),
+                path.resolve(__dirname, "kotlin/fonts"),
             ],
             type: 'asset/resource',
         }
     )
-    
-    config.resolve.modules.push(mokoResourcePath);
 })(config);
             """.trimIndent()
         )
@@ -129,13 +123,16 @@ internal class CopyResourcesToExecutableAction(
         outputDir: File,
         logger: Logger
     ) {
-        if (inputFile.extension != "klib") return
         if (inputFile.exists().not()) return
 
         logger.info("copy resources from $inputFile into $outputDir")
         val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
         val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-        val layout: KotlinLibraryLayout = klib.extractingToTemp
+        val layout: KotlinLibraryLayout = if (klib.isZipped) {
+            klib.extractingToTemp
+        } else {
+            klib
+        }
 
         try {
             File(layout.resourcesDir.path, "moko-resources-js").copyRecursively(

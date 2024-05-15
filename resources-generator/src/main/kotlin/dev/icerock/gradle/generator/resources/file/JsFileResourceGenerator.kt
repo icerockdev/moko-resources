@@ -22,7 +22,7 @@ internal class JsFileResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: FileMetadata): CodeBlock {
-        val requireDeclaration = """require("$FILES_DIR/${metadata.filePath.name}")"""
+        val requireDeclaration = """require("./$FILES_DIR/${metadata.filePath.name}")"""
         return CodeBlock.of(
             "FileResource(fileUrl = js(%S) as String)",
             requireDeclaration

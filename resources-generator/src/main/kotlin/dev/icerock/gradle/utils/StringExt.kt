@@ -5,6 +5,7 @@
 package dev.icerock.gradle.utils
 
 import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
+import kotlinx.serialization.json.JsonPrimitive
 import org.apache.commons.text.StringEscapeUtils
 import java.util.Locale
 
@@ -49,25 +50,24 @@ internal val String.flatName: String
     get() = this.remove('.')
 
 internal fun String.convertXmlStringToAndroidLocalization(): String {
-    return convertXmlStringToLocalization().let {
+    return StringEscapeUtils.unescapeXml(this).let {
+        // Add mirroring for newline, without this android does flat string line
+        it.replace("\n", "\\n")
+    }.let {
         StringEscapeUtils.escapeXml11(it)
     }
 }
 
 internal fun String.convertXmlStringToLocalization(): String {
     return StringEscapeUtils.unescapeXml(this).let {
-        StringEscapeUtils.escapeEcmaScript(it)
+        val jsonPrimitive = JsonPrimitive(it)
+        // Usage of inner encode mechanism of Koltinx.Serialization
+        val stringValue: String = jsonPrimitive.toString()
+
+        // Remove symbol ["] from start and end of string
+        stringValue.substring(1, stringValue.length - 1)
     }
 }
-
-internal val String.appearance: Appearance
-    get() {
-        return if (withoutScale.endsWith(suffix = Appearance.DARK.suffix, ignoreCase = true)) {
-            Appearance.DARK
-        } else {
-            Appearance.LIGHT
-        }
-    }
 
 internal val String.withoutAppearance: String
     get() {

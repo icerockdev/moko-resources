@@ -29,7 +29,7 @@ class XmlStringsToPlatformTest {
     @Test
     fun separateSymbolsAndroid() {
         assertEquals(
-            expected = """\&quot; \&apos; % @ * &amp; {}""",
+            expected = """&quot; &apos; % @ * &amp; {}""",
             actual = "\" ' % @ * &amp; {}".convertXmlStringToAndroidLocalization()
         )
     }
@@ -37,7 +37,7 @@ class XmlStringsToPlatformTest {
     @Test
     fun separateSymbolsOtherPlatforms() {
         assertEquals(
-            expected = """\" \' % @ * & {}""",
+            expected = """\" ' % @ * & {}""",
             actual = "\" ' % @ * &amp; {}".convertXmlStringToLocalization()
         )
     }
@@ -45,7 +45,7 @@ class XmlStringsToPlatformTest {
     @Test
     fun textWithApostropheAndroid() {
         assertEquals(
-            expected = """I\&apos;m bought new monitor with 27 inch\&apos;s""",
+            expected = """I&apos;m bought new monitor with 27 inch&apos;s""",
             actual = "I'm bought new monitor with 27 inch's".convertXmlStringToAndroidLocalization()
         )
     }
@@ -53,7 +53,7 @@ class XmlStringsToPlatformTest {
     @Test
     fun textWithApostropheOtherPlatforms() {
         assertEquals(
-            expected = """I\'m bought new monitor with 27 inch\'s""",
+            expected = """I'm bought new monitor with 27 inch's""",
             actual = "I'm bought new monitor with 27 inch's".convertXmlStringToLocalization()
         )
     }
@@ -61,7 +61,7 @@ class XmlStringsToPlatformTest {
     @Test
     fun textWithXmlTagsAndroid() {
         assertEquals(
-            expected = """Text with &lt;b&gt;bold&lt;\/b&gt;, &lt;i&gt;italic&lt;\/i&gt;, &lt;u&gt;underline&lt;\/u&gt;""",
+            expected = """Text with &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;""",
             actual = "Text with &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;".convertXmlStringToAndroidLocalization(),
         )
     }
@@ -69,7 +69,7 @@ class XmlStringsToPlatformTest {
     @Test
     fun textWithXmlTagsOtherPlatforms() {
         assertEquals(
-            expected = """Text with <b>bold<\/b>, <i>italic<\/i>, <u>underline<\/u>""",
+            expected = """Text with <b>bold</b>, <i>italic</i>, <u>underline</u>""",
             actual = "Text with &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;".convertXmlStringToLocalization(),
         )
     }
