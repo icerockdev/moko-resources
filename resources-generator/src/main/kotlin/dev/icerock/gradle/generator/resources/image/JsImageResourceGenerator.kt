@@ -37,8 +37,8 @@ internal class JsImageResourceGenerator(
             }
         }
 
-        val requireDeclaration: String = """require("$IMAGES_DIR/$fileName")"""
-        val darkRequireDeclaration: String = """require("$IMAGES_DIR/$darkFileName")"""
+        val requireDeclaration: String = """require("./$IMAGES_DIR/$fileName")"""
+        val darkRequireDeclaration: String = """require("./$IMAGES_DIR/$darkFileName")"""
 
         return if (darkFileName != null) {
             CodeBlock.of(

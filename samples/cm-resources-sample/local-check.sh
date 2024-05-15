@@ -14,6 +14,9 @@ log "cm-resources-sample android success"
 ./gradlew clean jvmJar
 log "cm-resources-sample jvm success"
 
+./gradlew clean jsBrowserDistribution
+log "cm-resources-sample js success"
+
 if ! command -v xcodebuild &> /dev/null
 then
     log "xcodebuild could not be found, skip ios checks"

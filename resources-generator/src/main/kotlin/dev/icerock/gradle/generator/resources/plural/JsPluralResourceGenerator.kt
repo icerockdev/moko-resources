@@ -59,7 +59,7 @@ internal class JsPluralResourceGenerator(
         builder.addSuperinterface(Constants.Js.loaderHolderName)
 
         builder.addJsFallbackProperty(
-            fallbackFilePath = LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base)
+            fallbackFilePath = "./" + LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base)
         )
         builder.addJsSupportedLocalesProperty(
             bcpLangToPath = metadata.asSequence()
@@ -69,7 +69,7 @@ internal class JsPluralResourceGenerator(
                     LanguageType.fromLanguage(locale)
                 }.filterIsInstance<LanguageType.Locale>().map { language ->
                     val fileName: String = getFileNameForLanguage(language)
-                    language.toBcpString() to "$LOCALIZATION_DIR/$fileName"
+                    language.toBcpString() to "./$LOCALIZATION_DIR/$fileName"
                 }.toList()
         )
         builder.addJsContainerStringsLoaderProperty()

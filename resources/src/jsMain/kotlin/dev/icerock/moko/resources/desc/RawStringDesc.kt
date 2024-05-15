@@ -9,6 +9,6 @@ import dev.icerock.moko.resources.provider.JsStringProvider
 actual data class RawStringDesc actual constructor(
     val string: String
 ) : StringDesc {
-    override suspend fun localized(): String = string
-    override fun localized(provider: JsStringProvider): String = string
+    override suspend fun toLocalizedString(): String = string
+    override fun toLocalizedString(provider: JsStringProvider): String = string
 }

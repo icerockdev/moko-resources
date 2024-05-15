@@ -34,7 +34,6 @@ android {
 
 kotlin {
     androidTarget()
-    ios()
 }
 
 dependencies {

@@ -14,6 +14,9 @@ log "compose-resources-gallery android success"
 ./gradlew clean jvmJar
 log "compose-resources-gallery jvm success"
 
+./gradlew clean jsBrowserDistribution
+log "compose-resources-gallery js success"
+
 if ! command -v xcodebuild &> /dev/null
 then
     echo "xcodebuild could not be found, skip ios checks"
@@ -25,8 +28,7 @@ else
     ./gradlew clean compileKotlinIosX64
     log "compose-resources-gallery ios success"
 
-    # rerun tasks because kotlinjs compilation broken with build cache :(
-    ./gradlew clean podspec build generateDummyFramework --rerun-tasks
+    ./gradlew clean podspec build generateDummyFramework
     log "compose-resources-gallery full build success"
 
     (
