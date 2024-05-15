@@ -25,7 +25,7 @@ internal class JsAssetResourceGenerator(
         val filePath: String = File(ASSETS_DIR, metadata.pathRelativeToBase.path).path
             .replace("\\", "/")
 
-        val requireDeclaration = """require("$filePath")"""
+        val requireDeclaration = """require("./$filePath")"""
         return CodeBlock.of(
             "AssetResource(originalPath = js(%S) as String, rawPath = %S)",
             requireDeclaration,
