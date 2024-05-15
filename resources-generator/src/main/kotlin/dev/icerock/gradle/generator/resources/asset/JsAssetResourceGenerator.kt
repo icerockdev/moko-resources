@@ -22,8 +22,8 @@ internal class JsAssetResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: AssetMetadata): CodeBlock {
-        val filePath: String = File(ASSETS_DIR, metadata.pathRelativeToBase.path).path
-            .replace("\\", "/")
+        val filePath: String = File(ASSETS_DIR, metadata.pathRelativeToBase.path)
+            .invariantSeparatorsPath
 
         val requireDeclaration = """require("./$filePath")"""
         return CodeBlock.of(

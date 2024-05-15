@@ -24,7 +24,10 @@ internal class AndroidAssetResourceGenerator(
     )
 
     override fun generateInitializer(metadata: AssetMetadata): CodeBlock {
-        return CodeBlock.of("AssetResource(path = %S)", metadata.pathRelativeToBase.path)
+        return CodeBlock.of(
+            "AssetResource(path = %S)",
+            metadata.pathRelativeToBase.invariantSeparatorsPath
+        )
     }
 
     override fun generateBeforeProperties(
