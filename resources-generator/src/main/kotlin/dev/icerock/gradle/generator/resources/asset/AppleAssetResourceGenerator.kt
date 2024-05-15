@@ -23,10 +23,8 @@ internal class AppleAssetResourceGenerator(
     override fun generateInitializer(metadata: AssetMetadata): CodeBlock {
         return CodeBlock.of(
             "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = %L)",
-            metadata.pathRelativeToBase.path,
-            metadata.pathRelativeToBase.path
-                .replace('/', PATH_DELIMITER)
-                .substringBeforeLast('.'),
+            metadata.pathRelativeToBase.invariantSeparatorsPath,
+            processedFilePath(metadata).substringBeforeLast('.'),
             metadata.filePath.extension,
             Constants.Apple.platformContainerBundlePropertyName
         )
@@ -34,9 +32,14 @@ internal class AppleAssetResourceGenerator(
 
     override fun generateResourceFiles(data: List<AssetMetadata>) {
         data.forEach { metadata ->
-            val newName: String = metadata.pathRelativeToBase.path.replace('/', PATH_DELIMITER)
+            val newName: String = processedFilePath(metadata)
             metadata.filePath.copyTo(File(resourcesGenerationDir, newName))
         }
+    }
+
+    private fun processedFilePath(metadata: AssetMetadata): String {
+        return metadata.pathRelativeToBase.invariantSeparatorsPath
+            .replace('/', PATH_DELIMITER)
     }
 
     override fun generateBeforeProperties(

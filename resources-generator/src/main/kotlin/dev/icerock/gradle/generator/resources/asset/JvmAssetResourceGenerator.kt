@@ -26,7 +26,7 @@ internal class JvmAssetResourceGenerator(
         return CodeBlock.of(
             "AssetResource(resourcesClassLoader = %L, originalPath = %S, path = %S)",
             "${PlatformDetails.platformDetailsPropertyName}.${Jvm.resourcesClassLoaderPropertyName}",
-            metadata.pathRelativeToBase.path,
+            metadata.pathRelativeToBase.invariantSeparatorsPath,
             buildAssetPath(metadata)
         )
     }
