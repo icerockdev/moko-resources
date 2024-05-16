@@ -7,7 +7,7 @@ plugins {
 }
 
 kotlin {
-    jvm {}
+    jvm()
     sourceSets {
         val jvmMain by getting  {
             dependencies {
@@ -31,5 +31,5 @@ compose.desktop {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.app"
+    resourcesPackage.set("com.icerockdev.app")
 }

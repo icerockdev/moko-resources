@@ -1,4 +1,4 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
 
 plugins {
     kotlin("multiplatform")
@@ -11,13 +11,15 @@ plugins {
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    android()
-
-    jvm("desktop")
+    androidTarget()
 
     ios()
     iosSimulatorArm64()
 
+    macosArm64()
+    macosX64()
+
+    jvm("desktop")
     js(IR) {
         browser()
     }
@@ -29,9 +31,13 @@ kotlin {
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
+            isStatic = true
         }
+        // TODO move to gradle plugin
+        extraSpecAttributes["resource"] = "'build/cocoapods/framework/shared.framework/*.bundle'"
     }
 
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -44,9 +50,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:1.6.1")
+                api("androidx.activity:activity-compose:1.7.2")
                 api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.9.0")
+                api("androidx.core:core-ktx:1.10.1")
             }
         }
         val iosMain by getting
@@ -60,8 +66,17 @@ kotlin {
         }
         val jsMain by getting {
             dependencies {
-                implementation(compose.web.core)
+                implementation(compose.html.core)
             }
+        }
+        val macosMain by creating {
+            dependsOn(commonMain)
+        }
+        val macosX64Main by getting {
+            dependsOn(macosMain)
+        }
+        val macosArm64Main by getting {
+            dependsOn(macosMain)
         }
     }
 }
@@ -69,22 +84,45 @@ kotlin {
 android {
     compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 33
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     lint {
-        abortOnError = false
+        disable.add("MissingTranslation")
     }
+
+    namespace = "com.myapplication.common"
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
+}
+
+// TODO move to gradle plugin
+tasks.withType<DummyFrameworkTask>().configureEach {
+    @Suppress("ObjectLiteralToLambda")
+    doLast(object : Action<Task> {
+        override fun execute(task: Task) {
+            task as DummyFrameworkTask
+
+            val frameworkDir: File = task.outputFramework.get().asFile
+
+            // TODO here we should fill list from local gradle modules
+            //  AND from external dependencies with bundles
+            //  to fill full list of bundles
+            listOf(
+                "compose-resources-gallery:shared.bundle"
+            ).forEach { bundleName ->
+                val bundleDir = File(frameworkDir, bundleName)
+                bundleDir.mkdir()
+                File(bundleDir, "dummyFile").writeText("dummy")
+            }
+        }
+    })
 }

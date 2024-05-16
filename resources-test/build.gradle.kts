@@ -3,12 +3,16 @@
  */
 
 plugins {
-    id("multiplatform-library-convention")
+    id("multiplatform-library-extended-convention")
     id("multiplatform-android-publish-convention")
     id("apple-main-convention")
     id("detekt-convention")
     id("javadoc-stub-convention")
     id("publication-convention")
+}
+
+android {
+    namespace = "dev.icerock.moko.resources.test"
 }
 
 dependencies {

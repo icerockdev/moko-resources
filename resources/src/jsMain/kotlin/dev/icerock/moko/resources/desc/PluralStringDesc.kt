@@ -4,19 +4,18 @@
 
 package dev.icerock.moko.resources.desc
 
-import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.provider.JsStringProvider
 
 actual data class PluralStringDesc actual constructor(
     val pluralsRes: PluralsResource,
     val number: Int,
-) : StringDesc, Parcelable {
+) : StringDesc {
 
-    override suspend fun localized(): String =
-        localized(pluralsRes.loader.getOrLoad())
+    override suspend fun toLocalizedString(): String =
+        toLocalizedString(pluralsRes.loader.getOrLoad())
 
-    override fun localized(provider: JsStringProvider): String {
+    override fun toLocalizedString(provider: JsStringProvider): String {
         return pluralsRes.localized(
             provider = provider,
             locale = StringDesc.localeType.locale,

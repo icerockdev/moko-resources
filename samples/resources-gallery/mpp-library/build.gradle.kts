@@ -2,8 +2,6 @@
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
@@ -12,9 +10,9 @@ plugins {
 }
 
 allprojects {
-    this.plugins.withId("org.jetbrains.kotlin.multiplatform") {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
         kotlin {
-            android()
+            androidTarget()
             ios()
             iosSimulatorArm64()
             jvm()
@@ -50,6 +48,7 @@ android {
     testOptions.unitTests.isIncludeAndroidResources = true
 
     lint.disable.add("ImpliedQuantity")
+    lint.disable.add("MissingTranslation")
 }
 
 kotlin {
@@ -76,5 +75,5 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
 }

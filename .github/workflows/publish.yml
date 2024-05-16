@@ -21,16 +21,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 11
-      - name: Publish plugin
-        run: ./gradlew -p resources-generator publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PLUGIN_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PLUGIN_PORTAL_SECRET }}
+          java-version: 17
       - name: Prebuild library
-        run: ./gradlew publishToMavenLocal
+        run: ./gradlew publishToMavenLocal --rerun-tasks
       - name: Publish library
         run: ./gradlew publish --no-parallel
+      - name: Publish plugin
+        run: ./gradlew -p resources-generator publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PLUGIN_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PLUGIN_PORTAL_SECRET }}
   release:
     name: Create release
     needs: publish

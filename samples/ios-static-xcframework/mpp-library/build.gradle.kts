@@ -27,7 +27,14 @@ kotlin {
     }
 
     sourceSets {
-        val iosMain by creating
+        val commonMain by getting {
+            dependencies {
+                api(moko.resources)
+            }
+        }
+        val iosMain by creating {
+            dependsOn(commonMain)
+        }
         val iosArm64Main by getting {
             dependsOn(iosMain)
         }
@@ -45,5 +52,5 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
 }

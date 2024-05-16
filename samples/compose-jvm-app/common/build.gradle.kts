@@ -10,7 +10,7 @@ version = "1.0"
 kotlin {
     jvm("desktop") {
         compilations.all {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
     }
     sourceSets {
@@ -39,7 +39,7 @@ kotlin {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.app"
+    resourcesPackage.set("com.icerockdev.app")
 }
 
 compose {

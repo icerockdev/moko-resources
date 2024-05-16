@@ -9,7 +9,8 @@ import cnames.structs.CGImage
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CValue
-import kotlinx.cinterop.readBytes
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.refTo
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.Image
@@ -28,9 +29,11 @@ import platform.CoreGraphics.CGRect
 import platform.CoreGraphics.CGRectMake
 import platform.posix.free
 import platform.posix.malloc
+import platform.posix.memcpy
 import platform.posix.size_t
 import platform.posix.uint32_t
 
+@OptIn(ExperimentalForeignApi::class)
 internal fun CGImageRef.toSkiaImage(): Image {
     val cgImage: CPointer<CGImage> = this
     val width: size_t = CGImageGetWidth(cgImage)
@@ -72,7 +75,8 @@ internal fun CGImageRef.toSkiaImage(): Image {
 
     CGContextRelease(ctx)
 
-    val bytes: ByteArray = data.readBytes(bufferSize.toInt())
+    val bytes = ByteArray(bufferSize.toInt())
+    memcpy(bytes.refTo(0), data, bufferSize)
 
     free(data)
 

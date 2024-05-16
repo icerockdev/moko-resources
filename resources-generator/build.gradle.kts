@@ -2,12 +2,16 @@
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.8.10")
+    id("org.jetbrains.kotlin.jvm") version ("1.9.0")
     id("detekt-convention")
     id("publication-convention")
-    id("com.gradle.plugin-publish") version ("0.19.0")
+    id("com.gradle.plugin-publish") version ("1.2.0")
     id("java-gradle-plugin")
+    kotlin("plugin.serialization") version ("1.9.0")
 }
 
 group = "dev.icerock.moko"
@@ -23,47 +27,40 @@ dependencies {
     implementation(libs.kotlinxSerialization)
     implementation(libs.apacheCommonsText)
     implementation(libs.commonsCodec)
+
+    testImplementation(kotlin("test-junit"))
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+
     withJavadocJar()
     withSourcesJar()
 }
 
-publishing.publications.register("mavenJava", MavenPublication::class) {
-    from(components["java"])
+kotlin {
+    jvmToolchain(11)
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "11"
-}
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>()
+    .configureEach {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_7)
+    }
 
 gradlePlugin {
     plugins {
         create("multiplatform-resources") {
             id = "dev.icerock.mobile.multiplatform-resources"
             implementationClass = "dev.icerock.gradle.MultiplatformResourcesPlugin"
-        }
-    }
-}
 
-pluginBundle {
-    website = "https://github.com/icerockdev/moko-resources"
-    vcsUrl = "https://github.com/icerockdev/moko-resources"
-    description = "Plugin to provide access to the resources on iOS & Android"
-    tags = listOf("moko-resources", "moko", "kotlin", "kotlin-multiplatform")
-
-    plugins {
-        getByName("multiplatform-resources") {
             displayName = "MOKO resources generator plugin"
+            description = "Plugin to provide access to the resources on iOS & Android"
+            tags.set(listOf("moko-resources", "moko", "kotlin", "kotlin-multiplatform"))
         }
     }
 
-    mavenCoordinates {
-        groupId = project.group as String
-        artifactId = project.name
-        version = project.version as String
-    }
+    website.set("https://github.com/icerockdev/moko-resources")
+    vcsUrl.set("https://github.com/icerockdev/moko-resources")
 }

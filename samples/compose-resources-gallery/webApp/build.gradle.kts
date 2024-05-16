@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -18,7 +16,7 @@ kotlin {
             dependencies {
                 implementation(project(":shared"))
 
-                implementation(compose.web.core)
+                implementation(compose.html.core)
             }
         }
     }
@@ -29,5 +27,5 @@ compose.experimental {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.app"
+    resourcesPackage.set("com.icerockdev.app")
 }

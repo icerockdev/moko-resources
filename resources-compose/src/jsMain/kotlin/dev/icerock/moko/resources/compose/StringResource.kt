@@ -50,6 +50,6 @@ actual fun stringResource(resource: PluralsResource, quantity: Int, vararg args:
 @Composable
 private fun localized(stringDesc: StringDesc): String {
     return produceState(initialValue = "", stringDesc) {
-        value = stringDesc.localized()
+        value = stringDesc.toLocalizedString()
     }.value
 }

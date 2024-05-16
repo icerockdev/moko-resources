@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.icerockdev.library.Testing
+import com.icerockdev.library.R as libraryR
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         textView.text = text
         textView.typeface = Testing.getFontTtf1().getTypeface(context = this)
 
-        val textColorFromRes = ContextCompat.getColor(this, R.color.textColor)
+        val textColorFromRes = ContextCompat.getColor(this, libraryR.color.textColor)
         textView.setTextColor(textColorFromRes)
 
         stringDescTextView.text = Testing.getStringDesc().toString(context = this)

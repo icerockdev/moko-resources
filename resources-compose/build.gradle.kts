@@ -19,18 +19,15 @@ android {
     defaultConfig {
         minSdk = 21
     }
-}
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
+    namespace = "dev.icerock.moko.resources.compose"
 }
 
 kotlin {
     jvm()
-    android()
-    ios()
+    androidTarget()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
@@ -56,7 +53,6 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 api(compose.desktop.common)
-                implementation(compose.desktop.currentOs)
             }
         }
     }

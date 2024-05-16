@@ -19,8 +19,8 @@ value class CompiledVariableString(private val function: (Json) -> String) {
 
 value class CompiledPlural(private val function: (Json) -> String) {
     fun evaluate(quantity: Int, vararg args: Any): String {
-        val keyValues = arrayOf("PLURAL" to quantity) +
-                args.mapIndexed { index: Int, any: Any -> "$index" to any }
+        val keyValues = arrayOf("PLURAL" to quantity) + args
+            .mapIndexed { index: Int, any: Any -> "$index" to any }
 
         @Suppress("SpreadOperator")
         val json = json(*keyValues)
@@ -29,6 +29,6 @@ value class CompiledPlural(private val function: (Json) -> String) {
 }
 
 @JsModule("@messageformat/core")
-external class MessageFormat(locales: Array<String>) {
+external class MessageFormat(@Suppress("UnusedPrivateMember") locales: Array<String>) {
     fun compile(format: String): (Json) -> String
 }
