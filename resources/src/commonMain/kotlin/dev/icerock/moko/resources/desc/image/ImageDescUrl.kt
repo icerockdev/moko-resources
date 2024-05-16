@@ -4,7 +4,7 @@
 
 package dev.icerock.moko.resources.desc.image
 
-class ImageDescUrl(val url: String) : ImageDesc
+data class ImageDescUrl(val url: String) : ImageDesc
 
 @Suppress("FunctionName")
 fun ImageDesc.Companion.Url(url: String): ImageDesc = ImageDescUrl(url)

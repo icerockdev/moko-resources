@@ -4,15 +4,25 @@
 
 package dev.icerock.gradle
 
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
+import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.Property
 
-open class MultiplatformResourcesPluginExtension {
-    var multiplatformResourcesPackage: String? = null
-    var multiplatformResourcesClassName: String = "MR"
-    var multiplatformResourcesSourceSet: String? = null
-    var iosBaseLocalizationRegion: String = "en"
-    val sourceSetName: String
-        get() = multiplatformResourcesSourceSet ?: KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME
-    var disableStaticFrameworkWarning = false
-    var multiplatformResourcesVisibility: MRVisibility = MRVisibility.Public
+@Suppress("UnnecessaryAbstractClass")
+abstract class MultiplatformResourcesPluginExtension {
+    abstract val resourcesPackage: Property<String>
+    abstract val resourcesClassName: Property<String>
+    abstract val iosBaseLocalizationRegion: Property<String>
+    abstract val resourcesVisibility: Property<MRVisibility>
+    abstract val iosMinimalDeploymentTarget: Property<String>
+    abstract val resourcesSourceSets: NamedDomainObjectContainer<SourceDirectorySet>
+}
+
+internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Project) {
+    resourcesPackage.convention(project.provider { "${project.group}.${project.name}" })
+    resourcesClassName.convention("MR")
+    iosBaseLocalizationRegion.convention("en")
+    resourcesVisibility.convention(MRVisibility.Public)
+    iosMinimalDeploymentTarget.convention("9.0")
 }

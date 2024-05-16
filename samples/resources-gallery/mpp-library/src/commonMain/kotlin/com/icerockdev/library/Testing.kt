@@ -112,19 +112,19 @@ public object Testing {
         return list.joinToStringDesc("\n")
     }
 
-    public fun getFontTtf1(): FontResource = MR.fonts.Raleway.italic
+    public fun getFontTtf1(): FontResource = MR.fonts.raleway_italic
 
-    public fun getFontTtf2(): FontResource = MR.fonts.Raleway.bold
+    public fun getFontTtf2(): FontResource = MR.fonts.raleway_bold
 
-    public fun getFontOtf1(): FontResource = MR.fonts.cormorant.regular
-    public fun getFontOtf2(): FontResource = MR.fonts.cormorant.italic
-    public fun getFontOtf3(): FontResource = MR.fonts.cormorant.light
+    public fun getFontOtf1(): FontResource = MR.fonts.cormorant_regular
+    public fun getFontOtf2(): FontResource = MR.fonts.cormorant_italic
+    public fun getFontOtf3(): FontResource = MR.fonts.cormorant_light
 
     public fun getTextsFromAssets(): List<AssetResource> {
         return listOf(
-            MR.assets.test_1,
+            MR.assets.test_1_txt,
             MR.assets.getAssetByFilePath("texts/test2.txt") ?: error("Can't load asset"),
-            MR.assets.texts.inner_1.test3
+            MR.assets.texts.inner_1.test3_txt
         )
     }
 
@@ -134,11 +134,11 @@ public object Testing {
     }
 
     public fun getTextFile(): FileResource {
-        return MR.files.test
+        return MR.files.test_txt
     }
 
     public fun getJsonFile(): FileResource {
-        return MR.files.some
+        return MR.files.some_json
     }
 
     public fun getNestedJsonFile(): FileResource {

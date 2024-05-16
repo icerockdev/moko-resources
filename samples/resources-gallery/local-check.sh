@@ -14,25 +14,35 @@ log "resources-gallery android success"
 ./gradlew clean jvmJar
 log "resources-gallery jvm success"
 
-./gradlew clean compileKotlinIosX64
-log "resources-gallery ios success"
+./gradlew clean jsBrowserDistribution
+log "resources-gallery js success"
 
-# rerun tasks because kotlinjs compilation broken with build cache :(
-./gradlew clean build --rerun-tasks
-log "resources-gallery full build success"
+if ! command -v xcodebuild &> /dev/null
+then
+    log "xcodebuild could not be found, skip ios checks"
 
-(
-cd ios-app &&
-pod install &&
-set -o pipefail &&
-xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
-)
-log "resources-gallery ios xcode success"
+    ./gradlew build
+    log "resources-gallery full build success"
+else
+    ./gradlew clean compileKotlinIosX64
+    log "resources-gallery ios success"
 
-(
-cd macos-app &&
-pod install &&
-set -o pipefail &&
-xcodebuild -scheme TestProj -workspace macos-app.xcworkspace -configuration Debug -sdk macosx -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
-)
-log "resources-gallery macos xcode success"
+    ./gradlew clean podspec build generateDummyFramework
+    log "resources-gallery clean build success"
+
+    (
+    cd ios-app &&
+    pod install &&
+    set -o pipefail &&
+    xcodebuild -scheme TestProj -workspace TestProj.xcworkspace -configuration Debug -sdk iphonesimulator -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+    )
+    log "resources-gallery ios xcode success"
+
+    (
+    cd macos-app &&
+    pod install &&
+    set -o pipefail &&
+    xcodebuild -scheme TestProj -workspace macos-app.xcworkspace -configuration Debug -sdk macosx -arch x86_64 build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | xcpretty
+    )
+    log "resources-gallery macos xcode success"
+fi

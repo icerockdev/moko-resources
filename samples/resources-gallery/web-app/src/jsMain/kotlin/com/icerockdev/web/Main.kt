@@ -52,7 +52,7 @@ suspend fun main() {
                         }
                     }
                 ) {
-                    Text(Testing.getStringDesc().localized(strings))
+                    Text(Testing.getStringDesc().toLocalizedString(strings))
                 }
                 Br()
                 val color by remember(window) {
@@ -80,7 +80,7 @@ suspend fun main() {
 
     fileText.value = Testing.getTextFile().getText() + "\n" +
             Testing.getTextsFromAssets()[1].getText() + "\n" +
-            MR.files.some.getText()
+            MR.files.some_json.getText()
 
     println(Testing.getTextFile().fileUrl)
 }

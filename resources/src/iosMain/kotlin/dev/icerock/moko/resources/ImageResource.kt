@@ -7,7 +7,7 @@ package dev.icerock.moko.resources
 import platform.Foundation.NSBundle
 import platform.UIKit.UIImage
 
-actual class ImageResource(
+actual data class ImageResource(
     val assetImageName: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {

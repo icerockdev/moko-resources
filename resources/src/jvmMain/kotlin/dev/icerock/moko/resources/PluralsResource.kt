@@ -6,7 +6,7 @@ package dev.icerock.moko.resources
 
 import com.ibm.icu.text.PluralRules
 import com.ibm.icu.util.ULocale
-import java.util.*
+import java.util.Locale
 
 actual class PluralsResource(
     val resourcesClassLoader: ClassLoader,
