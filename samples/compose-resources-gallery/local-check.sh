@@ -14,7 +14,7 @@ log "compose-resources-gallery android success"
 ./gradlew clean jvmJar
 log "compose-resources-gallery jvm success"
 
-./gradlew clean jsBrowserDistribution
+./gradlew clean jsBrowserDistribution --rerun-tasks
 log "compose-resources-gallery js success"
 
 if ! command -v xcodebuild &> /dev/null

@@ -14,7 +14,7 @@ log "resources-gallery android success"
 ./gradlew clean jvmJar
 log "resources-gallery jvm success"
 
-./gradlew clean jsBrowserDistribution
+./gradlew clean jsBrowserDistribution --rerun-tasks
 log "resources-gallery js success"
 
 if ! command -v xcodebuild &> /dev/null
