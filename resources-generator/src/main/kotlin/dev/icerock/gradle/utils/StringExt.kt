@@ -107,9 +107,3 @@ internal val String.withoutAppearance: String
 
         return this
     }
-
-fun main(args: Array<String>) {
-    val text = "Текст \"%s\"".convertXmlStringToApplePluralLocalization()
-
-    println(text)
-}
