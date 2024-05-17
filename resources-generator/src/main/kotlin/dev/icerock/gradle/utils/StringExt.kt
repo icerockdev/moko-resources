@@ -50,23 +50,33 @@ internal val String.flatName: String
     get() = this.remove('.')
 
 internal fun String.convertXmlStringToAndroidLocalization(): String {
-    return StringEscapeUtils.unescapeXml(this).let {
-        // Add mirroring for newline, without this android does flat string line
-        it.replace("\n", "\\n")
-    }.let {
-        StringEscapeUtils.escapeXml11(it)
-    }
+    //  Android resources should comply with requirements:
+    //  https://developer.android.com/guide/topics/resources/string-resource
+    return StringEscapeUtils
+        .unescapeXml(this)
+        .replace("\n", "\\n")
+        .let { StringEscapeUtils.escapeXml11(it) }
+        .replace("&quot;", "\\&quot;")
+        .replace("&apos;", "\\&apos;")
 }
 
 internal fun String.convertXmlStringToLocalization(): String {
-    return StringEscapeUtils.unescapeXml(this).let {
-        val jsonPrimitive = JsonPrimitive(it)
-        // Usage of inner encode mechanism of Koltinx.Serialization
-        val stringValue: String = jsonPrimitive.toString()
+    return StringEscapeUtils
+        .unescapeXml(this)
+        .let { value ->
+            val jsonPrimitive = JsonPrimitive(value)
+            // Usage of inner encode mechanism of Koltinx.Serialization
+            val stringValue: String = jsonPrimitive.toString()
 
-        // Remove symbol ["] from start and end of string
-        stringValue.substring(1, stringValue.length - 1)
-    }
+            // Remove symbol ["] from start and end of string
+            stringValue.substring(1, stringValue.length - 1)
+        }
+}
+
+internal fun String.convertXmlStringToApplePluralLocalization(): String {
+    return StringEscapeUtils
+        .unescapeXml(this)
+        .let { StringEscapeUtils.escapeXml11(it) }
 }
 
 internal val String.withoutAppearance: String
@@ -97,3 +107,9 @@ internal val String.withoutAppearance: String
 
         return this
     }
+
+fun main(args: Array<String>) {
+    val text = "Текст \"%s\"".convertXmlStringToApplePluralLocalization()
+
+    println(text)
+}
