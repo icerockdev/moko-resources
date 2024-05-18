@@ -22,6 +22,7 @@ import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.Directory
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
@@ -95,20 +96,23 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
     project.tasks.register(
         /* name = */ taskName,
         /* type = */ CopyFrameworkResourcesToAppTask::class.java
-    ) {
-        it.configuration = framework.buildType.name
-        it.konanTarget = framework.compilation.konanTarget.name
-        it.frameworkPrefix = framework.nameWithoutBuildType
+    ) { task ->
+        task.configuration = framework.buildType.name
+        task.konanTarget = framework.compilation.konanTarget.name
+        task.frameworkPrefix = framework.nameWithoutBuildType
 
-        it.frameworkIsStatic.set(
+        task.frameworkIsStatic.set(
             project.provider {
                 framework.isStatic
             }
         )
-        it.inputFrameworkDirectory.set(
-            project.layout.projectDirectory.dir(framework.outputFile.absolutePath)
+        val projectDirectory: Directory = project.layout.projectDirectory
+        task.inputFrameworkDirectory.set(
+            framework.linkTaskProvider
+                .flatMap { it.outputFile }
+                .let { project.layout.dir(it) }
         )
-        it.outputDirectory.set(
+        task.outputDirectory.set(
             project.provider {
                 val buildProductsDir =
                     project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
@@ -116,13 +120,13 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
                     project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
 
                 val targetDir = File("$buildProductsDir/$contentsFolderPath")
-                val baseDir: File = project.layout.projectDirectory.asFile
+                val baseDir: File = projectDirectory.asFile
 
-                project.layout.projectDirectory.dir(targetDir.relativeTo(baseDir).path)
+                projectDirectory.dir(targetDir.relativeTo(baseDir).path)
             }
         )
 
-        it.dependsOn(framework.linkTaskProvider)
+        task.dependsOn(framework.linkTaskProvider)
     }
 }
 
