@@ -29,7 +29,7 @@ class XmlStringsToPlatformRuTest {
     @Test
     fun textWithApostropheAndroid() {
         assertEquals(
-            expected = """Я&apos;ж купил новый 27 дюйм&apos;ов монитор""",
+            expected = """Я\&apos;ж купил новый 27 дюйм\&apos;ов монитор""",
             actual = "Я'ж купил новый 27 дюйм'ов монитор".convertXmlStringToAndroidLocalization()
         )
     }

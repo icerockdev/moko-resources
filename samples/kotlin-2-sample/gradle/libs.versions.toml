@@ -1,10 +1,9 @@
 [versions]
-agp = "8.4.0-alpha13"
-kotlin = "2.0.0-Beta5"
-compose = "1.5.4"
-compose-compiler = "1.5.11-dev-k2.0.0-Beta5-b5a216d0ac6"
-compose-material3 = "1.1.2"
-androidx-activityCompose = "1.8.2"
+agp = "8.4.0"
+kotlin = "2.0.0-RC3"
+compose = "1.6.7"
+compose-material3 = "1.2.1"
+androidx-activityCompose = "1.9.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -21,3 +20,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
