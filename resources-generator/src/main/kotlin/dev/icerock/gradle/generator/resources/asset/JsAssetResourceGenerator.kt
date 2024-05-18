@@ -29,7 +29,7 @@ internal class JsAssetResourceGenerator(
         return CodeBlock.of(
             "AssetResource(originalPath = js(%S) as String, rawPath = %S)",
             requireDeclaration,
-            metadata.pathRelativeToBase
+            metadata.pathRelativeToBase.invariantSeparatorsPath
         )
     }
 
