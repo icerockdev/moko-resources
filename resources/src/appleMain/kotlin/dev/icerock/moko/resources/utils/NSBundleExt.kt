@@ -11,9 +11,6 @@ import platform.Foundation.NSURL
 import platform.Foundation.pathExtension
 
 fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
-    // try get already loaded bundle
-    NSBundle.bundleWithIdentifier(identifier)?.let { return it }
-
     val bundlePath: String = NSBundle.mainBundle.bundlePath
     val enumerator: NSDirectoryEnumerator = requireNotNull(NSFileManager.defaultManager.enumeratorAtPath(bundlePath))
     while (true) {
@@ -21,15 +18,18 @@ fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
         val url = NSURL(fileURLWithPath = relativePath)
         if (url.pathExtension == "bundle") {
             val fullPath = "$bundlePath/$relativePath"
-            val loadedIdentifier: String? = NSBundle.bundleWithPath(fullPath)?.bundleIdentifier
+            val foundedBundle: NSBundle? = NSBundle.bundleWithPath(fullPath)
+            val loadedIdentifier: String? = foundedBundle?.bundleIdentifier
+
             if (isBundleSearchLogEnabled) {
                 println("moko-resources auto-load bundle with identifier $loadedIdentifier at path $fullPath")
             }
+
+            if (foundedBundle?.bundleIdentifier == identifier) return foundedBundle
         }
     }
 
-    return bundleWithIdentifier(identifier)
-        ?: throw IllegalArgumentException("bundle with identifier $identifier not found")
+    throw IllegalArgumentException("bundle with identifier $identifier not found")
 }
 
 var isBundleSearchLogEnabled = false
