@@ -192,37 +192,30 @@ internal fun registerCopyFrameworkResourcesToAppTask(
     }
 }
 
-internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
-    val xcFrameworkTaskNames: DomainObjectSet<String> = project.objects
-        .domainObjectSet(String::class.java)
+internal fun registerCopyXCFrameworkResourcesToAppTask(
+    project: Project,
+    xcFrameworkName: String
+) {
+    val copyTaskName: String = "copyResources" + xcFrameworkName + "ToApp"
 
-    project.tasks.withType(XCFrameworkTask::class).configureEach { task ->
-        xcFrameworkTaskNames.add(task.name)
-    }
+    project.tasks.register<CopyXCFrameworkResourcesToApp>(copyTaskName) {
+        val xcFrameworkTask = this.project.tasks
+            .getByName("assemble$xcFrameworkName") as XCFrameworkTask
 
-    xcFrameworkTaskNames.configureEach { taskName ->
-        val copyTaskName: String = taskName
-            .replace("assemble", "copyResources").plus("ToApp")
+        xcFrameworkDir.set(xcFrameworkTask.outputDir)
+        outputDir.set(
+            project.layout.dir(
+                project.provider {
+                    val buildProductsDir =
+                        project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
+                    val contentsFolderPath =
+                        project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
 
-        project.tasks.register<CopyXCFrameworkResourcesToApp>(copyTaskName) {
-            val xcFrameworkTask: XCFrameworkTask = this.project.tasks
-                .getByName(taskName) as XCFrameworkTask
-
-            xcFrameworkDir.set(xcFrameworkTask.outputDir)
-            outputDir.set(
-                project.layout.dir(
-                    project.provider {
-                        val buildProductsDir =
-                            project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
-                        val contentsFolderPath =
-                            project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
-
-                        File("$buildProductsDir/$contentsFolderPath")
-                    }
-                )
+                    File("$buildProductsDir/$contentsFolderPath")
+                }
             )
-            dependsOn(xcFrameworkTask)
-        }
+        )
+        dependsOn(xcFrameworkTask)
     }
 }
 
