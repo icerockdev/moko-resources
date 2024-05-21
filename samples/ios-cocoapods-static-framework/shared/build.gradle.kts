@@ -17,7 +17,7 @@ kotlin {
         ios.deploymentTarget = "15"
         podfile = project.file("../iosApp/Podfile")
         framework {
-            baseName = "shared"
+            baseName = "SharedKit"
             binaryOptions["bundleId"] = "com.share.resources.module"
 
             isStatic = true
