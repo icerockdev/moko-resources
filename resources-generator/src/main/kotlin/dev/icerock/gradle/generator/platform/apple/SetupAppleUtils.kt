@@ -193,15 +193,22 @@ internal fun registerCopyFrameworkResourcesToAppTask(
 }
 
 internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
-    // Seems that there were problem with this block in the past with mystic task adding. Need more info
-    // Now, that works perfectly, I've tested on the real project with Kotlin 1.9.10 and KSP enabled
-    // Suppose that on that moment there were no lazy register method for task container
-    project.tasks.withType(XCFrameworkTask::class).all { task ->
-        val copyTaskName: String = task.name
+    val xcFrameworkTaskNames: DomainObjectSet<String> = project.objects
+        .domainObjectSet(String::class.java)
+
+    project.tasks.withType(XCFrameworkTask::class).configureEach { task ->
+        xcFrameworkTaskNames.add(task.name)
+    }
+
+    xcFrameworkTaskNames.configureEach { taskName ->
+        val copyTaskName: String = taskName
             .replace("assemble", "copyResources").plus("ToApp")
 
         project.tasks.register<CopyXCFrameworkResourcesToApp>(copyTaskName) {
-            xcFrameworkDir.set(task.outputDir)
+            val xcFrameworkTask: XCFrameworkTask = this.project.tasks
+                .getByName(taskName) as XCFrameworkTask
+
+            xcFrameworkDir.set(xcFrameworkTask.outputDir)
             outputDir.set(
                 project.layout.dir(
                     project.provider {
@@ -214,7 +221,7 @@ internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
                     }
                 )
             )
-            dependsOn(task)
+            dependsOn(xcFrameworkTask)
         }
     }
 }
@@ -222,7 +229,8 @@ internal fun setupCopyXCFrameworkResourcesTask(project: Project) {
 internal fun setupExecutableResources(target: KotlinNativeTarget) {
     val project: Project = target.project
     target.binaries.withType<AbstractExecutable>().configureEach { executable ->
-        val copyTaskName: String = executable.linkTaskProvider.name.replace("link", "copyResources")
+        val copyTaskName: String =
+            executable.linkTaskProvider.name.replace("link", "copyResources")
 
         project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
             dependsOn(executable.linkTaskProvider)
