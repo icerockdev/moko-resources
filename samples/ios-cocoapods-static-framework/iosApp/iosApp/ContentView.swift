@@ -1,6 +1,6 @@
 import UIKit
 import SwiftUI
-import shared
+import SharedKit
 
 
 struct ContentView: View {

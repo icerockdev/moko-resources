@@ -11,7 +11,6 @@ import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
 import dev.icerock.gradle.generator.platform.android.setupAndroidVariantsSync
 import dev.icerock.gradle.generator.platform.apple.registerCopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
-import dev.icerock.gradle.generator.platform.apple.setupCopyXCFrameworkResourcesTask
 import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
 import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
@@ -57,7 +56,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 kmpExtension = kmpExtension
             )
 
-            setupCopyXCFrameworkResourcesTask(project = project)
             setupFatFrameworkTasks(project = project)
             registerGenerateAllResources(project = project)
             registerCopyFrameworkResourcesToAppTask(project = project)
