@@ -43,8 +43,7 @@ kotlin {
                 api(compose.foundation)
             }
         }
-
-        named("androidMain") {
+        androidMain {
             dependencies {
                 api(libs.composeUi)
             }
