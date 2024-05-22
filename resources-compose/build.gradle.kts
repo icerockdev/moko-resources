@@ -49,11 +49,5 @@ kotlin {
                 api(libs.composeUi)
             }
         }
-
-        named("jvmMain") {
-            dependencies {
-                api(compose.desktop.common)
-            }
-        }
     }
 }
