@@ -260,10 +260,19 @@ use `XCFramework` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-nat
 But if you use **static frameworks** required additional setup - add to Xcode build phase (at end):
 
 ```bash
-"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMPLReleaseXCFrameworkToApp \
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMultiPlatformLibraryReleaseXCFrameworkToApp \
     -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
     -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
 ```
+
+and add in your build.gradle config:
+```kotlin
+multiplatformResources {
+    configureCopyXCFrameworkResources("MultiPlatformLibrary")
+}
+```
+
+replace "MultiPlatformLibrary" with name that you use in `XCFramework` creation.
 
 Details you can check in sample `samples/ios-static-xcframework`.
 

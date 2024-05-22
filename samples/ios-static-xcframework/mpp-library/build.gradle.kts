@@ -53,4 +53,6 @@ dependencies {
 
 multiplatformResources {
     resourcesPackage.set("com.icerockdev.library")
+
+    configureCopyXCFrameworkResources("MultiPlatformLibrary")
 }

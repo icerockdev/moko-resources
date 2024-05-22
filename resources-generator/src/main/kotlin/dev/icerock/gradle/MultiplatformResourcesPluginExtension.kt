@@ -4,10 +4,12 @@
 
 package dev.icerock.gradle
 
+import dev.icerock.gradle.generator.platform.apple.registerCopyXCFrameworkResourcesToAppTask
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Property
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 @Suppress("UnnecessaryAbstractClass")
 abstract class MultiplatformResourcesPluginExtension {
@@ -17,6 +19,14 @@ abstract class MultiplatformResourcesPluginExtension {
     abstract val resourcesVisibility: Property<MRVisibility>
     abstract val iosMinimalDeploymentTarget: Property<String>
     abstract val resourcesSourceSets: NamedDomainObjectContainer<SourceDirectorySet>
+
+    fun Project.configureCopyXCFrameworkResources(xcFrameworkName: String = name) {
+        NativeBuildType.values()
+            .map { it.name.lowercase().capitalize() }
+            .plus("")
+            .map { xcFrameworkName.capitalize() + it + "XCFramework" }
+            .forEach { registerCopyXCFrameworkResourcesToAppTask(project = this, xcFrameworkName = it) }
+    }
 }
 
 internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Project) {

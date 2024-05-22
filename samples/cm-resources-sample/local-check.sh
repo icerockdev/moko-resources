@@ -14,7 +14,7 @@ log "cm-resources-sample android success"
 ./gradlew clean jvmJar
 log "cm-resources-sample jvm success"
 
-./gradlew clean jsBrowserDistribution
+./gradlew clean jsBrowserDistribution --rerun-tasks
 log "cm-resources-sample js success"
 
 if ! command -v xcodebuild &> /dev/null
