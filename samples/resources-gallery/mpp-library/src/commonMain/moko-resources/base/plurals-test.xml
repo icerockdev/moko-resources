@@ -25,4 +25,8 @@
         <item quantity="two">plurals-interop: two</item>
         <item quantity="other">plurals-interop: other</item>
     </plurals>
+    <plural name="test.plural.fallback">
+        <item quantity="one">one</item>
+        <item quantity="other">other</item>
+    </plural>
 </resources>

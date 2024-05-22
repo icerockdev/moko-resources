@@ -49,6 +49,7 @@ android {
 
     lint.disable.add("ImpliedQuantity")
     lint.disable.add("MissingTranslation")
+    lint.disable.add("MissingQuantity")
 }
 
 kotlin {

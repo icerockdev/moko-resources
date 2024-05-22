@@ -21,7 +21,11 @@ actual class PluralsResource(
         val selectedVariant = pluralRules.select(quantity.toDouble())
         val keyWithQuantity = "$key.$selectedVariant"
 
-        return resourceBundle.getString(keyWithQuantity)
+        return if (resourceBundle.containsKey(keyWithQuantity)) {
+            resourceBundle.getString(keyWithQuantity)
+        } else {
+            resourceBundle.getString("$key.${PluralRules.KEYWORD_OTHER}")
+        }
     }
 
     fun localized(locale: Locale = Locale.getDefault(), quantity: Int): String =
