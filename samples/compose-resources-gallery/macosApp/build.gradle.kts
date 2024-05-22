@@ -1,11 +1,12 @@
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
-import kotlin.reflect.full.declaredMemberProperties
 
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 version = "0.1.0"

@@ -6,6 +6,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 version = "1.0-SNAPSHOT"
@@ -13,7 +14,8 @@ version = "1.0-SNAPSHOT"
 kotlin {
     androidTarget()
 
-    ios()
+    iosArm64()
+    iosX64()
     iosSimulatorArm64()
 
     macosArm64()
@@ -27,7 +29,7 @@ kotlin {
     cocoapods {
         summary = "Some description for the Shared Module"
         homepage = "Link to the Shared Module homepage"
-        ios.deploymentTarget = "14.1"
+        ios.deploymentTarget = "15.2"
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
@@ -55,10 +57,6 @@ kotlin {
                 api("androidx.core:core-ktx:1.10.1")
             }
         }
-        val iosMain by getting
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
-        }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
@@ -69,20 +67,11 @@ kotlin {
                 implementation(compose.html.core)
             }
         }
-        val macosMain by creating {
-            dependsOn(commonMain)
-        }
-        val macosX64Main by getting {
-            dependsOn(macosMain)
-        }
-        val macosArm64Main by getting {
-            dependsOn(macosMain)
-        }
     }
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
