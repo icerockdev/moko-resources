@@ -13,18 +13,23 @@ class XmlStringsAndroidFormatTest {
     @Test
     fun quotesAndroidFormat() {
         assertEquals(
-            expected = """Same text with symbol's @ ? somet'ing "word" ad asd""",
-            actual = """Same text with symbol's @ ? somet\'ing \"word" ad asd""".removeAndroidMirroringFormat()
+            expected = """Same text with symbol's @ ? somet'ing "word"""",
+            actual = TEXT_WITH_QUOTES.removeAndroidMirroringFormat()
         )
     }
 
     @Test
     fun quotesAndroidInOutFormat() {
         assertEquals(
-            expected = """Same text with symbol\'s @ ? somet\'ing \"word\"""",
-            actual = """Same text with symbol's @ ? somet\'ing \"word""""
+            expected = """Same text with symbol\&apos;s @ ? somet\&apos;ing \&quot;word\&quot;""",
+            actual = TEXT_WITH_QUOTES
                 .removeAndroidMirroringFormat()
                 .convertXmlStringToAndroidLocalization()
         )
+    }
+
+    private companion object {
+        private const val TEXT_WITH_QUOTES = """Same text with symbol's @ ? somet\'ing \"word""""
+
     }
 }

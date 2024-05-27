@@ -63,17 +63,16 @@ internal fun String.convertXmlStringToAndroidLocalization(): String {
         .replace("\n", "\\n")
         .let { StringEscapeUtils.escapeXml11(it) }
         .let {
-            if (this[0] == '@') {
+            if (it[0] == '@') {
                 replace("@", """\@""")
             } else {
-                this
+                it
             }
         }
         .replace("\"", """\"""")
         .replace("\'", """\'""")
         .replace("&quot;", "\\&quot;")
         .replace("&apos;", "\\&apos;")
-        .replace("&", "&amp;")
 }
 
 internal fun String.convertXmlStringToLocalization(): String {
