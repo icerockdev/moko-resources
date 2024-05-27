@@ -19,6 +19,8 @@ allprojects {
             macosX64()
             macosArm64()
             js(IR) { browser() }
+            @OptIn(ExperimentalWasmDsl::class)
+            wasmJs { browser() }
 
             explicitApi()
 

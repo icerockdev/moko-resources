@@ -48,8 +48,4 @@ actual fun stringResource(resource: PluralsResource, quantity: Int, vararg args:
 }
 
 @Composable
-private fun localized(stringDesc: StringDesc): String {
-    return produceState(initialValue = "", stringDesc) {
-        value = stringDesc.toLocalizedString()
-    }.value
-}
+internal expect fun localized(stringDesc: StringDesc): String
