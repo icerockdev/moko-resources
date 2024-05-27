@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform")
@@ -9,11 +10,26 @@ plugins {
 
 kotlin {
     jvm()
+    js(IR) {
+        browser {
+            useCommonJs()
+        }
+        binaries.executable()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
     sourceSets {
-        val jvmMain by getting  {
+        commonMain {
+            dependencies {
+                implementation(project(":shared"))
+            }
+        }
+        jvmMain {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation(project(":shared"))
             }
         }
     }

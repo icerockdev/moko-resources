@@ -72,6 +72,12 @@ internal class FontGeneratorFactory(
                     resourcesPackageName = resourcesPackageName,
                     resourcesGenerationDir = outputResourcesDir
                 )
+            },
+            createWasm = {
+                JsFontResourceGenerator(
+                    resourcesPackageName = resourcesPackageName,
+                    resourcesGenerationDir = outputResourcesDir
+                )
             }
         )
     }

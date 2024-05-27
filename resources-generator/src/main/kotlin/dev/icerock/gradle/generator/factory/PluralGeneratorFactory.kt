@@ -79,6 +79,12 @@ internal class PluralGeneratorFactory(
                     resourcesPackageName = resourcesPackageName,
                     resourcesGenerationDir = outputResourcesDir
                 )
+            },
+            createWasm = {
+                JsPluralResourceGenerator(
+                    resourcesPackageName = resourcesPackageName,
+                    resourcesGenerationDir = outputResourcesDir
+                )
             }
         )
     }

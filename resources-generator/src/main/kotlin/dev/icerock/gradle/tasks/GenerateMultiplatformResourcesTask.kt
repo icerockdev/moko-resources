@@ -12,13 +12,7 @@ import dev.icerock.gradle.generator.container.AppleContainerGenerator
 import dev.icerock.gradle.generator.container.JsContainerGenerator
 import dev.icerock.gradle.generator.container.JvmContainerGenerator
 import dev.icerock.gradle.generator.container.NOPContainerGenerator
-import dev.icerock.gradle.generator.factory.AssetGeneratorFactory
-import dev.icerock.gradle.generator.factory.ColorGeneratorFactory
-import dev.icerock.gradle.generator.factory.FileGeneratorFactory
-import dev.icerock.gradle.generator.factory.FontGeneratorFactory
-import dev.icerock.gradle.generator.factory.ImageGeneratorFactory
-import dev.icerock.gradle.generator.factory.PluralGeneratorFactory
-import dev.icerock.gradle.generator.factory.StringGeneratorFactory
+import dev.icerock.gradle.generator.factory.*
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
@@ -33,15 +27,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.konan.target.KonanTarget
 
@@ -197,6 +183,9 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             },
             createJvm = {
                 JvmContainerGenerator()
+            },
+            createWasm = {
+                JsContainerGenerator()
             }
         )
     }

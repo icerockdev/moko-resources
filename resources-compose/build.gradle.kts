@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
 /*
  * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
@@ -34,6 +36,10 @@ kotlin {
     js(IR) {
         browser()
     }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
 
     sourceSets {
         commonMain {
@@ -47,6 +53,15 @@ kotlin {
             dependencies {
                 api(libs.composeUi)
             }
+        }
+        val commonJsMain by creating {
+            dependsOn(commonMain.get())
+        }
+        val wasmJsMain by getting {
+            dependsOn(commonJsMain)
+        }
+        jsMain {
+            dependsOn(commonJsMain)
         }
     }
 }

@@ -76,6 +76,11 @@ internal class ImageGeneratorFactory(
                 JsImageResourceGenerator(
                     resourcesGenerationDir = outputResourcesDir
                 )
+            },
+            createWasm = {
+                JsImageResourceGenerator(
+                    resourcesGenerationDir = outputResourcesDir
+                )
             }
         )
     }

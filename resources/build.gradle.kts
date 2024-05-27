@@ -13,7 +13,8 @@ plugins {
 
 kotlin {
     sourceSets {
-        getByName("jsMain") {
+        val commonJsMain by creating {
+            dependsOn(commonMain.get())
             dependencies {
                 api(npm("bcp-47", "2.1.0"))
                 api(npm("@messageformat/core", "3.1.0"))
@@ -23,6 +24,12 @@ kotlin {
 
                 implementation(libs.kotlinxCoroutines)
             }
+        }
+        val wasmJsMain by getting {
+            dependsOn(commonJsMain)
+        }
+        jsMain {
+            dependsOn(commonJsMain)
         }
     }
 }
