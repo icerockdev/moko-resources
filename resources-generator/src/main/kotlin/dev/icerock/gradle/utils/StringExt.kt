@@ -51,8 +51,8 @@ internal val String.flatName: String
 
 internal fun String.removeAndroidMirroringFormat(): String {
     //  Remove android format from string
-    return replace("""\'""","'")
-        .replace("""\"""","\"")
+    return replace("""\'""", "'")
+        .replace("""\"""", "\"")
 }
 
 internal fun String.convertXmlStringToAndroidLocalization(): String {
