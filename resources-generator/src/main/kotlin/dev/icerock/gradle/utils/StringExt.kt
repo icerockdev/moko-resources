@@ -64,7 +64,7 @@ internal fun String.convertXmlStringToAndroidLocalization(): String {
         .let { StringEscapeUtils.escapeXml11(it) }
         .let {
             if (it[0] == '@') {
-                replace("@", """\@""")
+                replaceFirst("@", """\@""")
             } else {
                 it
             }
