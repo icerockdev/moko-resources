@@ -69,8 +69,6 @@ internal fun String.convertXmlStringToAndroidLocalization(): String {
                 it
             }
         }
-        .replace("\"", """\"""")
-        .replace("\'", """\'""")
         .replace("&quot;", "\\&quot;")
         .replace("&apos;", "\\&apos;")
 }
