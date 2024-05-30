@@ -23,7 +23,7 @@ class XmlPluralsToPlatformTest {
     fun simplePluralsAndroidTest(){
         assertEquals(
             expected = """%d count of \&quot;%s\&quot;""",
-            actual ="%d count of \"%s\"".convertXmlStringToAndroidLocalization(),
+            actual ="""%d count of "%s"""".convertXmlStringToAndroidLocalization(),
         )
     }
 

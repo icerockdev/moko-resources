@@ -122,4 +122,12 @@ class XmlStringsToPlatformTest {
             actual = "\uD83D\uDE08".convertXmlStringToLocalization()
         )
     }
+
+    @Test
+    fun stringLikeAndroidLinkOnStringAndroidTest() {
+        assertEquals(
+            expected = """\@same text""",
+            actual = """@same text""".convertXmlStringToAndroidLocalization()
+        )
+    }
 }
