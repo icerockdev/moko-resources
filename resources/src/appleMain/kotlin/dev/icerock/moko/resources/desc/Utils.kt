@@ -9,7 +9,7 @@ import platform.Foundation.NSString
 import platform.Foundation.stringWithFormat
 
 object Utils {
-    const val FALLBACK_FALLBACK_LOCALE = "en"
+    const val BASE_LOCALIZATION: String = "Base"
 
     fun processArgs(args: List<Any>): Array<out Any> {
         return args.map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
@@ -17,15 +17,35 @@ object Utils {
 
     fun localizedString(stringRes: StringResource): String {
         val bundle = StringDesc.localeType.getLocaleBundle(stringRes.bundle)
-        val stringInCurrentLocale = bundle.localizedStringForKey(stringRes.resourceId, null, null)
+        val stringInCurrentLocale = bundle.localizedStringForKey(
+            key = stringRes.resourceId,
+            value = null,
+            table = null
+        )
+
         return if (stringInCurrentLocale == stringRes.resourceId) {
-            val stringInDefaultBundle = stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
+            val stringInDefaultBundle = stringRes.bundle.localizedStringForKey(
+                key = stringRes.resourceId,
+                value = null,
+                table = null
+            )
+
             if (stringInDefaultBundle == stringRes.resourceId) {
-                val fallbackLocale = stringRes.bundle.developmentLocalization ?: FALLBACK_FALLBACK_LOCALE
-                val fallbackLocaleBundle = StringDesc.LocaleType.Custom(fallbackLocale).getLocaleBundle(bundle)
-                fallbackLocaleBundle.localizedStringForKey(stringRes.resourceId, null, null)
-            } else stringInDefaultBundle
-        } else stringInCurrentLocale
+                val fallbackLocale = stringRes.bundle.developmentLocalization ?: BASE_LOCALIZATION
+                val fallbackLocaleBundle = StringDesc.LocaleType
+                    .Custom(fallbackLocale)
+                    .getLocaleBundle(stringRes.bundle)
+                fallbackLocaleBundle.localizedStringForKey(
+                    key = stringRes.resourceId,
+                    value = null,
+                    table = null
+                )
+            } else {
+                stringInDefaultBundle
+            }
+        } else {
+            stringInCurrentLocale
+        }
     }
 
     fun stringWithFormat(format: String, args: Array<out Any>): String {

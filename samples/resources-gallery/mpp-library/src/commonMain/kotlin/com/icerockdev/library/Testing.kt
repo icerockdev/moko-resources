@@ -28,6 +28,7 @@ import dev.icerock.moko.resources.getImageByFileName
 public object Testing {
     public fun getStrings(): List<StringDesc> {
         return listOf(
+            MR.strings.text_only_in_base.desc(),
             MR.strings.test_simple.desc(),
             MR.strings.test2.desc(),
             MR.strings.test3.desc(),

@@ -5,7 +5,7 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.PluralsResource
-import dev.icerock.moko.resources.desc.Utils.FALLBACK_FALLBACK_LOCALE
+import dev.icerock.moko.resources.desc.Utils.BASE_LOCALIZATION
 import kotlinx.cinterop.BetaInteropApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSLocale
@@ -40,7 +40,7 @@ internal fun pluralizedString(
     resourceId: String,
     number: Int
 ): String {
-    val fallbackLocale = bundle.developmentLocalization ?: FALLBACK_FALLBACK_LOCALE
+    val fallbackLocale = bundle.developmentLocalization ?: BASE_LOCALIZATION
     val localized = bundle
         .localizedStringForKey(resourceId, null, null)
         .takeUnless { it == resourceId }
