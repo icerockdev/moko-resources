@@ -49,13 +49,26 @@ internal fun String.remove(char: String): String {
 internal val String.flatName: String
     get() = this.remove('.')
 
+internal fun String.removeAndroidMirroringFormat(): String {
+    //  Remove android format from string
+    return replace("""\'""", "'")
+        .replace("""\"""", "\"")
+}
+
 internal fun String.convertXmlStringToAndroidLocalization(): String {
     //  Android resources should comply with requirements:
-    //  https://developer.android.com/guide/topics/resources/string-resource
+    //  https://developer.android.com/guide/topics/resources/string-resource#escaping_quotes
     return StringEscapeUtils
         .unescapeXml(this)
         .replace("\n", "\\n")
         .let { StringEscapeUtils.escapeXml11(it) }
+        .let {
+            if (it[0] == '@') {
+                replaceFirst("@", """\@""")
+            } else {
+                it
+            }
+        }
         .replace("&quot;", "\\&quot;")
         .replace("&apos;", "\\&apos;")
 }

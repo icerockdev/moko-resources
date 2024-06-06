@@ -150,6 +150,9 @@ You should enable moko-resources gradle plugin in `resources` module, that conta
 
 ### Xcode setup
 
+For correct work of plugin tasks you need disable `ENABLE_USER_SCRIPT_SANDBOXING` in .xcodeproj file:
+Xcode > Build Settings > Build Options > User Script Sandbox set `NO` 
+
 In iOS/macOS Info.plist need to add localizations, to use localizations strings.
 
 ```xml

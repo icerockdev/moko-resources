@@ -51,6 +51,18 @@ class PluralResourceEnTests : BaseStringResourceTests("en") {
     )
 
     @Test
+    fun checkPluralFallback1() = pluralTest(
+        expected = "one",
+        actual = MR.plurals.test_plural_fallback.desc(1)
+    )
+
+    @Test
+    fun checkPluralFallback2() = pluralTest(
+        expected = "other",
+        actual = MR.plurals.test_plural_fallback.desc(2)
+    )
+
+    @Test
     fun checkVariantsPlurals() = pluralTest(
         expected = """
             1 item

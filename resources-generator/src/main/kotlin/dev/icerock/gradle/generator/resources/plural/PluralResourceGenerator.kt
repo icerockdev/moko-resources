@@ -11,6 +11,7 @@ import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.processXmlTextContent
+import dev.icerock.gradle.utils.removeAndroidMirroringFormat
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -79,7 +80,7 @@ internal class PluralResourceGenerator(
                 val item: Node = itemNodes.item(j)
 
                 val quantity: String = item.attributes.getNamedItem("quantity").textContent.trim()
-                val value: String = item.textContent
+                val value: String = item.textContent.removeAndroidMirroringFormat()
 
                 pluralMap[quantity] = value.processXmlTextContent(strictLineBreaks)
             }

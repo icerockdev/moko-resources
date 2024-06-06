@@ -11,6 +11,7 @@ import dev.icerock.gradle.generator.generateKey
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.processXmlTextContent
+import dev.icerock.gradle.utils.removeAndroidMirroringFormat
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -29,7 +30,7 @@ internal class StringResourceGenerator(
             val language: LanguageType = LanguageType.fromFileName(file.parentFile.name)
             val strings: Map<KeyType, String> = loadLanguageStrings(file)
             strings.map { (key: KeyType, text: String) ->
-                key to (language to text)
+                key to (language to text.removeAndroidMirroringFormat())
             }
         }.groupBy(
             keySelector = { it.first },
