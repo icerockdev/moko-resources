@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.PluralsResource
+import dev.icerock.moko.resources.desc.Utils.BASE_LOCALIZATION
 import kotlinx.cinterop.BetaInteropApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSLocale
@@ -39,10 +40,13 @@ internal fun pluralizedString(
     resourceId: String,
     number: Int
 ): String {
+    val fallbackLocale = bundle.developmentLocalization ?: BASE_LOCALIZATION
     val localized = bundle
         .localizedStringForKey(resourceId, null, null)
         .takeUnless { it == resourceId }
         ?: baseBundle.localizedStringForKey(resourceId, null, null)
+            .takeUnless { it == resourceId } ?: StringDesc.LocaleType.Custom(fallbackLocale)
+            .getLocaleBundle(bundle).localizedStringForKey(resourceId, null, null)
     @Suppress("CAST_NEVER_SUCCEEDS")
     return NSString.create(
         format = localized,
@@ -50,3 +54,4 @@ internal fun pluralizedString(
         args = arrayOf(number)
     ) as String
 }
+
