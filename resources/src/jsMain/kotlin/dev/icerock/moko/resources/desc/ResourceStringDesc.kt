@@ -4,17 +4,16 @@
 
 package dev.icerock.moko.resources.desc
 
-import dev.icerock.moko.parcelize.Parcelable
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.provider.JsStringProvider
 
 actual data class ResourceStringDesc actual constructor(
     val stringRes: StringResource
-) : StringDesc, Parcelable {
-    override suspend fun localized(): String =
-        localized(stringRes.loader.getOrLoad())
+) : StringDesc {
+    override suspend fun toLocalizedString(): String =
+        toLocalizedString(stringRes.loader.getOrLoad())
 
-    override fun localized(provider: JsStringProvider): String {
+    override fun toLocalizedString(provider: JsStringProvider): String {
         return stringRes.localized(
             provider = provider,
             locale = StringDesc.localeType.locale

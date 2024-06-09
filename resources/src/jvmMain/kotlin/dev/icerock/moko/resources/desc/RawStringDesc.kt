@@ -4,8 +4,6 @@
 
 package dev.icerock.moko.resources.desc
 
-import dev.icerock.moko.parcelize.Parcelable
-
-actual data class RawStringDesc actual constructor(val string: String) : StringDesc, Parcelable {
+actual data class RawStringDesc actual constructor(val string: String) : StringDesc {
     override fun localized() = string
 }

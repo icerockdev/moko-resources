@@ -13,10 +13,10 @@ actual data class PluralFormattedStringDesc actual constructor(
     val args: List<Any>
 ) : StringDesc {
 
-    override suspend fun localized(): String =
-        localized(pluralsRes.loader.getOrLoad())
+    override suspend fun toLocalizedString(): String =
+        toLocalizedString(pluralsRes.loader.getOrLoad())
 
-    override fun localized(provider: JsStringProvider): String {
+    override fun toLocalizedString(provider: JsStringProvider): String {
         return pluralsRes.localized(
             provider = provider,
             locale = StringDesc.localeType.locale,

@@ -6,29 +6,30 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    android()
+    androidTarget()
 
-    jvm("desktop")
-
-    ios()
+    iosArm64()
+    iosX64()
     iosSimulatorArm64()
-
-    js(IR) {
-        browser()
-    }
 
     macosArm64()
     macosX64()
 
+    jvm("desktop")
+    js(IR) {
+        browser()
+    }
+
     cocoapods {
         summary = "Some description for the Shared Module"
         homepage = "Link to the Shared Module homepage"
-        ios.deploymentTarget = "14.1"
+        ios.deploymentTarget = "15.2"
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
@@ -51,14 +52,10 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:1.7.1")
+                api("androidx.activity:activity-compose:1.7.2")
                 api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.0")
+                api("androidx.core:core-ktx:1.10.1")
             }
-        }
-        val iosMain by getting
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
         }
         val desktopMain by getting {
             dependencies {
@@ -70,22 +67,12 @@ kotlin {
                 implementation(compose.html.core)
             }
         }
-        val macosMain by creating {
-            dependsOn(commonMain)
-        }
-        val macosX64Main by getting {
-            dependsOn(macosMain)
-        }
-        val macosArm64Main by getting {
-            dependsOn(macosMain)
-        }
     }
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
 
     defaultConfig {
         minSdk = 26
@@ -95,11 +82,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    lint {
+        disable.add("MissingTranslation")
+    }
+
     namespace = "com.myapplication.common"
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
 }
 
 // TODO move to gradle plugin
@@ -109,8 +100,11 @@ tasks.withType<DummyFrameworkTask>().configureEach {
         override fun execute(task: Task) {
             task as DummyFrameworkTask
 
-            val frameworkDir = File(task.destinationDir, task.frameworkName.get() + ".framework")
+            val frameworkDir: File = task.outputFramework.get().asFile
 
+            // TODO here we should fill list from local gradle modules
+            //  AND from external dependencies with bundles
+            //  to fill full list of bundles
             listOf(
                 "compose-resources-gallery:shared.bundle"
             ).forEach { bundleName ->

@@ -8,7 +8,7 @@ import platform.AppKit.NSImage
 import platform.AppKit.imageForResource
 import platform.Foundation.NSBundle
 
-actual class ImageResource(
+actual data class ImageResource(
     val assetImageName: String,
     val bundle: NSBundle = NSBundle.mainBundle
 ) {

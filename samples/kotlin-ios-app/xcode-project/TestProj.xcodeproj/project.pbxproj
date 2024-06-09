@@ -10,7 +10,35 @@
 		220E30A329BF51DE00C5724D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 220E30A229BF51DE00C5724D /* Main.storyboard */; };
 		7FD0DE8A27F45B08007F61A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FD0DE8927F45B08007F61A3 /* Assets.xcassets */; };
 		7FD0DE8D27F45B08007F61A3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7FD0DE8B27F45B08007F61A3 /* LaunchScreen.storyboard */; };
+		AEBDE7DD2B8F778B00105708 /* TestKotlinWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBDE7DC2B8F778B00105708 /* TestKotlinWatchApp.swift */; };
+		AEBDE7DF2B8F778B00105708 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBDE7DE2B8F778B00105708 /* ContentView.swift */; };
+		AEBDE7E12B8F778C00105708 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEBDE7E02B8F778C00105708 /* Assets.xcassets */; };
+		AEBDE7E72B8F778C00105708 /* TestKotlinWatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AEBDE7DA2B8F778B00105708 /* TestKotlinWatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AEBDE7E52B8F778C00105708 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 287627F71F319065007FA12B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AEBDE7D92B8F778B00105708;
+			remoteInfo = "TestKotlinWatchApp Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AEBDE7E82B8F778C00105708 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				AEBDE7E72B8F778C00105708 /* TestKotlinWatchApp.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		220E30A229BF51DE00C5724D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -19,10 +47,21 @@
 		7FD0DE8927F45B08007F61A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7FD0DE8C27F45B08007F61A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7FD0DE8E27F45B08007F61A3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AEBDE7DA2B8F778B00105708 /* TestKotlinWatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestKotlinWatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AEBDE7DC2B8F778B00105708 /* TestKotlinWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestKotlinWatchApp.swift; sourceTree = "<group>"; };
+		AEBDE7DE2B8F778B00105708 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AEBDE7E02B8F778C00105708 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		7FD0DE7B27F45B06007F61A3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AEBDE7D72B8F778B00105708 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -37,6 +76,7 @@
 			children = (
 				45964D362282A1FD00C16658 /* mpp-library */,
 				7FD0DE7F27F45B06007F61A3 /* TestKotlinApp */,
+				AEBDE7DB2B8F778B00105708 /* TestKotlinWatchApp */,
 				287628001F319065007FA12B /* Products */,
 			);
 			indentWidth = 4;
@@ -48,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				7FD0DE7E27F45B06007F61A3 /* TestKotlinApp.app */,
+				AEBDE7DA2B8F778B00105708 /* TestKotlinWatchApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -63,6 +104,16 @@
 			path = TestKotlinApp;
 			sourceTree = "<group>";
 		};
+		AEBDE7DB2B8F778B00105708 /* TestKotlinWatchApp */ = {
+			isa = PBXGroup;
+			children = (
+				AEBDE7DC2B8F778B00105708 /* TestKotlinWatchApp.swift */,
+				AEBDE7DE2B8F778B00105708 /* ContentView.swift */,
+				AEBDE7E02B8F778C00105708 /* Assets.xcassets */,
+			);
+			path = TestKotlinWatchApp;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -74,14 +125,34 @@
 				7FD0DE7B27F45B06007F61A3 /* Frameworks */,
 				7FD0DE7C27F45B06007F61A3 /* Resources */,
 				7F0DF74627F4A39A008C9F52 /* mokoResources */,
+				AEBDE7E82B8F778C00105708 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AEBDE7E62B8F778C00105708 /* PBXTargetDependency */,
+			);
+			name = TestKotlinApp;
+			productName = TestKotlinApp;
+			productReference = 7FD0DE7E27F45B06007F61A3 /* TestKotlinApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AEBDE7D92B8F778B00105708 /* TestKotlinWatchApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AEBDE7EB2B8F778C00105708 /* Build configuration list for PBXNativeTarget "TestKotlinWatchApp" */;
+			buildPhases = (
+				AEBDE7EC2B8F7A9100105708 /* ShellScript */,
+				AEBDE7D62B8F778B00105708 /* Sources */,
+				AEBDE7D72B8F778B00105708 /* Frameworks */,
+				AEBDE7D82B8F778B00105708 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = TestKotlinApp;
-			productName = TestKotlinApp;
-			productReference = 7FD0DE7E27F45B06007F61A3 /* TestKotlinApp.app */;
+			name = TestKotlinWatchApp;
+			productName = "TestKotlinWatchApp Watch App";
+			productReference = AEBDE7DA2B8F778B00105708 /* TestKotlinWatchApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -90,12 +161,15 @@
 		287627F71F319065007FA12B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1320;
+				LastSwiftUpdateCheck = 1510;
 				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "IceRock Development";
 				TargetAttributes = {
 					7FD0DE7D27F45B06007F61A3 = {
 						CreatedOnToolsVersion = 13.2.1;
+					};
+					AEBDE7D92B8F778B00105708 = {
+						CreatedOnToolsVersion = 15.1;
 					};
 				};
 			};
@@ -115,6 +189,7 @@
 			projectRoot = "";
 			targets = (
 				7FD0DE7D27F45B06007F61A3 /* TestKotlinApp */,
+				AEBDE7D92B8F778B00105708 /* TestKotlinWatchApp */,
 			);
 		};
 /* End PBXProject section */
@@ -127,6 +202,14 @@
 				220E30A329BF51DE00C5724D /* Main.storyboard in Resources */,
 				7FD0DE8D27F45B08007F61A3 /* LaunchScreen.storyboard in Resources */,
 				7FD0DE8A27F45B08007F61A3 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AEBDE7D82B8F778B00105708 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEBDE7E12B8F778C00105708 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,12 +249,50 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				$TARGET_BUILD_DIR/$EXECUTABLE_PATH,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd ..\n\n./gradlew :ios-kotlin-app:linkDebugExecutableIosSimulatorArm64\n\ncp ios-kotlin-app/build/bin/iosSimulatorArm64/debugExecutable/ios-kotlin-app.kexe \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n";
 		};
+		AEBDE7EC2B8F7A9100105708 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :mpp-library:embedAndSignAppleFrameworkForXcode\n";
+		};
 /* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AEBDE7D62B8F778B00105708 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEBDE7DF2B8F778B00105708 /* ContentView.swift in Sources */,
+				AEBDE7DD2B8F778B00105708 /* TestKotlinWatchApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AEBDE7E62B8F778C00105708 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AEBDE7D92B8F778B00105708 /* TestKotlinWatchApp */;
+			targetProxy = AEBDE7E52B8F778C00105708 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		7FD0DE8B27F45B08007F61A3 /* LaunchScreen.storyboard */ = {
@@ -212,6 +333,7 @@
 		7FD0DE9027F45B08007F61A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -248,6 +370,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -292,6 +415,7 @@
 		7FD0DE9127F45B08007F61A3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -328,6 +452,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -364,6 +489,170 @@
 			};
 			name = Release;
 		};
+		AEBDE7E92B8F778C00105708 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../mpp-library/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TestKotlinWatchApp;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = dev.icerock.moko.resources.TestKotlinApp;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.icerock.moko.resources.TestKotlinApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.2;
+			};
+			name = Debug;
+		};
+		AEBDE7EA2B8F778C00105708 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../mpp-library/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TestKotlinWatchApp;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = dev.icerock.moko.resources.TestKotlinApp;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.icerock.moko.resources.TestKotlinApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -381,6 +670,15 @@
 			buildConfigurations = (
 				7FD0DE9027F45B08007F61A3 /* Debug */,
 				7FD0DE9127F45B08007F61A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AEBDE7EB2B8F778C00105708 /* Build configuration list for PBXNativeTarget "TestKotlinWatchApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AEBDE7E92B8F778C00105708 /* Debug */,
+				AEBDE7EA2B8F778C00105708 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

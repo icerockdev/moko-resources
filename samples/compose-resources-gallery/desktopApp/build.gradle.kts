@@ -4,10 +4,11 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 kotlin {
-    jvm {}
+    jvm()
     sourceSets {
         val jvmMain by getting  {
             dependencies {
@@ -31,5 +32,5 @@ compose.desktop {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.app"
+    resourcesPackage.set("com.icerockdev.app")
 }

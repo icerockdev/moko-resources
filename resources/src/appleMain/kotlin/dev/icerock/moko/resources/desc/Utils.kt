@@ -9,16 +9,43 @@ import platform.Foundation.NSString
 import platform.Foundation.stringWithFormat
 
 object Utils {
+    const val BASE_LOCALIZATION: String = "Base"
+
     fun processArgs(args: List<Any>): Array<out Any> {
         return args.map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
     }
 
     fun localizedString(stringRes: StringResource): String {
         val bundle = StringDesc.localeType.getLocaleBundle(stringRes.bundle)
-        val string = bundle.localizedStringForKey(stringRes.resourceId, null, null)
-        return if (string == stringRes.resourceId) {
-            stringRes.bundle.localizedStringForKey(stringRes.resourceId, null, null)
-        } else string
+        val stringInCurrentLocale = bundle.localizedStringForKey(
+            key = stringRes.resourceId,
+            value = null,
+            table = null
+        )
+
+        return if (stringInCurrentLocale == stringRes.resourceId) {
+            val stringInDefaultBundle = stringRes.bundle.localizedStringForKey(
+                key = stringRes.resourceId,
+                value = null,
+                table = null
+            )
+
+            if (stringInDefaultBundle == stringRes.resourceId) {
+                val fallbackLocale = stringRes.bundle.developmentLocalization ?: BASE_LOCALIZATION
+                val fallbackLocaleBundle = StringDesc.LocaleType
+                    .Custom(fallbackLocale)
+                    .getLocaleBundle(stringRes.bundle)
+                fallbackLocaleBundle.localizedStringForKey(
+                    key = stringRes.resourceId,
+                    value = null,
+                    table = null
+                )
+            } else {
+                stringInDefaultBundle
+            }
+        } else {
+            stringInCurrentLocale
+        }
     }
 
     fun stringWithFormat(format: String, args: Array<out Any>): String {

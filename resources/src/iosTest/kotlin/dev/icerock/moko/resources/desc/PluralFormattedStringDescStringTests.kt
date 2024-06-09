@@ -50,6 +50,16 @@ class PluralFormattedStringDescStringTests {
         )
     }
 
+    @Test
+    fun testMissingLocalizationCase() {
+        StringDesc.localeType = StringDesc.LocaleType.Custom("es-US")
+        assertEquals(
+            expected = "6/10 items",
+            actual = createPluralFormatted(6).localized()
+        )
+        StringDesc.localeType = StringDesc.LocaleType.System
+    }
+
     private fun createPluralFormatted(number: Int): PluralFormattedStringDesc {
         val pluralResource = PluralsResource(
             resourceId = "stringFormatted",

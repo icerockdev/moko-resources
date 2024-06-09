@@ -35,7 +35,7 @@ implement all your UI in Kotlin with Jetpack Compose and MOKO resources.
 - **Strings, Plurals** to access the corresponding resources from common code;
 - **Colors** with light/dark mode support;
 - **Compose Multiplatform** support;
-- **Images** support (`svg`, `png`, `jpg`);
+- **Images** support (`svg`, `png`, `jpg`) with light/dark mode support;
 - **Fonts** support (`ttf`, `otf`);
 - **Files** support (as `raw` or `assets` for android);
 - **StringDesc** for lifecycle-aware access to resources and unified localization on both platforms;
@@ -45,9 +45,11 @@ implement all your UI in Kotlin with Jetpack Compose and MOKO resources.
 ## Requirements
 
 - Gradle version 7.5+
+- Kotlin 1.9.20+
 - Android Gradle Plugin 7.4.2+
 - Android API 16+
 - iOS version 11.0+
+- Compose Multiplatform 1.6.0+
 
 ## Installation
 
@@ -62,7 +64,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.23.0"
+        classpath "dev.icerock.moko:resources-generator:0.24.0"
     }
 }
 
@@ -80,20 +82,48 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.23.0")
-    commonMainApi("dev.icerock.moko:resources-compose:0.23.0") // for compose multiplatform
+    commonMainApi("dev.icerock.moko:resources:0.24.0")
+    commonMainApi("dev.icerock.moko:resources-compose:0.24.0") // for compose multiplatform
 
-    commonTestImplementation("dev.icerock.moko:resources-test:0.23.0")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.24.0")
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "org.example.library" // required
-    multiplatformResourcesClassName = "SharedRes" // optional, default MR
-    multiplatformResourcesVisibility = MRVisibility.Internal // optional, default Public
-    iosBaseLocalizationRegion = "en" // optional, default "en"
-    multiplatformResourcesSourceSet = "commonClientMain"  // optional, default "commonMain"
+    resourcesPackage.set("org.example.library") // required
+    resourcesClassName.set("SharedRes") // optional, default MR
+    resourcesVisibility.set(MRVisibility.Internal) // optional, default Public
+    iosBaseLocalizationRegion.set("en") // optional, default "en"
+    iosMinimalDeploymentTarget.set("11.0") // optional, default "9.0"
 }
 ```
+
+#### Custom resource sourceSet
+
+If you need custom path for source of resources, you need add in plugin configuration resourcesSourceSets option:
+project build.gradle
+
+```groovy
+multiplatformResources {
+    resourcesPackage.set("org.example.library.customResource") // required
+    resourcesSourceSets {
+        getByName("jvmMain").srcDirs(
+            File(projectDir, "customResources")
+        )
+    }  
+}
+```
+
+On next step, you must create inside of project directory folder with name: `customResources`, and moved your resources there. 
+
+```
+- projectDirectory
+-- customResources
+--- assets
+--- base
+--- image
+```
+
+Example of custom sourceSet in: `resources-gallery` sample, inside `jvm-app`
 
 #### Export classes to Swift
 
@@ -102,7 +132,7 @@ should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-bui
 
 ```
 framework {
-    export("dev.icerock.moko:resources:0.23.0")
+    export("dev.icerock.moko:resources:0.24.0")
     export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
 }
 ```
@@ -119,6 +149,9 @@ If you have multiple gradle modules and resources stored not in module that comp
 You should enable moko-resources gradle plugin in `resources` module, that contains resources, AND in `shared` module, that compiles into framework for iOS (same for jvm, JS, macos targets. Only android will works without this).
 
 ### Xcode setup
+
+For correct work of plugin tasks you need disable `ENABLE_USER_SCRIPT_SANDBOXING` in .xcodeproj file:
+Xcode > Build Settings > Build Options > User Script Sandbox set `NO` 
 
 In iOS/macOS Info.plist need to add localizations, to use localizations strings.
 
@@ -155,7 +188,11 @@ For more details about JS see `samples/resources-gallery/web-app` sample
 ### iOS/macOS static kotlin frameworks support
 
 Static framework can't have own resources, so we should setup additional `Build Phase` in Xcode
-that will copy resources to application.
+that will copy resources to application. 
+
+> **⚠ Warning**  
+> 
+> This phase should be placed after Kotlin Framework Compilation phase.
 
 Please replace `:yourframeworkproject` to kotlin project gradle path, and set correct relative
 path (`$SRCROOT/../` in example).
@@ -165,13 +202,15 @@ path (`$SRCROOT/../` in example).
 In Xcode add `Build Phase` (at end of list) with script:
 
 ```shell script
-"$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copy`YourFrameworkName`FrameworkResourcesToApp \
     -Pmoko.resources.BUILT_PRODUCTS_DIR="$BUILT_PRODUCTS_DIR" \
     -Pmoko.resources.CONTENTS_FOLDER_PATH="$CONTENTS_FOLDER_PATH" \
     -Pkotlin.native.cocoapods.platform="$PLATFORM_NAME" \
     -Pkotlin.native.cocoapods.archs="$ARCHS" \
     -Pkotlin.native.cocoapods.configuration="$CONFIGURATION" 
 ```
+
+`YourFrameworkName` is name of your project framework. Please, see on a static framework warning for get correct task name.
 
 #### Without org.jetbrains.kotlin.native.cocoapods
 
@@ -188,12 +227,10 @@ In Xcode add `Build Phase` (at end of list) with script:
 
 #### Disable warning about static framework usage
 
-To disable warnings about static framework in gradle set flag:
+To disable warnings about static framework in gradle.properties:
 
-```kotlin
-multiplatformResources {
-    disableStaticFrameworkWarning = true
-}
+```xml
+moko.resources.disableStaticFrameworkWarning=false
 ```
 
 ### iOS executable
@@ -226,10 +263,19 @@ use `XCFramework` [from kotlin plugin](https://kotlinlang.org/docs/mpp-build-nat
 But if you use **static frameworks** required additional setup - add to Xcode build phase (at end):
 
 ```bash
-"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMPLReleaseXCFrameworkToApp \
+"$SRCROOT/../gradlew" -p "$SRCROOT/../" :shared:copyResourcesMultiPlatformLibraryReleaseXCFrameworkToApp \
     -Pmoko.resources.BUILT_PRODUCTS_DIR=$BUILT_PRODUCTS_DIR \
     -Pmoko.resources.CONTENTS_FOLDER_PATH=$CONTENTS_FOLDER_PATH
 ```
+
+and add in your build.gradle config:
+```kotlin
+multiplatformResources {
+    configureCopyXCFrameworkResources("MultiPlatformLibrary")
+}
+```
+
+replace "MultiPlatformLibrary" with name that you use in `XCFramework` creation.
 
 Details you can check in sample `samples/ios-static-xcframework`.
 
@@ -237,7 +283,7 @@ Details you can check in sample `samples/ios-static-xcframework`.
 
 ### Example 1 - simple localization string
 
-The first step is a create a file `strings.xml` in `commonMain/resources/MR/base` with the following
+The first step is a create a file `strings.xml` in `commonMain/moko-resources/base` with the following
 content:
 
 ```xml
@@ -248,8 +294,8 @@ content:
 ```
 
 Next - create a file `strings.xml` with localized strings
-in `commonMain/resource/MR/<languageCode>`. Here's an example of
-creating `commonMain/resource/MR/ru` for a Russian localization:
+in `commonMain/moko-resources/<languageCode>`. Here's an example of
+creating `commonMain/moko-resources/ru` for a Russian localization:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -343,7 +389,7 @@ Note: more info in issue [#126](https://github.com/icerockdev/moko-resources/iss
 
 ### Example 2 - formatted localization string
 
-In `commonMain/resources/MR/base/strings.xml` add:
+In `commonMain/moko-resources/base/strings.xml` add:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -388,7 +434,7 @@ different behaviour on different platforms. Stick to one style for each string.
 
 ### Example 3 - plural string
 
-The first step is to create a file `plurals.xml` in `commonMain/resources/MR/base` with the
+The first step is to create a file `plurals.xml` in `commonMain/moko-resources/base` with the
 following content:
 
 ```xml
@@ -429,7 +475,7 @@ let string = getMyPluralDesc(quantity: 10).localized()
 
 ### Example 4 - plural formatted string
 
-The first step is to create file `plurals.xml` in `commonMain/resources/MR/base` with the following
+The first step is to create file `plurals.xml` in `commonMain/moko-resources/base` with the following
 content:
 
 ```xml
@@ -476,6 +522,20 @@ iOS:
 
 ```swift
 let string = getMyPluralFormattedDesc(quantity: 10).localized()
+```
+
+Compose:
+
+With compose, you can simply use `pluralStringResource`
+
+```kotlin
+Text(
+    text = pluralStringResource(
+        MR.plurals.runtime_format,
+        quantity,
+        quantity
+    )
+)
 ```
 
 ### Example 5 - pass raw string or resource
@@ -538,7 +598,7 @@ android {
 
 ### Example 7 - Shared Images
 
-Place images in the `commonMain/resources/MR/images` directory. Nested directories are also supported.
+Place images in the `commonMain/moko-resources/images` directory. Nested directories are also supported.
 
 #### png and jpg
 
@@ -551,7 +611,7 @@ Image names should end with one of:
 - `@3x` - android xxhdpi, ios 3x;
 - `@4x` - android xxxhdpi.
 
-If we add the following files to `commonMain/resources/MR/images`:
+If we add the following files to `commonMain/moko-resources/images`:
 
 - `home_black_18@1x.png`
 - `home_black_18@2x.png`
@@ -561,11 +621,18 @@ Then we get an autogenerated `MR.images.home_black_18` `ImageResource` in code. 
 - Android: `imageView.setImageResource(image.drawableResId)`
 - iOS: `imageView.image = image.toUIImage()`
 
+#### dark mode
+
+To support Dark Mode images, you can add -dark and optionally -light to the name of an image. Make sure the rest of the name matches the corresponding light mode image:
+
+- `car.svg`
+- `car-dark.svg`
+
 #### svg
 
 The Image generator also supports `svg` files.
 
-If we add the following file to `commonMain/resources/MR/images`:
+If we add the following file to `commonMain/moko-resources/images`:
 
 - `car_black.svg`
 
@@ -625,22 +692,21 @@ Image(resource: \.home_black_18)
 
 ### Example 8 - pass font
 
-Fonts resources directory is `commonMain/resources/MR/fonts`.  
-Font name should be this pattern: `<fontFamily>-<fontStyle>` like:
+Fonts resources directory is `commonMain/moko-resources/fonts`.
+Supported type of resources:
+- `ttf`
+- `otf`
 
+If we add to `commonMain/moko-resources/fonts` files:
 - `Raleway-Bold.ttf`
-- `Raleway-Regular.ttf`
-- `Raleway-Italic.ttf`
-  Supports `ttf` and `otf` resources.
-
-If we add to `commonMain/resources/MR/fonts` files:
-
-- `Raleway-Bold.ttf`
-- `Raleway-Regular.ttf`
+- `Raleway-Regular.otf`
 - `Raleway-Italic.ttf`
 
-We got
-autogenerated `MR.fonts.Raleway.italic`, `MR.fonts.Raleway.regular`, `MR.fonts.Raleway.bold` `FontResource`
+We got autogenerated:
+- `MR.fonts.raleway_italic`,
+- `MR.fonts.raleway_regular`,
+- `MR.fonts.raleway_bold_italic`
+
 in code, that we can use:
 
 - Android: `textView.typeface = font.getTypeface(context = this)`
@@ -665,7 +731,7 @@ val font: Font = MR.fonts.Raleway.italic.asFont(
 
 ### Example 9 - pass colors
 
-Colors resources directory is `commonMain/resources/MR/colors`.  
+Colors resources directory is `commonMain/moko-resources/colors`.  
 Colors files is `xml` with format:
 
 ```xml
@@ -765,7 +831,7 @@ val color: Color = colorResource(MR.colors.valueColor)
 ### Example 10 - plain file resource access
 
 The first step is a create a resource file `test.txt` for example,
-in `commonMain/resources/MR/files`
+in `commonMain/moko-resources/files`
 After gradle sync we can get file by id `MR.files.test`
 Moko-resources has out of box implementation function for read text files from common
 code - `readText()`
@@ -795,7 +861,7 @@ val fileContent: String? by MR.files.test.readTextAsState()
 ### Example 11 - assets access
 
 Assets allow you save directories hierarchy (in files structure is plain). Locate files
-to `commonMain/resources/MR/assets` and access to it by `MR.assets.*`
+to `commonMain/moko-resources/assets` and access to it by `MR.assets.*`
 
 #### Compose Multiplatform
 

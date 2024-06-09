@@ -4,10 +4,9 @@
 
 package dev.icerock.moko.resources
 
-import com.ibm.icu.text.MessageFormat
 import com.ibm.icu.text.PluralRules
 import com.ibm.icu.util.ULocale
-import java.util.*
+import java.util.Locale
 
 actual class PluralsResource(
     val resourcesClassLoader: ClassLoader,
@@ -22,7 +21,11 @@ actual class PluralsResource(
         val selectedVariant = pluralRules.select(quantity.toDouble())
         val keyWithQuantity = "$key.$selectedVariant"
 
-        return resourceBundle.getString(keyWithQuantity)
+        return if (resourceBundle.containsKey(keyWithQuantity)) {
+            resourceBundle.getString(keyWithQuantity)
+        } else {
+            resourceBundle.getString("$key.${PluralRules.KEYWORD_OTHER}")
+        }
     }
 
     fun localized(locale: Locale = Locale.getDefault(), quantity: Int): String =

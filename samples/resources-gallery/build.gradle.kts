@@ -3,6 +3,8 @@
  */
 
 import com.android.build.gradle.BaseExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
 buildscript {
     repositories {
@@ -13,9 +15,9 @@ buildscript {
     }
     dependencies {
         classpath(moko.resourcesGradlePlugin)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
-        classpath("com.android.tools.build:gradle:7.4.2")
-        classpath("org.jetbrains.compose:compose-gradle-plugin:1.4.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23")
+        classpath("org.jetbrains.compose:compose-gradle-plugin:1.6.1")
+        classpath("com.android.tools.build:gradle:8.1.1")
     }
 }
 
@@ -24,6 +26,16 @@ subprojects {
         configure<BaseExtension> {
             defaultConfig.minSdkVersion(16)
             compileSdkVersion(33)
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+        }
+    }
+    plugins.withType<KotlinPluginWrapper> {
+        configure<KotlinProjectExtension> {
+            jvmToolchain(17)
         }
     }
 }

@@ -11,6 +11,6 @@ import dev.icerock.moko.resources.desc.StringDesc
 @Composable
 actual fun StringDesc.localized(): String {
     return produceState("", this) {
-        value = localized()
+        value = toLocalizedString()
     }.value
 }

@@ -12,7 +12,7 @@ plugins {
 allprojects {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         kotlin {
-            android()
+            androidTarget()
             ios()
             iosSimulatorArm64()
             jvm()
@@ -49,6 +49,7 @@ android {
 
     lint.disable.add("ImpliedQuantity")
     lint.disable.add("MissingTranslation")
+    lint.disable.add("MissingQuantity")
 }
 
 kotlin {
@@ -75,5 +76,5 @@ dependencies {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.icerockdev.library"
+    resourcesPackage.set("com.icerockdev.library")
 }
