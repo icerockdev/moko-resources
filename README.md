@@ -728,6 +728,24 @@ val font: Font = MR.fonts.Raleway.italic.asFont(
   style = FontStyle.Normal // optional
 )
 ```
+#### SwiftUI
+
+For SwiftUI, create this `Font` extension:
+
+```swift
+extension Font {
+    init(resource: KeyPath<MR.fonts, FontResource>, withSize: Double = 14.0) {
+        self.init(MR.fonts()[keyPath: resource].uiFont(withSize: withSize))
+    }
+}
+```
+
+Then, you can refer to `FontResource`s directly by their key path, which provides compiler errors for typos or missing resources:
+
+```swift
+ Text("Text displayed resource font")
+   .font(Font(resource: \.raleway_regular, withSize: 14.0))
+```
 
 ### Example 9 - pass colors
 
