@@ -230,7 +230,7 @@ In Xcode add `Build Phase` (at end of list) with script:
 To disable warnings about static framework in gradle.properties:
 
 ```xml
-moko.resources.disableStaticFrameworkWarning=false
+moko.resources.disableStaticFrameworkWarning=true
 ```
 
 ### iOS executable
