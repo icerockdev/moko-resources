@@ -37,4 +37,10 @@ kotlin {
     }.configureEach {
         this.dependsOn(sourceSets.getByName("appleMain"))
     }
+
+    sourceSets.matching {
+        it.name == "tvosMain"
+    }.configureEach {
+        this.dependsOn(sourceSets.getByName("appleMain"))
+    }
 }
