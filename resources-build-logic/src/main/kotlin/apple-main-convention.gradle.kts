@@ -32,15 +32,15 @@ kotlin {
         }
     }
 
-    sourceSets.matching {
-        it.name == "watchosMain"
-    }.configureEach {
-        this.dependsOn(sourceSets.getByName("appleMain"))
-    }
+    val appleSourceSets = listOf("watchos", "tvos")
+    val appleMainSourceSets = appleSourceSets.map { "${it}Main" }
+    val appleTestSourceSets = appleSourceSets.map { "${it}Test" }
 
-    sourceSets.matching {
-        it.name == "tvosMain"
-    }.configureEach {
-        this.dependsOn(sourceSets.getByName("appleMain"))
-    }
+    sourceSets
+        .matching { it.name in appleMainSourceSets }
+        .configureEach { this.dependsOn(sourceSets.getByName("appleMain")) }
+
+    sourceSets
+        .matching { it.name in appleTestSourceSets }
+        .configureEach { this.dependsOn(sourceSets.getByName("appleTest")) }
 }
