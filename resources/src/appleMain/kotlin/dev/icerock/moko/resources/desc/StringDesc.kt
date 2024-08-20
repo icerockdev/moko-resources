@@ -57,7 +57,6 @@ actual interface StringDesc {
         abstract val locale: NSLocale
     }
 
-    @ThreadLocal
     actual companion object {
         actual var localeType: LocaleType = LocaleType.System
     }
