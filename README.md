@@ -230,7 +230,7 @@ In Xcode add `Build Phase` (at end of list) with script:
 To disable warnings about static framework in gradle.properties:
 
 ```xml
-moko.resources.disableStaticFrameworkWarning=false
+moko.resources.disableStaticFrameworkWarning=true
 ```
 
 ### iOS executable
@@ -727,6 +727,24 @@ val font: Font = MR.fonts.Raleway.italic.asFont(
   weight = FontWeight.Normal, // optional
   style = FontStyle.Normal // optional
 )
+```
+#### SwiftUI
+
+For SwiftUI, create this `Font` extension:
+
+```swift
+extension Font {
+    init(resource: KeyPath<MR.fonts, FontResource>, withSize: Double = 14.0) {
+        self.init(MR.fonts()[keyPath: resource].uiFont(withSize: withSize))
+    }
+}
+```
+
+Then, you can refer to `FontResource`s directly by their key path, which provides compiler errors for typos or missing resources:
+
+```swift
+ Text("Text displayed resource font")
+   .font(Font(resource: \.raleway_regular, withSize: 14.0))
 ```
 
 ### Example 9 - pass colors
