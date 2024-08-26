@@ -99,6 +99,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Input
     abstract val strictLineBreaks: Property<Boolean>
 
+    @get:Optional
     @get:Input
     abstract val allowWebpImageFormat: Property<Boolean>
 
