@@ -19,6 +19,7 @@ abstract class MultiplatformResourcesPluginExtension {
     abstract val resourcesVisibility: Property<MRVisibility>
     abstract val iosMinimalDeploymentTarget: Property<String>
     abstract val resourcesSourceSets: NamedDomainObjectContainer<SourceDirectorySet>
+    abstract val allowWebpImageFormat: Property<Boolean>
 
     fun Project.configureCopyXCFrameworkResources(xcFrameworkName: String = name) {
         NativeBuildType.values()
@@ -35,4 +36,5 @@ internal fun MultiplatformResourcesPluginExtension.setupConvention(project: Proj
     iosBaseLocalizationRegion.convention("en")
     resourcesVisibility.convention(MRVisibility.Public)
     iosMinimalDeploymentTarget.convention("9.0")
+    allowWebpImageFormat.convention(false)
 }

@@ -99,6 +99,9 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:Input
     abstract val strictLineBreaks: Property<Boolean>
 
+    @get:Input
+    abstract val allowWebpImageFormat: Property<Boolean>
+
     @get:Optional
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:InputFiles
@@ -229,8 +232,9 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             outputAssetsDir = outputAssetsDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
             kotlinKonanTarget = ::kotlinKonanTarget,
+            allowWebpImageFormat = allowWebpImageFormat.get(),
             androidRClassPackage = androidRClassPackage::get,
-            logger = logger
+            logger = logger,
         ).create(),
         ColorGeneratorFactory(
             resourcesVisibility = resourcesVisibility.get(),
