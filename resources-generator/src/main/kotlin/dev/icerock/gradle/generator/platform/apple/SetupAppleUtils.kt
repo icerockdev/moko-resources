@@ -160,7 +160,6 @@ internal fun registerCopyFrameworkResourcesToAppTask(
 
     val configName: String = (configMap[configuration]?.name ?: configuration).lowercase()
     // Map any configuration to standard with two types: "Debug/Release" builds
-    val clearConfigurationName: String = when{
     val clearConfigurationName: String = when {
         configName.matches(".*debug.*".toRegex()) -> "debug"
         configName.matches(".*release.*".toRegex()) -> "release"
