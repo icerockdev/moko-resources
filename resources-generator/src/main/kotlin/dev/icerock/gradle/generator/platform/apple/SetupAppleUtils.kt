@@ -159,6 +159,15 @@ internal fun registerCopyFrameworkResourcesToAppTask(
         ?: emptyMap()
 
     val configName: String = (configMap[configuration]?.name ?: configuration).lowercase()
+    // Map any configuration to standard with two types: "Debug/Release" builds
+    val clearConfigurationName: String = when{
+        configName.matches(".*debug.*".toRegex()) -> "debug"
+        configName.matches(".*release.*".toRegex()) -> "release"
+        else -> throw IllegalArgumentException(
+            "Invalid build configuration name: $configName. Please, update your configuration." +
+                "Configuration name should contains Debug or Release in name"
+        )
+    }
     val requiredKonanTargets: List<String> =
         AppleSdk.defineNativeTargets(platform, archs).map { it.name }
     val frameworkNames: DomainObjectSet<String> =
@@ -179,7 +188,7 @@ internal fun registerCopyFrameworkResourcesToAppTask(
             it.dependsOn(
                 project.tasks.withType<CopyFrameworkResourcesToAppTask>().matching { copyTask ->
                     val isCorrectConfiguration: Boolean =
-                        copyTask.configuration.lowercase() == configName
+                        copyTask.configuration.lowercase() == clearConfigurationName
                     val isCorrectFrameworkPrefix: Boolean =
                         copyTask.frameworkPrefix == frameworkPrefix
                     val isCorrectKonanTarget: Boolean =
