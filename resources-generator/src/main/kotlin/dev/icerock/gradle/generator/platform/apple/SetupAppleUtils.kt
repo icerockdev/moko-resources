@@ -152,24 +152,6 @@ internal fun registerCopyFrameworkResourcesToAppTask(
     if (platform == null || archs == null || configuration == null) return
 
     val kotlinMultiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
-    val configMap: Map<String, NativeBuildType> = (kotlinMultiplatformExtension as? ExtensionAware)
-        ?.extensions
-        ?.findByType<CocoapodsExtension>()
-        ?.xcodeConfigurationToNativeBuildType
-        ?: emptyMap()
-
-    val configName: String = (configMap[configuration]?.name ?: configuration).lowercase()
-    // Map any configuration to standard with two types: "Debug/Release" builds
-    val clearConfigurationName: String = when {
-        configName.matches(".*debug.*".toRegex()) -> "debug"
-        configName.matches(".*release.*".toRegex()) -> "release"
-        else -> throw IllegalArgumentException(
-            "Invalid build configuration name: $configName. Please, update your configuration." +
-                "Configuration name should contains Debug or Release in name"
-        )
-    }
-    val requiredKonanTargets: List<String> =
-        AppleSdk.defineNativeTargets(platform, archs).map { it.name }
     val frameworkNames: DomainObjectSet<String> =
         project.objects.domainObjectSet(String::class.java)
 
@@ -185,10 +167,21 @@ internal fun registerCopyFrameworkResourcesToAppTask(
         )
 
         xcodeTask.configure {
+            val configMap: Map<String, NativeBuildType> =
+                (kotlinMultiplatformExtension as? ExtensionAware)
+                    ?.extensions
+                    ?.findByType<CocoapodsExtension>()
+                    ?.xcodeConfigurationToNativeBuildType
+                    ?: emptyMap()
+
+            val configName: String = (configMap[configuration]?.name ?: configuration).lowercase()
+            val requiredKonanTargets: List<String> =
+                AppleSdk.defineNativeTargets(platform, archs).map { it.name }
+
             it.dependsOn(
                 project.tasks.withType<CopyFrameworkResourcesToAppTask>().matching { copyTask ->
                     val isCorrectConfiguration: Boolean =
-                        copyTask.configuration.lowercase() == clearConfigurationName
+                        copyTask.configuration.lowercase() == configName
                     val isCorrectFrameworkPrefix: Boolean =
                         copyTask.frameworkPrefix == frameworkPrefix
                     val isCorrectKonanTarget: Boolean =
