@@ -14,23 +14,22 @@ jobs:
   build-library:
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Check
         run: ./local-check.sh
         shell: bash
@@ -41,21 +40,21 @@ jobs:
         run: ./gradlew publishToMavenLocal
         shell: bash
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-android-mpp-app:
     runs-on: ${{ matrix.os }}
@@ -67,25 +66,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -93,16 +91,16 @@ jobs:
         run: cd samples/android-mpp-app && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-auto-manifest:
     runs-on: ${{ matrix.os }}
@@ -114,25 +112,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -140,16 +137,16 @@ jobs:
         run: cd samples/auto-manifest && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-compose-jvm-app:
     runs-on: ${{ matrix.os }}
@@ -161,25 +158,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -187,16 +183,16 @@ jobs:
         run: cd samples/compose-jvm-app && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-resources-gallery:
     runs-on: ${{ matrix.os }}
@@ -208,25 +204,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -234,16 +229,16 @@ jobs:
         run: cd samples/resources-gallery && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-default-hierarchy-resources-gallery-mobile:
     runs-on: ${{ matrix.os }}
@@ -255,25 +250,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -281,40 +275,39 @@ jobs:
         run: cd samples/default-hierarchy-gallery-mobile && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -322,40 +315,39 @@ jobs:
         run: cd samples/ios-static-xcframework && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-ios-cocoapods-static-framework:
     runs-on: macOS-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -363,40 +355,39 @@ jobs:
         run: cd samples/ios-cocoapods-static-framework && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-kotlin-ios-app:
     runs-on: macOS-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -404,16 +395,16 @@ jobs:
         run: cd samples/kotlin-ios-app && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-compose-resources-gallery:
     runs-on: ${{ matrix.os }}
@@ -425,25 +416,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -451,16 +441,16 @@ jobs:
         run: cd samples/compose-resources-gallery && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-kotlin-2-sample:
     runs-on: ${{ matrix.os }}
@@ -472,25 +462,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -498,16 +487,16 @@ jobs:
         run: cd samples/kotlin-2-sample && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-cm-resources-sample:
     runs-on: ${{ matrix.os }}
@@ -519,25 +508,24 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -545,14 +533,14 @@ jobs:
         run: cd samples/cm-resources-sample && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"

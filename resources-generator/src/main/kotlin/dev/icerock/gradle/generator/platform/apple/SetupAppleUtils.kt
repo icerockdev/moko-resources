@@ -152,15 +152,6 @@ internal fun registerCopyFrameworkResourcesToAppTask(
     if (platform == null || archs == null || configuration == null) return
 
     val kotlinMultiplatformExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
-    val configMap: Map<String, NativeBuildType> = (kotlinMultiplatformExtension as? ExtensionAware)
-        ?.extensions
-        ?.findByType<CocoapodsExtension>()
-        ?.xcodeConfigurationToNativeBuildType
-        ?: emptyMap()
-
-    val configName: String = (configMap[configuration]?.name ?: configuration).lowercase()
-    val requiredKonanTargets: List<String> =
-        AppleSdk.defineNativeTargets(platform, archs).map { it.name }
     val frameworkNames: DomainObjectSet<String> =
         project.objects.domainObjectSet(String::class.java)
 
@@ -176,6 +167,17 @@ internal fun registerCopyFrameworkResourcesToAppTask(
         )
 
         xcodeTask.configure {
+            val configMap: Map<String, NativeBuildType> =
+                (kotlinMultiplatformExtension as? ExtensionAware)
+                    ?.extensions
+                    ?.findByType<CocoapodsExtension>()
+                    ?.xcodeConfigurationToNativeBuildType
+                    ?: emptyMap()
+
+            val configName: String = (configMap[configuration]?.name ?: configuration).lowercase()
+            val requiredKonanTargets: List<String> =
+                AppleSdk.defineNativeTargets(platform, archs).map { it.name }
+
             it.dependsOn(
                 project.tasks.withType<CopyFrameworkResourcesToAppTask>().matching { copyTask ->
                     val isCorrectConfiguration: Boolean =
