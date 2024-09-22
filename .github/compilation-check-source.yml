@@ -29,7 +29,7 @@ on:
 
 .publish_test_report: &publish_test_report
   name: Publish Test Report
-  uses: mikepenz/action-junit-report@v2
+  uses: mikepenz/action-junit-report@v4
   if: ${{ always() }}
   with:
     report_paths: '**/build/test-results/**/TEST-*.xml'
@@ -81,7 +81,7 @@ jobs:
         shell: bash
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock

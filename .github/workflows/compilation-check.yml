@@ -40,12 +40,12 @@ jobs:
         run: ./gradlew publishToMavenLocal
         shell: bash
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -91,7 +91,7 @@ jobs:
         run: cd samples/android-mpp-app && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -137,7 +137,7 @@ jobs:
         run: cd samples/auto-manifest && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -183,7 +183,7 @@ jobs:
         run: cd samples/compose-jvm-app && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -229,7 +229,7 @@ jobs:
         run: cd samples/resources-gallery && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -275,7 +275,7 @@ jobs:
         run: cd samples/default-hierarchy-gallery-mobile && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -315,7 +315,7 @@ jobs:
         run: cd samples/ios-static-xcframework && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -355,7 +355,7 @@ jobs:
         run: cd samples/ios-cocoapods-static-framework && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -395,7 +395,7 @@ jobs:
         run: cd samples/kotlin-ios-app && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -441,7 +441,7 @@ jobs:
         run: cd samples/compose-resources-gallery && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -487,7 +487,7 @@ jobs:
         run: cd samples/kotlin-2-sample && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
@@ -533,7 +533,7 @@ jobs:
         run: cd samples/cm-resources-sample && ./local-check.sh
         shell: bash
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: "**/build/test-results/**/TEST-*.xml"
