@@ -40,7 +40,7 @@ on:
   uses: actions/upload-artifact@v4
   if: ${{ always() }}
   with:
-    name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+    name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
     path: '**/build/reports/**/*'
 
 .download_maven: &download_maven
@@ -55,7 +55,7 @@ on:
   uses: actions/cache@v4
   with:
     path: ~/.konan
-    key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+    key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
 
 .runner_matrix: &runner_matrix
   os: [ macOS-latest, windows-latest, ubuntu-latest ]

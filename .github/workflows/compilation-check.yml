@@ -29,7 +29,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Check
         run: ./local-check.sh
         shell: bash
@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-android-mpp-app:
     runs-on: ${{ matrix.os }}
@@ -81,7 +81,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -100,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-auto-manifest:
     runs-on: ${{ matrix.os }}
@@ -127,7 +127,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -146,7 +146,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-compose-jvm-app:
     runs-on: ${{ matrix.os }}
@@ -173,7 +173,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -192,7 +192,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-resources-gallery:
     runs-on: ${{ matrix.os }}
@@ -219,7 +219,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -238,7 +238,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-default-hierarchy-resources-gallery-mobile:
     runs-on: ${{ matrix.os }}
@@ -265,7 +265,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -284,7 +284,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
@@ -305,7 +305,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -324,7 +324,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-ios-cocoapods-static-framework:
     runs-on: macOS-latest
@@ -345,7 +345,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -364,7 +364,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-kotlin-ios-app:
     runs-on: macOS-latest
@@ -385,7 +385,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -404,7 +404,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-sample-compose-resources-gallery:
     runs-on: ${{ matrix.os }}
@@ -431,7 +431,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -450,7 +450,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-kotlin-2-sample:
     runs-on: ${{ matrix.os }}
@@ -477,7 +477,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -496,7 +496,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
   check-cm-resources-sample:
     runs-on: ${{ matrix.os }}
@@ -523,7 +523,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
+          key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
         uses: actions/download-artifact@v4
         with:
@@ -542,6 +542,5 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
           path: "**/build/reports/**/*"
-  
