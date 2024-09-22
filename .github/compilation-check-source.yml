@@ -12,17 +12,17 @@ on:
       - develop
 
 .checkout: &checkout
-  uses: actions/checkout@v1
+  uses: actions/checkout@v4
 
 .setup_jdk: &setup_jdk
   name: Set up JDK 17
-  uses: actions/setup-java@v1
+  uses: actions/setup-java@v4
   with:
     java-version: 17
 
 .setup_gradle: &setup_gradle
   name: Setup Gradle
-  uses: gradle/gradle-build-action@v2
+  uses: gradle/gradle-build-action@v3
   with:
     cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
 
@@ -39,24 +39,22 @@ on:
   uses: actions/upload-artifact@v4
   if: ${{ always() }}
   with:
-    name: code-coverage-report-${{ github.job }}
+    name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
     path: '**/build/reports/**/*'
 
 .download_maven: &download_maven
   name: Download maven artifacts
-  uses: actions/download-artifact@v3
+  uses: actions/download-artifact@v4
   with:
     name: maven
     path: ~/.m2/repository/dev/icerock
 
 .cache_konan: &cache_konan
   name: Cache .konan
-  uses: actions/cache@v2
+  uses: actions/cache@v4
   with:
     path: ~/.konan
-    key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-    restore-keys: |
-      ${{ runner.os }}-konan-
+    key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
 
 .runner_matrix: &runner_matrix
   os: [ macOS-latest, windows-latest, ubuntu-latest ]

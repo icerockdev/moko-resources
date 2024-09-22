@@ -14,23 +14,21 @@ jobs:
   build-library:
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Check
         run: ./local-check.sh
         shell: bash
@@ -55,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-android-mpp-app:
     runs-on: ${{ matrix.os }}
@@ -67,25 +65,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -102,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-auto-manifest:
     runs-on: ${{ matrix.os }}
@@ -114,25 +110,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -149,7 +143,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-compose-jvm-app:
     runs-on: ${{ matrix.os }}
@@ -161,25 +155,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -196,7 +188,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-resources-gallery:
     runs-on: ${{ matrix.os }}
@@ -208,25 +200,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -243,7 +233,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-default-hierarchy-resources-gallery-mobile:
     runs-on: ${{ matrix.os }}
@@ -255,25 +245,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -290,31 +278,29 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-ios-static-xcframework:
     runs-on: macOS-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -331,31 +317,29 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-ios-cocoapods-static-framework:
     runs-on: macOS-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -372,31 +356,29 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-kotlin-ios-app:
     runs-on: macOS-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -413,7 +395,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-sample-compose-resources-gallery:
     runs-on: ${{ matrix.os }}
@@ -425,25 +407,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -460,7 +440,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-kotlin-2-sample:
     runs-on: ${{ matrix.os }}
@@ -472,25 +452,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -507,7 +485,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
   check-cm-resources-sample:
     runs-on: ${{ matrix.os }}
@@ -519,25 +497,23 @@ jobs:
           - ubuntu-latest
     needs: build-library
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
       - name: Cache .konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+          key: ${{ matrix.runs-on }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
       - name: Download maven artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
@@ -554,5 +530,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: code-coverage-report-${{ github.job }}
+          name: code-coverage-report-${{ github.job }}-${{ matrix.runs-on }}
           path: "**/build/reports/**/*"
+  
