@@ -52,7 +52,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -99,7 +99,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -146,7 +146,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -193,7 +193,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -240,7 +240,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -287,7 +287,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -328,7 +328,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -369,7 +369,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -410,7 +410,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -457,7 +457,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -504,7 +504,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
@@ -551,7 +551,7 @@ jobs:
           report_paths: "**/build/test-results/**/TEST-*.xml"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: code-coverage-report-${{ github.job }}
