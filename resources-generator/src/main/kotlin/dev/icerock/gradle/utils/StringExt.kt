@@ -54,6 +54,7 @@ internal fun String.removeAndroidMirroringFormat(): String {
     return replace("""\'""", "'")
         .replace("""\"""", "\"")
         .replace("""\?""", "?")
+        .replace("""\@""", "@")
 }
 
 internal fun String.convertXmlStringToAndroidLocalization(): String {
