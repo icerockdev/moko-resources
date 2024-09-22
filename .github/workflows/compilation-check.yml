@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -70,6 +71,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -115,6 +117,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -160,6 +163,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -205,6 +209,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -250,6 +255,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -289,6 +295,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -328,6 +335,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -367,6 +375,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -412,6 +421,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -457,6 +467,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:
@@ -502,6 +513,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
         with:

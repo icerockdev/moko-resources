@@ -19,6 +19,7 @@ on:
   uses: actions/setup-java@v4
   with:
     java-version: 17
+    distribution: zulu
 
 .setup_gradle: &setup_gradle
   name: Setup Gradle

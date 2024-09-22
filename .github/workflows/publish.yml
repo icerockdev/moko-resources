@@ -25,6 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: zulu
       - name: Prebuild library
         run: ./gradlew publishToMavenLocal --rerun-tasks
       - name: Publish library
