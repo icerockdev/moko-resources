@@ -12,23 +12,24 @@ on:
       - develop
 
 .checkout: &checkout
-  uses: actions/checkout@v1
+  uses: actions/checkout@v4
 
 .setup_jdk: &setup_jdk
   name: Set up JDK 17
-  uses: actions/setup-java@v1
+  uses: actions/setup-java@v4
   with:
     java-version: 17
+    distribution: zulu
 
 .setup_gradle: &setup_gradle
   name: Setup Gradle
-  uses: gradle/gradle-build-action@v2
+  uses: gradle/gradle-build-action@v3
   with:
     cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop' }}
 
 .publish_test_report: &publish_test_report
   name: Publish Test Report
-  uses: mikepenz/action-junit-report@v2
+  uses: mikepenz/action-junit-report@v4
   if: ${{ always() }}
   with:
     report_paths: '**/build/test-results/**/TEST-*.xml'
@@ -36,27 +37,25 @@ on:
 
 .upload_reports: &upload_reports
   name: Archive reports
-  uses: actions/upload-artifact@v2
+  uses: actions/upload-artifact@v4
   if: ${{ always() }}
   with:
-    name: code-coverage-report-${{ github.job }}
+    name: code-coverage-report-${{ github.job }}-${{ matrix.os }}
     path: '**/build/reports/**/*'
 
 .download_maven: &download_maven
   name: Download maven artifacts
-  uses: actions/download-artifact@v3
+  uses: actions/download-artifact@v4
   with:
     name: maven
     path: ~/.m2/repository/dev/icerock
 
 .cache_konan: &cache_konan
   name: Cache .konan
-  uses: actions/cache@v2
+  uses: actions/cache@v4
   with:
     path: ~/.konan
-    key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
-    restore-keys: |
-      ${{ runner.os }}-konan-
+    key: ${{ matrix.os }}-konan-${{ hashFiles('**/*.gradle*', 'gradle/**/*') }}
 
 .runner_matrix: &runner_matrix
   os: [ macOS-latest, windows-latest, ubuntu-latest ]
@@ -82,7 +81,7 @@ jobs:
         shell: bash
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: maven
           path: ~/.m2/repository/dev/icerock
