@@ -124,10 +124,18 @@ class XmlStringsToPlatformTest {
     }
 
     @Test
-    fun stringLikeAndroidLinkOnStringAndroidTest() {
+    fun stringLikeAndroidResourceLinkOnStringAndroidTest() {
         assertEquals(
             expected = """\@same text""",
             actual = """@same text""".convertXmlStringToAndroidLocalization()
+        )
+    }
+
+    @Test
+    fun stringLikeAndroidAttributeLinkOnStringAndroidTest() {
+        assertEquals(
+            expected = """\?same text""",
+            actual = """?same text""".convertXmlStringToAndroidLocalization()
         )
     }
 }
