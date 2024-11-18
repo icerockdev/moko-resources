@@ -1,0 +1,3 @@
+# https://kotlinlang.org/docs/native-definition-file.html
+language = Objective-C
+package = dev.icerock.moko.resources.apple.native
