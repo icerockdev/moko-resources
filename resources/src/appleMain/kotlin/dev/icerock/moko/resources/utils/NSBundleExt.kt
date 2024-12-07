@@ -12,11 +12,18 @@ import platform.Foundation.NSURL
 import platform.Foundation.pathExtension
 
 fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
-    // we should use search by our class because dynamic framework with resources can be placed in
-    //  external directory, not inside app directory (NSBundle.main). for example in case of
-    //  SwiftUI preview - app directory empty, but dynamic framework with resources will be in
-    //  different directory (DerivedData)
-    val bundlePath: String = MRBundleAnchor().getBundle().bundlePath
+    // at first we try to find required bundle inside Bundle.main, because it's faster way
+    // https://github.com/icerockdev/moko-resources/issues/708
+    // but in some cases (for example in SwiftUI Previews) dynamic framework with bundles can be located
+    // in different location, not inside Bundle.main. So in this case we run less performant way - bundleWithIdentifier
+    // https://github.com/icerockdev/moko-resources/issues/747
+    return findBundleInMain(identifier)
+        ?: NSBundle.bundleWithIdentifier(identifier)
+        ?: throw IllegalArgumentException("bundle with identifier $identifier not found")
+}
+
+private fun findBundleInMain(identifier: String): NSBundle? {
+    val bundlePath: String = NSBundle.mainBundle.bundlePath
 
     val enumerator: NSDirectoryEnumerator = requireNotNull(
         NSFileManager.defaultManager.enumeratorAtPath(bundlePath)
@@ -39,7 +46,7 @@ fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
         }
     }
 
-    throw IllegalArgumentException("bundle with identifier $identifier not found")
+    return null
 }
 
 var isBundleSearchLogEnabled = false

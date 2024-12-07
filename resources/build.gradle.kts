@@ -2,9 +2,6 @@
  * Copyright 2019 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
 plugins {
     id("multiplatform-library-extended-convention")
     id("multiplatform-android-publish-convention")
@@ -28,20 +25,6 @@ kotlin {
             }
         }
     }
-
-    // setup bundle searcher for apple
-//    targets
-//        .withType<KotlinNativeTarget>()
-//        .matching { it.konanTarget.family.isAppleFamily }
-//        .configureEach {
-//            compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME) {
-//                val appleNative by cinterops.creating {
-//                    defFile(project.file("src/appleMain/def/appleNative.def"))
-//
-//                    includeDirs("$projectDir/src/appleMain/objective-c")
-//                }
-//            }
-//        }
 }
 
 android {
