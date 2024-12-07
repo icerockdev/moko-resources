@@ -2,6 +2,7 @@
 #import <Foundation/NSBundle.h>
 
 @interface ResourcesBundleAnchor : NSObject
-@end
 
-NSBundle* getResourcesBundle();
++ (NSBundle*) getResourcesBundle;
+
+@end

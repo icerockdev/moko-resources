@@ -7,8 +7,9 @@
 #import "MRResourcesBundle.h"
 
 @implementation ResourcesBundleAnchor
-@end
 
-NSBundle* getResourcesBundle() {
++ (NSBundle*) getResourcesBundle {
     return [NSBundle bundleForClass:[ResourcesBundleAnchor class]];
 }
+
+@end
