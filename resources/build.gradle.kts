@@ -30,18 +30,18 @@ kotlin {
     }
 
     // setup bundle searcher for apple
-    targets
-        .withType<KotlinNativeTarget>()
-        .matching { it.konanTarget.family.isAppleFamily }
-        .configureEach {
-            compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME) {
-                val appleNative by cinterops.creating {
-                    defFile(project.file("src/appleMain/def/appleNative.def"))
-
-                    includeDirs("$projectDir/src/appleMain/objective-c")
-                }
-            }
-        }
+//    targets
+//        .withType<KotlinNativeTarget>()
+//        .matching { it.konanTarget.family.isAppleFamily }
+//        .configureEach {
+//            compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME) {
+//                val appleNative by cinterops.creating {
+//                    defFile(project.file("src/appleMain/def/appleNative.def"))
+//
+//                    includeDirs("$projectDir/src/appleMain/objective-c")
+//                }
+//            }
+//        }
 }
 
 android {
