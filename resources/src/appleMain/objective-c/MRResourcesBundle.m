@@ -2,8 +2,6 @@
 // ar rcs libMRResourcesBundle.a source.o
 // lipo -info libMRResourcesBundle.a
 
-#import <stdarg.h>
-#import <Foundation/NSBundle.h>
 #import "MRResourcesBundle.h"
 
 @implementation ResourcesBundleAnchor

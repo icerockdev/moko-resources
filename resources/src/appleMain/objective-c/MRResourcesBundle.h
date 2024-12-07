@@ -1,3 +1,4 @@
+#import <limits.h>
 #import <stdarg.h>
 #import <Foundation/NSBundle.h>
 
