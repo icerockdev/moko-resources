@@ -134,22 +134,22 @@ fun KonanTarget.getAppleSdk(): String {
 fun KonanTarget.getClangTarget(): String {
     return when (this) {
         KonanTarget.IOS_ARM32 -> "armv7-apple-ios"
-        KonanTarget.IOS_ARM64 -> "arm64-apple-ios"
-        KonanTarget.IOS_SIMULATOR_ARM64 -> "arm64-apple-ios-simulator"
+        KonanTarget.IOS_ARM64 -> "aarch64-apple-ios"
+        KonanTarget.IOS_SIMULATOR_ARM64 -> "aarch64-apple-ios-simulator"
         KonanTarget.IOS_X64 -> "x86_64-apple-ios-simulator"
 
-        KonanTarget.MACOS_ARM64 -> "arm64-apple-macosx"
+        KonanTarget.MACOS_ARM64 -> "aarch64-apple-macosx"
         KonanTarget.MACOS_X64 -> "x86_64-apple-macosx"
 
-        KonanTarget.TVOS_ARM64 -> "arm64-apple-tvos"
-        KonanTarget.TVOS_SIMULATOR_ARM64 -> "arm64-apple-tvsimulator"
-        KonanTarget.TVOS_X64 -> "x86_64-apple-tvsimulator"
+        KonanTarget.TVOS_ARM64 -> "aarch64-apple-tvos"
+        KonanTarget.TVOS_SIMULATOR_ARM64 -> "aarch64-apple-tvos-simulator"
+        KonanTarget.TVOS_X64 -> "x86_64-apple-tvos-simulator"
 
         KonanTarget.WATCHOS_ARM32 -> "armv7k-apple-watchos"
-        KonanTarget.WATCHOS_ARM64 -> "arm64-apple-watchos"
-        KonanTarget.WATCHOS_DEVICE_ARM64 -> "arm64_32-apple-watchos"
-        KonanTarget.WATCHOS_SIMULATOR_ARM64 -> "arm64-apple-watchos"
-        KonanTarget.WATCHOS_X64 -> "x86_64-apple-watchos"
+        KonanTarget.WATCHOS_ARM64 -> "arm64_32-apple-watchos"
+        KonanTarget.WATCHOS_DEVICE_ARM64 -> "aarch64-apple-watchos"
+        KonanTarget.WATCHOS_SIMULATOR_ARM64 -> "aarch64-apple-watchos-simulator"
+        KonanTarget.WATCHOS_X64 -> "x86_64-apple-watchos-simulator"
         KonanTarget.WATCHOS_X86 -> "i386-apple-watchos"
 
         else -> error("Unsupported target for selecting clang target: $this")
