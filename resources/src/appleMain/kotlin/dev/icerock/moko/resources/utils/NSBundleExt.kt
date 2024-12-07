@@ -16,7 +16,7 @@ fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
     //  external directory, not inside app directory (NSBundle.main). for example in case of
     //  SwiftUI preview - app directory empty, but dynamic framework with resources will be in
     //  different directory (DerivedData)
-    val bundlePath: String = MRBundleAnchor.getBundle().bundlePath
+    val bundlePath: String = MRBundleAnchor().getBundle().bundlePath
 
     val enumerator: NSDirectoryEnumerator = requireNotNull(
         NSFileManager.defaultManager.enumeratorAtPath(bundlePath)
