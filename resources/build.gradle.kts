@@ -6,6 +6,7 @@ plugins {
     id("multiplatform-library-extended-convention")
     id("multiplatform-android-publish-convention")
     id("apple-main-convention")
+    id("apple-bundle-searcher-convention")
     id("detekt-convention")
     id("javadoc-stub-convention")
     id("publication-convention")

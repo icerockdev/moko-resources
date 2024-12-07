@@ -4,15 +4,31 @@
 
 package dev.icerock.moko.resources.utils
 
+import dev.icerock.moko.resources.apple.native.ResourcesBundleAnchor
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSDirectoryEnumerator
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSLog
 import platform.Foundation.NSURL
 import platform.Foundation.pathExtension
 
 fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
-    val bundlePath: String = NSBundle.mainBundle.bundlePath
-    val enumerator: NSDirectoryEnumerator = requireNotNull(NSFileManager.defaultManager.enumeratorAtPath(bundlePath))
+    // we should use search by our class because dynamic framework with resources can be placed in
+    //  external directory, not inside app directory (NSBundle.main). for example in case of
+    //  SwiftUI preview - app directory empty, but dynamic framework with resources will be in
+    //  different directory (DerivedData)
+    // more details inside resources-build-logic/src/main/kotlin/apple-bundle-searcher-convention.gradle.kts
+    @OptIn(ExperimentalForeignApi::class)
+    val rootBundle: NSBundle = requireNotNull(ResourcesBundleAnchor.getResourcesBundle()) {
+        "root NSBundle can't be found"
+    }
+    val bundlePath: String = rootBundle.bundlePath
+
+    val enumerator: NSDirectoryEnumerator = requireNotNull(
+        NSFileManager.defaultManager.enumeratorAtPath(bundlePath)
+    ) { "can't get enumerator" }
+
     while (true) {
         val relativePath: String = enumerator.nextObject() as? String ?: break
         val url = NSURL(fileURLWithPath = relativePath)
@@ -22,7 +38,8 @@ fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
             val loadedIdentifier: String? = foundedBundle?.bundleIdentifier
 
             if (isBundleSearchLogEnabled) {
-                println("moko-resources auto-load bundle with identifier $loadedIdentifier at path $fullPath")
+                // NSLog to see this logs in Console app when debug SwiftUI previews or release apps
+                NSLog("moko-resources auto-load bundle with identifier $loadedIdentifier at path $fullPath")
             }
 
             if (foundedBundle?.bundleIdentifier == identifier) return foundedBundle
