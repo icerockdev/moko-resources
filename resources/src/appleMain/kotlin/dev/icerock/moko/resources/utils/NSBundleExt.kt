@@ -4,6 +4,8 @@
 
 package dev.icerock.moko.resources.utils
 
+import dev.icerock.moko.resources.apple.native.ResourcesBundleAnchor
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSDirectoryEnumerator
 import platform.Foundation.NSFileManager
@@ -12,18 +14,16 @@ import platform.Foundation.NSURL
 import platform.Foundation.pathExtension
 
 fun NSBundle.Companion.loadableBundle(identifier: String): NSBundle {
-    // at first we try to find required bundle inside Bundle.main, because it's faster way
-    // https://github.com/icerockdev/moko-resources/issues/708
-    // but in some cases (for example in SwiftUI Previews) dynamic framework with bundles can be located
-    // in different location, not inside Bundle.main. So in this case we run less performant way - bundleWithIdentifier
-    // https://github.com/icerockdev/moko-resources/issues/747
-    return findBundleInMain(identifier)
-        ?: NSBundle.bundleWithIdentifier(identifier)
-        ?: throw IllegalArgumentException("bundle with identifier $identifier not found")
-}
-
-private fun findBundleInMain(identifier: String): NSBundle? {
-    val bundlePath: String = NSBundle.mainBundle.bundlePath
+    // we should use search by our class because dynamic framework with resources can be placed in
+    //  external directory, not inside app directory (NSBundle.main). for example in case of
+    //  SwiftUI preview - app directory empty, but dynamic framework with resources will be in
+    //  different directory (DerivedData)
+    // more details inside resources-build-logic/src/main/kotlin/apple-bundle-searcher-convention.gradle.kts
+    @OptIn(ExperimentalForeignApi::class)
+    val rootBundle: NSBundle = requireNotNull(ResourcesBundleAnchor.getResourcesBundle()) {
+        "root NSBundle can't be found"
+    }
+    val bundlePath: String = rootBundle.bundlePath
 
     val enumerator: NSDirectoryEnumerator = requireNotNull(
         NSFileManager.defaultManager.enumeratorAtPath(bundlePath)
@@ -46,7 +46,7 @@ private fun findBundleInMain(identifier: String): NSBundle? {
         }
     }
 
-    return null
+    throw IllegalArgumentException("bundle with identifier $identifier not found")
 }
 
 var isBundleSearchLogEnabled = false
