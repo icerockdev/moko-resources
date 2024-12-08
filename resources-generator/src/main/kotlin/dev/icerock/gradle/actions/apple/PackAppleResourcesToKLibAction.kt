@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.konan.file.zipDirAs
 import java.io.File
 import java.util.Properties
+import org.jetbrains.kotlin.konan.file.File as KonanFile
 
 internal class PackAppleResourcesToKLibAction(
     private val assetsDirectory: Provider<File>,
@@ -43,11 +44,48 @@ internal class PackAppleResourcesToKLibAction(
 
         val klibFile: File = task.outputFile.get()
         val repackDir = File(klibFile.parent, klibFile.nameWithoutExtension)
-        val defaultDir = File(repackDir, "default")
-        val resRepackDir = File(defaultDir, "resources")
 
-        task.logger.info("Adding resources to klib file `{}`", klibFile)
-        unzipTo(zipFile = klibFile, outputDirectory = repackDir)
+        if (klibFile.isDirectory) {
+            task.logger.info("Adding resources to unpacked klib directory `{}`", klibFile)
+
+            addResourcesToUnpackedKlib(
+                klibDir = klibFile,
+                resourcesGenerationDir = resourcesGenerationDir,
+                assetsDirectory = assetsDirectory,
+                task = task
+            )
+        } else {
+            task.logger.info("Adding resources to packed klib directory `{}`", klibFile)
+
+            unzipTo(zipFile = klibFile, outputDirectory = repackDir)
+
+            addResourcesToUnpackedKlib(
+                klibDir = repackDir,
+                resourcesGenerationDir = resourcesGenerationDir,
+                assetsDirectory = assetsDirectory,
+                task = task
+            )
+
+            val repackKonan = KonanFile(repackDir.path)
+            val klibKonan = KonanFile(klibFile.path)
+
+            klibFile.delete()
+            repackKonan.zipDirAs(klibKonan)
+
+            repackDir.deleteRecursively()
+        }
+    }
+
+    private fun addResourcesToUnpackedKlib(
+        klibDir: File,
+        resourcesGenerationDir: File,
+        assetsDirectory: File,
+        task: KotlinNativeCompile
+    ) {
+        assert(klibDir.isDirectory) { "should be used directory as KLib" }
+
+        val defaultDir = File(klibDir, "default")
+        val resRepackDir = File(defaultDir, "resources")
 
         val manifestFile = File(defaultDir, "manifest")
         val manifest = Properties()
@@ -83,14 +121,6 @@ internal class PackAppleResourcesToKLibAction(
         } else {
             task.logger.info("assets not found, compilation not required")
         }
-
-        val repackKonan = org.jetbrains.kotlin.konan.file.File(repackDir.path)
-        val klibKonan = org.jetbrains.kotlin.konan.file.File(klibFile.path)
-
-        klibFile.delete()
-        repackKonan.zipDirAs(klibKonan)
-
-        repackDir.deleteRecursively()
     }
 
     private fun compileAppleAssets(
