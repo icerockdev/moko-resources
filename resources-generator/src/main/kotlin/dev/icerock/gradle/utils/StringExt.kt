@@ -57,6 +57,8 @@ internal fun String.removeAndroidMirroringFormat(): String {
         .replace("""\@""", "@")
 }
 
+private val androidLinkingCharacters = setOf('@', '?')
+
 internal fun String.convertXmlStringToAndroidLocalization(): String {
     //  Android resources should comply with requirements:
     //  https://developer.android.com/guide/topics/resources/string-resource#escaping_quotes
@@ -64,13 +66,7 @@ internal fun String.convertXmlStringToAndroidLocalization(): String {
         .unescapeXml(this)
         .replace("\n", "\\n")
         .let { StringEscapeUtils.escapeXml11(it) }
-        .let {
-            if (it.getOrNull(0) == '@') {
-                replaceFirst("@", """\@""")
-            } else {
-                it
-            }
-        }
+        .replaceFirstChar { if (it in androidLinkingCharacters) "\\$it" else "$it" }
         .replace("&quot;", "\\&quot;")
         .replace("&apos;", "\\&apos;")
 }
