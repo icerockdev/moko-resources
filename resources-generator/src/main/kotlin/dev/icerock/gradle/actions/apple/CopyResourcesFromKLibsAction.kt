@@ -7,6 +7,7 @@ package dev.icerock.gradle.actions.apple
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Task
+import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
@@ -18,25 +19,50 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         linkTask: KotlinNativeLink,
         outputDir: File
     ) {
-        linkTask.klibs
-            .filter { it.extension == "klib" }
+        val packedKlibs: List<File> = linkTask.klibs
             .filter { it.exists() }
-            .forEach { inputFile ->
-                linkTask.logger.info("copy resources from $inputFile into $outputDir")
-                val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
-                val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-                val layout: KotlinLibraryLayout = klib.extractingToTemp
+            .filter { it.extension == "klib" }
+            .map { it }
+        val unpackedKlibs: List<File> = linkTask.klibs
+            .filter { it.exists() }
+            // we need only unpacked klibs
+            .filter { it.name == "manifest" && it.parentFile.name == "default" }
+            // manifest stored in klib inside directory default
+            .map { it.parentFile.parentFile }
 
-                try {
-                    File(layout.resourcesDir.path).copyRecursively(
-                        target = outputDir,
-                        overwrite = true
-                    )
-                } catch (@Suppress("SwallowedException") exc: NoSuchFileException) {
-                    linkTask.logger.info("resources in $inputFile not found")
-                } catch (@Suppress("SwallowedException") exc: java.nio.file.NoSuchFileException) {
-                    linkTask.logger.info("resources in $inputFile not found (empty lib)")
-                }
+        (packedKlibs + unpackedKlibs)
+            .forEach { inputFile ->
+                linkTask.logger.info("found dependency $inputFile, try to copy resources")
+
+                val layout: KotlinLibraryLayout = getKotlinLibraryLayout(inputFile)
+
+                copyResourcesFromKlib(
+                    logger = linkTask.logger,
+                    layout = layout,
+                    outputDir = outputDir,
+                )
             }
+    }
+
+    private fun copyResourcesFromKlib(logger: Logger, layout: KotlinLibraryLayout, outputDir: File) {
+        logger.info("copy resources from $layout into $outputDir")
+
+        try {
+            File(layout.resourcesDir.path).copyRecursively(
+                target = outputDir,
+                overwrite = true
+            )
+        } catch (@Suppress("SwallowedException") exc: NoSuchFileException) {
+            logger.info("resources in $layout not found")
+        } catch (@Suppress("SwallowedException") exc: java.nio.file.NoSuchFileException) {
+            logger.info("resources in $layout not found (empty lib)")
+        }
+    }
+
+    private fun getKotlinLibraryLayout(file: File): KotlinLibraryLayout {
+        val klibKonan = org.jetbrains.kotlin.konan.file.File(file.path)
+        val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
+
+        return if (klib.isZipped) klib.extractingToTemp else klib
     }
 }
