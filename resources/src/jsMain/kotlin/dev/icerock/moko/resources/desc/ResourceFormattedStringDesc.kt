@@ -14,11 +14,12 @@ actual data class ResourceFormattedStringDesc actual constructor(
     override suspend fun toLocalizedString(): String =
         toLocalizedString(stringRes.loader.getOrLoad())
 
+    @Suppress("SpreadOperator")
     override fun toLocalizedString(provider: JsStringProvider): String {
         return stringRes.localized(
             provider = provider,
             locale = StringDesc.localeType.locale,
-            args = args.toTypedArray()
+            *Utils.processArgs(args, provider)
         )
     }
 }
