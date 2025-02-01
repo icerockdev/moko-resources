@@ -11,6 +11,7 @@ import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
+import org.jetbrains.kotlin.library.impl.javaFile
 import java.io.File
 
 internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
@@ -19,49 +20,62 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         linkTask: KotlinNativeLink,
         outputDir: File
     ) {
-        val packedKlibs: List<File> = linkTask.klibs
-            .filter { it.exists() }
-            .filter { it.extension == "klib" }
-            .map { it }
-        val unpackedKlibs: List<File> = linkTask.klibs
-            .filter { it.exists() }
-            // we need only unpacked klibs
-            .filter { it.name == "manifest" && it.parentFile.name == "default" }
-            // manifest stored in klib inside directory default
-            .map { it.parentFile.parentFile }
+        val logger: Logger = linkTask.logger
 
-        (packedKlibs + unpackedKlibs)
-            .forEach { inputFile ->
-                linkTask.logger.info("found dependency $inputFile, try to copy resources")
-
-                val layout: KotlinLibraryLayout = getKotlinLibraryLayout(inputFile)
-
-                copyResourcesFromKlib(
-                    logger = linkTask.logger,
-                    layout = layout,
-                    outputDir = outputDir,
-                )
+        linkTask.klibs
+            .onEach { file ->
+                logger.debug("found klib dependency {}", file)
+            }
+            .flatMap { file ->
+                getBundlesFromKlib(file, logger)
+            }.forEach { bundle ->
+                logger.info("copy $bundle to $outputDir")
+                bundle.copyRecursively(File(outputDir, bundle.name), overwrite = true)
             }
     }
 
-    private fun copyResourcesFromKlib(logger: Logger, layout: KotlinLibraryLayout, outputDir: File) {
-        logger.info("copy resources from $layout into $outputDir")
+    /**
+     * Search bundles in klib different types
+     */
+    private fun getBundlesFromKlib(klibFile: File, logger: Logger): List<File> {
+        val isPackedKlib = klibFile.isFile && klibFile.extension == "klib"
+        val isUnpackedKlib = klibFile.isDirectory
 
-        try {
-            File(layout.resourcesDir.path).copyRecursively(
-                target = outputDir,
-                overwrite = true
-            )
-        } catch (@Suppress("SwallowedException") exc: NoSuchFileException) {
-            logger.info("resources in $layout not found")
-        } catch (@Suppress("SwallowedException") exc: java.nio.file.NoSuchFileException) {
-            logger.info("resources in $layout not found (empty lib)")
+        if (isPackedKlib || isUnpackedKlib) {
+            logger.info("found klib $klibFile")
+            return getBundlesFromKotlinLibrary(klibFile, logger)
+        } else {
+            // for unpacked klibs we can see content files instead of klib directory.
+            // try to check this case
+            if (klibFile.name == "manifest" && klibFile.parentFile.name == "default") {
+                logger.info("found manifest of klib $klibFile")
+                val unpackedKlibRoot: File = klibFile.parentFile.parentFile
+                return getBundlesFromKotlinLibrary(unpackedKlibRoot, logger)
+            } else {
+                logger.info("found some file $klibFile")
+                return emptyList()
+            }
         }
     }
 
-    private fun getKotlinLibraryLayout(file: File): KotlinLibraryLayout {
+    private fun getBundlesFromKotlinLibrary(
+        klibFile: File,
+        logger: Logger
+    ): List<File> {
+        val layout: KotlinLibraryLayout = getKotlinLibraryLayout(klibFile, logger)
+        return layout.resourcesDir.listFilesOrEmpty
+            .filter { it.isDirectory && it.extension == "bundle" }
+            .map { it.javaFile() }
+    }
+
+    private fun getKotlinLibraryLayout(file: File, logger: Logger): KotlinLibraryLayout {
         val klibKonan = org.jetbrains.kotlin.konan.file.File(file.path)
         val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
+
+        logger.warn("klib zipped ${klib.isZipped}, resources count ${klib.resourcesDir.listFilesOrEmpty.size}")
+        klib.resourcesDir.listFilesOrEmpty.forEach {
+            logger.warn("i see $it")
+        }
 
         return if (klib.isZipped) klib.extractingToTemp else klib
     }
