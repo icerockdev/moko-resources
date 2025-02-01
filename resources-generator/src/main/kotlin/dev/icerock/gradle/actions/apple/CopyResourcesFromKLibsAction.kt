@@ -41,20 +41,18 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         val isPackedKlib = klibFile.isFile && klibFile.extension == "klib"
         val isUnpackedKlib = klibFile.isDirectory
 
-        if (isPackedKlib || isUnpackedKlib) {
+        return if (isPackedKlib || isUnpackedKlib) {
             logger.info("found klib $klibFile")
-            return getBundlesFromKotlinLibrary(klibFile, logger)
-        } else {
+            getBundlesFromKotlinLibrary(klibFile, logger)
+        } else if (klibFile.name == "manifest" && klibFile.parentFile.name == "default") {
             // for unpacked klibs we can see content files instead of klib directory.
             // try to check this case
-            if (klibFile.name == "manifest" && klibFile.parentFile.name == "default") {
-                logger.info("found manifest of klib $klibFile")
-                val unpackedKlibRoot: File = klibFile.parentFile.parentFile
-                return getBundlesFromKotlinLibrary(unpackedKlibRoot, logger)
-            } else {
-                logger.info("found some file $klibFile")
-                return emptyList()
-            }
+            logger.info("found manifest of klib $klibFile")
+            val unpackedKlibRoot: File = klibFile.parentFile.parentFile
+            getBundlesFromKotlinLibrary(unpackedKlibRoot, logger)
+        } else {
+            logger.info("found some file $klibFile")
+            emptyList()
         }
     }
 
