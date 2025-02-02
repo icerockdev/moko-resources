@@ -290,6 +290,28 @@ jobs:
       - *publish_test_report
       - *upload_reports
 
+
+  check-kotlin-2-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - kotlin-2-tests
+        run: cd samples/kotlin-2-tests && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
   check-cm-resources-sample:
     runs-on: ${{ matrix.os }}
     strategy:
