@@ -64,7 +64,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.24.4"
+        classpath "dev.icerock.moko:resources-generator:0.24.5"
     }
 }
 
@@ -82,10 +82,10 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.24.4")
-    commonMainApi("dev.icerock.moko:resources-compose:0.24.4") // for compose multiplatform
+    commonMainApi("dev.icerock.moko:resources:0.24.5")
+    commonMainApi("dev.icerock.moko:resources-compose:0.24.5") // for compose multiplatform
 
-    commonTestImplementation("dev.icerock.moko:resources-test:0.24.4")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.24.5")
 }
 
 multiplatformResources {
@@ -132,7 +132,7 @@ should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-bui
 
 ```
 framework {
-    export("dev.icerock.moko:resources:0.24.4")
+    export("dev.icerock.moko:resources:0.24.5")
     export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
 }
 ```
