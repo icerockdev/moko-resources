@@ -14,4 +14,6 @@ set -e
 (cd samples/compose-resources-gallery && ./local-check.sh)
 (cd samples/default-hierarchy-gallery-mobile && ./local-check.sh)
 (cd samples/kotlin-2-sample && ./local-check.sh)
+(cd samples/kotlin-2-dynamic-sample && ./local-check.sh)
+(cd samples/kotlin-2-tests && ./local-check.sh)
 (cd samples/cm-resources-sample && ./local-check.sh)
