@@ -8,4 +8,5 @@
     <string name="quotes">Alex009 said "hello world" &amp; "write tests".</string>
     <string name="single_quotes">Alex009 said 'hello'</string>
     <string name="text_only_in_base">Text from base locale</string>
+    <string name="hello_formatted_string">Hello %s</string>
 </resources>

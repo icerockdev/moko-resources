@@ -11,10 +11,10 @@ actual data class PluralFormattedStringDesc actual constructor(
     val number: Int,
     val args: List<Any>
 ) : StringDesc {
-
+    @Suppress("SpreadOperator")
     override fun localized() = pluralsRes.localized(
         locale = StringDesc.localeType.currentLocale,
         quantity = number,
-        *(args.toTypedArray())
+        *Utils.processArgs(args)
     )
 }

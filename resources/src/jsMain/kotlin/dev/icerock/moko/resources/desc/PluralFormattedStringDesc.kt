@@ -16,12 +16,13 @@ actual data class PluralFormattedStringDesc actual constructor(
     override suspend fun toLocalizedString(): String =
         toLocalizedString(pluralsRes.loader.getOrLoad())
 
+    @Suppress("SpreadOperator")
     override fun toLocalizedString(provider: JsStringProvider): String {
         return pluralsRes.localized(
             provider = provider,
             locale = StringDesc.localeType.locale,
             quantity = number,
-            args = args.toTypedArray()
+            *Utils.processArgs(args, provider)
         )
     }
 }
