@@ -17,7 +17,7 @@ kotlin {
             testTask {
                 useKarma {
                     useSourceMapSupport()
-                    useChrome()
+                    useChromeHeadless()
                 }
             }
         }
