@@ -565,6 +565,7 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref !=
             'refs/heads/develop' }}
+      - uses: browser-actions/setup-chrome@v1
       - name: Cache .konan
         uses: actions/cache@v4
         with:

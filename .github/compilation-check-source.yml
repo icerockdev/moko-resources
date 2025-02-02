@@ -322,6 +322,7 @@ jobs:
       - *checkout
       - *setup_jdk
       - *setup_gradle
+      - uses: browser-actions/setup-chrome@v1
       - *cache_konan
       - *download_maven
 
