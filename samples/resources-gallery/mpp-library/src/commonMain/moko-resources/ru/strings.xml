@@ -12,4 +12,5 @@
     <string name="quotes">Alex009 сказал "привет мир" &amp; "пишите тесты".</string>
     <string name="single_quotes">Alex009 сказал 'привет'</string>
     <string name="test.dialect">Russian</string>
+    <string name="hello_formatted_string">Привет %s</string>
 </resources>

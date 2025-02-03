@@ -22,4 +22,12 @@ class StringResourceEnTests : BaseStringResourceTests("en") {
         expected = "Test data 2",
         actual = MR.strings.format.format(2)
     )
+
+    @Test
+    fun checkFormattedStringWithStringDesc() = stringTest(
+        expected = "Hello Test Project",
+        actual = MR.strings.hello_formatted_string.format(
+            MR.strings.common_name.desc()
+        )
+    )
 }

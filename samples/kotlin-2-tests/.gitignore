@@ -1,0 +1,27 @@
+*.iml
+.gradle
+.idea
+.DS_Store
+build
+*/build
+captures
+.externalNativeBuild
+.cxx
+local.properties
+/androidApp/key
+*.jks
+*yarn.lock
+kotlin-js-store/
+moko-resources-generated.js
+.kotlin
+
+## fastlane specific
+**/fastlane/report.xml
+# deliver temporary files
+**/fastlane/Preview.html
+# snapshot generated screenshots
+**/fastlane/screenshots
+# scan temporary files
+**/fastlane/test_output
+
+.kotlin

@@ -10,8 +10,9 @@ actual data class ResourceFormattedStringDesc actual constructor(
     private val stringRes: StringResource,
     private val args: List<Any>
 ) : StringDesc {
+    @Suppress("SpreadOperator")
     override fun localized() = stringRes.localized(
         locale = StringDesc.localeType.currentLocale,
-        *(args.toTypedArray())
+        *Utils.processArgs(args)
     )
 }
