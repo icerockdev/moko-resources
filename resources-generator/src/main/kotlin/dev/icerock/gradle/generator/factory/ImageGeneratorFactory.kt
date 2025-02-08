@@ -31,6 +31,7 @@ internal class ImageGeneratorFactory(
     private val outputAssetsDir: File,
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
+    private val allowWebpImageFormat: Boolean,
     private val androidRClassPackage: () -> String,
     private val logger: Logger
 ) {
@@ -44,7 +45,11 @@ internal class ImageGeneratorFactory(
             generator = ImageResourceGenerator(),
             platformResourceGenerator = createPlatformImageGenerator(),
             filter = {
-                include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
+                val formats = mutableListOf("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
+                if (allowWebpImageFormat) {
+                    formats.add("images/**/*.webp")
+                }
+                include(formats)
             }
         )
     }
