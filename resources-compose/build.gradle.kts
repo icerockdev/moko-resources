@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 /*
  * Copyright 2021 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
@@ -13,6 +15,7 @@ plugins {
     id("org.jetbrains.compose")
     id("javadoc-stub-convention")
     id("publication-convention")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -32,6 +35,10 @@ kotlin {
     macosX64()
     macosArm64()
     js(IR) {
+        browser()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         browser()
     }
 
