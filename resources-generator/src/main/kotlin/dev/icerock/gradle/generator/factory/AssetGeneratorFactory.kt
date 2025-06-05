@@ -80,6 +80,11 @@ internal class AssetGeneratorFactory(
                 JsAssetResourceGenerator(
                     resourcesGenerationDir = outputResourcesDir
                 )
+            },
+            createWasm = {
+                JsAssetResourceGenerator(
+                    resourcesGenerationDir = outputResourcesDir
+                )
             }
         )
     }

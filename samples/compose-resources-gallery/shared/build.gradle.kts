@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform")
@@ -23,6 +24,10 @@ kotlin {
 
     jvm("desktop")
     js(IR) {
+        browser()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         browser()
     }
 

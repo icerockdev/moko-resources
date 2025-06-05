@@ -18,6 +18,7 @@ internal fun <T> createByPlatform(
     createApple: () -> T,
     createJvm: () -> T,
     createJs: () -> T,
+    createWasm: () -> T,
 ): T {
     return when (kotlinPlatformType) {
         KotlinPlatformType.common -> createCommon()
@@ -54,6 +55,6 @@ internal fun <T> createByPlatform(
             KonanTarget.MINGW_X64 -> error("$konanTarget not supported by moko-resources now")
         }
 
-        KotlinPlatformType.wasm -> error("$kotlinPlatformType not supported by moko-resources now")
+        KotlinPlatformType.wasm -> createWasm()
     }
 }

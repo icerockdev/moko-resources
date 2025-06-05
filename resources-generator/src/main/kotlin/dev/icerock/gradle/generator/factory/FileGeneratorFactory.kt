@@ -79,6 +79,11 @@ internal class FileGeneratorFactory(
                 JsFileResourceGenerator(
                     resourcesGenerationDir = outputResourcesDir
                 )
+            },
+            createWasm = {
+                JsFileResourceGenerator(
+                    resourcesGenerationDir = outputResourcesDir
+                )
             }
         )
     }
