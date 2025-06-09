@@ -1,9 +1,9 @@
 [versions]
 
-kotlin = "1.9.23"
-compose = "1.6.10-rc01"
-agp = "8.3.1"
-androidx-activityCompose = "1.8.2"
+kotlin = "2.1.21"
+compose = "1.8.1"
+agp = "8.9.3"
+androidx-activityCompose = "1.10.1"
 androidx-uiTest = "1.6.4"
 
 [libraries]
@@ -17,3 +17,4 @@ androidx-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref =
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 android-application = { id = "com.android.application", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

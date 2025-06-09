@@ -2,7 +2,6 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
@@ -10,6 +9,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
     id("dev.icerock.mobile.multiplatform-resources")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 kotlin {
@@ -34,11 +34,6 @@ kotlin {
     jvm()
 
     js {
-        browser()
-        binaries.executable()
-    }
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
         browser()
         binaries.executable()
     }
@@ -99,7 +94,7 @@ kotlin {
 
 android {
     namespace = "com.icerock.cm.sample.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
