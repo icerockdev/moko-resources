@@ -11,11 +11,11 @@ plugins {
 android {
     namespace = "com.icerockdev.mpp"
 
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
-        minSdk = 16
-        targetSdk = 33
+        minSdk = 21
+        targetSdk = 34
     }
 
     defaultConfig {
@@ -37,7 +37,7 @@ kotlin {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation(libs.appCompat)
 
     commonMainImplementation(moko.resources)
 }

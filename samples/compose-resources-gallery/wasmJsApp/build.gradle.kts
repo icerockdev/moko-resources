@@ -30,12 +30,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":shared"))
-
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.ui)
-                implementation(compose.material)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
             }
         }
     }

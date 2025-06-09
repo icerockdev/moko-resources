@@ -14,8 +14,8 @@ import dev.icerock.gradle.generator.resources.font.AndroidFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.AppleFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.FontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.JsFontResourceGenerator
-import dev.icerock.gradle.generator.resources.font.WasmJsFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.JvmFontResourceGenerator
+import dev.icerock.gradle.generator.resources.font.WasmJsFontResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import dev.icerock.gradle.toModifier

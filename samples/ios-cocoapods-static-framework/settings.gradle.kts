@@ -30,6 +30,9 @@ dependencyResolutionManagement {
     }
 
     versionCatalogs {
+        create("libs") {
+            from(files("../../gradle/libs.versions.toml"))
+        }
         create("moko") {
             from(files("../../gradle/moko.versions.toml"))
         }

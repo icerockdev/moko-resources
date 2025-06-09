@@ -4,7 +4,6 @@
 
 package dev.icerock.moko.resources.test
 
-import dev.icerock.moko.resources.FontResource
 import dev.icerock.moko.resources.ImageResource
 
 actual fun createImageResourceMock(): ImageResource = ImageResource("")

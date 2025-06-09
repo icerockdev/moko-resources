@@ -14,8 +14,8 @@ import dev.icerock.gradle.generator.resources.file.AndroidFileResourceGenerator
 import dev.icerock.gradle.generator.resources.file.AppleFileResourceGenerator
 import dev.icerock.gradle.generator.resources.file.FileResourceGenerator
 import dev.icerock.gradle.generator.resources.file.JsFileResourceGenerator
-import dev.icerock.gradle.generator.resources.file.WasmJsFileResourceGenerator
 import dev.icerock.gradle.generator.resources.file.JvmFileResourceGenerator
+import dev.icerock.gradle.generator.resources.file.WasmJsFileResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import dev.icerock.gradle.toModifier

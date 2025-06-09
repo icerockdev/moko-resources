@@ -6,8 +6,8 @@ plugins {
     kotlin("native.cocoapods")
     id("com.android.library")
     id("org.jetbrains.compose")
-    id("dev.icerock.mobile.multiplatform-resources")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 version = "1.0-SNAPSHOT"
@@ -61,9 +61,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:1.7.2")
-                api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.1")
+                api(libs.appCompat)
+                api(libs.androidxActivityCompose)
+                api(libs.androidxCore)
             }
         }
         val desktopMain by getting {
@@ -80,7 +80,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {

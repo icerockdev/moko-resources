@@ -15,18 +15,18 @@ buildscript {
     }
     dependencies {
         classpath(moko.resourcesGradlePlugin)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.21")
-        classpath("org.jetbrains.compose:compose-gradle-plugin:1.8.1")
-        classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.1.21")
-        classpath("com.android.tools.build:gradle:8.9.3")
+        classpath(libs.kotlinGradlePlugin)
+        classpath(libs.androidGradlePlugin)
+        classpath(libs.composeJetBrainsPlugin)
+        classpath(libs.composeCompilerPlugin)
     }
 }
 
 subprojects {
     plugins.withType<com.android.build.gradle.BasePlugin> {
         configure<BaseExtension> {
-            defaultConfig.minSdkVersion(16)
-            compileSdkVersion(33)
+            defaultConfig.minSdkVersion(21)
+            compileSdkVersion(34)
 
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_17

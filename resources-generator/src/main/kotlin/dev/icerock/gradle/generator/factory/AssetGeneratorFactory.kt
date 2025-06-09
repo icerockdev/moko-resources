@@ -14,8 +14,8 @@ import dev.icerock.gradle.generator.resources.asset.AndroidAssetResourceGenerato
 import dev.icerock.gradle.generator.resources.asset.AppleAssetResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.AssetResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.JsAssetResourceGenerator
-import dev.icerock.gradle.generator.resources.asset.WasmJsAssetResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.JvmAssetResourceGenerator
+import dev.icerock.gradle.generator.resources.asset.WasmJsAssetResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import dev.icerock.gradle.toModifier

@@ -10,7 +10,12 @@ import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
-import dev.icerock.gradle.generator.resources.string.*
+import dev.icerock.gradle.generator.resources.string.AndroidStringResourceGenerator
+import dev.icerock.gradle.generator.resources.string.AppleStringResourceGenerator
+import dev.icerock.gradle.generator.resources.string.JsStringResourceGenerator
+import dev.icerock.gradle.generator.resources.string.JvmStringResourceGenerator
+import dev.icerock.gradle.generator.resources.string.StringResourceGenerator
+import dev.icerock.gradle.generator.resources.string.WasmJsStringResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.toModifier

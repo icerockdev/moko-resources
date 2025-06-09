@@ -32,6 +32,15 @@ kotlin {
         useCommonJs()
     }
 
+    // For https://youtrack.jetbrains.com/issue/KT-61573
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.get().compilerOptions {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+        }
+    }
+
     sourceSets {
         val commonMain by getting
 
