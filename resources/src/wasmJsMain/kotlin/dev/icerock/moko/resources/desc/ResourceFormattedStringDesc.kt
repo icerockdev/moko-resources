@@ -18,7 +18,7 @@ actual data class ResourceFormattedStringDesc actual constructor(
         return stringRes.localized(
             provider = provider,
             locale = StringDesc.localeType.locale,
-            args = args.toTypedArray()
+            *Utils.processArgs(args, provider)
         )
     }
 }

@@ -4,7 +4,6 @@
 
 package dev.icerock.moko.resources.internal
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import org.w3c.dom.MediaQueryList
@@ -25,7 +24,6 @@ internal fun Window.getDarkModeFlow(): Flow<Boolean> {
         }
         mediaList.addListener(listener)
 
-        @OptIn(ExperimentalCoroutinesApi::class)
         invokeOnClose {
             mediaList.removeListener(listener)
         }

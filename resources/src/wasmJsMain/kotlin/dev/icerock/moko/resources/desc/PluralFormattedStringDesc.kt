@@ -21,7 +21,7 @@ actual data class PluralFormattedStringDesc actual constructor(
             provider = provider,
             locale = StringDesc.localeType.locale,
             quantity = number,
-            args = args.toTypedArray()
+            *Utils.processArgs(args, provider)
         )
     }
 }

@@ -215,6 +215,19 @@ internal fun TypeSpec.Builder.addJsFallbackProperty(fallbackFilePath: String) {
     addProperty(property)
 }
 
+internal fun TypeSpec.Builder.addWasmJsFallbackProperty(fallbackFilePath: String) {
+    val property: PropertySpec = PropertySpec
+        .builder(Constants.WasmJs.fallbackFilePropertyName, String::class, KModifier.PRIVATE)
+        .initializer(
+            CodeBlock.of(
+                "\"$fallbackFilePath\""
+            )
+        )
+        .build()
+
+    addProperty(property)
+}
+
 internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
     bcpLangToPath: List<Pair<String, String>>,
 ) {
@@ -244,6 +257,34 @@ internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
     addProperty(property)
 }
 
+internal fun TypeSpec.Builder.addWasmJsSupportedLocalesProperty(
+    bcpLangToPath: List<Pair<String, String>>,
+) {
+    val property: PropertySpec = PropertySpec
+        .builder(
+            Constants.WasmJs.supportedLocalesPropertyName,
+            Constants.WasmJs.supportedLocalesName,
+            KModifier.PRIVATE
+        ).initializer(
+            CodeBlock
+                .builder()
+                .apply {
+                    add("%T(listOf(\n", Constants.WasmJs.supportedLocalesName)
+                    bcpLangToPath.forEach { (bcpLang, filePath) ->
+                        add(
+                            "%T(%S, %S),\n",
+                            Constants.WasmJs.supportedLocaleName,
+                            bcpLang,
+                            filePath
+                        )
+                    }
+                    add("))")
+                }.build()
+        ).build()
+
+    addProperty(property)
+}
+
 internal fun TypeSpec.Builder.addJsContainerStringsLoaderProperty() {
     val property = PropertySpec.builder(
         Constants.Js.stringsLoaderPropertyName,
@@ -251,9 +292,24 @@ internal fun TypeSpec.Builder.addJsContainerStringsLoaderProperty() {
         KModifier.OVERRIDE
     ).initializer(
         CodeBlock.of(
-            "RemoteJsStringLoader.Impl(supportedLocales = %N, fallbackFileUri = %N)",
+            "${Constants.Js.remoteStringLoaderClassName}.Impl(supportedLocales = %N, fallbackFileUri = %N)",
             Constants.Js.supportedLocalesPropertyName,
             Constants.Js.fallbackFilePropertyName
+        )
+    ).build()
+    addProperty(property)
+}
+
+internal fun TypeSpec.Builder.addWasmJsContainerStringsLoaderProperty() {
+    val property = PropertySpec.builder(
+        Constants.WasmJs.stringsLoaderPropertyName,
+        Constants.WasmJs.stringLoaderName,
+        KModifier.OVERRIDE
+    ).initializer(
+        CodeBlock.of(
+            "${Constants.WasmJs.remoteStringLoaderClassName}.Impl(supportedLocales = %N, fallbackFileUri = %N)",
+            Constants.WasmJs.supportedLocalesPropertyName,
+            Constants.WasmJs.fallbackFilePropertyName
         )
     ).build()
     addProperty(property)

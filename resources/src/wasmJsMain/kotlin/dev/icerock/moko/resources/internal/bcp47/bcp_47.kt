@@ -7,6 +7,6 @@
 
 package dev.icerock.moko.resources.internal.bcp47
 
-import JsObject
+import dev.icerock.moko.resources.internal.JsObject
 
 external fun parse(tag: String): JsObject

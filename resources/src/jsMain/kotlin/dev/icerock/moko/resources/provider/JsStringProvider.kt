@@ -14,25 +14,13 @@ import kotlinx.coroutines.coroutineScope
 import org.w3c.fetch.Response
 import kotlin.js.Json
 
-fun interface JsStringProvider {
-    fun provideString(id: String, locale: String?): String
+fun JsStringProvider.Companion.loader(
+    builder: RemoteJsStringLoaderBuilder.() -> Unit
+): RemoteJsStringLoader = RemoteJsStringLoaderBuilder().apply(builder).build()
 
-    operator fun plus(other: JsStringProvider) = JsStringProvider { id, locale ->
-        runCatching {
-            provideString(id, locale)
-        }.recover {
-            other.provideString(id, locale)
-        }.getOrThrow()
-    }
-
-    companion object {
-        fun loader(builder: RemoteJsStringLoaderBuilder.() -> Unit): RemoteJsStringLoader =
-            RemoteJsStringLoaderBuilder().apply(builder).build()
-
-        suspend fun load(builder: RemoteJsStringLoaderBuilder.() -> Unit): JsStringProvider =
-            loader(builder).getOrLoad()
-    }
-}
+suspend fun JsStringProvider.Companion.load(
+    builder: RemoteJsStringLoaderBuilder.() -> Unit
+): JsStringProvider = loader(builder).getOrLoad()
 
 class RemoteJsStringLoaderBuilder {
     private val supportedLocales: MutableList<SupportedLocale> = mutableListOf()

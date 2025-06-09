@@ -4,9 +4,9 @@
 
 package dev.icerock.moko.resources.internal
 
-import JsObject
 import dev.icerock.moko.resources.internal.bcp47.parse
 import kotlinx.browser.window
+
 
 /*
  * Maybe this entire file can be replaced by MessageFormat

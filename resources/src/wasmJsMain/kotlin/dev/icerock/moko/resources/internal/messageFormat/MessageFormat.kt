@@ -4,8 +4,8 @@
 
 package dev.icerock.moko.resources.internal.messageFormat
 
-import JsObject
-import json
+import dev.icerock.moko.resources.internal.JsObject
+import dev.icerock.moko.resources.internal.json
 
 value class CompiledVariableString(private val function: (JsObject) -> String) {
     fun evaluate(vararg args: Any): String {

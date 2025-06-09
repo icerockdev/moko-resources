@@ -4,7 +4,7 @@
 
 package dev.icerock.moko.resources
 
-import JsObject
+import dev.icerock.moko.resources.internal.JsObject
 import dev.icerock.moko.resources.internal.currentLocale
 import dev.icerock.moko.resources.internal.messageFormat.CompiledPlural
 import dev.icerock.moko.resources.internal.messageFormat.MessageFormat

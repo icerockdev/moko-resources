@@ -14,6 +14,7 @@ import dev.icerock.gradle.generator.resources.image.AndroidImageResourceGenerato
 import dev.icerock.gradle.generator.resources.image.AppleImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.ImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.JsImageResourceGenerator
+import dev.icerock.gradle.generator.resources.image.WasmJsImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.JvmImageResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ImageMetadata
@@ -78,7 +79,7 @@ internal class ImageGeneratorFactory(
                 )
             },
             createWasm = {
-                JsImageResourceGenerator(
+                WasmJsImageResourceGenerator(
                     resourcesGenerationDir = outputResourcesDir
                 )
             }

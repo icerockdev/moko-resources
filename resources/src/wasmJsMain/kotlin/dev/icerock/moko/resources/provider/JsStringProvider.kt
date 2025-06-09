@@ -4,7 +4,7 @@
 
 package dev.icerock.moko.resources.provider
 
-import JsObject
+import dev.icerock.moko.resources.internal.JsObject
 import dev.icerock.moko.resources.internal.SupportedLocale
 import dev.icerock.moko.resources.internal.SupportedLocales
 import kotlinx.browser.window
@@ -14,25 +14,13 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.w3c.fetch.Response
 
-fun interface JsStringProvider {
-    fun provideString(id: String, locale: String?): String
+fun JsStringProvider.Companion.loader(
+    builder: RemoteJsStringLoaderBuilder.() -> Unit
+): RemoteJsStringLoader = RemoteJsStringLoaderBuilder().apply(builder).build()
 
-    operator fun plus(other: JsStringProvider) = JsStringProvider { id, locale ->
-        runCatching {
-            provideString(id, locale)
-        }.recover {
-            other.provideString(id, locale)
-        }.getOrThrow()
-    }
-
-    companion object {
-        fun loader(builder: RemoteJsStringLoaderBuilder.() -> Unit): RemoteJsStringLoader =
-            RemoteJsStringLoaderBuilder().apply(builder).build()
-
-        suspend fun load(builder: RemoteJsStringLoaderBuilder.() -> Unit): JsStringProvider =
-            loader(builder).getOrLoad()
-    }
-}
+suspend fun JsStringProvider.Companion.load(
+    builder: RemoteJsStringLoaderBuilder.() -> Unit
+): JsStringProvider = loader(builder).getOrLoad()
 
 class RemoteJsStringLoaderBuilder {
     private val supportedLocales: MutableList<SupportedLocale> = mutableListOf()
@@ -115,3 +103,28 @@ fun interface RemoteJsStringLoader {
 
     operator fun plus(other: RemoteJsStringLoader) = Composition(listOf(this, other))
 }
+/*
+
+ */
+
+@JsFun(
+    """
+    (path) => {
+        let cache = null;
+        let loading = false;
+        let promise = null;
+        return () => {
+            if (cache !== null) return cache;
+            if (!loading) {
+                loading = true;
+                promise = import(path).then(module => {
+                    cache = module.default;
+                    return cache;
+                });
+            }
+            return {}; 
+        };
+    };
+    """
+)
+external fun fetchFile(path: String): String

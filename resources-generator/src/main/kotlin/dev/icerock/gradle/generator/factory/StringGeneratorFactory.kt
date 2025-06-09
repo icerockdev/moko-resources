@@ -77,7 +77,7 @@ internal class StringGeneratorFactory(
                 )
             },
             createWasm = {
-                JsStringResourceGenerator(
+                WasmJsStringResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
                     resourcesGenerationDir = outputResourcesDir
                 )

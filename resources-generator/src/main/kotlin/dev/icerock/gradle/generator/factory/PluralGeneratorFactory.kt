@@ -13,6 +13,7 @@ import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.AndroidPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.ApplePluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.JsPluralResourceGenerator
+import dev.icerock.gradle.generator.resources.plural.WasmJsPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.JvmPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.PluralResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
@@ -81,7 +82,7 @@ internal class PluralGeneratorFactory(
                 )
             },
             createWasm = {
-                JsPluralResourceGenerator(
+                WasmJsPluralResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
                     resourcesGenerationDir = outputResourcesDir
                 )

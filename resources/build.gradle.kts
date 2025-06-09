@@ -24,8 +24,6 @@ kotlin {
             api(npm("style-loader", "3.3.2"))
         }
 
-        jsMain.dependencies {}
-
         wasmJsMain.dependencies {
             implementation(libs.kotlinxBrowser)
         }

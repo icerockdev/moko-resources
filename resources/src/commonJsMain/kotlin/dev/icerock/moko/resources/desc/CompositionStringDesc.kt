@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2025 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.moko.resources.desc
@@ -10,6 +10,7 @@ actual data class CompositionStringDesc actual constructor(
     val args: Iterable<StringDesc>,
     val separator: String?
 ) : StringDesc {
+
     override suspend fun toLocalizedString(): String = args
         .map { child -> child.toLocalizedString() }
         .joinToString(separator = separator ?: "")
