@@ -5,7 +5,6 @@ plugins {
     // in each subproject's classloader
     kotlin("multiplatform").apply(false)
     id("org.jetbrains.compose").apply(false)
-    id("org.jetbrains.kotlin.plugin.compose").apply(false)
 }
 
 buildscript {
@@ -14,9 +13,7 @@ buildscript {
         gradlePluginPortal()
     }
 
-
     dependencies {
         classpath(moko.resourcesGradlePlugin)
-        classpath(libs.composeCompilerPlugin)
     }
 }

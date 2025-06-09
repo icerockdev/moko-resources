@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "app.kotlin2sample.android"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "app.kotlin2sample.android"
         minSdk = 26
