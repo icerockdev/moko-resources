@@ -15,9 +15,10 @@ buildscript {
     }
     dependencies {
         classpath(moko.resourcesGradlePlugin)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23")
-        classpath("org.jetbrains.compose:compose-gradle-plugin:1.6.1")
-        classpath("com.android.tools.build:gradle:8.1.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.21")
+        classpath("org.jetbrains.compose:compose-gradle-plugin:1.8.1")
+        classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.1.21")
+        classpath("com.android.tools.build:gradle:8.9.3")
     }
 }
 

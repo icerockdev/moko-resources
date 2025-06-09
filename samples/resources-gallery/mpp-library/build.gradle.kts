@@ -13,33 +13,23 @@ allprojects {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         kotlin {
             androidTarget()
-            ios()
+            iosX64()
+            iosArm64()
+            iosSimulatorArm64()
             iosSimulatorArm64()
             jvm()
             macosX64()
             macosArm64()
             js(IR) { browser() }
-            @OptIn(ExperimentalWasmDsl::class)
-            wasmJs { browser() }
+            @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+            wasmJs {
+                browser()
+                binaries.executable()
+            }
 
             explicitApi()
 
-            sourceSets {
-                val iosMain by getting
-                val iosSimulatorArm64Main by getting {
-                    dependsOn(iosMain)
-                }
-
-                val macosMain by creating {
-                    dependsOn(commonMain.get())
-                }
-                val macosX64Main by getting {
-                    dependsOn(macosMain)
-                }
-                val macosArm64Main by getting {
-                    dependsOn(macosMain)
-                }
-            }
+            applyDefaultHierarchyTemplate()
         }
     }
 }
