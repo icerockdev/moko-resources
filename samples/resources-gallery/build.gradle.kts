@@ -26,7 +26,7 @@ subprojects {
     plugins.withType<com.android.build.gradle.BasePlugin> {
         configure<BaseExtension> {
             defaultConfig.minSdkVersion(21)
-            compileSdkVersion(34)
+            compileSdkVersion(35)
 
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_17

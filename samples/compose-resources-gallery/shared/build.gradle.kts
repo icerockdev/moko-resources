@@ -1,5 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform")
@@ -26,7 +26,7 @@ kotlin {
     js(IR) {
         browser()
     }
-    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         compilerOptions {
             freeCompilerArgs.add("-Xwasm-attach-js-exception")
