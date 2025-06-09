@@ -21,11 +21,6 @@ allprojects {
             macosX64()
             macosArm64()
             js(IR) { browser() }
-            @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
-            wasmJs {
-                browser()
-                binaries.executable()
-            }
 
             explicitApi()
 

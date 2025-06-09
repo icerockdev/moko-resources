@@ -29,9 +29,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(moko.resources)
-                implementation(moko.resourcesCompose)
-                implementation(project(":mpp-library"))
+                implementation(project(":shared"))
 
                 implementation(compose.runtime)
                 implementation(compose.foundation)

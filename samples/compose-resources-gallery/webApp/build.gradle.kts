@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("dev.icerock.mobile.multiplatform-resources")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {

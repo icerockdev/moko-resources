@@ -103,28 +103,3 @@ fun interface RemoteJsStringLoader {
 
     operator fun plus(other: RemoteJsStringLoader) = Composition(listOf(this, other))
 }
-/*
-
- */
-
-@JsFun(
-    """
-    (path) => {
-        let cache = null;
-        let loading = false;
-        let promise = null;
-        return () => {
-            if (cache !== null) return cache;
-            if (!loading) {
-                loading = true;
-                promise = import(path).then(module => {
-                    cache = module.default;
-                    return cache;
-                });
-            }
-            return {}; 
-        };
-    };
-    """
-)
-external fun fetchFile(path: String): String

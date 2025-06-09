@@ -26,9 +26,13 @@ kotlin {
     js(IR) {
         browser()
     }
-    @OptIn(ExperimentalWasmDsl::class)
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
+        compilerOptions {
+            freeCompilerArgs.add("-Xwasm-attach-js-exception")
+        }
         browser()
+        binaries.executable()
     }
 
     cocoapods {

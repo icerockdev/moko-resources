@@ -12,7 +12,7 @@ import org.w3c.fetch.Response
 actual class FileResource(val fileUrl: String) {
     suspend fun getText(): String {
         return retryIO {
-            window.fetch(fileUrl).await<Response>().text().await()
+            window.fetch(fileUrl).await<Response>().text().await<JsString>().toString()
         }
     }
 }

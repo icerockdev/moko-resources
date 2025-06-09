@@ -17,7 +17,7 @@ actual class AssetResource(
 ) {
     suspend fun getText(): String {
         return retryIO {
-            window.fetch(originalPath).await<Response>().text().await()
+            window.fetch(originalPath).await<Response>().text().await<JsString>().toString()
         }
     }
 }

@@ -42,14 +42,14 @@ internal class WasmJsImageResourceGenerator(
 
         return if (darkFileName != null) {
             CodeBlock.of(
-                "ImageResource(fileUrl = %S as String, darkFileUrl = js(%S) as String, fileName = %S)",
+                "ImageResource(fileUrl = %S, darkFileUrl = %S, fileName = %S)",
                 requireDeclaration,
                 darkRequireDeclaration,
                 fileName
             )
         } else {
             CodeBlock.of(
-                "ImageResource(fileUrl = %S as String, fileName = %S)",
+                "ImageResource(fileUrl = %S, fileName = %S)",
                 requireDeclaration,
                 fileName
             )
