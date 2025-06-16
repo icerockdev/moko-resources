@@ -9,13 +9,13 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.HierarchyPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.AndroidAssetResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.AppleAssetResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.AssetResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.JsAssetResourceGenerator
 import dev.icerock.gradle.generator.resources.asset.JvmAssetResourceGenerator
-import dev.icerock.gradle.generator.resources.asset.WasmJsAssetResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import dev.icerock.gradle.toModifier
@@ -79,12 +79,14 @@ internal class AssetGeneratorFactory(
             },
             createJs = {
                 JsAssetResourceGenerator(
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.require
                 )
             },
             createWasm = {
-                WasmJsAssetResourceGenerator(
-                    resourcesGenerationDir = outputResourcesDir
+                JsAssetResourceGenerator(
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.rawPath
                 )
             }
         )

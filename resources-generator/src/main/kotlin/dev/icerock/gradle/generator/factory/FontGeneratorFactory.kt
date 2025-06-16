@@ -9,13 +9,13 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.font.AndroidFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.AppleFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.FontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.JsFontResourceGenerator
 import dev.icerock.gradle.generator.resources.font.JvmFontResourceGenerator
-import dev.icerock.gradle.generator.resources.font.WasmJsFontResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import dev.icerock.gradle.toModifier
@@ -71,13 +71,15 @@ internal class FontGeneratorFactory(
             createJs = {
                 JsFontResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.require
                 )
             },
             createWasm = {
-                WasmJsFontResourceGenerator(
+                JsFontResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.rawPath
                 )
             }
         )

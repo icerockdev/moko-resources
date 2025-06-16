@@ -56,19 +56,4 @@ internal object Constants {
         const val fallbackFilePropertyName = "fallbackFileUrl"
         const val supportedLocalesPropertyName = "supportedLocales"
     }
-
-    object WasmJs {
-        private const val internalPackage = "dev.icerock.moko.resources.internal"
-        val supportedLocalesName = ClassName(internalPackage, "SupportedLocales")
-        val supportedLocaleName = ClassName(internalPackage, "SupportedLocale")
-
-        const val remoteStringLoaderClassName = "RemoteJsStringLoader"
-        val loaderHolderName = ClassName(internalPackage, "${remoteStringLoaderClassName}Holder")
-        val stringLoaderName =
-            ClassName("dev.icerock.moko.resources.provider", remoteStringLoaderClassName)
-        const val stringsLoaderPropertyName = "stringsLoader"
-
-        const val fallbackFilePropertyName = "fallbackFileUrl"
-        const val supportedLocalesPropertyName = "supportedLocales"
-    }
 }

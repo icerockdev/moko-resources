@@ -9,13 +9,13 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.AndroidPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.ApplePluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.JsPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.JvmPluralResourceGenerator
 import dev.icerock.gradle.generator.resources.plural.PluralResourceGenerator
-import dev.icerock.gradle.generator.resources.plural.WasmJsPluralResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.toModifier
@@ -78,13 +78,15 @@ internal class PluralGeneratorFactory(
             createJs = {
                 JsPluralResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.require
                 )
             },
             createWasm = {
-                WasmJsPluralResourceGenerator(
+                JsPluralResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.rawPath
                 )
             }
         )

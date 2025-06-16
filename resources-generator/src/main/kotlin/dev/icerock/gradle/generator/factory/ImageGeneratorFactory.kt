@@ -9,13 +9,13 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.image.AndroidImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.AppleImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.ImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.JsImageResourceGenerator
 import dev.icerock.gradle.generator.resources.image.JvmImageResourceGenerator
-import dev.icerock.gradle.generator.resources.image.WasmJsImageResourceGenerator
 import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.toModifier
@@ -75,12 +75,14 @@ internal class ImageGeneratorFactory(
             },
             createJs = {
                 JsImageResourceGenerator(
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.require
                 )
             },
             createWasm = {
-                WasmJsImageResourceGenerator(
-                    resourcesGenerationDir = outputResourcesDir
+                JsImageResourceGenerator(
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.rawPath
                 )
             }
         )
