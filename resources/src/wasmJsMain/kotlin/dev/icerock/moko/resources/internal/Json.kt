@@ -14,9 +14,13 @@ external class JsObject : JsAny {
     operator fun set(key: JsString, value: JsAny?)
 }
 
-fun json(vararg entries: Pair<String, Any>) =
+internal fun json(vararg entries: Pair<String, Any>) =
     entries.fold(JsObject()) { result, (key, value) ->
         result.apply {
             set(key.toJsString(), value.toString().toJsString())
         }
     }
+
+internal fun JsObject.toJsonElement(): JsonElement {
+    TODO()
+}

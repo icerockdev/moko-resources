@@ -1,37 +1,24 @@
 /*
- * Copyright 2022 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2025 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.moko.resources.internal
 
-import dev.icerock.moko.resources.internal.bcp47.parse
-import kotlinx.browser.window
-
+import dev.icerock.moko.resources.internal.bcp47.parseBcp47
 
 /*
  * Maybe this entire file can be replaced by MessageFormat
  */
-
-@Suppress("UNCHECKED_CAST")
-class ParsedLocale(parseResult: JsObject) {
-    val primaryLanguageTag: String = (parseResult["language".toJsString()] as? JsString)?.toString()
+class ParsedLocale internal constructor(parseResult: JsonElement.Object) {
+    val primaryLanguageTag: String = parseResult["language"]?.stringPrimitive
         ?: throw IllegalArgumentException("Primary language tags must not be empty")
 
-    val extendedLanguageSubtag: List<String> =
-        (parseResult["extendedLanguageSubtags".toJsString()] as? Array<String>)?.toList().orEmpty()
-
-    val script: String = (parseResult["script".toJsString()] as? JsString)?.toString().orEmpty()
-
-    val region: String = (parseResult["region".toJsString()] as? JsString)?.toString().orEmpty()
-
-    val variants: List<String> =
-        (parseResult["variants".toJsString()] as? Array<JsString>)?.map { it.toString() }.orEmpty()
-
-    val extensions: List<String> =
-        (parseResult["extensions".toJsString()] as? Array<JsString>)?.map { it.toString() }.orEmpty()
-
-    val privateuse: List<String> =
-        (parseResult["privateuse".toJsString()] as? Array<JsString>)?.map { it.toString() }.orEmpty()
+    val extendedLanguageSubtag: List<String> = parseResult["extendedLanguageSubtags"]?.array?.stringArray.orEmpty()
+    val script: String = parseResult["script"]?.stringPrimitive.orEmpty()
+    val region: String = parseResult["region"]?.stringPrimitive.orEmpty()
+    val variants: List<String> = parseResult["variants"]?.array?.stringArray.orEmpty()
+    val extensions: List<String> = parseResult["extensions"]?.array?.stringArray.orEmpty()
+    val privateuse: List<String> = parseResult["privateuse"]?.array?.stringArray.orEmpty()
 }
 
 private var cachedLocale: CachedLocale? = null
@@ -43,9 +30,9 @@ private var cachedLocale: CachedLocale? = null
  * @return the locale that can be used to localize strings or null if no locale was found
  * that matches this user's preferences
  */
-fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
-    val currentCache = cachedLocale
-    val userLanguages = Array(window.navigator.languages.length) { window.navigator.languages[it].toString() }
+internal fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
+    val currentCache: CachedLocale? = cachedLocale
+    val userLanguages: Array<out String> = getUserLanguages()
 
     if (currentCache != null && currentCache.usedLanguages.contentEquals(userLanguages)) {
         return currentCache.locale?.let(supportedLocales::getForLocale)
@@ -60,7 +47,7 @@ fun getLanguageLocale(supportedLocales: SupportedLocales): SupportedLocale? {
  * Finds a matching locale in the supported locales.
  * @param locale if null, the user defined locales of the browsers will be used.
  */
-fun findMatchingLocale(supportedLocales: SupportedLocales, locale: String?): SupportedLocale? {
+internal fun findMatchingLocale(supportedLocales: SupportedLocales, locale: String?): SupportedLocale? {
     return if (locale == null) {
         getLanguageLocale(supportedLocales)
     } else {
@@ -77,7 +64,7 @@ fun findMatchingLocale(supportedLocales: SupportedLocales, locale: String?): Sup
  */
 private fun findMatchingLocale(
     supportedLocales: SupportedLocales,
-    userLanguages: Array<out String> = Array(window.navigator.languages.length) { window.navigator.languages[it].toString() }
+    userLanguages: Array<out String> = getUserLanguages()
 ): SupportedLocale? {
     return userLanguages
         .asSequence()
@@ -151,4 +138,4 @@ private fun calculateMatchingScore(desiredLocale: ParsedLocale, candidate: Suppo
 
 private class CachedLocale(val usedLanguages: Array<out String>, val locale: String?)
 
-fun parseBcpLocale(tag: String): ParsedLocale = ParsedLocale(parse(tag))
+internal fun parseBcpLocale(tag: String): ParsedLocale = ParsedLocale(parseBcp47(tag))

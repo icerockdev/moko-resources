@@ -5,7 +5,6 @@
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource

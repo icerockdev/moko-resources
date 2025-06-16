@@ -1,60 +1,29 @@
 /*
- * Copyright 2022 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2025 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.icerock.moko.resources.provider
 
-import dev.icerock.moko.resources.internal.JsObject
+import dev.icerock.moko.resources.internal.JsonElement
 import dev.icerock.moko.resources.internal.SupportedLocale
 import dev.icerock.moko.resources.internal.SupportedLocales
-import kotlinx.browser.window
+import dev.icerock.moko.resources.internal.fetchJson
 import kotlinx.coroutines.async
-import kotlinx.coroutines.await
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import org.w3c.fetch.Response
-
-fun JsStringProvider.Companion.loader(
-    builder: RemoteJsStringLoaderBuilder.() -> Unit
-): RemoteJsStringLoader = RemoteJsStringLoaderBuilder().apply(builder).build()
-
-suspend fun JsStringProvider.Companion.load(
-    builder: RemoteJsStringLoaderBuilder.() -> Unit
-): JsStringProvider = loader(builder).getOrLoad()
-
-class RemoteJsStringLoaderBuilder {
-    private val supportedLocales: MutableList<SupportedLocale> = mutableListOf()
-    lateinit var fallbackFileUri: String
-
-    fun locale(name: String, fileUri: String) {
-        supportedLocales += SupportedLocale(locale = name, fileUrl = fileUri)
-    }
-
-    fun build(): RemoteJsStringLoader {
-        require(::fallbackFileUri.isInitialized) { "Fallback file uri was not initialized" }
-
-        return RemoteJsStringLoader.Impl(SupportedLocales(supportedLocales), fallbackFileUri)
-    }
-}
 
 fun interface RemoteJsStringLoader {
     class Impl(
         private val supportedLocales: SupportedLocales,
         private val fallbackFileUri: String
     ) : RemoteJsStringLoader {
-        private val cachedLocalizationFiles: MutableMap<String, JsObject> = mutableMapOf()
-        private var cachedFallbackFile: JsObject? = null
+        private val cachedLocalizationFiles: MutableMap<String, JsonElement.Object> = mutableMapOf()
+        private var cachedFallbackFile: JsonElement.Object? = null
 
-        private suspend fun loadLocalizationFile(fileUri: String): JsObject {
-            val response: Response = window.fetch(fileUri).await()
-            if (!response.ok) {
-                error("response not ok for $fileUri - ${response.statusText} ${response.body}")
-            }
+        private suspend fun loadLocalizationFile(fileUri: String): JsonElement.Object {
+            val jsonFile: JsonElement = fetchJson(fileUri)
 
-            @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-            val json: JsObject? = response.json().await() as JsObject?
-
-            return json ?: error("Could not read json at $fileUri")
+            return jsonFile as? JsonElement.Object ?: error("Could not read json object at $fileUri")
         }
 
         override suspend fun getOrLoad(): JsStringProvider {
@@ -65,12 +34,12 @@ fun interface RemoteJsStringLoader {
                     .awaitAll()
             }
             return JsStringProvider { id, locale ->
-                val localeFile: JsObject = locale?.let { cachedLocalizationFiles[locale] }
+                val localeFile: JsonElement.Object = locale?.let { cachedLocalizationFiles[locale] }
                     ?: cachedFallbackFile
                     ?: error("Invalid state after download")
 
-                localeFile[id.toJsString()]?.toString()
-                    ?: cachedFallbackFile?.get(id.toJsString())?.toString()
+                localeFile[id]?.stringPrimitive
+                    ?: cachedFallbackFile?.get(id)?.stringPrimitive
                     ?: error("$id string resource not found")
             }
         }

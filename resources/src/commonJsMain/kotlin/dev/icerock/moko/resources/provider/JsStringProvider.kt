@@ -17,3 +17,12 @@ fun interface JsStringProvider {
 
     companion object
 }
+
+fun JsStringProvider.Companion.loader(
+    builder: RemoteJsStringLoaderBuilder.() -> Unit
+): RemoteJsStringLoader = RemoteJsStringLoaderBuilder().apply(builder).build()
+
+suspend fun JsStringProvider.Companion.load(
+    builder: RemoteJsStringLoaderBuilder.() -> Unit
+): JsStringProvider = loader(builder).getOrLoad()
+

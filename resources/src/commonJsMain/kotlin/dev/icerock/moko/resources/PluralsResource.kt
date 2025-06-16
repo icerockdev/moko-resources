@@ -4,10 +4,8 @@
 
 package dev.icerock.moko.resources
 
-import dev.icerock.moko.resources.internal.JsObject
+import dev.icerock.moko.resources.internal.LocalizedText
 import dev.icerock.moko.resources.internal.currentLocale
-import dev.icerock.moko.resources.internal.messageFormat.CompiledPlural
-import dev.icerock.moko.resources.internal.messageFormat.MessageFormat
 import dev.icerock.moko.resources.provider.JsStringProvider
 import dev.icerock.moko.resources.provider.RemoteJsStringLoader
 
@@ -18,25 +16,12 @@ actual class PluralsResource(
     fun localized(provider: JsStringProvider, locale: String?, quantity: Int): String {
         val pluralString: String = provider.provideString(id = key, locale = locale)
         val pluralLocale: String = locale ?: currentLocale()
-        val jsArrayPluralLocale = JsArray<JsString>()
-        jsArrayPluralLocale[0] = pluralLocale.toJsString()
-
-        val compiledPlural: (JsObject) -> String = MessageFormat(jsArrayPluralLocale)
-            .compile(pluralString)
-
-        return CompiledPlural(compiledPlural).evaluate(quantity)
+        return LocalizedText(locale = pluralLocale, text = pluralString).evaluate(quantity = quantity)
     }
 
     fun localized(provider: JsStringProvider, locale: String?, quantity: Int, vararg args: Any): String {
         val pluralString: String = provider.provideString(id = key, locale = locale)
         val pluralLocale: String = locale ?: currentLocale()
-        val jsArrayPluralLocale = JsArray<JsString>()
-        jsArrayPluralLocale[0] = pluralLocale.toJsString()
-
-        val compiledPlural = CompiledPlural(
-            MessageFormat(jsArrayPluralLocale).compile(pluralString)
-        )
-
-        return compiledPlural.evaluate(quantity, *args)
+        return LocalizedText(locale = pluralLocale, text = pluralString).evaluate(quantity = quantity, args = args)
     }
 }

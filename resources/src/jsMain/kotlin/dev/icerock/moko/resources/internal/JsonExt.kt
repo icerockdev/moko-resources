@@ -4,4 +4,8 @@
 
 package dev.icerock.moko.resources.internal
 
-expect fun currentLocale(): String
+import kotlin.js.Json
+
+internal fun Json.toJsonElement(): JsonElement {
+    TODO()
+}
