@@ -8,16 +8,33 @@ plugins {
 }
 
 kotlin {
-    listOf(iosArm64(), iosSimulatorArm64(), iosX64()).forEach { target ->
-        target.binaries.executable {
-            entryPoint = "main"
+    val iosArm64 = iosArm64()
+    val iosSimulatorArm64 = iosSimulatorArm64()
+    val iosX64 = iosX64()
+    configure(listOf(iosArm64, iosSimulatorArm64, iosX64)) {
+        binaries {
+            executable {
+                entryPoint = "main"
+            }
         }
     }
 
-    applyDefaultHierarchyTemplate()
     sourceSets {
-        commonMain.dependencies {
-            implementation(project(":mpp-library"))
+        val commonMain by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+                implementation(project(":mpp-library"))
+            }
+        }
+        val iosArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosX64Main by getting {
+            dependsOn(iosMain)
         }
     }
 }

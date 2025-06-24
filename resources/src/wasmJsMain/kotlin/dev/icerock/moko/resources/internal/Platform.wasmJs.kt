@@ -60,7 +60,7 @@ actual suspend fun fetchText(fileUri: String): String {
     return window.fetch(fileUri).await<Response>().text().await<JsString>().toString()
 }
 
-actual class LocalizedText actual constructor(locale: String, text: String) {
+internal actual class LocalizedText actual constructor(locale: String, text: String) {
     private val function: (JsObject) -> String = MessageFormat(
         locales = JsArray<JsString>().apply { set(0, locale.toJsString()) }
     ).compile(text)

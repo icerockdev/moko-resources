@@ -26,6 +26,7 @@ internal fun <T> createByPlatform(
         KotlinPlatformType.androidJvm -> createAndroid()
         KotlinPlatformType.js -> createJs()
         KotlinPlatformType.native -> when (konanTarget()) {
+            KonanTarget.IOS_ARM32,
             KonanTarget.IOS_ARM64,
             KonanTarget.IOS_SIMULATOR_ARM64,
             KonanTarget.IOS_X64,
@@ -41,7 +42,8 @@ internal fun <T> createByPlatform(
             KonanTarget.WATCHOS_ARM64,
             KonanTarget.WATCHOS_DEVICE_ARM64,
             KonanTarget.WATCHOS_SIMULATOR_ARM64,
-            KonanTarget.WATCHOS_X64 -> createApple()
+            KonanTarget.WATCHOS_X64,
+            KonanTarget.WATCHOS_X86 -> createApple()
 
             KonanTarget.ANDROID_ARM32,
             KonanTarget.ANDROID_ARM64,
@@ -50,9 +52,16 @@ internal fun <T> createByPlatform(
 
             KonanTarget.LINUX_ARM32_HFP,
             KonanTarget.LINUX_ARM64,
+            KonanTarget.LINUX_MIPS32,
+            KonanTarget.LINUX_MIPSEL32,
             KonanTarget.LINUX_X64,
 
-            KonanTarget.MINGW_X64 -> error("$konanTarget not supported by moko-resources now")
+            KonanTarget.MINGW_X64,
+            KonanTarget.MINGW_X86,
+
+            KonanTarget.WASM32,
+
+            is KonanTarget.ZEPHYR -> error("$konanTarget not supported by moko-resources now")
         }
 
         KotlinPlatformType.wasm -> createWasm()

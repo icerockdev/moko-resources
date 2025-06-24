@@ -14,7 +14,6 @@ buildscript {
     dependencies {
         classpath("dev.icerock.moko:resources-generator")
         classpath(libs.composeJetBrainsPlugin)
-        classpath(libs.composeCompilerPlugin)
         classpath(":resources-build-logic")
     }
 }

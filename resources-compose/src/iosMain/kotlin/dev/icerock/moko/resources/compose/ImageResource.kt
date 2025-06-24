@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.remember
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.LocalSystemTheme
@@ -18,7 +19,7 @@ import org.jetbrains.skia.Image
 import platform.CoreGraphics.CGImageRef
 import platform.UIKit.UIImage
 
-@OptIn(ExperimentalForeignApi::class, InternalComposeUiApi::class)
+@OptIn(ExperimentalForeignApi::class, InternalComposeApi::class, InternalComposeUiApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
     return remember(LocalSystemTheme.current, imageResource) {

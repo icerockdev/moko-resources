@@ -2,7 +2,6 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
     id("dev.icerock.mobile.multiplatform-resources")
 }
 
@@ -23,7 +22,7 @@ kotlin {
 
             isStatic = true
             export(moko.resources)
-            export("dev.icerock.moko:graphics:0.9.0")
+            export("dev.icerock.moko:graphics:0.10.0")
         }
     }
 

@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform")
@@ -26,7 +25,6 @@ kotlin {
     js(IR) {
         browser()
     }
-    @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         compilerOptions {
             freeCompilerArgs.add("-Xwasm-attach-js-exception")
@@ -61,9 +59,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api(libs.appCompat)
-                api(libs.androidxActivityCompose)
-                api(libs.androidxCore)
+                api("androidx.activity:activity-compose:1.7.2")
+                api("androidx.appcompat:appcompat:1.6.1")
+                api("androidx.core:core-ktx:1.10.1")
             }
         }
         val desktopMain by getting {
@@ -80,7 +78,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 34
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {

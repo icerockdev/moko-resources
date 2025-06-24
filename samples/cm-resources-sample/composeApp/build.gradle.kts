@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
     id("dev.icerock.mobile.multiplatform-resources")
-    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 kotlin {
@@ -94,11 +93,11 @@ kotlin {
 
 android {
     namespace = "com.icerock.cm.sample.app"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
 
         applicationId = "com.icerock.cm.sample.app.androidApp"
         versionCode = 1

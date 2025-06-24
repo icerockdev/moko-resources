@@ -14,7 +14,6 @@ pluginManagement {
         kotlin("multiplatform").version(kotlinVersion)
 
         id("org.jetbrains.compose").version(composeVersion)
-        id("org.jetbrains.kotlin.plugin.compose").version(kotlinVersion)
     }
 }
 
@@ -31,9 +30,6 @@ dependencyResolutionManagement {
     }
 
     versionCatalogs {
-        create("libs") {
-            from(files("../../gradle/libs.versions.toml"))
-        }
         create("moko") {
             from(files("../../gradle/moko.versions.toml"))
         }

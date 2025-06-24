@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.InternalComposeUiApi
@@ -25,7 +26,7 @@ import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image
 import org.jetbrains.skia.svg.SVGDOM
 
-@OptIn(InternalComposeUiApi::class)
+@OptIn(InternalComposeUiApi::class, InternalComposeApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
     val fileUrl: String = if (LocalSystemTheme.current == SystemTheme.Dark) {

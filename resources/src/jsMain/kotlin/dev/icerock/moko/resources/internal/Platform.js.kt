@@ -61,7 +61,7 @@ actual suspend fun fetchText(fileUri: String): String {
     return window.fetch(fileUri).await().text().await()
 }
 
-actual class LocalizedText actual constructor(locale: String, text: String) {
+internal actual class LocalizedText actual constructor(locale: String, text: String) {
     private val function: (Json) -> String = MessageFormat(arrayOf(locale))
         .compile(text)
 

@@ -42,7 +42,7 @@ import platform.darwin.UInt8Var
 import kotlin.native.internal.ObjCErrorException
 
 actual class FontResource(
-    val fontName: String = "",
+    val fontName: String,
     val bundle: NSBundle = NSBundle.mainBundle,
 ) {
     @OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)

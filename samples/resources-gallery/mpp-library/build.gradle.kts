@@ -13,9 +13,7 @@ allprojects {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         kotlin {
             androidTarget()
-            iosX64()
-            iosArm64()
-            iosSimulatorArm64()
+            ios()
             iosSimulatorArm64()
             jvm()
             macosX64()
@@ -24,7 +22,22 @@ allprojects {
 
             explicitApi()
 
-            applyDefaultHierarchyTemplate()
+            sourceSets {
+                val iosMain by getting
+                val iosSimulatorArm64Main by getting {
+                    dependsOn(iosMain)
+                }
+
+                val macosMain by creating {
+                    dependsOn(commonMain.get())
+                }
+                val macosX64Main by getting {
+                    dependsOn(macosMain)
+                }
+                val macosArm64Main by getting {
+                    dependsOn(macosMain)
+                }
+            }
         }
     }
 }

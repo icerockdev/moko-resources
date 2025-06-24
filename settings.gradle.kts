@@ -9,7 +9,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        mavenLocal()
         google()
 
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }

@@ -4,7 +4,6 @@
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id("com.android.library")
@@ -25,8 +24,6 @@ kotlin {
         browser()
         useCommonJs()
     }
-
-    @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         useCommonJs()
@@ -35,8 +32,10 @@ kotlin {
     // For https://youtrack.jetbrains.com/issue/KT-61573
     targets.configureEach {
         compilations.configureEach {
-            compileTaskProvider.get().compilerOptions {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
+            compileTaskProvider.configure {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
             }
         }
     }

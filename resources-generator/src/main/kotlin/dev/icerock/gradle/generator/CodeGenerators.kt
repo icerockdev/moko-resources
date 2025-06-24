@@ -152,8 +152,8 @@ internal fun <T : ResourceMetadata> TypeSpec.Builder.addValuesFunction(
 
             hierarchyMetadata.joinToString { meta ->
                 meta.path.joinToString(separator = ".") +
-                        (".".takeIf { meta.path.isNotEmpty() } ?: "") +
-                        meta.key
+                    (".".takeIf { meta.path.isNotEmpty() } ?: "") +
+                    meta.key
             }
         } else {
             // Create simple resource key

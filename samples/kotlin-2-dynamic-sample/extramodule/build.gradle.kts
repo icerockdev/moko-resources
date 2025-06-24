@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -5,7 +7,12 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+        }
+    }
 
     iosX64()
     iosArm64()
@@ -23,7 +30,7 @@ kotlin {
 
 android {
     namespace = "app.kotlin2sample.extra"
-    compileSdk = 35
+    compileSdk = 34
     defaultConfig {
         minSdk = 26
     }

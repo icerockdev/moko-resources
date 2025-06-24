@@ -9,7 +9,7 @@ plugins {
 
 android {
     defaultConfig {
-        targetSdk = 35
+        targetSdk = 33
         applicationId = "dev.icerock.moko.samples.resources"
         versionCode = 1
         versionName = "0.1.0"
@@ -18,6 +18,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.appCompat)
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation(project(":mpp-library"))
 }
