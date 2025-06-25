@@ -4,10 +4,6 @@
 
 package dev.icerock.moko.resources.internal
 
-external object JSON {
-    fun stringify(value: JsAny?): String
-}
-
 @JsName("Object")
 external class JsObject : JsAny {
     operator fun get(key: JsString): JsAny?
@@ -21,6 +17,31 @@ internal fun json(vararg entries: Pair<String, Any>) =
         }
     }
 
-internal fun JsObject.toJsonElement(): JsonElement {
-    TODO()
+internal fun JsAny.toJsonElement(): JsonElement {
+    return when (this) {
+        is JsArray<*> -> {
+            val array = this.toList()
+                .map { it?.toJsonElement() ?: JsonElement.StringPrimitive("null") }
+            JsonElement.Array(array)
+        }
+        is JsObject -> {
+            val objectProperties = jsObjectKeys(this).toList().associate { propertyName ->
+                val strKey = propertyName.toString()
+                this[propertyName]?.toJsonElement()
+                    ?.let { strKey to it }
+                    ?: (strKey to JsonElement.StringPrimitive("null"))
+            }
+            JsonElement.Object(objectProperties)
+        }
+        else -> JsonElement.StringPrimitive(this.toString())
+    }
+}
+
+private fun jsObjectKeys(jsObject: JsObject): JsArray<JsString> = js(
+    "Object.keys(jsObject)"
+)
+
+private fun <T : JsAny?> JsArray<T>.toList(): List<T> {
+    @Suppress("UNCHECKED_CAST")
+    return List(length) { this[it] as T }
 }

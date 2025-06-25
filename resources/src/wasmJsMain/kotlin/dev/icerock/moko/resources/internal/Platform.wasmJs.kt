@@ -51,7 +51,7 @@ internal actual suspend fun fetchJson(fileUri: String): JsonElement {
     }
 
     @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-    val json: JsObject? = response.json().await() as JsObject?
+    val json: JsAny? = response.json().await() as JsAny?
 
     return json?.toJsonElement() ?: error("Could not read json at $fileUri")
 }
