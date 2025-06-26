@@ -26,9 +26,6 @@ kotlin {
         browser()
     }
     wasmJs {
-        compilerOptions {
-            freeCompilerArgs.add("-Xwasm-attach-js-exception")
-        }
         browser()
         binaries.executable()
     }

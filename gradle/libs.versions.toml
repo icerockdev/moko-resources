@@ -10,8 +10,6 @@ kotlinxBrowserVersion = "0.3"
 
 # android
 androidAppCompatVersion = "1.6.1"
-androidxActivityComposeVersion = "1.10.0"
-androidxCoreVersion = "1.15.0"
 
 # android compose
 composeUiVersion = "1.7.1"
@@ -43,10 +41,7 @@ mokoGraphics = { module = "dev.icerock.moko:graphics", version.ref = "mokoGraphi
 mokoTestCore = { module = "dev.icerock.moko:test-core", version.ref = "mokoTestVersion" }
 
 # android
-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidAppCompatVersion" }
 appCompatResources = { module = "androidx.appcompat:appcompat-resources", version.ref = "androidAppCompatVersion" }
-androidxActivityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityComposeVersion" }
-androidxCore = { module = "androidx.core:core-ktx", version.ref = "androidxCoreVersion" }
 
 # android compose
 composeUi = { module = "androidx.compose.ui:ui", version.ref = "composeUiVersion" }
