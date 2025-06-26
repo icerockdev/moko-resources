@@ -21,7 +21,7 @@ actual fun FontResource.asFont(
 ): Font? {
     val bytes: ByteArray? by produceByteArray(url = fileUrl)
 
-    return remember(fileUrl, bytes?.size ?: 0) {
+    return remember(bytes, weight, style) {
         bytes?.let { b ->
             Font(
                 identity = fontFamily,

@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.StringResource
@@ -47,4 +48,8 @@ actual fun stringResource(resource: PluralsResource, quantity: Int, vararg args:
 }
 
 @Composable
-internal expect fun localized(stringDesc: StringDesc): String
+internal fun localized(stringDesc: StringDesc): String {
+    return produceState(initialValue = "", stringDesc) {
+        value = stringDesc.toLocalizedString()
+    }.value
+}

@@ -33,10 +33,10 @@ internal fun produceByteArray(url: String): State<ByteArray?> {
 }
 
 
-fun Int8Array.copyInto(inputOffset: Int, output: ByteArray, outputOffset: Int, length: Int) {
+private fun Int8Array.copyInto(inputOffset: Int, output: ByteArray, outputOffset: Int, length: Int) {
     repeat(length) { index ->
         output[outputOffset + index] = this[inputOffset + index]
     }
 }
 
-fun Int8Array.toByteArray(): ByteArray = ByteArray(length).also { copyInto(0, it, 0, length) }
+private fun Int8Array.toByteArray(): ByteArray = ByteArray(length).also { copyInto(0, it, 0, length) }
