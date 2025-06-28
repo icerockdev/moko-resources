@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    kotlin("plugin.compose")
     id("org.jetbrains.compose")
     id("dev.icerock.mobile.multiplatform-resources")
 }

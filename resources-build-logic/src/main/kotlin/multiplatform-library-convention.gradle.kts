@@ -52,7 +52,6 @@ kotlin {
         val macosX64Main by getting
 
         val macosMain by creating {
-            dependsOn(commonMain)
             macosArm64Main.dependsOn(this)
             macosX64Main.dependsOn(this)
         }
@@ -62,7 +61,6 @@ kotlin {
         val macosX64Test by getting
 
         val macosTest by creating {
-            dependsOn(commonTest)
             macosArm64Test.dependsOn(this)
             macosX64Test.dependsOn(this)
         }

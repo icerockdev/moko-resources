@@ -30,7 +30,7 @@ kotlin {
 
 android {
     namespace = "app.kotlin2sample.extra"
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         minSdk = 26
     }

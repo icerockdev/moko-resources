@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        val imageView: ImageView = findViewById(R.id.imageView)
-        val svgImageView: ImageView = findViewById(R.id.svgImageView)
-        val textView: TextView = findViewById(R.id.textView)
-        val stringDescTextView: TextView = findViewById(R.id.stringDescTextView)
-        val otfFontsTestTextView: TextView = findViewById(R.id.stringOtfFontsTest)
+        val imageView: ImageView = findViewById(R.id.imageView)!!
+        val svgImageView: ImageView = findViewById(R.id.svgImageView)!!
+        val textView: TextView = findViewById(R.id.textView)!!
+        val stringDescTextView: TextView = findViewById(R.id.stringDescTextView)!!
+        val otfFontsTestTextView: TextView = findViewById(R.id.stringOtfFontsTest)!!
 
         val strings = Testing.getStrings()
         val text = strings.joinToString("\n") { it.toString(context = this) }

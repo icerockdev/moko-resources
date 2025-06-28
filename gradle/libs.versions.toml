@@ -1,5 +1,5 @@
 [versions]
-kotlinVersion = "1.9.20"
+kotlinVersion = "2.2.0"
 androidGradleVersion = "8.1.4"
 androidSdkCommonVersion = "31.1.2"
 
@@ -11,10 +11,10 @@ kotlinxCoroutinesVersion = "1.6.4"
 androidAppCompatVersion = "1.6.1"
 
 # android compose
-composeUiVersion = "1.5.1"
+composeUiVersion = "1.8.3"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.6.0"
+composeJetbrainsVersion = "1.8.2"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
@@ -60,3 +60,7 @@ kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embe
 detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektVersion" }
 mokoMultiplatformPlugin = { module = "dev.icerock:mobile-multiplatform", version.ref = "mokoMultiplatformPluginVersion" }
 composeJetBrainsPlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeJetbrainsVersion" }
+
+[plugins]
+kotlinComposePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
+

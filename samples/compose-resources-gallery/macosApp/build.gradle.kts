@@ -1,4 +1,5 @@
 
+import dev.icerock.gradle.data.ExtractingBaseLibraryImpl
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 
@@ -84,7 +85,7 @@ tasks.withType<KotlinNativeLink>().configureEach {
                         klib = klibKonan,
                         component = "default"
                     )
-                    val layout = klib.extractingToTemp
+                    val layout = ExtractingBaseLibraryImpl(klib)
 
                     // extracting bundles
                     layout

@@ -6,12 +6,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.9.0")
+    id("org.jetbrains.kotlin.jvm") version (libs.versions.kotlinVersion.get())
     id("detekt-convention")
     id("publication-convention")
-    id("com.gradle.plugin-publish") version ("1.2.0")
+    id("com.gradle.plugin-publish") version ("1.3.1")
     id("java-gradle-plugin")
-    kotlin("plugin.serialization") version ("1.9.0")
+    kotlin("plugin.serialization") version (libs.versions.kotlinVersion.get())
 }
 
 group = "dev.icerock.moko"
@@ -46,7 +46,7 @@ kotlin {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>()
     .configureEach {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_7)
+        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
     }
 
 gradlePlugin {

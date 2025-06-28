@@ -13,7 +13,8 @@ allprojects {
     plugins.withId("org.jetbrains.kotlin.multiplatform") {
         kotlin {
             androidTarget()
-            ios()
+            iosX64()
+            iosArm64()
             iosSimulatorArm64()
             jvm()
             macosX64()
@@ -23,7 +24,15 @@ allprojects {
             explicitApi()
 
             sourceSets {
-                val iosMain by getting
+                val iosMain by creating {
+                    dependsOn(commonMain.get())
+                }
+                val iosArm64Main by getting {
+                    dependsOn(iosMain)
+                }
+                val iosX64Main by getting {
+                    dependsOn(iosMain)
+                }
                 val iosSimulatorArm64Main by getting {
                     dependsOn(iosMain)
                 }

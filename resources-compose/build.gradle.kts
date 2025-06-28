@@ -11,6 +11,7 @@ plugins {
     id("apple-main-convention")
     id("detekt-convention")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("javadoc-stub-convention")
     id("publication-convention")
 }
