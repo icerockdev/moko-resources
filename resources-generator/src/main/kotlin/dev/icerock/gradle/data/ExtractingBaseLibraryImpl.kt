@@ -17,8 +17,7 @@ open class ExtractingKotlinLibraryLayout(zipped: KotlinLibraryLayoutImpl) : Kotl
     override val component = zipped.component
 }
 
-class ExtractingBaseLibraryImpl(zipped: KotlinLibraryLayoutImpl) :
-    ExtractingKotlinLibraryLayout(zipped) {
+class ExtractingBaseLibraryImpl(zipped: KotlinLibraryLayoutImpl) : ExtractingKotlinLibraryLayout(zipped) {
     override val manifestFile: File by lazy { zipped.extract(zipped.manifestFile) }
     override val resourcesDir: File by lazy { zipped.extractDir(zipped.resourcesDir) }
 }
