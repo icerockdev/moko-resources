@@ -12,7 +12,6 @@ import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
-import org.jetbrains.kotlin.library.impl.javaFile
 import java.io.File
 
 internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
@@ -72,7 +71,7 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         val layout: KotlinLibraryLayout = getKotlinLibraryLayout(klibFile)
         return layout.resourcesDir.listFilesOrEmpty
             .filter { it.isDirectory && it.extension == "bundle" }
-            .map { it.javaFile() }
+            .map { File(it.path) }
     }
 
     private fun getKotlinLibraryLayout(file: File): KotlinLibraryLayout {
