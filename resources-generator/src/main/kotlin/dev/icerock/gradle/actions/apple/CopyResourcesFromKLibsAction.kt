@@ -4,7 +4,7 @@
 
 package dev.icerock.gradle.actions.apple
 
-import dev.icerock.gradle.data.ExtractingKotlinLibraryLayout
+import dev.icerock.gradle.data.ExtractingBaseLibraryImpl
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Task
@@ -84,6 +84,6 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         // klib path, hash, resources count. to not extract klibs that we already know that not
         // contains any resources. BUT maybe extraction will be faster then hashing for this logic.
         // so this improvement should be checked in future
-        return if (klib.isZipped) ExtractingKotlinLibraryLayout(klib) else klib
+        return if (klib.isZipped) ExtractingBaseLibraryImpl(klib) else klib
     }
 }
