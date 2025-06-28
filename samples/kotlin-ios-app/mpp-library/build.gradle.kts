@@ -8,8 +8,9 @@ plugins {
 }
 
 kotlin {
-    ios()
+    iosArm64()
     iosSimulatorArm64()
+    iosX64()
     val watchosX64 = watchosX64()
     val watchosArm64 = watchosArm64()
     val watchosSimulatorArm64 = watchosSimulatorArm64()
@@ -32,8 +33,14 @@ kotlin {
             }
         }
 
-        val iosMain by getting {
+        val iosMain by creating {
             dependsOn(appleMain)
+        }
+        val iosArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosX64Main by getting {
+            dependsOn(iosMain)
         }
         val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)
