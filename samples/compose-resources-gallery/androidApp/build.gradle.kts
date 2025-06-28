@@ -19,7 +19,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.myapplication.MyApplication"
         minSdk = 26
