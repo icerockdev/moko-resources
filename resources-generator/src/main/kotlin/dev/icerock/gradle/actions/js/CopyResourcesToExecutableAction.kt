@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.actions.js
 
+import dev.icerock.gradle.data.ExtractingKotlinLibraryLayout
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.logging.Logger
@@ -129,7 +130,7 @@ internal class CopyResourcesToExecutableAction(
         val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
         val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
         val layout: KotlinLibraryLayout = if (klib.isZipped) {
-            klib.extractingToTemp
+            ExtractingKotlinLibraryLayout(klib)
         } else {
             klib
         }
