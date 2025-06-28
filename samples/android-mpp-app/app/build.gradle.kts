@@ -11,11 +11,11 @@ plugins {
 android {
     namespace = "com.icerockdev.mpp"
 
-    compileSdk = 33
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 16
-        targetSdk = 33
+        targetSdk = 36
     }
 
     defaultConfig {
