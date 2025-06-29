@@ -12,7 +12,7 @@ import androidx.compose.runtime.produceState
 
 @Composable
 internal fun produceByteArray(url: String): State<ByteArray?> {
-    return produceState(null, url) {
+    return produceState<ByteArray?>(null, url) {
         @Suppress("TooGenericExceptionCaught")
         try {
             value = fetchByteArray(url)
