@@ -28,5 +28,7 @@ dependencyResolutionManagement {
         }
     }
 }
-
-includeBuild("../resources-build-logic")
+// support gradle Composite builds - https://github.com/icerockdev/moko-resources/issues/558
+if (gradle.parent == null) {
+    includeBuild("../resources-build-logic")
+}
