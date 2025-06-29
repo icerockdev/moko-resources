@@ -18,6 +18,9 @@ allprojects {
             jvm()
             macosX64()
             macosArm64()
+            tvosX64()
+            tvosArm64()
+            tvosSimulatorArm64()
             js(IR) { browser() }
 
             explicitApi()
@@ -36,6 +39,16 @@ allprojects {
                 }
                 val macosArm64Main by getting {
                     dependsOn(macosMain)
+                }
+
+                val tvosMain by creating {
+                    dependsOn(commonMain.get())
+                }
+                val tvosX64Main by getting {
+                    dependsOn(tvosMain)
+                }
+                val tvosArm64Main by getting {
+                    dependsOn(tvosMain)
                 }
             }
         }
