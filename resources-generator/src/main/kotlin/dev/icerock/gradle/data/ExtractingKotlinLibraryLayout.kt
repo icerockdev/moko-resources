@@ -12,7 +12,8 @@ import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 
 /**
- * The code in this file is pulled from a previous version of Kotlin to replicate removed functionality that MR relies on for extracting klibs.
+ * The code in this file is pulled from a previous version of Kotlin to replicate
+ * removed functionality that MR relies on for extracting klibs.
  * https://github.com/JetBrains/kotlin/blob/00984f32ac1ebc2e7fb71b440c282be2a8b05f36/compiler/util-klib/src/org/jetbrains/kotlin/library/impl/KotlinLibraryLayoutImpl.kt
  */
 
