@@ -22,7 +22,7 @@ kotlin {
 
             isStatic = true
             export(moko.resources)
-            export("dev.icerock.moko:graphics:0.9.0")
+            export("dev.icerock.moko:graphics:0.10.0")
         }
     }
 

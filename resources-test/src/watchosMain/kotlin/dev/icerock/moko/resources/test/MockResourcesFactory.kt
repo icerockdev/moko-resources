@@ -8,4 +8,3 @@ import dev.icerock.moko.resources.FontResource
 import dev.icerock.moko.resources.ImageResource
 
 actual fun createImageResourceMock(): ImageResource = ImageResource("")
-actual fun createFontResourceMock(): FontResource = FontResource("")

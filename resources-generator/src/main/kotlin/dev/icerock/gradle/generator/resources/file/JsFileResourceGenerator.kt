@@ -12,20 +12,22 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addValuesFunction
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
 internal class JsFileResourceGenerator(
     private val resourcesGenerationDir: File,
+    private val filePathMode: JsFilePathMode
 ) : PlatformResourceGenerator<FileMetadata> {
 
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: FileMetadata): CodeBlock {
-        val requireDeclaration = """require("./$FILES_DIR/${metadata.filePath.name}")"""
+        val fileUrl: String = filePathMode.argument("./$FILES_DIR/${metadata.filePath.name}")
         return CodeBlock.of(
-            "FileResource(fileUrl = js(%S) as String)",
-            requireDeclaration
+            "FileResource(fileUrl = ${filePathMode.format} as String)",
+            fileUrl
         )
     }
 

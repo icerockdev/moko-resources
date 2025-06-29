@@ -14,7 +14,6 @@ import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
 import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
 import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
-import dev.icerock.gradle.generator.platform.apple.setupTestsResources
 import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
 import dev.icerock.gradle.generator.platform.js.setupJsResourcesWithLinkTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
@@ -85,7 +84,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             if (target is KotlinNativeTarget) {
                 setupExecutableResources(target = target)
                 setupFrameworkResources(target = target)
-                setupTestsResources(target = target)
             }
 
             if (target is KotlinJsIrTarget) {
@@ -186,6 +184,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputResourcesDir })
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
+
             KotlinPlatformType.androidJvm -> {
                 // Fix: android sourceSets indexation in IDE
                 // Usage of api of v2.model in AGP broken for IDE resources indexing
@@ -200,6 +199,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 // see: dev.icerock.gradle.generator.platform.android.SetupAndroidUtilsKt.addGenerationTaskDependency
                 // androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
+
             KotlinPlatformType.common, KotlinPlatformType.native,
             KotlinPlatformType.wasm -> Unit
         }

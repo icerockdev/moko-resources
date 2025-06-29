@@ -5,8 +5,8 @@ plugins {
     kotlin("native.cocoapods")
     id("com.android.library")
     id("org.jetbrains.compose")
-    id("dev.icerock.mobile.multiplatform-resources")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 version = "1.0-SNAPSHOT"
@@ -24,6 +24,10 @@ kotlin {
     jvm("desktop")
     js(IR) {
         browser()
+    }
+    wasmJs {
+        browser()
+        binaries.executable()
     }
 
     cocoapods {

@@ -13,7 +13,7 @@ kotlin {
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -40,7 +40,7 @@ kotlin {
 
 android {
     namespace = "app.kotlin2sample"
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         minSdk = 26
     }

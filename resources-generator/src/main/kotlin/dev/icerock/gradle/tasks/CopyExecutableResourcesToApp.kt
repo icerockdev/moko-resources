@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.tasks
 
+import dev.icerock.gradle.data.ExtractingBaseLibraryImpl
 import dev.icerock.gradle.utils.toKonanFile
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
@@ -40,7 +41,7 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
             .forEach { inputFile ->
                 val klibKonan: org.jetbrains.kotlin.konan.file.File = inputFile.toKonanFile()
                 val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-                val layout: KotlinLibraryLayout = klib.extractingToTemp
+                val layout: KotlinLibraryLayout = ExtractingBaseLibraryImpl(klib)
 
                 // extracting bundles
                 layout
