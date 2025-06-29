@@ -9,16 +9,6 @@ plugins {
 
 kotlin {
     jvm()
-    js(IR) {
-        browser {
-            useCommonJs()
-        }
-        binaries.executable()
-    }
-    wasmJs {
-        browser()
-        binaries.executable()
-    }
     sourceSets {
         commonMain {
             dependencies {
