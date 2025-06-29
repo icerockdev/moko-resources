@@ -11,6 +11,11 @@ import org.jetbrains.kotlin.konan.file.withZipFileSystem
 import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 
+/**
+ * The code in this file is pulled from a previous version of Kotlin to replicate removed functionality that MR relies on for extracting klibs.
+ * https://github.com/JetBrains/kotlin/blob/00984f32ac1ebc2e7fb71b440c282be2a8b05f36/compiler/util-klib/src/org/jetbrains/kotlin/library/impl/KotlinLibraryLayoutImpl.kt
+ */
+
 open class ExtractingKotlinLibraryLayout(zipped: KotlinLibraryLayoutImpl) : KotlinLibraryLayout {
     override val libFile: File get() = error("Extracting layout doesn't extract its own root")
     override val libraryName = zipped.libraryName
@@ -22,7 +27,7 @@ class ExtractingBaseLibraryImpl(zipped: KotlinLibraryLayoutImpl) : ExtractingKot
     override val resourcesDir: File by lazy { zipped.extractDir(zipped.resourcesDir) }
 }
 
-fun KotlinLibraryLayoutImpl.extract(file: File): File = extract(this.klib, file)
+private fun KotlinLibraryLayoutImpl.extract(file: File): File = extract(this.klib, file)
 
 private fun extract(zipFile: File, file: File) = zipFile.withZipFileSystem { zipFileSystem ->
     val temporary = org.jetbrains.kotlin.konan.file.createTempFile(file.name)
@@ -31,7 +36,7 @@ private fun extract(zipFile: File, file: File) = zipFile.withZipFileSystem { zip
     temporary
 }
 
-fun KotlinLibraryLayoutImpl.extractDir(directory: File): File = extractDir(this.klib, directory)
+private fun KotlinLibraryLayoutImpl.extractDir(directory: File): File = extractDir(this.klib, directory)
 
 private fun extractDir(zipFile: File, directory: File): File {
     val temporary = org.jetbrains.kotlin.konan.file.createTempDir(directory.name)
