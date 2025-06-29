@@ -3,17 +3,21 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("dev.icerock.mobile.multiplatform-resources")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {
     jvm()
     sourceSets {
-        val jvmMain by getting  {
+        commonMain {
+            dependencies {
+                implementation(project(":shared"))
+            }
+        }
+        jvmMain {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation(project(":shared"))
             }
         }
     }

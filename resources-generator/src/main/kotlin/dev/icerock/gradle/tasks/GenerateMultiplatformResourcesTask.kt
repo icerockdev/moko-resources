@@ -197,6 +197,9 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             },
             createJvm = {
                 JvmContainerGenerator()
+            },
+            createWasm = {
+                JsContainerGenerator()
             }
         )
     }

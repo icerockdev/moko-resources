@@ -13,12 +13,14 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import java.io.File
 
 internal class JsImageResourceGenerator(
     private val resourcesGenerationDir: File,
+    private val filePathMode: JsFilePathMode
 ) : PlatformResourceGenerator<ImageMetadata> {
 
     override fun imports(): List<ClassName> = emptyList()
@@ -37,20 +39,21 @@ internal class JsImageResourceGenerator(
             }
         }
 
-        val requireDeclaration: String = """require("./$IMAGES_DIR/$fileName")"""
-        val darkRequireDeclaration: String = """require("./$IMAGES_DIR/$darkFileName")"""
+        val lightFilePath: String = filePathMode.argument("./$IMAGES_DIR/$fileName")
+        val darkFilePath: String = filePathMode.argument("./$IMAGES_DIR/$darkFileName")
+        val format: String = filePathMode.format
 
         return if (darkFileName != null) {
             CodeBlock.of(
-                "ImageResource(fileUrl = js(%S) as String, darkFileUrl = js(%S) as String, fileName = %S)",
-                requireDeclaration,
-                darkRequireDeclaration,
+                "ImageResource(fileUrl = $format as String, darkFileUrl = $format as String, fileName = %S)",
+                lightFilePath,
+                darkFilePath,
                 fileName
             )
         } else {
             CodeBlock.of(
-                "ImageResource(fileUrl = js(%S) as String, fileName = %S)",
-                requireDeclaration,
+                "ImageResource(fileUrl = $format as String, fileName = %S)",
+                lightFilePath,
                 fileName
             )
         }

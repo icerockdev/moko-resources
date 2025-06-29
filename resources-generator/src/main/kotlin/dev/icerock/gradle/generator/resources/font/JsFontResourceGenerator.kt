@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import dev.icerock.gradle.utils.flatName
 import java.io.File
@@ -20,6 +21,7 @@ import java.io.File
 internal class JsFontResourceGenerator(
     resourcesPackageName: String,
     private val resourcesGenerationDir: File,
+    private val filePathMode: JsFilePathMode
 ) : PlatformResourceGenerator<FontMetadata> {
     private val flattenClassPackage: String = resourcesPackageName.flatName
     private val cssDeclarationsFileName: String = "$flattenClassPackage-generated-declarations.css"
@@ -27,10 +29,10 @@ internal class JsFontResourceGenerator(
     override fun imports(): List<ClassName> = emptyList()
 
     override fun generateInitializer(metadata: FontMetadata): CodeBlock {
-        val requireDeclaration = """require("./$FONTS_DIR/${metadata.filePath.name}")"""
+        val fileUrl: String = filePathMode.argument("./$FONTS_DIR/${metadata.filePath.name}")
         return CodeBlock.of(
-            "FontResource(fileUrl = js(%S) as String, fontFamily = %S)",
-            requireDeclaration,
+            "FontResource(fileUrl = ${filePathMode.format} as String, fontFamily = %S)",
+            fileUrl,
             metadata.key
         )
     }
@@ -94,8 +96,8 @@ internal class JsFontResourceGenerator(
 
         val addFontsFun: FunSpec = FunSpec.builder("addFontsToPage")
             .addCode(
-                "js(%S)",
-                """require("./$FONTS_DIR/$cssDeclarationsFileName")"""
+                filePathMode.format,
+                filePathMode.argument("./$FONTS_DIR/$cssDeclarationsFileName")
             ).build()
         builder.addFunction(addFontsFun)
     }

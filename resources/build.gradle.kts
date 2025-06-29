@@ -14,16 +14,18 @@ plugins {
 
 kotlin {
     sourceSets {
-        getByName("jsMain") {
-            dependencies {
-                api(npm("bcp-47", "2.1.0"))
-                api(npm("@messageformat/core", "3.1.0"))
-                api(npm("mini-css-extract-plugin", "2.7.5"))
-                api(npm("css-loader", "6.7.3"))
-                api(npm("style-loader", "3.3.2"))
+        commonJsMain.dependencies {
+            implementation(libs.kotlinxCoroutines)
 
-                implementation(libs.kotlinxCoroutines)
-            }
+            api(npm("bcp-47", "2.1.0"))
+            api(npm("@messageformat/core", "3.1.0"))
+            api(npm("mini-css-extract-plugin", "2.7.5"))
+            api(npm("css-loader", "6.7.3"))
+            api(npm("style-loader", "3.3.2"))
+        }
+
+        wasmJsMain.dependencies {
+            implementation(libs.kotlinxBrowser)
         }
     }
 }

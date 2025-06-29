@@ -9,6 +9,7 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.ResourceTypeGenerator
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.string.AndroidStringResourceGenerator
 import dev.icerock.gradle.generator.resources.string.AppleStringResourceGenerator
@@ -77,7 +78,15 @@ internal class StringGeneratorFactory(
             createJs = {
                 JsStringResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.require
+                )
+            },
+            createWasm = {
+                JsStringResourceGenerator(
+                    resourcesPackageName = resourcesPackageName,
+                    resourcesGenerationDir = outputResourcesDir,
+                    filePathMode = JsFilePathMode.rawPath
                 )
             }
         )

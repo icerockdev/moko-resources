@@ -24,6 +24,21 @@ kotlin {
         browser()
         useCommonJs()
     }
+    wasmJs {
+        browser()
+        useCommonJs()
+    }
+
+    // For https://youtrack.jetbrains.com/issue/KT-61573
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting
@@ -57,6 +72,16 @@ kotlin {
             macosX64Main.dependsOn(this)
         }
 
+        val commonJsMain = create("commonJsMain") {
+            dependsOn(commonMain)
+        }
+        val jsMain by getting {
+            dependsOn(commonJsMain)
+        }
+        val wasmJsMain by getting {
+            dependsOn(commonJsMain)
+        }
+
         val commonTest by getting
         val macosArm64Test by getting
         val macosX64Test by getting
@@ -68,6 +93,10 @@ kotlin {
         }
         
         val jsTest by getting {
+            dependsOn(commonTest)
+        }
+
+        val wasmJsTest by getting {
             dependsOn(commonTest)
         }
     }

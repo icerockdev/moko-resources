@@ -17,6 +17,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Apple
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.metadata.resource.HierarchyMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import org.gradle.api.GradleException
@@ -200,13 +201,16 @@ internal fun TypeSpec.Builder.addOverrideAbstractValuesFunction(
     return addFunction(valuesFun)
 }
 
-internal fun TypeSpec.Builder.addJsFallbackProperty(fallbackFilePath: String) {
+internal fun TypeSpec.Builder.addJsFallbackProperty(
+    fallbackFilePath: String,
+    filePathMode: JsFilePathMode
+) {
     val property: PropertySpec = PropertySpec
         .builder(Constants.Js.fallbackFilePropertyName, String::class, KModifier.PRIVATE)
         .initializer(
             CodeBlock.of(
-                "js(%S) as %T",
-                "require(\"$fallbackFilePath\")",
+                "${filePathMode.format} as %T",
+                filePathMode.argument(fallbackFilePath),
                 String::class
             )
         )
@@ -217,6 +221,7 @@ internal fun TypeSpec.Builder.addJsFallbackProperty(fallbackFilePath: String) {
 
 internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
     bcpLangToPath: List<Pair<String, String>>,
+    filePathMode: JsFilePathMode
 ) {
     val property: PropertySpec = PropertySpec
         .builder(
@@ -230,10 +235,10 @@ internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
                     add("%T(listOf(\n", Constants.Js.supportedLocalesName)
                     bcpLangToPath.forEach { (bcpLang, filePath) ->
                         add(
-                            "%T(%S, js(%S) as %T),\n",
+                            "%T(%S, ${filePathMode.format} as %T),\n",
                             Constants.Js.supportedLocaleName,
                             bcpLang,
-                            "require(\"$filePath\")",
+                            filePathMode.argument(filePath),
                             String::class
                         )
                     }
@@ -251,7 +256,7 @@ internal fun TypeSpec.Builder.addJsContainerStringsLoaderProperty() {
         KModifier.OVERRIDE
     ).initializer(
         CodeBlock.of(
-            "RemoteJsStringLoader.Impl(supportedLocales = %N, fallbackFileUri = %N)",
+            "${Constants.Js.remoteStringLoaderClassName}.Impl(supportedLocales = %N, fallbackFileUri = %N)",
             Constants.Js.supportedLocalesPropertyName,
             Constants.Js.fallbackFilePropertyName
         )

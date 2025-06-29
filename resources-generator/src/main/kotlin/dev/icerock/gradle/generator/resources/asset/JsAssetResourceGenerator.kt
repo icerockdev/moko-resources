@@ -12,11 +12,13 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addValuesFunction
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
 internal class JsAssetResourceGenerator(
     private val resourcesGenerationDir: File,
+    private val filePathMode: JsFilePathMode
 ) : PlatformResourceGenerator<AssetMetadata> {
 
     override fun imports(): List<ClassName> = emptyList()
@@ -25,10 +27,10 @@ internal class JsAssetResourceGenerator(
         val filePath: String = File(ASSETS_DIR, metadata.pathRelativeToBase.path)
             .invariantSeparatorsPath
 
-        val requireDeclaration = """require("./$filePath")"""
+        val originalPath: String = filePathMode.argument("./$filePath")
         return CodeBlock.of(
-            "AssetResource(originalPath = js(%S) as String, rawPath = %S)",
-            requireDeclaration,
+            "AssetResource(originalPath = ${filePathMode.format} as String, rawPath = %S)",
+            originalPath,
             metadata.pathRelativeToBase.invariantSeparatorsPath
         )
     }

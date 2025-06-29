@@ -13,7 +13,6 @@ buildscript {
         gradlePluginPortal()
     }
 
-
     dependencies {
         classpath(moko.resourcesGradlePlugin)
     }
