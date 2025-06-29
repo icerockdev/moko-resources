@@ -1,8 +1,8 @@
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("dev.icerock.mobile.multiplatform-resources")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {
@@ -21,10 +21,6 @@ kotlin {
             }
         }
     }
-}
-
-compose.experimental {
-    web.application {}
 }
 
 multiplatformResources {

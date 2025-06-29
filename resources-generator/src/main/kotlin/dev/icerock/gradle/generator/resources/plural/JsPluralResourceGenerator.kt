@@ -17,6 +17,7 @@ import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
 import dev.icerock.gradle.generator.addJsSupportedLocalesProperty
 import dev.icerock.gradle.generator.localization.LanguageType
+import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.platform.js.convertToMessageFormat
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.flatName
@@ -26,7 +27,8 @@ import java.io.File
 
 internal class JsPluralResourceGenerator(
     resourcesPackageName: String,
-    private val resourcesGenerationDir: File
+    private val resourcesGenerationDir: File,
+    private val filePathMode: JsFilePathMode
 ) : PlatformResourceGenerator<PluralMetadata> {
     private val flattenClassPackage: String = resourcesPackageName.flatName
 
@@ -59,7 +61,8 @@ internal class JsPluralResourceGenerator(
         builder.addSuperinterface(Constants.Js.loaderHolderName)
 
         builder.addJsFallbackProperty(
-            fallbackFilePath = "./" + LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base)
+            fallbackFilePath = "./" + LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base),
+            filePathMode = filePathMode
         )
         builder.addJsSupportedLocalesProperty(
             bcpLangToPath = metadata.asSequence()
@@ -70,7 +73,8 @@ internal class JsPluralResourceGenerator(
                 }.filterIsInstance<LanguageType.Locale>().map { language ->
                     val fileName: String = getFileNameForLanguage(language)
                     language.toBcpString() to "./$LOCALIZATION_DIR/$fileName"
-                }.toList()
+                }.toList(),
+            filePathMode = filePathMode
         )
         builder.addJsContainerStringsLoaderProperty()
     }

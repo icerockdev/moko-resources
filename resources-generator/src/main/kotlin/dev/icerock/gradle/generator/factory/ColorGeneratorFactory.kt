@@ -67,6 +67,9 @@ internal class ColorGeneratorFactory(
             },
             createJs = {
                 JsColorResourceGenerator()
+            },
+            createWasm = {
+                JsColorResourceGenerator()
             }
         )
     }

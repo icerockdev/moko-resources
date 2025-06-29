@@ -34,6 +34,9 @@ kotlin {
     js(IR) {
         browser()
     }
+    wasmJs {
+        browser()
+    }
 
     sourceSets {
         commonMain {

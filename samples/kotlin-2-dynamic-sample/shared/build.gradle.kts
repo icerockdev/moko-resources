@@ -13,7 +13,7 @@ kotlin {
             apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),

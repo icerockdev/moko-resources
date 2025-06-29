@@ -1,20 +1,21 @@
 [versions]
-kotlinVersion = "1.9.20"
+kotlinVersion = "1.9.25"
 androidGradleVersion = "8.1.4"
 androidSdkCommonVersion = "31.1.2"
 
 # kotlinx
 kotlinxSerializationVersion = "1.6.1"
-kotlinxCoroutinesVersion = "1.6.4"
+kotlinxCoroutinesVersion = "1.8.0"
+kotlinxBrowserVersion = "0.3"
 
 # android
 androidAppCompatVersion = "1.6.1"
 
 # android compose
-composeUiVersion = "1.5.1"
+composeUiVersion = "1.7.1"
 
 # jetbrains compose
-composeJetbrainsVersion = "1.6.0"
+composeJetbrainsVersion = "1.7.0"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
@@ -25,7 +26,7 @@ commonsCodecVersion = "1.15"
 batikVersion = "1.17"
 
 # moko
-mokoGraphicsVersion = "0.9.0"
+mokoGraphicsVersion = "0.10.0"
 mokoTestVersion = "0.6.1"
 mokoMultiplatformPluginVersion = "0.14.2"
 
@@ -33,6 +34,7 @@ mokoMultiplatformPluginVersion = "0.14.2"
 # kotlinx
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationVersion" }
 kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesVersion" }
+kotlinxBrowser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinxBrowserVersion" }
 
 # moko
 mokoGraphics = { module = "dev.icerock.moko:graphics", version.ref = "mokoGraphicsVersion" }
