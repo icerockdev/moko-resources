@@ -37,7 +37,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
-import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
@@ -222,37 +221,39 @@ internal fun registerCopyXCFrameworkResourcesToAppTask(
 }
 
 internal fun setupExecutableResources(target: KotlinNativeTarget) {
-    val project: Project = target.project
     target.binaries.withType<AbstractExecutable>().configureEach { executable ->
-        val copyTaskName: String =
-            executable.linkTaskProvider.name.replace("link", "copyResources")
-
-        project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
-            dependsOn(executable.linkTaskProvider)
-
-            klibs.from(executable.linkTaskProvider.map { it.klibs })
-
-            outputDirectory.set(
-                project.layout.dir(
-                    project.provider {
-                        val buildProductsDir =
-                            project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
-                        val contentsFolderPath =
-                            project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
-
-                        File("$buildProductsDir/$contentsFolderPath")
-                    }
-                )
-            )
-        }
+        setupExecutableGradleResources(executable)
+        setupExecutableXcodeResources(executable)
     }
 }
 
-internal fun setupTestsResources(target: KotlinNativeTarget) {
-    target.binaries.withType<TestExecutable>().configureEach { executable ->
-        executable.linkTaskProvider.configure { link ->
-            link.doLast(CopyResourcesFromKLibsToExecutableAction())
-        }
+internal fun setupExecutableXcodeResources(executable: AbstractExecutable) {
+    val copyTaskName: String = executable.linkTaskProvider.name.replace("link", "copyResources")
+    val project: Project = executable.project
+
+    project.tasks.register<CopyExecutableResourcesToApp>(copyTaskName) {
+        dependsOn(executable.linkTaskProvider)
+
+        klibs.from(executable.linkTaskProvider.map { it.klibs })
+
+        outputDirectory.set(
+            project.layout.dir(
+                project.provider {
+                    val buildProductsDir =
+                        project.property("moko.resources.BUILT_PRODUCTS_DIR") as String
+                    val contentsFolderPath =
+                        project.property("moko.resources.CONTENTS_FOLDER_PATH") as String
+
+                    File("$buildProductsDir/$contentsFolderPath")
+                }
+            )
+        )
+    }
+}
+
+internal fun setupExecutableGradleResources(executable: AbstractExecutable) {
+    executable.linkTaskProvider.configure { link ->
+        link.doLast(CopyResourcesFromKLibsToExecutableAction())
     }
 }
 

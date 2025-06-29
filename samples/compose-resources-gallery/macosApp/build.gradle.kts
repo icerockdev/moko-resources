@@ -1,8 +1,3 @@
-
-import dev.icerock.gradle.data.ExtractingBaseLibraryImpl
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
-import java.io.File
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -65,44 +60,4 @@ kotlin {
 
 multiplatformResources {
     resourcesPackage.set("dev.icerock.moko.resources.sample")
-}
-
-// TODO move to moko-resources gradle plugin
-// copy .bundle from all .klib to .kexe
-tasks.withType<KotlinNativeLink>().configureEach {
-    val linkTask: KotlinNativeLink = this
-    val outputDir: File = this.outputFile.get().parentFile
-
-    @Suppress("ObjectLiteralToLambda") // lambda broke up-to-date
-    val action = object : Action<Task> {
-        override fun execute(t: Task) {
-            (linkTask.libraries + linkTask.sources)
-                .filter { library -> library.extension == "klib" }
-                .filter(File::exists)
-                .forEach { inputFile ->
-                    val klibKonan = org.jetbrains.kotlin.konan.file.File(inputFile.path)
-                    val klib = org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl(
-                        klib = klibKonan,
-                        component = "default"
-                    )
-                    val layout = ExtractingBaseLibraryImpl(klib)
-
-                    // extracting bundles
-                    layout
-                        .resourcesDir
-                        .absolutePath
-                        .let(::File)
-                        .listFiles { file: File -> file.extension == "bundle" }
-                        // copying bundles to app
-                        ?.forEach {
-                            logger.info("${it.absolutePath} copying to $outputDir")
-                            it.copyRecursively(
-                                target = File(outputDir, it.name),
-                                overwrite = true
-                            )
-                        }
-                }
-        }
-    }
-    doLast(action)
 }

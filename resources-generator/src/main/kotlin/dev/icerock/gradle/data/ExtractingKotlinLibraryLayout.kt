@@ -17,13 +17,13 @@ import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
  * https://github.com/JetBrains/kotlin/blob/00984f32ac1ebc2e7fb71b440c282be2a8b05f36/compiler/util-klib/src/org/jetbrains/kotlin/library/impl/KotlinLibraryLayoutImpl.kt
  */
 
-open class ExtractingKotlinLibraryLayout(zipped: KotlinLibraryLayoutImpl) : KotlinLibraryLayout {
+internal open class ExtractingKotlinLibraryLayout(zipped: KotlinLibraryLayoutImpl) : KotlinLibraryLayout {
     override val libFile: File get() = error("Extracting layout doesn't extract its own root")
     override val libraryName = zipped.libraryName
     override val component = zipped.component
 }
 
-class ExtractingBaseLibraryImpl(zipped: KotlinLibraryLayoutImpl) : ExtractingKotlinLibraryLayout(zipped) {
+internal class ExtractingBaseLibraryImpl(zipped: KotlinLibraryLayoutImpl) : ExtractingKotlinLibraryLayout(zipped) {
     override val manifestFile: File by lazy { zipped.extract(zipped.manifestFile) }
     override val resourcesDir: File by lazy { zipped.extractDir(zipped.resourcesDir) }
 }
