@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.actions.apple
 
+import dev.icerock.gradle.data.ExtractingBaseLibraryImpl
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Task
@@ -11,7 +12,6 @@ import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.library.KotlinLibraryLayout
 import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
-import org.jetbrains.kotlin.library.impl.javaFile
 import java.io.File
 
 internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
@@ -71,7 +71,7 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         val layout: KotlinLibraryLayout = getKotlinLibraryLayout(klibFile)
         return layout.resourcesDir.listFilesOrEmpty
             .filter { it.isDirectory && it.extension == "bundle" }
-            .map { it.javaFile() }
+            .map { File(it.path) }
     }
 
     private fun getKotlinLibraryLayout(file: File): KotlinLibraryLayout {
@@ -83,6 +83,6 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         // klib path, hash, resources count. to not extract klibs that we already know that not
         // contains any resources. BUT maybe extraction will be faster then hashing for this logic.
         // so this improvement should be checked in future
-        return if (klib.isZipped) klib.extractingToTemp else klib
+        return if (klib.isZipped) ExtractingBaseLibraryImpl(klib) else klib
     }
 }

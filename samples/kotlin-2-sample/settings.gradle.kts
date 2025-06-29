@@ -1,20 +1,20 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     repositories {
+        mavenLocal()
         google()
         gradlePluginPortal()
         mavenCentral()
         maven("https://androidx.dev/storage/compose-compiler/repository/")
-        mavenLocal()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
         maven("https://androidx.dev/storage/compose-compiler/repository/")
-        mavenLocal()
     }
 
     versionCatalogs {
