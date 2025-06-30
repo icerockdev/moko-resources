@@ -18,11 +18,15 @@ buildscript {
     }
 }
 
-apply(plugin = "nexus-publication-convention")
-
 allprojects {
     plugins.withId("org.gradle.maven-publish") {
         group = "dev.icerock.moko"
         version = moko.versions.resourcesVersion.get()
     }
 }
+
+// required for nexus plugin
+group = "dev.icerock.moko"
+version = moko.versions.resourcesVersion.get()
+
+apply(plugin = "nexus-publication-convention")
