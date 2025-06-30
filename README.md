@@ -8,7 +8,7 @@
 ![badge][badge-macosX64]
 ![badge][badge-jvm]
 ![badge][badge-js]
-![badge][badge-wasmjs]
+![badge][badge-wasm]
 
 # Mobile Kotlin resources
 
