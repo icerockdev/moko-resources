@@ -680,7 +680,8 @@ For SwiftUI, create this `Image` extension:
 ```swift
 extension Image {
     init(resource: KeyPath<MR.images, ImageResource>) {
-        self.init(uiImage: MR.images()[keyPath: resource].toUIImage()!)
+        let imageResource = MR.images()[keyPath: resource]
+        self.init(imageResource.assetImageName, bundle: imageResource.bundle)
     }
 }
 ```
