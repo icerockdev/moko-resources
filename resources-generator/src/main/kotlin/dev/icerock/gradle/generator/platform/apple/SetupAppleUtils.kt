@@ -11,6 +11,7 @@ import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
 import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
+import dev.icerock.gradle.tasks.PackAppleResourcesBundleTask
 import dev.icerock.gradle.utils.AppleSdk
 import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.disableStaticFrameworkWarning
@@ -23,6 +24,7 @@ import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
@@ -45,12 +47,29 @@ import java.io.File
 @Suppress("LongParameterList")
 internal fun setupAppleKLibResources(
     compileTask: KotlinNativeCompile,
-    assetsDirectory: Provider<File>,
-    resourcesGenerationDir: Provider<File>,
+    assetsDirectory: Provider<Directory>,
+    resourcesGenerationDir: Provider<Directory>,
     iosLocalizationRegion: Provider<String>,
     appleBundleIdentifier: Provider<String>,
     iosMinimalDeploymentTarget: Provider<String>,
 ) {
+    // use separated task to pack bundle
+    val packName = compileTask.name.replace("link", "packAppleBundle")
+    val packTask = compileTask.project.tasks.register(packName, PackAppleResourcesBundleTask::class.java) { task ->
+        task.resourcesGenerationDir.set(resourcesGenerationDir)
+        task.assetsDirectory.set(assetsDirectory)
+        task.iosMinimalDeploymentTarget.set(iosMinimalDeploymentTarget)
+        task.bundleIdentifier.set(appleBundleIdentifier)
+        task.baseLocalizationRegion.set(iosLocalizationRegion)
+
+        task.outputDirectory.set(TODO())
+        task.bundleName.set(compileTask.shortModuleName)
+    }
+
+    // call this task when link framework
+    compileTask.dependsOn(packTask)
+
+    // copy output of this pack task to framework
     compileTask.doLast(
         PackAppleResourcesToKLibAction(
             baseLocalizationRegion = iosLocalizationRegion,
@@ -92,6 +111,11 @@ internal fun createCopyFrameworkResourcesTask(framework: Framework) {
     val project: Project = framework.project
     val taskName: String = framework.linkTaskName.replace("link", "copyResources")
 
+    // can we call just PACK task, without depends on LINK at all? to not call compilation to copy resources at all.
+    // to do it we should:
+    // 1. pack bundles without compilation of framework at all
+    // 2. read all klib dependencies inside CopyFrameworkResourcesToAppTask just like in CopyResourcesFromKLibsAction,
+    // to copy bundles from compiled dependencies
     project.tasks.register(
         /* name = */ taskName,
         /* type = */ CopyFrameworkResourcesToAppTask::class.java

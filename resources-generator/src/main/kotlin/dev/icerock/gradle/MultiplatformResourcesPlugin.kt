@@ -149,10 +149,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                             setupAppleKLibResources(
                                 compileTask = compileTask,
                                 assetsDirectory = genTaskProvider.flatMap {
-                                    it.outputAssetsDir.asFile
+                                    it.outputAssetsDir
                                 },
                                 resourcesGenerationDir = genTaskProvider.flatMap {
-                                    it.outputResourcesDir.asFile
+                                    it.outputResourcesDir
                                 },
                                 iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
                                 iosMinimalDeploymentTarget = mrExtension.iosMinimalDeploymentTarget,
