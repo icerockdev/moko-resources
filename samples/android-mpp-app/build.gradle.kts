@@ -4,14 +4,15 @@
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
         gradlePluginPortal()
-        mavenLocal()
     }
     dependencies {
         classpath(moko.resourcesGradlePlugin)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.25")
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.10")
+        classpath("com.android.tools.build:gradle:8.11.1")
+
     }
 }
