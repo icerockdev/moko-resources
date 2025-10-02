@@ -8,7 +8,7 @@
 ![badge][badge-macosX64]
 ![badge][badge-jvm]
 ![badge][badge-js]
-![badge][badge-wasmjs]
+![badge][badge-wasm]
 
 # Mobile Kotlin resources
 
@@ -208,7 +208,7 @@ In Xcode add `Build Phase` (at end of list) with script:
     -Pmoko.resources.CONTENTS_FOLDER_PATH="$CONTENTS_FOLDER_PATH" \
     -Pkotlin.native.cocoapods.platform="$PLATFORM_NAME" \
     -Pkotlin.native.cocoapods.archs="$ARCHS" \
-    -Pkotlin.native.cocoapods.configuration="$CONFIGURATION" 
+    -Pkotlin.native.cocoapods.configuration="${KOTLIN_FRAMEWORK_BUILD_TYPE:-$CONFIGURATION}" 
 ```
 
 `YourFrameworkName` is name of your project framework. Please, see on a static framework warning for get correct task name.
@@ -220,7 +220,7 @@ In Xcode add `Build Phase` (at end of list) with script:
 ```shell script
 "$SRCROOT/../gradlew" -p "$SRCROOT/../" :yourframeworkproject:copyFrameworkResourcesToApp \
     -Pmoko.resources.PLATFORM_NAME="$PLATFORM_NAME" \
-    -Pmoko.resources.CONFIGURATION="$CONFIGURATION" \
+    -Pmoko.resources.CONFIGURATION="${KOTLIN_FRAMEWORK_BUILD_TYPE:-$CONFIGURATION}" \
     -Pmoko.resources.ARCHS="$ARCHS" \
     -Pmoko.resources.BUILT_PRODUCTS_DIR="$BUILT_PRODUCTS_DIR" \
     -Pmoko.resources.CONTENTS_FOLDER_PATH="$CONTENTS_FOLDER_PATH" 
@@ -680,7 +680,8 @@ For SwiftUI, create this `Image` extension:
 ```swift
 extension Image {
     init(resource: KeyPath<MR.images, ImageResource>) {
-        self.init(uiImage: MR.images()[keyPath: resource].toUIImage()!)
+        let imageResource = MR.images()[keyPath: resource]
+        self.init(imageResource.assetImageName, bundle: imageResource.bundle)
     }
 }
 ```
