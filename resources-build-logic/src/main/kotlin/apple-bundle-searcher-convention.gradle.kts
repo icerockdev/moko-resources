@@ -105,7 +105,6 @@ kotlin.targets
 
 fun KonanTarget.getAppleSdk(): String {
     return when (this) {
-        KonanTarget.IOS_ARM32,
         KonanTarget.IOS_ARM64 -> "iphoneos"
 
         KonanTarget.IOS_SIMULATOR_ARM64,
@@ -124,8 +123,7 @@ fun KonanTarget.getAppleSdk(): String {
 
         KonanTarget.WATCHOS_ARM64,
         KonanTarget.WATCHOS_SIMULATOR_ARM64,
-        KonanTarget.WATCHOS_X64,
-        KonanTarget.WATCHOS_X86 -> "watchsimulator"
+        KonanTarget.WATCHOS_X64 -> "watchsimulator"
 
         else -> error("Unsupported target for selecting SDK: $this")
     }
@@ -133,7 +131,6 @@ fun KonanTarget.getAppleSdk(): String {
 
 fun KonanTarget.getClangTarget(): String {
     return when (this) {
-        KonanTarget.IOS_ARM32 -> "armv7-apple-ios"
         KonanTarget.IOS_ARM64 -> "aarch64-apple-ios"
         KonanTarget.IOS_SIMULATOR_ARM64 -> "aarch64-apple-ios-simulator"
         KonanTarget.IOS_X64 -> "x86_64-apple-ios-simulator"
@@ -150,7 +147,6 @@ fun KonanTarget.getClangTarget(): String {
         KonanTarget.WATCHOS_DEVICE_ARM64 -> "aarch64-apple-watchos"
         KonanTarget.WATCHOS_SIMULATOR_ARM64 -> "aarch64-apple-watchos-simulator"
         KonanTarget.WATCHOS_X64 -> "x86_64-apple-watchos-simulator"
-        KonanTarget.WATCHOS_X86 -> "i386-apple-watchos"
 
         else -> error("Unsupported target for selecting clang target: $this")
     }

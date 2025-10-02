@@ -1,5 +1,5 @@
 [versions]
-resourcesVersion = "0.25.0"
+resourcesVersion = "0.25.1"
 
 [libraries]
 resources = { module = "dev.icerock.moko:resources", version.ref = "resourcesVersion" }
