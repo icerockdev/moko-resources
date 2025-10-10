@@ -28,9 +28,13 @@ jobs:
           distribution: zulu
       - name: Prebuild library
         run: ./gradlew publishToMavenLocal --rerun-tasks
+      - name: Prebuild plugin
+        run: ./gradlew -p resources-generator publishToMavenLocal --rerun-tasks
       - name: Publish library
-        run: ./gradlew publish --no-parallel
-      - name: Publish plugin
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+      - name: Publish plugin to maven central
+        run: ./gradlew -p resources-generator publishToSonatype closeAndReleaseSonatypeStagingRepository
+      - name: Publish plugin to Gradle Plugin Portal
         run: ./gradlew -p resources-generator publishPlugins -Pgradle.publish.key=${{ secrets.GRADLE_PLUGIN_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PLUGIN_PORTAL_SECRET }}
   release:
     name: Create release
