@@ -5,7 +5,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform-resources")
+ //   id("dev.icerock.mobile.multiplatform-resources")
 }
 
 android {
@@ -54,9 +54,9 @@ dependencies {
     commonMainImplementation(moko.resources)
 }
 
-multiplatformResources {
-    resourcesPackage.set("com.icerockdev.library")
-}
+//multiplatformResources {
+//    resourcesPackage.set("com.icerockdev.library")
+//}
 
 tasks.matching { it.name == "packageAndroidMainResources" }
     .configureEach {

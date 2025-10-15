@@ -5,8 +5,11 @@
 package dev.icerock.gradle.generator.platform.android
 
 import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.Sources
 import com.android.build.api.variant.Variant
@@ -19,13 +22,17 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.InternalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.AndroidGradlePluginVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.sources.android.androidSourceSetInfoOrNull
 import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 private const val VARIANTS_EXTRA_NAME = "dev.icerock.moko.resources.android-variants"
 
@@ -36,40 +43,73 @@ internal fun setupAndroidTasks(
     genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
     compilation: KotlinCompilation<*>,
 ) {
-    if (target !is KotlinAndroidTarget) return
+    if (target is KotlinAndroidTarget) {
+        compilation as KotlinJvmAndroidCompilation
 
-    compilation as KotlinJvmAndroidCompilation
+        val project: Project = target.project
 
-    val project: Project = target.project
+        val androidSourceSet: AndroidSourceSet = project.findAndroidSourceSet(sourceSet)
+            ?: throw GradleException("can't find android source set for $sourceSet")
 
-    val androidSourceSet: AndroidSourceSet = project.findAndroidSourceSet(sourceSet)
-        ?: throw GradleException("can't find android source set for $sourceSet")
+        // save android sourceSet name to skip build type specific tasks
+        @Suppress("UnstableApiUsage")
+        genTaskProvider.configure { it.androidSourceSetName.set(androidSourceSet.name) }
 
-    // save android sourceSet name to skip build type specific tasks
-    @Suppress("UnstableApiUsage")
-    genTaskProvider.configure { it.androidSourceSetName.set(androidSourceSet.name) }
+        // connect generateMR task with android tasks
+        val androidVariants: NamedDomainObjectContainer<Variant> = project.extra
+            .get(VARIANTS_EXTRA_NAME) as NamedDomainObjectContainer<Variant>
 
-    // connect generateMR task with android tasks
-    val androidVariants: NamedDomainObjectContainer<Variant> = project.extra
-        .get(VARIANTS_EXTRA_NAME) as NamedDomainObjectContainer<Variant>
+        androidVariants
+            .configureEach { variant ->
+                if (variant.name == compilation.name) {
+                    variant.sources.addGenerationTaskDependency(genTaskProvider)
+                }
 
-    androidVariants
-        .configureEach { variant ->
-            if (variant.name == compilation.name) {
-                variant.sources.addGenerationTaskDependency(genTaskProvider)
-            }
-
-            variant.nestedComponents.forEach { component ->
-                if (component.name == compilation.name) {
-                    component.sources.addGenerationTaskDependency(genTaskProvider)
+                variant.nestedComponents.forEach { component ->
+                    if (component.name == compilation.name) {
+                        component.sources.addGenerationTaskDependency(genTaskProvider)
+                    }
                 }
             }
-        }
 
-    // to fix issues with android lint - depends on preBuild
-    project.tasks
-        .matching { it.name == "preBuild" }
-        .configureEach { it.dependsOn(genTaskProvider) }
+        // to fix issues with android lint - depends on preBuild
+        project.tasks
+            .matching { it.name == "preBuild" }
+            .configureEach { it.dependsOn(genTaskProvider) }
+    }
+    if (target is KotlinMultiplatformAndroidLibraryTarget) {
+        val project: Project = target.project
+        project.isAgpVersionGreaterOrEqual(1, 10)
+        project.extensions.extensionsSchema.forEach {
+            project.logger.warn("project.extensions name=${it.name}")
+        }
+        val componentsExtension =
+            project.extensions.findByType<KotlinMultiplatformAndroidComponentsExtension>()
+        val androidExtension =
+            project.extensions.getByName("androidComponents") as KotlinMultiplatformAndroidComponentsExtension
+        project.logger.warn("componentsExtension: $componentsExtension")
+        androidExtension.onVariants { variant ->
+            project.logger.warn("componentsExtension.onVariants: ${variant.name}")
+
+            // 3. У варианта есть доступ к его source-set'ам!
+            // variant.sources - это объект типа Sources, который нам и нужен.
+            val androidSources = variant.sources
+            androidSources.addGenerationTaskDependency(genTaskProvider)
+            project.logger.warn("nestedComponents size: ${ variant.nestedComponents.size}")
+            variant.sources.addGenerationTaskDependency(genTaskProvider)
+            try {
+                // Используем имя варианта, оно совпадает с именем sourceSet
+                genTaskProvider.configure { it.androidSourceSetName.set(variant.name) }
+                project.logger.warn("genTaskProvider.configure: ${variant.name}")
+            } catch (exception: Exception) {
+                target.project.logger.warn("androidJvm: error configure genTaskProvider $exception")
+            }
+        }
+        // to fix issues with android lint - depends on preBuild
+        project.tasks
+            .matching { it.name == "preBuild" }
+            .configureEach { it.dependsOn(genTaskProvider) }
+    }
 }
 
 internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<GenerateMultiplatformResourcesTask>) {
@@ -97,7 +137,8 @@ internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<Generate
 internal fun setupAndroidVariantsSync(project: Project) {
     listOf(
         "com.android.application",
-        "com.android.library"
+        "com.android.library",
+        "com.android.kotlin.multiplatform.library"
     ).forEach {
         project.plugins.withId(it) {
             val androidVariants: NamedDomainObjectContainer<Variant> =
@@ -108,6 +149,7 @@ internal fun setupAndroidVariantsSync(project: Project) {
             val componentsExtension: AndroidComponentsExtension<*, *, *> = project.extensions
                 .findByType<LibraryAndroidComponentsExtension>()
                 ?: project.extensions.findByType<ApplicationAndroidComponentsExtension>()
+                ?: project.extensions.findByType(AndroidComponentsExtension::class.java)
                 ?: error("can't find AndroidComponentsExtension")
 
             componentsExtension.onVariants { variant: Variant ->
@@ -127,4 +169,14 @@ internal fun Project.getAndroidSourceSetOrNull(kotlinSourceSet: KotlinSourceSet)
     val androidSourceSetInfo = kotlinSourceSet.androidSourceSetInfoOrNull ?: return null
     val android = extensions.findByType<BaseExtension>() ?: return null
     return android.sourceSets.getByName(androidSourceSetInfo.androidSourceSetName)
+}
+
+// Можно добавить этот код в конец файла SetupAndroidUtils.kt
+
+// В файле SetupAndroidUtils.kt
+
+private fun Project.isAgpVersionGreaterOrEqual(major: Int, minor: Int): Boolean {
+    var agpVersion: String? = null
+    logger.warn("MokoResources: AndroidGradlePluginVersion ${CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION}")
+    return true
 }

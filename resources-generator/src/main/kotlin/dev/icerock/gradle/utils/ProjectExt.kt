@@ -4,12 +4,16 @@
 
 package dev.icerock.gradle.utils
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.android.build.api.variant.AndroidComponents
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidSourceSet
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.kotlin.dsl.findByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -23,12 +27,23 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
         // it's required to support gradle projects without android target
         val isAndroidEnabled = listOf(
             "com.android.library",
-            "com.android.application"
+            "com.android.application",
+            "com.android.kotlin.multiplatform.library"
         ).any { project.plugins.findPlugin(it) != null }
-        if (!isAndroidEnabled) return@provider null
-
+        if (!isAndroidEnabled) return@provider "android not enabled"
+        // TODO ADD IF ELSE
+        val newAndroidExtension: KotlinProjectExtension? =
+            project.extensions.findByType()
+        project.logger.warn("newAndroidExtension name=${newAndroidExtension}")
+        val newExtension: KotlinMultiplatformAndroidLibraryExtension? =
+            newAndroidExtension?.extensions?.findByType()
+        project.logger.warn("newAndroidExtension name=${newExtension?.namespace}")
+        if(newExtension!=null){
+            return@provider newExtension.namespace
+        }
         val androidExt: BaseExtension = project.extensions.findByType()
-            ?: return@provider null
+            ?: return@provider "androidExt not found"
+
         androidExt.namespace ?: getAndroidPackage(androidExt.mainSourceSet.manifest.srcFile)
     }
 }

@@ -1,6 +1,6 @@
 [versions]
-kotlinVersion = "1.9.25"
-androidGradleVersion = "8.1.4"
+kotlinVersion = "2.2.10"
+androidGradleVersion = "8.12.0"
 androidSdkCommonVersion = "31.1.2"
 
 # kotlinx
@@ -63,3 +63,6 @@ detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugi
 mokoMultiplatformPlugin = { module = "dev.icerock:mobile-multiplatform", version.ref = "mokoMultiplatformPluginVersion" }
 composeJetBrainsPlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeJetbrainsVersion" }
 nexusPublishing = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
+
+[plugins]
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
