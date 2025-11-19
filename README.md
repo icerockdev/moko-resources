@@ -65,7 +65,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.25.1"
+        classpath "dev.icerock.moko:resources-generator:0.25.2"
     }
 }
 
@@ -84,9 +84,9 @@ apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
     commonMainApi("dev.icerock.moko:resources:0.25.1")
-    commonMainApi("dev.icerock.moko:resources-compose:0.25.1") // for compose multiplatform
+    commonMainApi("dev.icerock.moko:resources-compose:0.25.2") // for compose multiplatform
 
-    commonTestImplementation("dev.icerock.moko:resources-test:0.25.1")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.25.2")
 }
 
 multiplatformResources {

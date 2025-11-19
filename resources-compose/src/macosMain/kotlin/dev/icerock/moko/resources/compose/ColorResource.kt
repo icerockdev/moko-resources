@@ -15,8 +15,6 @@ import platform.AppKit.NSColorSpace.Companion.deviceRGBColorSpace
 
 @Composable
 actual fun colorResource(resource: ColorResource): Color {
-    // TODO https://github.com/icerockdev/moko-resources/issues/443
-    //  recompose when appearance changed (now not works in runtime!)
     val darkMode: Boolean = isSystemInDarkTheme()
     return remember(resource, darkMode) {
         val nsColor: NSColor = resource.getNSColor()
