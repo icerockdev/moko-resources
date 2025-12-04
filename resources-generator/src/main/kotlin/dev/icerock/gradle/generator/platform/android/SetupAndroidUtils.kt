@@ -129,7 +129,7 @@ internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<Generate
 }
 
 internal fun setupAndroidVariantsSync(project: Project) {
-    androidLibraryPlugins().forEach { pluginId ->
+    androidPlugins().forEach { pluginId ->
         project.plugins.withId(pluginId) {
             val androidVariants: NamedDomainObjectContainer<Variant> =
                 project.objects.domainObjectContainer(Variant::class.java)

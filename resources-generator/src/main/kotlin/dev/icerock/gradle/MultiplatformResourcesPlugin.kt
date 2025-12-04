@@ -19,6 +19,7 @@ import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
 import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
 import dev.icerock.gradle.generator.platform.js.setupJsResourcesWithLinkTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
+import dev.icerock.gradle.utils.getPlatformType
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -206,13 +207,5 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             KotlinPlatformType.common, KotlinPlatformType.native,
             KotlinPlatformType.wasm -> Unit
         }
-    }
-}
-
-fun KotlinTarget.getPlatformType(): String {
-    return if (this is KotlinMultiplatformAndroidLibraryTarget){
-        KotlinPlatformType.androidJvm.name
-    } else {
-        platformType.name
     }
 }

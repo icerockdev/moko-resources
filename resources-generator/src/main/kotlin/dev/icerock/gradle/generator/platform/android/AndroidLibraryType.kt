@@ -4,20 +4,12 @@
 
 package dev.icerock.gradle.generator.platform.android
 
-internal enum class AndroidLibraryType(val plugins: List<String>) {
-    Library(
-        plugins = listOf(
-            "com.android.application",
-            "com.android.library"
-        )
-    ),
-    KmpLibrary(
-        plugins = listOf(
-            "com.android.kotlin.multiplatform.library"
-        )
-    )
+internal enum class AndroidLibraryType(val pluginId: String) {
+    Application(pluginId = "com.android.application"),
+    Library(pluginId = "com.android.library"),
+    KmpLibrary(pluginId = "com.android.kotlin.multiplatform.library")
 }
 
-internal fun androidLibraryPlugins(): List<String> {
-    return AndroidLibraryType.entries.flatMap { it.plugins }
+internal fun androidPlugins(): List<String> {
+    return AndroidLibraryType.entries.map { it.pluginId }
 }

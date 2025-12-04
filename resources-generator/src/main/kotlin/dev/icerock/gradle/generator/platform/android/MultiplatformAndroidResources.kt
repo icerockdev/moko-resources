@@ -5,20 +5,21 @@
 package dev.icerock.gradle.generator.platform.android
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import dev.icerock.gradle.utils.capitalize
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 internal fun configureMultiplatformAndroidResources(project: Project) {
-    project.plugins.withId("com.android.kotlin.multiplatform.library") {
+    project.plugins.withId(AndroidLibraryType.KmpLibrary.pluginId) {
         val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
         androidComponents.onVariants { variant ->
-            val capName = variant.name.replaceFirstChar { it.titlecase() }
-
-            val generateTask = project.tasks.findByName("generateMRandroidMain")
+            val capitalizedName: String = variant.name.capitalize()
+            val generateTask: Task? = project.tasks.findByName("generateMRandroidMain")
 
             generateTask?.let { task ->
                 project.tasks.configureEach { projectTask ->
-                    if (projectTask.name == "package${capName}Resources") {
+                    if (projectTask.name == "package${capitalizedName}Resources") {
                         projectTask.dependsOn(task)
                     }
                 }
