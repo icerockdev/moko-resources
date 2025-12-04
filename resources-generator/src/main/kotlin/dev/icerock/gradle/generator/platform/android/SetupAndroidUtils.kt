@@ -22,17 +22,13 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.InternalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.AndroidGradlePluginVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.sources.android.androidSourceSetInfoOrNull
 import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 private const val VARIANTS_EXTRA_NAME = "dev.icerock.moko.resources.android-variants"
 
@@ -52,7 +48,6 @@ internal fun setupAndroidTasks(
             ?: throw GradleException("can't find android source set for $sourceSet")
 
         // save android sourceSet name to skip build type specific tasks
-        @Suppress("UnstableApiUsage")
         genTaskProvider.configure { it.androidSourceSetName.set(androidSourceSet.name) }
 
         // connect generateMR task with android tasks
@@ -95,7 +90,7 @@ internal fun setupAndroidTasks(
             // variant.sources - это объект типа Sources, который нам и нужен.
             val androidSources = variant.sources
             androidSources.addGenerationTaskDependency(genTaskProvider)
-            project.logger.warn("nestedComponents size: ${ variant.nestedComponents.size}")
+            project.logger.warn("nestedComponents size: ${variant.nestedComponents.size}")
             variant.sources.addGenerationTaskDependency(genTaskProvider)
             try {
                 // Используем имя варианта, оно совпадает с именем sourceSet
@@ -113,7 +108,6 @@ internal fun setupAndroidTasks(
 }
 
 internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<GenerateMultiplatformResourcesTask>) {
-    @Suppress("UnstableApiUsage")
     kotlin?.addGeneratedSourceDirectory(
         taskProvider = provider,
         wiredWith = GenerateMultiplatformResourcesTask::outputSourcesDir
@@ -135,12 +129,8 @@ internal fun Sources.addGenerationTaskDependency(provider: TaskProvider<Generate
 }
 
 internal fun setupAndroidVariantsSync(project: Project) {
-    listOf(
-        "com.android.application",
-        "com.android.library",
-        "com.android.kotlin.multiplatform.library"
-    ).forEach {
-        project.plugins.withId(it) {
+    androidLibraryPlugins().forEach { pluginId ->
+        project.plugins.withId(pluginId) {
             val androidVariants: NamedDomainObjectContainer<Variant> =
                 project.objects.domainObjectContainer(Variant::class.java)
 

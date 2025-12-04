@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import dev.icerock.gradle.generator.platform.apple.registerCopyXCFrameworkResourcesToAppTask
+import dev.icerock.gradle.utils.capitalize
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
