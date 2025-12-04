@@ -65,3 +65,22 @@ gradlePlugin {
     website.set("https://github.com/icerockdev/moko-resources")
     vcsUrl.set("https://github.com/icerockdev/moko-resources")
 }
+
+project.plugins.withId("com.android.kotlin.multiplatform.library") {
+    val androidComponents = project.extensions.getByType(
+        com.android.build.api.variant.AndroidComponentsExtension::class.java
+    )
+
+    androidComponents.onVariants { variant ->
+        val capName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+
+        // задача генерации создаётся библиотекой/плагином
+        val generateTask = project.tasks.named("generateMRandroidMain")
+
+        // связываем упаковку ресурсов конкретного варианта с генерацией
+        project.tasks.matching { it.name == "package${capName}Resources" }
+            .configureEach {
+                dependsOn(generateTask)
+            }
+    }
+}

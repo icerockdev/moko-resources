@@ -13,6 +13,7 @@ plugins {
     id("org.jetbrains.compose")
     id("javadoc-stub-convention")
     id("publication-convention")
+    alias(libs.plugins.composeCompiler)
 }
 
 android {

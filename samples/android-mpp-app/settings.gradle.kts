@@ -4,9 +4,9 @@
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
-        mavenLocal()
     }
     versionCatalogs {
         create("moko") {
@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 }
 
 include(":app")
+include(":library")

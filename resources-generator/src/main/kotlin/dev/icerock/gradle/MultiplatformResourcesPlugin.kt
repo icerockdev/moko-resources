@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
 import dev.icerock.gradle.generator.platform.android.getAndroidSourceSetOrNull
 import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
@@ -34,6 +35,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
@@ -96,7 +98,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         sourceSet.getOrRegisterGenerateResourcesTask(mrExtension)
 
                     genTaskProvider.configure {
-                        it.platformType.set(target.platformType.name)
+                        it.platformType.set(target.getPlatformType())
 
                         if (target is KotlinNativeTarget) {
                             it.konanTarget.set(target.konanTarget.name)
@@ -204,4 +206,10 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             KotlinPlatformType.wasm -> Unit
         }
     }
+}
+
+fun KotlinTarget.getPlatformType(): String = if (this is KotlinMultiplatformAndroidLibraryTarget){
+    KotlinPlatformType.androidJvm.name
+} else {
+    platformType.name
 }

@@ -5,13 +5,15 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.multiplatform")
-    id("dev.icerock.mobile.multiplatform-resources")
+ //   id("dev.icerock.mobile.multiplatform-resources")
 }
 
 android {
     namespace = "com.icerockdev.mpp"
 
     compileSdk = 33
+
+    flavorDimensions += "type1" // Используйте то же имя измерения, что и в ваших flavors
 
     defaultConfig {
         minSdk = 16
@@ -25,10 +27,20 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        missingDimensionStrategy("type1", "dev") // Если :app собирает dev, и зависимость не имеет type1, используй 'dev' из type1
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    productFlavors {
+        create("dev") {
+            dimension = "type1"
+        }
+        create("prod") {
+            dimension = "type1"
+        }
     }
 }
 
@@ -38,10 +50,15 @@ kotlin {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-
+    implementation(project(":library"))
     commonMainImplementation(moko.resources)
 }
 
-multiplatformResources {
-    resourcesPackage.set("com.icerockdev.library")
-}
+//multiplatformResources {
+//    resourcesPackage.set("com.icerockdev.library")
+//}
+
+tasks.matching { it.name == "packageAndroidMainResources" }
+    .configureEach {
+        dependsOn(tasks.named("generateMRandroidMain"))
+    }

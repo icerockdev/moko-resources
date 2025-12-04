@@ -112,9 +112,13 @@ private fun registerGenerateTask(
 
             val platform: String = task.platformType.get()
             if (platform != KotlinPlatformType.androidJvm.name) return@onlyIf true
-
+            try {
             val flavor: String = task.androidSourceSetName.get()
             flavor in listOf("main", "test", "androidTest")
+            } catch (exception: Exception){
+                project.logger.warn(" flavor check error $exception")
+                true
+            }
         }
     }
 
