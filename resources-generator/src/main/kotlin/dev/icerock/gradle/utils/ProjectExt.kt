@@ -5,8 +5,6 @@
 package dev.icerock.gradle.utils
 
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
-import com.android.build.api.variant.AndroidComponents
-import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidSourceSet
 import dev.icerock.gradle.generator.platform.android.androidPlugins
@@ -22,26 +20,50 @@ import java.io.File
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 
+/**
+ * Resolves the Android R-class package name (namespace) for the current project.
+ *
+ * This function determines the package name used for generated Android R-classes
+ * (Resource classes). It prioritizes the modern Kotlin Multiplatform (KMP)
+ * Android Library Extension namespace, and falls back to the deprecated BaseExtension
+ * and manifest file parsing if necessary.
+ *
+ * The evaluation is performed lazily inside a [Provider].
+ *
+ * @return A [Provider] that supplies the R-class package name as a [String].
+ * The provider returns special error/signal strings if configuration fails or is not applicable:
+ * - `"android not enabled"`: If none of the known Android plugins are applied to the project.
+ * - `"BaseExtension Android not found"`: If Android plugins are detected but the
+ * necessary [BaseExtension] (like `android` extension) cannot be located.
+ * - The actual package name (e.g., "com.example.app"): The resolved namespace.
+ */
 internal fun Project.getAndroidRClassPackage(): Provider<String> {
     return provider {
         // before call android specific classes we should ensure that android plugin in classpath at all
         // it's required to support gradle projects without android target
         val isAndroidEnabled = androidPlugins().any { project.plugins.findPlugin(it) != null }
-        if (!isAndroidEnabled) return@provider "android not enabled"
-        // TODO ADD IF ELSE
-        val newAndroidExtension: KotlinProjectExtension? =
-            project.extensions.findByType()
-        project.logger.warn("newAndroidExtension name=${newAndroidExtension}")
-        val newExtension: KotlinMultiplatformAndroidLibraryExtension? =
-            newAndroidExtension?.extensions?.findByType()
-        project.logger.warn("newAndroidExtension name=${newExtension?.namespace}")
-        if(newExtension!=null){
-            return@provider newExtension.namespace
+        if (!isAndroidEnabled) {
+            return@provider "android not enabled"
         }
-        val androidExt: BaseExtension = project.extensions.findByType()
-            ?: return@provider "androidExt not found"
 
-        androidExt.namespace ?: getAndroidPackage(androidExt.mainSourceSet.manifest.srcFile)
+        val kotlinProjectExtension: KotlinProjectExtension? = project
+            .extensions.findByType<KotlinProjectExtension>()
+        val androidLibraryExtension: KotlinMultiplatformAndroidLibraryExtension? =
+            kotlinProjectExtension?.extensions?.findByType<KotlinMultiplatformAndroidLibraryExtension>()
+
+        // 1. Check for modern KMP Android Library Extension
+        if (androidLibraryExtension != null) {
+            return@provider androidLibraryExtension.namespace
+        }
+
+        // 2. Fallback to deprecated BaseExtension (e.g., Android Gradle Plugin 7.x/8.x)
+        val androidBaseExtension: BaseExtension = project.extensions.findByType<BaseExtension>()
+            ?: return@provider "BaseExtension Android not found"
+
+        // 3. Use namespace or parse it from the manifest (AGP < 7.x fallback)
+        androidBaseExtension.namespace ?: getAndroidPackage(
+            manifestFile = androidBaseExtension.mainSourceSet.manifest.srcFile
+        )
     }
 }
 
