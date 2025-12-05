@@ -9,6 +9,7 @@ import com.android.build.api.variant.AndroidComponents
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidSourceSet
+import dev.icerock.gradle.generator.platform.android.androidPlugins
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
@@ -25,11 +26,7 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
     return provider {
         // before call android specific classes we should ensure that android plugin in classpath at all
         // it's required to support gradle projects without android target
-        val isAndroidEnabled = listOf(
-            "com.android.library",
-            "com.android.application",
-            "com.android.kotlin.multiplatform.library"
-        ).any { project.plugins.findPlugin(it) != null }
+        val isAndroidEnabled = androidPlugins().any { project.plugins.findPlugin(it) != null }
         if (!isAndroidEnabled) return@provider "android not enabled"
         // TODO ADD IF ELSE
         val newAndroidExtension: KotlinProjectExtension? =

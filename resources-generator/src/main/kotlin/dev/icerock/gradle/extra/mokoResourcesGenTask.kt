@@ -111,14 +111,20 @@ private fun registerGenerateTask(
             task as GenerateMultiplatformResourcesTask
 
             val platform: String = task.platformType.get()
+            println("DBG: platform $platform")
+
             if (platform != KotlinPlatformType.androidJvm.name) return@onlyIf true
-            try {
+
             val flavor: String = task.androidSourceSetName.get()
-            flavor in listOf("main", "test", "androidTest")
-            } catch (exception: Exception){
-                project.logger.warn(" flavor check error $exception")
-                true
-            }
+            println("DBG: flavor $flavor")
+
+            flavor in listOf(
+                "androidMain",
+                "androidTest",
+                "androidInstrumentedTest",
+                "main",
+                "test"
+            )
         }
     }
 
