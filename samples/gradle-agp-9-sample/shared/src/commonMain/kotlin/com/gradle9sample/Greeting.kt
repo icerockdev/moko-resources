@@ -1,4 +1,4 @@
-package app.kotlin2sample
+package com.gradle9sample
 
 import app.gradle9sample.library.MR
 import dev.icerock.moko.resources.desc.StringDesc

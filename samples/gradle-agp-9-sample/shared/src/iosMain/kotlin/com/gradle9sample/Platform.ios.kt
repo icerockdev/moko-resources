@@ -1,4 +1,4 @@
-package app.kotlin2sample
+package com.gradle9sample
 
 import platform.UIKit.UIDevice
 

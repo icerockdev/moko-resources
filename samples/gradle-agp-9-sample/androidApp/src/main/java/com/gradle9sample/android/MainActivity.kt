@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import app.gradle9sample.R
-import app.kotlin2sample.Greeting
+import com.gradle9sample.Greeting
+import com.gradle9sample.android.library.R
 import dev.icerock.moko.resources.compose.localized
 
 class MainActivity : ComponentActivity() {

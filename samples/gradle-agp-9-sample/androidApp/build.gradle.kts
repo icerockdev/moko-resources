@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "app.gradle9.android"
+    namespace = "com.gradle9.android"
     compileSdk = 36
 
     defaultConfig {

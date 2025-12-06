@@ -10,7 +10,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "app.gradle9sample"
+        namespace = "com.gradle9sample.android.library"
         compileSdk = 36
         minSdk = 26
     }
