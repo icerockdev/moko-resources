@@ -1,6 +1,6 @@
 package app.kotlin2sample
 
-import app.kotlin2sample.library.MR
+import app.gradle9sample.library.MR
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 

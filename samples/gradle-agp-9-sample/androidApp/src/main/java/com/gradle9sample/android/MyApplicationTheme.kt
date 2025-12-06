@@ -1,4 +1,4 @@
-package app.thirtyninth.compose.navigation.kotlin2sample.android
+package com.gradle9sample.android
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape

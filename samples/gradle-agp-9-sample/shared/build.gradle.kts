@@ -13,7 +13,6 @@ kotlin {
         namespace = "app.gradle9sample"
         compileSdk = 36
         minSdk = 26
-        androidResources.enable = true
     }
 
     listOf(
@@ -45,5 +44,5 @@ kotlin {
 }
 
 multiplatformResources {
-    resourcesPackage.set("app.kotlin2sample.library")
+    resourcesPackage.set("app.gradle9sample.library")
 }
