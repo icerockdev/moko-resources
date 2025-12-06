@@ -65,6 +65,11 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             setupAndroidVariantsSync(project = project)
             setupGradleSync(project = project)
         }
+
+        // Enable android resources for "com.android.kotlin.multiplatform.library" plugin
+        project.plugins.withId(AndroidLibraryType.KmpLibrary.pluginId) {
+            project.enableAndroidResources()
+        }
     }
 
     private fun setupGradleSync(project: Project) {

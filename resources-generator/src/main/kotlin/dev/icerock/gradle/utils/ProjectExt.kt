@@ -5,6 +5,7 @@
 package dev.icerock.gradle.utils
 
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidSourceSet
 import dev.icerock.gradle.generator.platform.android.androidPlugins
@@ -12,6 +13,8 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.w3c.dom.Document
 import org.w3c.dom.Node
@@ -65,6 +68,27 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
             manifestFile = androidBaseExtension.mainSourceSet.manifest.srcFile
         )
     }
+}
+
+/**
+ * Enables Android resources support for all [KotlinMultiplatformAndroidLibraryTarget] targets
+ * in this project.
+ *
+ * This function does **not** track plugin application and assumes that
+ * the caller invokes it only after the `com.android.kotlin.multiplatform.library` plugin
+ * has already been applied.
+ *
+ * It configures each Android library target to have `androidResources.enable = true`,
+ * which allows the module to use Android resource folders (`res/`, `assets/`, etc.)
+ * in the Kotlin Multiplatform Android source sets.
+ */
+internal fun Project.enableAndroidResources() {
+    val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
+
+    kmpExtension.targets.withType<KotlinMultiplatformAndroidLibraryTarget>()
+        .configureEach { target ->
+            target.androidResources.enable = true
+        }
 }
 
 private fun getAndroidPackage(manifestFile: File): String {
