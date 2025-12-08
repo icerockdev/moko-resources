@@ -6,13 +6,13 @@ package com.icerockdev.mpp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.icerockdev.mpplibrary.R
+import com.icerockdev.library.TestRes
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val text = R.string.app_test
-      //  TestRes.test()
+
+        TestRes.test()
     }
 }

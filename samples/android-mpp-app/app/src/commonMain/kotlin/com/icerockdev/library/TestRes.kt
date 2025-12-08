@@ -4,11 +4,8 @@
 
 package com.icerockdev.library
 
-import com.icerockdev.mpplibrary.TestResSecond
-
 object TestRes {
     fun test() {
-      //  println(MR.strings.common_name)
-        TestResSecond.test()
+        println(MR.strings.common_name)
     }
 }
