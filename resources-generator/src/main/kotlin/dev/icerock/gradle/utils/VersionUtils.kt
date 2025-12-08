@@ -57,8 +57,8 @@ internal fun hasMinimalVersion(minVersion: String, currentVersion: String): Bool
  * @param raw the version string to parse
  * @return a [Triple] containing major, minor, and patch numbers
  */
-private fun parseVersion(raw: String): Triple<Int,Int,Int> {
-    val core: String = raw.substringBefore('-')     // remove alpha/beta/rc/etc
+private fun parseVersion(raw: String): Triple<Int, Int, Int> {
+    val core: String = raw.substringBefore('-') // remove alpha/beta/rc/etc
     val parts: List<String> = core.split('.')
 
     val major: Int = parts.getOrNull(0)?.toIntOrNull() ?: 0

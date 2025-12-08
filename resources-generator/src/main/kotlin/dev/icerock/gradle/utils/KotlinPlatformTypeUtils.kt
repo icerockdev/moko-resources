@@ -12,7 +12,7 @@ internal val KotlinPlatformType.isCommon: Boolean
     get() = this == KotlinPlatformType.common
 
 internal fun KotlinTarget.getPlatformType(): String {
-    return if (this is KotlinMultiplatformAndroidLibraryTarget){
+    return if (this is KotlinMultiplatformAndroidLibraryTarget) {
         KotlinPlatformType.androidJvm.name
     } else {
         platformType.name
