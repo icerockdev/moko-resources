@@ -20,4 +20,4 @@ androidMultiplatfrom = { id = "com.android.kotlin.multiplatform.library", versio
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-multiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version = "0.27.0" }
+multiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version = "0.26.0" }

@@ -5,7 +5,9 @@
 package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
+import dev.icerock.gradle.generator.platform.android.AGP_8_11_0
 import dev.icerock.gradle.generator.platform.android.AndroidLibraryType
 import dev.icerock.gradle.generator.platform.android.getAndroidSourceSetOrNull
 import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
@@ -20,6 +22,7 @@ import dev.icerock.gradle.generator.platform.js.setupJsResourcesWithLinkTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import dev.icerock.gradle.utils.enableAndroidResources
 import dev.icerock.gradle.utils.getPlatformType
+import dev.icerock.gradle.utils.hasMinimalVersion
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -68,7 +71,14 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 
         // Enable android resources for "com.android.kotlin.multiplatform.library" plugin
         project.plugins.withId(AndroidLibraryType.KmpLibrary.pluginId) {
-            project.enableAndroidResources()
+            val hasEnableAndroidResourcesFlag = hasMinimalVersion(
+                minVersion = AGP_8_11_0,
+                currentVersion = CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION.version
+            )
+
+            if (hasEnableAndroidResourcesFlag) {
+                project.enableAndroidResources()
+            }
         }
     }
 

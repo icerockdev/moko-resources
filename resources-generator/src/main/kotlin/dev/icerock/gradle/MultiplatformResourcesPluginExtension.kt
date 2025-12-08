@@ -22,7 +22,7 @@ abstract class MultiplatformResourcesPluginExtension {
     abstract val resourcesSourceSets: NamedDomainObjectContainer<SourceDirectorySet>
 
     fun Project.configureCopyXCFrameworkResources(xcFrameworkName: String = name) {
-        NativeBuildType.values()
+        NativeBuildType.entries
             .map { it.name.lowercase().capitalize() }
             .plus("")
             .map { xcFrameworkName.capitalize() + it + "XCFramework" }
