@@ -58,7 +58,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 kmpExtension = kmpExtension
             )
 
-            configureMultiplatformAndroidResources(project = project)
             setupFatFrameworkTasks(project = project)
             registerGenerateAllResources(project = project)
             registerCopyFrameworkResourcesToAppTask(project = project)
