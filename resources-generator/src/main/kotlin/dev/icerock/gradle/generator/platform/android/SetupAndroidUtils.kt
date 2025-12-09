@@ -61,13 +61,15 @@ internal fun setupAndroidTasks(
     genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
     compilation: KotlinCompilation<*>,
 ) {
-    val project: Project = target.project
+
+    println("DBG: target ${target.name} ${target.platformType.name} ${target.artifactsTaskName}")
 
     // Only Android targets (legacy or KMP) participate in Android resource wiring.
     if (target !is KotlinAndroidTarget && target !is KotlinMultiplatformAndroidLibraryTarget) return
 
-    val androidExtension: KotlinMultiplatformAndroidComponentsExtension? = project.extensions
-        .findByType<KotlinMultiplatformAndroidComponentsExtension>()
+    val project: Project = target.project
+    val androidExtension: KotlinMultiplatformAndroidComponentsExtension? =
+        project.extensions.findByType()
 
     if (androidExtension != null) {
         // Modern KMP Android integration:
