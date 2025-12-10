@@ -23,6 +23,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.findByType
+import org.jetbrains.kotlin.cfg.pseudocode.and
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -102,6 +103,7 @@ internal fun setupAndroidTasks(
     }
 
     if (androidExtension == null && target is KotlinAndroidTarget) {
+        println("DBG: legacy code")
         val androidCompilation = compilation as KotlinJvmAndroidCompilation
 
         // Legacy Android Plugin (com.android.library).
@@ -110,7 +112,8 @@ internal fun setupAndroidTasks(
             kotlinSourceSet = sourceSet
         ) ?: throw GradleException("can't find android source set for $sourceSet")
 
-        // Assign the Android source set name to the task (used for skipping build-type-specific tasks).
+        // Assign the Android source set name to the task
+        // (used for skipping build-type-specific tasks).
         genTaskProvider.configure { it.androidSourceSetName.set(androidSourceSet.name) }
 
         // Wire generated sources into AGP's legacy Variant API.
@@ -193,6 +196,8 @@ internal fun setupAndroidVariantsSync(project: Project) {
                     ?: error("can't find AndroidComponentsExtension")
 
             componentsExtension.onVariants { variant: Variant ->
+                println("DBG: sync ${variant.name} added in variants")
+
                 androidVariants.add(variant)
             }
         }
@@ -228,6 +233,7 @@ private fun variantHandler(
     genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
     compilation: KotlinCompilation<*>,
 ) {
+    println("DBG: variantHandler ${variant.name} ${compilation.platformType} ${compilation.compilationName}")
     if (compilation !is KotlinMultiplatformAndroidCompilation) return
 
     if (variant.name == compilation.componentName) {

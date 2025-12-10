@@ -13,8 +13,11 @@ internal val KotlinPlatformType.isCommon: Boolean
 
 internal fun KotlinTarget.getPlatformType(): String {
     return if (this is KotlinMultiplatformAndroidLibraryTarget) {
+        println("DBG: getPlatformType kmpAT but ${this.name} ${this.platformType.name}")
         KotlinPlatformType.androidJvm.name
     } else {
+        println("DBG: getPlatformType kmpAT ${this.platformType.name}")
+
         platformType.name
     }
 }
