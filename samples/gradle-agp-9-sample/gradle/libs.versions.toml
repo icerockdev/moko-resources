@@ -1,5 +1,5 @@
 [versions]
-agp = "9.0.0-beta03"
+agp = "9.0.0-rc01"
 kotlin = "2.2.10"
 compose = "1.6.7"
 compose-material3 = "1.2.1"

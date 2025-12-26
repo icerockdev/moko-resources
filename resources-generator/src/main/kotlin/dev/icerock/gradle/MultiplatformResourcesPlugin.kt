@@ -5,8 +5,6 @@
 package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
-import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
-import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
 import dev.icerock.gradle.generator.platform.android.AGP_8_11_0
@@ -39,7 +37,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
@@ -102,6 +99,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         kmpExtension.targets.configureEach { target ->
+            println("DBG: TARGETS: ${target.name} -> ${target.platformType}")
             if (target is KotlinNativeTarget) {
                 setupExecutableResources(target = target)
                 setupFrameworkResources(target = target)
@@ -109,30 +107,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
 
             if (target is KotlinJsIrTarget) {
                 setupJsResourcesWithLinkTask(target = target, project = project)
-            }
-
-            if (target is KotlinMultiplatformAndroidLibraryTarget) {
-                target.compilations
-                    .withType(KotlinMultiplatformAndroidCompilation::class)
-                    .configureEach { compilation ->
-                        compilation.kotlinSourceSetsObservable.forAll { sourceSet ->
-                            println("DBG: sourceSets kmpat $sourceSet")
-                            val genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask> =
-                                sourceSet.getOrRegisterGenerateResourcesTask(mrExtension)
-println("DBG: compilations KotlinMultiplatformAndroidCompilation: ${target.platformType.name}")
-                            genTaskProvider.configure {
-                                it.platformType.set(target.platformType.name)
-                            }
-
-                            setupAndroidTasks(
-                                target = target,
-                                sourceSet = sourceSet,
-                                genTaskProvider = genTaskProvider,
-                                compilation = compilation
-                            )
-                        }
-                    }
-
             }
 
             target.compilations.configureEach { compilation ->
