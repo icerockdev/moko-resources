@@ -5,7 +5,6 @@
 package dev.icerock.gradle.utils
 
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.api.AndroidSourceSet
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
 import org.gradle.kotlin.dsl.findByType
@@ -70,9 +69,6 @@ private fun getAndroidPackage(manifestFile: File): String {
 
     return manifest.attributes.getNamedItem("package").textContent
 }
-
-private val BaseExtension.mainSourceSet: AndroidSourceSet
-    get() = this.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 
 private val BaseExtension.newMainSourceSet: com.android.build.api.dsl.AndroidSourceSet
     get() = this.sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)

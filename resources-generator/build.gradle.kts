@@ -6,12 +6,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("1.9.25")
+    id("org.jetbrains.kotlin.jvm") version ("2.2.10")
     id("detekt-convention")
     id("publication-convention")
     id("com.gradle.plugin-publish") version ("1.2.0")
     id("java-gradle-plugin")
-    kotlin("plugin.serialization") version ("1.9.25")
+    kotlin("plugin.serialization") version ("2.2.10")
     id("nexus-publication-convention")
 }
 
@@ -20,9 +20,10 @@ version = moko.versions.resourcesVersion.get()
 
 dependencies {
     implementation(gradleKotlinDsl())
-    compileOnly(libs.kotlinGradlePlugin)
-    compileOnly(libs.androidGradlePlugin)
-    compileOnly(libs.kotlinCompilerEmbeddable)
+    compileOnly(libs.generatorKotlinGradlePlugin)
+    compileOnly(libs.generatorAndroidGradlePlugin)
+    compileOnly(libs.androidMultiplatfrom)
+    compileOnly(libs.generatorKotlinCompilerEmbeddable)
     compileOnly(libs.androidSdkCommon)
     implementation(libs.kotlinPoet)
     implementation(libs.kotlinxSerialization)
@@ -47,7 +48,7 @@ kotlin {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>()
     .configureEach {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_9)
+        compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
     }
 
 gradlePlugin {
