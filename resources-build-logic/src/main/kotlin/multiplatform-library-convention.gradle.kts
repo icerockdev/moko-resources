@@ -2,11 +2,8 @@
  * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalWasmDsl::class)
-
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id("com.android.library")
@@ -17,7 +14,9 @@ plugins {
 
 kotlin {
     jvm()
-    androidTarget()
+    androidTarget {
+        publishLibraryVariants("release")
+    }
     iosX64()
     iosArm64()
     iosSimulatorArm64()
