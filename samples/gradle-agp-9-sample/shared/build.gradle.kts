@@ -1,7 +1,3 @@
-@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
-
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatfrom)
@@ -37,6 +33,8 @@ kotlin {
     }
 
     compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+
         languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
         // Optional: Set jvmTarget
 //        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17

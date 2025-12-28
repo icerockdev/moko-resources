@@ -43,6 +43,10 @@ kotlin {
         extraSpecAttributes["resource"] = "'build/cocoapods/framework/shared.framework/*.bundle'"
     }
 
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {

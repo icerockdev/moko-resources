@@ -11,8 +11,8 @@ buildscript {
     }
     dependencies {
         classpath(moko.resourcesGradlePlugin)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
-        classpath("com.android.tools.build:gradle:8.0.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
+        classpath("com.android.tools.build:gradle:8.3.0")
         classpath("com.gradleup:auto-manifest-plugin:2.0")
     }
 }

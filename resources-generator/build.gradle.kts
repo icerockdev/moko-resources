@@ -6,12 +6,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version ("2.2.10")
+    id("org.jetbrains.kotlin.jvm") version ("2.3.0")
     id("detekt-convention")
     id("publication-convention")
     id("com.gradle.plugin-publish") version ("1.2.0")
     id("java-gradle-plugin")
-    kotlin("plugin.serialization") version ("2.2.10")
+    kotlin("plugin.serialization") version ("2.3.0")
     id("nexus-publication-convention")
 }
 

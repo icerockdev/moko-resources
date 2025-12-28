@@ -4,11 +4,10 @@
 
 package dev.icerock.gradle.utils
 
-import dev.icerock.gradle.generator.platform.android.AndroidPluginType
 import dev.icerock.gradle.generator.platform.android.hasAndroidApplicationPlugin
-import dev.icerock.gradle.generator.platform.android.hasAnyAndroidPlugin
 import dev.icerock.gradle.generator.platform.android.hasAndroidKmpLibraryPlugin
 import dev.icerock.gradle.generator.platform.android.hasAndroidLibraryPlugin
+import dev.icerock.gradle.generator.platform.android.hasAnyAndroidPlugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 

@@ -66,6 +66,7 @@ androidMultiplatfromLibraryPlugin = { module = "com.android.kotlin.multiplatform
 
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "publishKotlinVersion" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
+
 androidSdkCommon = { module = "com.android.tools:sdk-common", version.ref = "androidSdkCommonVersion" }
 detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektVersion" }
 mokoMultiplatformPlugin = { module = "dev.icerock:mobile-multiplatform", version.ref = "mokoMultiplatformPluginVersion" }
