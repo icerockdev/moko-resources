@@ -22,7 +22,7 @@ dependencies {
     implementation(gradleKotlinDsl())
     compileOnly(libs.generatorKotlinGradlePlugin)
     compileOnly(libs.generatorAndroidGradlePlugin)
-    compileOnly(libs.androidMultiplatfrom)
+    compileOnly(libs.androidMultiplatfromLibraryPlugin)
     compileOnly(libs.generatorKotlinCompilerEmbeddable)
     compileOnly(libs.androidSdkCommon)
     implementation(libs.kotlinPoet)

@@ -20,6 +20,23 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.sources.android.findAndroidSourceSet
 
+/**
+ * Configures resource generation for standard Android targets (Application and Library).
+ *
+ * This function performs the "heavy lifting" for standard AGP projects:
+ * 1. Maps the [KotlinSourceSet] to the corresponding [AndroidSourceSet].
+ * 2. Injects the generated source directories into the Android [Variant] API.
+ * 3. Handles nested components like unit tests or custom test fixtures.
+ *
+ * It relies on the variants collected by [setupAndroidVariantsSync] and ensures that
+ * the [GenerateMultiplatformResourcesTask] is aware of the specific Android source
+ * set it is serving.
+ *
+ * @param target The [KotlinTarget], expected to be a [KotlinAndroidTarget].
+ * @param sourceSet The source set containing the resources.
+ * @param genTaskProvider The provider for the generation task.
+ * @param compilation The current Android-specific Kotlin compilation.
+ */
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 internal fun setupAndroidTargetSources(
     target: KotlinTarget,
@@ -35,27 +52,27 @@ internal fun setupAndroidTargetSources(
 
     val androidCompilation = compilation as KotlinJvmAndroidCompilation
 
-    // Legacy Android Plugin (com.android.library).
-    // Identify the corresponding Android source set.
+    // 1. Identify the corresponding Android source set (e.g., "main", "debug").
     val androidSourceSet: AndroidSourceSet = project.findAndroidSourceSet(
         kotlinSourceSet = sourceSet
     ) ?: throw GradleException("can't find android source set for $sourceSet")
 
-    // Assign the Android source set name to the task
-    // (used for skipping build-type-specific tasks).
+    // Inform the task which Android source set it's working with.
     genTaskProvider.configure { it.androidSourceSetName.set(androidSourceSet.name) }
 
-    // Wire generated sources into AGP's legacy Variant API.
+    // 2. Access the variants collected during the synchronization phase.
+    @Suppress("UNCHECKED_CAST")
     val androidVariants: NamedDomainObjectContainer<Variant> = project.extra
         .get(VARIANTS_EXTRA_NAME) as NamedDomainObjectContainer<Variant>
 
+    // 3. Wire generated sources into the AGP Variant API.
     androidVariants.configureEach { variant: Variant ->
-        // Attach directories at the variant level
+        // Direct variant match (e.g., "debug" == "debug")
         if (variant.name == androidCompilation.name) {
             variant.sources.addLegacyAndroidGeneratedSources(genTaskProvider)
         }
 
-        // Attach also to nested components (flavors/build-types).
+        // Check nested components (e.g., unit tests associated with the variant)
         variant.nestedComponents.forEach { component ->
             if (component.name == androidCompilation.name) {
                 component.sources.addLegacyAndroidGeneratedSources(genTaskProvider)

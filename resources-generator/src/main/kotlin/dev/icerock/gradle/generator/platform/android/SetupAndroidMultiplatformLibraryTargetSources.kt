@@ -18,6 +18,27 @@ import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
+/**
+ * Configures the source sets and task dependencies for the Android target within
+ * a Kotlin Multiplatform Library project.
+ *
+ * This function specifically integrates the [GenerateMultiplatformResourcesTask]
+ * into the Android variant lifecycle, ensuring that generated resources are
+ * correctly recognized by the Android build system.
+ *
+ * ### AGP Compatibility
+ * To support multiple versions of the Android Gradle Plugin, this function:
+ * - Uses the unified variant API available in **AGP 8.10.0** and later.
+ * - Falls back to the deprecated `onVariant` API for older AGP versions.
+ *
+ * @param target The [KotlinTarget] to configure. If the target is not a
+ * [KotlinMultiplatformAndroidLibraryTarget], this function will return early.
+ * @param genTaskProvider The [TaskProvider] for the resource generation task
+ * that needs to be wired to the Android variants.
+ * @param compilation The [KotlinCompilation] associated with the current target.
+ * * @throws GradleException If the [KotlinMultiplatformAndroidComponentsExtension]
+ * is missing in a project applying the `com.android.kotlin.multiplatform.library` plugin.
+ */
 fun setupAndroidMultiplatformLibraryTargetSources(
     target: KotlinTarget,
     genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
@@ -33,15 +54,12 @@ fun setupAndroidMultiplatformLibraryTargetSources(
                 "in project with 'com.android.kotlin.multiplatform.library'"
         )
 
-    // Modern KMP Android integration:
-    // Use the best available variant API depending on the AGP version.
-    val hasMinimalVersionAgp: Boolean = hasMinimalVersion(
+    val hasNewVariantApi: Boolean = hasMinimalVersion(
         minVersion = AGP_8_10_0,
         currentVersion = CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION.version
     )
 
-    if (hasMinimalVersionAgp) {
-        // AGP 8.10+: new unified variant API
+    if (hasNewVariantApi) {
         androidExtension.onVariants { variant: KotlinMultiplatformAndroidVariant ->
             variantHandler(
                 variant = variant,
@@ -50,7 +68,6 @@ fun setupAndroidMultiplatformLibraryTargetSources(
             )
         }
     } else {
-        // Older AGP versions still expose onVariant() (deprecated).
         @Suppress("DEPRECATION")
         androidExtension.onVariant { variant: KotlinMultiplatformAndroidVariant ->
             variantHandler(

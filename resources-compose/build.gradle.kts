@@ -32,13 +32,9 @@ kotlin {
     iosSimulatorArm64()
     macosX64()
     macosArm64()
-    js(IR) {
-        browser()
-    }
-
-    wasmJs {
-        browser()
-    }
+    js { browser() }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs { browser() }
 
     sourceSets {
         commonMain {

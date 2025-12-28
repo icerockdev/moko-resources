@@ -1,10 +1,10 @@
 [versions]
-publishKotlinVersion = "2.1.20"
-androidGradleVersion = "8.1.4"
-androidSdkCommonVersion = "31.1.2"
+publishKotlinVersion = "2.1.0"
+androidGradleVersion = "8.3.0"
+androidSdkCommonVersion = "31.13.2"
 
-generatorVersionKotlinVersion = "2.1.20"
-generatorAndroidGradleVersion = "8.11.0"
+generatorVersionKotlinVersion = "2.3.0"
+generatorAndroidGradleVersion = "8.13.2"
 
 
 # kotlinx
@@ -62,7 +62,7 @@ icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4jVersion" }
 generatorKotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "generatorVersionKotlinVersion" }
 generatorAndroidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "generatorAndroidGradleVersion" }
 generatorKotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "generatorVersionKotlinVersion" }
-androidMultiplatfrom = { module = "com.android.kotlin.multiplatform.library: com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "generatorAndroidGradleVersion" }
+androidMultiplatfromLibraryPlugin = { module = "com.android.kotlin.multiplatform.library: com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "generatorAndroidGradleVersion" }
 
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "publishKotlinVersion" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }

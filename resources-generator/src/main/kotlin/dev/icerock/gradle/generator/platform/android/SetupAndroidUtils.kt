@@ -22,27 +22,26 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.sources.android.androidSourceSetInfoOrNull
 
-const val VARIANTS_EXTRA_NAME = "dev.icerock.moko.resources.android-variants"
+internal const val VARIANTS_EXTRA_NAME = "dev.icerock.moko.resources.android-variants"
 
 /**
- * Sets up Android-related wiring for the generated multiplatform resources task.
+ * Orchestrates Android-specific wiring for multiplatform resource generation.
  *
- * Depending on the Android integration model used by the project, this function:
+ * This function integrates the [GenerateMultiplatformResourcesTask] into the Android
+ * build pipeline based on the applied plugins:
  *
- *  - registers generated sources, resources and assets for variants produced by
- *    the Kotlin Multiplatform Android plugin (`com.android.kotlin.multiplatform.library`);
- *  - registers generated sources and assets for the legacy Android plugin (`com.android.library`);
- *  - assigns the Android source set name to the generation task for correct variant scoping;
- *  - connects the generation task to the Android build lifecycle, including `preBuild`
- *    to prevent lint and resource-processing failures.
+ * - **Standard Android Plugins** (`com.android.application` / `com.android.library`):
+ * Registers generated sources and assets via the standard Android target logic.
+ * - **KMP Android Plugin** (`com.android.kotlin.multiplatform.library`):
+ * Integrates with the Kotlin Multiplatform Android variant API.
  *
- * Both modern and legacy Android configurations are supported:
+ * Additionally, it ensures that resource generation occurs before the `preBuild`
+ * phase to prevent issues with Lint, resource merging, and packaging.
  *
- *  - For AGP 8.10+, the new `onVariants` API is used.
- *  - For older AGP versions, the deprecated `onVariant` API is used.
- *  - When KMP Android integration is not present, classic `AndroidSourceSet` lookup is used.
- *
- * This function is invoked once per Kotlin source set participating in Android compilation.
+ * @param target The [KotlinTarget] being configured.
+ * @param sourceSet The specific [KotlinSourceSet] participating in the Android compilation.
+ * @param genTaskProvider The provider for the resource generation task.
+ * @param compilation The [KotlinCompilation] associated with this setup.
  */
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 internal fun setupAndroidTasks(
@@ -53,9 +52,8 @@ internal fun setupAndroidTasks(
 ) {
     val project: Project = target.project
 
-    println("DBG: target ${target.name} ${target.platformType.name} ${target.artifactsTaskName}")
-
-    project.plugins.withId(AndroidLibraryType.Library.pluginId) {
+    // 1. Setup for Standard AGP (Application or Library)
+    if (project.hasAndroidApplicationPlugin() || project.hasAndroidLibraryPlugin()) {
         setupAndroidTargetSources(
             target = target,
             sourceSet = sourceSet,
@@ -64,16 +62,8 @@ internal fun setupAndroidTasks(
         )
     }
 
-    project.plugins.withId(AndroidLibraryType.Application.pluginId) {
-        setupAndroidTargetSources(
-            target = target,
-            sourceSet = sourceSet,
-            genTaskProvider = genTaskProvider,
-            compilation = compilation
-        )
-    }
-
-    project.plugins.withId(AndroidLibraryType.KmpLibrary.pluginId) {
+    // 2. Setup for Kotlin Multiplatform Android Library
+    if (project.hasAndroidKmpLibraryPlugin()) {
         setupAndroidMultiplatformLibraryTargetSources(
             target = target,
             genTaskProvider = genTaskProvider,
@@ -81,19 +71,38 @@ internal fun setupAndroidTasks(
         )
     }
 
-    // Ensure generated resources are produced before Android's "preBuild" phase.
-    // This avoids issues with lint, resource merging and packaging tasks.
+    // Wiring to preBuild:
+    // This is crucial for Android as it ensures resources are ready before Lint or
+    // any code analysis tasks start looking for them.
     project.tasks
         .matching { it.name == "preBuild" }
         .configureEach { it.dependsOn(genTaskProvider) }
 }
 
+/**
+ * Synchronizes Android variants by collecting them into a observable container.
+ *
+ * Since Android variants are created and configured during the late stages of
+ * the Gradle configuration phase, this function uses the [AndroidComponentsExtension.onVariants]
+ * callback to capture each [Variant] object as it becomes available.
+ *
+ * The collected variants are stored in a [NamedDomainObjectContainer] within the
+ * project's extra properties ([VARIANTS_EXTRA_NAME]). This allows other parts of
+ * the plugin to react to or query Android variants without directly depending on
+ * the AGP extension in every call site.
+ *
+ * @param project The Gradle project to configure.
+ * @throws org.gradle.api.GradleException if the [AndroidComponentsExtension] cannot be resolved
+ * after an Android plugin has been applied.
+ */
 internal fun setupAndroidVariantsSync(project: Project) {
     androidPlugins().forEach { pluginId ->
         project.plugins.withId(pluginId) {
+            // Create a container to store variants lazily
             val androidVariants: NamedDomainObjectContainer<Variant> =
                 project.objects.domainObjectContainer(Variant::class.java)
 
+            // Store the container in extra properties for cross-plugin/task access
             project.extra.set(VARIANTS_EXTRA_NAME, androidVariants)
 
             val componentsExtension: AndroidComponentsExtension<*, *, *> =
@@ -102,6 +111,7 @@ internal fun setupAndroidVariantsSync(project: Project) {
                     ?: project.extensions.findByType(AndroidComponentsExtension::class.java)
                     ?: error("can't find AndroidComponentsExtension")
 
+            // Register the callback to populate our container
             componentsExtension.onVariants { variant: Variant ->
                 androidVariants.add(variant)
             }
