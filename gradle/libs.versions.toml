@@ -9,7 +9,7 @@ pluginAndroidGradleVersion = "8.13.2"
 
 # kotlinx
 kotlinxSerializationVersion = "1.6.1"
-kotlinxCoroutinesVersion = "1.8.0"
+kotlinxCoroutinesVersion = "1.9.0"
 kotlinxBrowserVersion = "0.3"
 
 # android

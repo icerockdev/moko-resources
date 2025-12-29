@@ -68,6 +68,9 @@ fun setupAndroidMultiplatformLibraryTargetSources(
             )
         }
     } else {
+        // TODO: Remove this 'else' branch and the 'hasNewVariantApi'
+        //  check when dropping support for AGP < 8.10.0.
+        //  The 'onVariant' API is scheduled for removal in AGP 9.0.
         @Suppress("DEPRECATION")
         androidExtension.onVariant { variant: KotlinMultiplatformAndroidVariant ->
             variantHandler(
