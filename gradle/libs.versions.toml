@@ -59,10 +59,10 @@ commonsCodec = { module = "commons-codec:commons-codec", version.ref = "commonsC
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4jVersion" }
 
 # gradle
-plugin-KotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "pluginKotlinVersion" }
-plugin-AndroidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "pluginAndroidGradleVersion" }
-plugin-KotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "pluginKotlinVersion" }
-plugin-AndroidMultiplatfromLibraryPlugin = { module = "com.android.kotlin.multiplatform.library: com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "pluginAndroidGradleVersion" }
+pluginKotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "pluginKotlinVersion" }
+pluginAndroidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "pluginAndroidGradleVersion" }
+pluginKotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "pluginKotlinVersion" }
+pluginAndroidMultiplatformLibraryPlugin = { module = "com.android.kotlin.multiplatform.library: com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "pluginAndroidGradleVersion" }
 
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
