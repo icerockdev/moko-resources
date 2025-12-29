@@ -14,9 +14,17 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
 
-    watchosArm64()
-    watchosX64()
-    watchosSimulatorArm64()
+    val watchosX64 = watchosX64()
+    val watchosArm64 = watchosArm64()
+    val watchosSimulatorArm64 = watchosSimulatorArm64()
+
+    configure(listOf(watchosX64, watchosArm64, watchosSimulatorArm64)) {
+        binaries {
+            framework {
+                baseName = "MppLibrary"
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting

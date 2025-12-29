@@ -1,10 +1,10 @@
 [versions]
-publishKotlinVersion = "2.1.0"
+kotlinVersion = "2.1.0"
 androidGradleVersion = "8.3.0"
 androidSdkCommonVersion = "31.13.2"
 
-generatorVersionKotlinVersion = "2.3.0"
-generatorAndroidGradleVersion = "8.13.2"
+pluginKotlinVersion = "2.3.0"
+pluginAndroidGradleVersion = "8.13.2"
 
 
 # kotlinx
@@ -59,14 +59,13 @@ commonsCodec = { module = "commons-codec:commons-codec", version.ref = "commonsC
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4jVersion" }
 
 # gradle
-generatorKotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "generatorVersionKotlinVersion" }
-generatorAndroidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "generatorAndroidGradleVersion" }
-generatorKotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "generatorVersionKotlinVersion" }
-androidMultiplatfromLibraryPlugin = { module = "com.android.kotlin.multiplatform.library: com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "generatorAndroidGradleVersion" }
+plugin-KotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "pluginKotlinVersion" }
+plugin-AndroidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "pluginAndroidGradleVersion" }
+plugin-KotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "pluginKotlinVersion" }
+plugin-AndroidMultiplatfromLibraryPlugin = { module = "com.android.kotlin.multiplatform.library: com.android.kotlin.multiplatform.library.gradle.plugin", version.ref = "pluginAndroidGradleVersion" }
 
-kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "publishKotlinVersion" }
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradleVersion" }
-
 androidSdkCommon = { module = "com.android.tools:sdk-common", version.ref = "androidSdkCommonVersion" }
 detektGradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektVersion" }
 mokoMultiplatformPlugin = { module = "dev.icerock:mobile-multiplatform", version.ref = "mokoMultiplatformPluginVersion" }
@@ -74,4 +73,4 @@ composeJetBrainsPlugin = { module = "org.jetbrains.compose:compose-gradle-plugin
 nexusPublishing = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
 
 [plugins]
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "publishKotlinVersion" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
