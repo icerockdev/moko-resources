@@ -99,7 +99,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
 
         kmpExtension.targets.configureEach { target ->
-            println("DBG: TARGETS: ${target.name} -> ${target.platformType}")
             if (target is KotlinNativeTarget) {
                 setupExecutableResources(target = target)
                 setupFrameworkResources(target = target)

@@ -1,3 +1,6 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
 
 plugins {
@@ -22,9 +25,7 @@ kotlin {
     macosX64()
 
     jvm("desktop")
-    js(IR) {
-        browser()
-    }
+    js { browser() }
     wasmJs {
         browser()
         binaries.executable()

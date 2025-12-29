@@ -18,24 +18,24 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("org.jetbrains.kotlin:kotlin-test:1.8.21")
-                api("org.jetbrains.kotlin:kotlin-test-annotations-common:1.8.21")
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+                api("org.jetbrains.kotlin:kotlin-test:2.1.0")
+                api("org.jetbrains.kotlin:kotlin-test-annotations-common:2.1.0")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
                 api(moko.resourcesTest)
             }
         }
 
         val jvmMain by getting {
             dependencies {
-                api("org.jetbrains.kotlin:kotlin-test-junit:1.8.21")
+                api("org.jetbrains.kotlin:kotlin-test-junit:2.1.0")
             }
         }
 
         val androidMain by getting {
             dependencies {
-                api("org.jetbrains.kotlin:kotlin-test-junit:1.8.21")
-                api("androidx.test:core:1.5.0")
-                api("org.robolectric:robolectric:4.10.3")
+                api("org.jetbrains.kotlin:kotlin-test-junit:2.1.0")
+                api("androidx.test:core:1.6.1")
+                api("org.robolectric:robolectric:4.12.2")
                 api("junit:junit:4.13.2")
             }
         }
