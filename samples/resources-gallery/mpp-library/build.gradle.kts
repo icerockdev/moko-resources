@@ -6,7 +6,6 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.multiplatform")
     id("org.jetbrains.kotlin.native.cocoapods")
-    id("org.jetbrains.kotlin.plugin.compose")
     id("dev.icerock.mobile.multiplatform-resources")
 }
 
@@ -24,14 +23,6 @@ allprojects {
             macosX64()
             macosArm64()
             js { browser() }
-
-            sourceSets {
-                val commonMain by getting {
-                    dependencies {
-                        implementation("org.jetbrains.compose.runtime:runtime:1.7.1")
-                    }
-                }
-            }
 
             compilerOptions {
                 freeCompilerArgs.add("-Xexpect-actual-classes")
@@ -61,10 +52,6 @@ kotlin {
 
             export(moko.resources)
         }
-    }
-
-    compilerOptions {
-        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 
