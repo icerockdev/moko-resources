@@ -1,8 +1,16 @@
 [versions]
+# --- Runtime versions ---
+# Minimum compatibility baseline for library modules (resources, compose, etc.).
+# Allows users to use moko-resources WITHOUT forcing them to update their projects.
 kotlinVersion = "2.1.0"
 androidGradleVersion = "8.3.0"
 androidSdkCommonVersion = "31.13.2"
 
+# --- Plugin versions (Tooling only) ---
+# Used EXCLUSIVELY in the generator plugin module via 'compileOnly'.
+# We use current APIs (available in 8.13.2+) to ensure compatibility with
+# the widest range of AGP versions: from the minimum (8.3)
+# to the current (9.0+ at this time).
 pluginKotlinVersion = "2.3.0"
 pluginAndroidGradleVersion = "8.13.2"
 
