@@ -16,23 +16,19 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
  * Resolves the Android R-class package name (namespace) specifically for
  * Kotlin Multiplatform (KMP) Android Library projects.
  *
- * Unlike standard Android projects, the KMP Android configuration is nested
- * within the [KotlinProjectExtension]. This function performs a hierarchical
- * lookup: Project -> Kotlin Extension -> KMP Android Library Extension.
+ * It looks up the [KotlinMultiplatformAndroidLibraryExtension] within the
+ * [KotlinProjectExtension] to retrieve the configured `namespace`.
  *
  * @param project The Gradle project to inspect.
- * @return
- * - The resolved namespace [String] if configured.
- * - `"KotlinMultiplatformAndroidLibraryExtension not found"` if the KMP Android extension is missing.
- * - `null` if the extension exists but the `namespace` property has not been set.
+ * @return The resolved namespace [String], or `null` if the KMP Android
+ * extension is missing or the namespace property has not been set.
  */
 internal fun getAndroidKmpRClassPackage(project: Project): String? {
-    val kotlinProjectExtension: KotlinProjectExtension? = project
-        .extensions.findByType<KotlinProjectExtension>()
-
-    val androidLibraryExtension: KotlinMultiplatformAndroidLibraryExtension =
-        kotlinProjectExtension?.extensions?.findByType<KotlinMultiplatformAndroidLibraryExtension>()
-            ?: return "KotlinMultiplatformAndroidLibraryExtension not found"
+    val kotlinProjectExtension = project.extensions.findByType<KotlinProjectExtension>()
+    val androidLibraryExtension: KotlinMultiplatformAndroidLibraryExtension = kotlinProjectExtension
+        ?.extensions
+        ?.findByType<KotlinMultiplatformAndroidLibraryExtension>()
+        ?: return null
 
     return androidLibraryExtension.namespace
 }

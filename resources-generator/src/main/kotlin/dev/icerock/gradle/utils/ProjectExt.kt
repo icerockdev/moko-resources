@@ -17,7 +17,7 @@ import org.gradle.api.provider.Provider
  *
  * This function determines the package name used for generated Android resource classes.
  * The resolution is performed lazily within a [Provider] to ensure it captures
- * configuration changes (like manual namespace overrides) during the Gradle configuration phase.
+ * configuration changes during the Gradle configuration phase.
  *
  * The logic evaluates plugins in the following order:
  * 1. **KMP Android Library**: Checks for `com.android.kotlin.multiplatform.library`.
@@ -25,8 +25,10 @@ import org.gradle.api.provider.Provider
  *
  * @return A [Provider] supplying:
  * - The resolved package name (e.g., "com.example.project").
- * - `"android not enabled"`: If no supported Android plugins are applied.
- * - `"RClass Error: namespace not found"`: If an Android plugin is present but the namespace is undefined.
+ * - `null`: If no supported Android plugins are applied.
+ *
+ * @throws IllegalStateException If an Android plugin is present but the namespace
+ * cannot be resolved through supported methods.
  */
 internal fun Project.getAndroidRClassPackage(): Provider<String> {
     return provider {
@@ -41,7 +43,7 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
             return@provider getAndroidKmpRClassPackage(project)
         }
 
-        // 2. Check for standard Android Application or Library
+        // 2. Check for standard Android Application or Android Library
         if (project.hasAndroidApplicationPlugin() || project.hasAndroidLibraryPlugin()) {
             return@provider getAndroidTargetRClassPackage(project)
         }
