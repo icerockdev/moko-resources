@@ -50,9 +50,9 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
 
         error(
             "Android R class package not found for project '${project.path}'. " +
-                "Expected one of Android plugins: ${
-                    AndroidPluginType.entries.joinToString { it.pluginId }
-                }, and configured android namespace."
+                "Expected one of Android plugins:" +
+                " ${AndroidPluginType.entries.joinToString { it.pluginId }}," +
+                " and configured android namespace."
         )
     }
 }
