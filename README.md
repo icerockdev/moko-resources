@@ -48,7 +48,7 @@ implement all your UI in Kotlin with Jetpack Compose and MOKO resources.
 - Gradle version 8.4+
 - Kotlin 2.1.0+
 - Android Gradle Plugin 8.3.0+
-- Android API 21+
+- Android API 16+
 - iOS version 12.0+
 - Compose Multiplatform 1.6.0+
 
