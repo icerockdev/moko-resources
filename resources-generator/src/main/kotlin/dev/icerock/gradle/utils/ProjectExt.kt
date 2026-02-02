@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.utils
 
+import dev.icerock.gradle.generator.platform.android.AndroidPluginType
 import dev.icerock.gradle.generator.platform.android.hasAndroidApplicationPlugin
 import dev.icerock.gradle.generator.platform.android.hasAndroidKmpLibraryPlugin
 import dev.icerock.gradle.generator.platform.android.hasAndroidLibraryPlugin
@@ -32,7 +33,7 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
         // Before accessing Android-specific classes, ensure an Android plugin is on the classpath.
         // This prevents NoClassDefFoundError in non-Android projects or modules.
         if (!project.hasAnyAndroidPlugin()) {
-            return@provider "android not enabled"
+            return@provider null
         }
 
         // 1. Check for Kotlin Multiplatform Android Library
@@ -45,6 +46,11 @@ internal fun Project.getAndroidRClassPackage(): Provider<String> {
             return@provider getAndroidTargetRClassPackage(project)
         }
 
-        return@provider "namespace not found"
+        error(
+            "Android R class package not found for project '${project.path}'. " +
+                "Expected one of Android plugins: ${
+                    AndroidPluginType.entries.joinToString { it.pluginId }
+                }, and configured android namespace."
+        )
     }
 }
