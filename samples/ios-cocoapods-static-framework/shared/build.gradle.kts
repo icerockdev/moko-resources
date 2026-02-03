@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("org.jetbrains.compose")
+    kotlin("plugin.compose")
     id("dev.icerock.mobile.multiplatform-resources")
 }
 
@@ -24,6 +25,10 @@ kotlin {
             export(moko.resources)
             export("dev.icerock.moko:graphics:0.10.0")
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     sourceSets {

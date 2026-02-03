@@ -111,10 +111,18 @@ private fun registerGenerateTask(
             task as GenerateMultiplatformResourcesTask
 
             val platform: String = task.platformType.get()
+
             if (platform != KotlinPlatformType.androidJvm.name) return@onlyIf true
 
             val flavor: String = task.androidSourceSetName.get()
-            flavor in listOf("main", "test", "androidTest")
+
+            flavor in listOf(
+                "androidMain",
+                "androidTest",
+                "androidInstrumentedTest",
+                "main",
+                "test"
+            )
         }
     }
 

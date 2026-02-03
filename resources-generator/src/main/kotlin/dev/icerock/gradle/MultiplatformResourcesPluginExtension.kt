@@ -5,6 +5,7 @@
 package dev.icerock.gradle
 
 import dev.icerock.gradle.generator.platform.apple.registerCopyXCFrameworkResourcesToAppTask
+import dev.icerock.gradle.utils.capitalize
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -21,7 +22,7 @@ abstract class MultiplatformResourcesPluginExtension {
     abstract val resourcesSourceSets: NamedDomainObjectContainer<SourceDirectorySet>
 
     fun Project.configureCopyXCFrameworkResources(xcFrameworkName: String = name) {
-        NativeBuildType.values()
+        NativeBuildType.entries
             .map { it.name.lowercase().capitalize() }
             .plus("")
             .map { xcFrameworkName.capitalize() + it + "XCFramework" }

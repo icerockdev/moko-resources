@@ -8,11 +8,16 @@ plugins {
 }
 
 kotlin {
-    ios()
+    applyDefaultHierarchyTemplate()
+
+    iosArm64()
+    iosX64()
     iosSimulatorArm64()
+
     val watchosX64 = watchosX64()
     val watchosArm64 = watchosArm64()
     val watchosSimulatorArm64 = watchosSimulatorArm64()
+
     configure(listOf(watchosX64, watchosArm64, watchosSimulatorArm64)) {
         binaries {
             framework {
@@ -24,29 +29,15 @@ kotlin {
     sourceSets {
         val commonMain by getting
 
-        val appleMain by creating {
-            dependsOn(commonMain)
+        val appleMain by getting {
             dependencies {
                 api(moko.resources)
             }
         }
+    }
 
-        val iosMain by getting {
-            dependsOn(appleMain)
-        }
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
-        }
-
-        val watchosMain by creating {
-            dependsOn(appleMain)
-        }
-        val watchosX64Main by getting
-        val watchosArm64Main by getting
-        val watchosSimulatorArm64Main by getting
-        watchosX64Main.dependsOn(watchosMain)
-        watchosArm64Main.dependsOn(watchosMain)
-        watchosSimulatorArm64Main.dependsOn(watchosMain)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 

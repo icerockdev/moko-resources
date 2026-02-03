@@ -34,6 +34,10 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 }
 
 android {

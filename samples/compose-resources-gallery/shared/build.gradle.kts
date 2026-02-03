@@ -1,3 +1,6 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
 
 plugins {
@@ -22,9 +25,7 @@ kotlin {
     macosX64()
 
     jvm("desktop")
-    js(IR) {
-        browser()
-    }
+    js { browser() }
     wasmJs {
         browser()
         binaries.executable()
@@ -41,6 +42,10 @@ kotlin {
         }
         // TODO move to gradle plugin
         extraSpecAttributes["resource"] = "'build/cocoapods/framework/shared.framework/*.bundle'"
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     @Suppress("UNUSED_VARIABLE")

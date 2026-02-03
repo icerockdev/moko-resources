@@ -5,7 +5,10 @@
 package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
+import dev.icerock.gradle.generator.platform.android.AGP_8_11_0
+import dev.icerock.gradle.generator.platform.android.AndroidPluginType
 import dev.icerock.gradle.generator.platform.android.getAndroidSourceSetOrNull
 import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
 import dev.icerock.gradle.generator.platform.android.setupAndroidVariantsSync
@@ -17,6 +20,8 @@ import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
 import dev.icerock.gradle.generator.platform.js.setupJsKLibResources
 import dev.icerock.gradle.generator.platform.js.setupJsResourcesWithLinkTask
 import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
+import dev.icerock.gradle.utils.enableAndroidResources
+import dev.icerock.gradle.utils.hasMinimalVersion
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -29,11 +34,12 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
@@ -60,6 +66,18 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             registerCopyFrameworkResourcesToAppTask(project = project)
             setupAndroidVariantsSync(project = project)
             setupGradleSync(project = project)
+        }
+
+        // Enable android resources for "com.android.kotlin.multiplatform.library" plugin
+        project.plugins.withId(AndroidPluginType.KmpLibrary.pluginId) {
+            val hasEnableAndroidResourcesFlag = hasMinimalVersion(
+                minVersion = AGP_8_11_0,
+                currentVersion = CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION.version
+            )
+
+            if (hasEnableAndroidResourcesFlag) {
+                project.enableAndroidResources()
+            }
         }
     }
 
@@ -172,6 +190,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
     private fun setupSourceSets(
         target: KotlinTarget,
         sourceSet: KotlinSourceSet,
@@ -179,13 +198,13 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
     ) {
         sourceSet.kotlin.srcDir(genTaskProvider.map { it.outputSourcesDir })
 
-        when (target.platformType) {
-            KotlinPlatformType.jvm, KotlinPlatformType.js -> {
+        when (target) {
+            is KotlinJsIrTarget, is KotlinJvmTarget -> {
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputResourcesDir })
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
 
-            KotlinPlatformType.androidJvm -> {
+            is KotlinAndroidTarget -> {
                 // Fix: android sourceSets indexation in IDE
                 // Usage of api of v2.model in AGP broken for IDE resources indexing
                 // For correct indexing of resources set resource directory
@@ -196,12 +215,11 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 androidSourceSet.res.srcDir(genTaskProvider.map { it.outputResourcesDir })
 
                 // Assets added in variants for correct generation
-                // see: dev.icerock.gradle.generator.platform.android.SetupAndroidUtilsKt.addGenerationTaskDependency
+                // see: dev.icerock.gradle.generator.platform.android
+                // .SetupAndroidUtilsKt.addGenerationTaskDependency
                 // androidSourceSet.assets.srcDir(genTaskProvider.map { it.outputAssetsDir })
             }
-
-            KotlinPlatformType.common, KotlinPlatformType.native,
-            KotlinPlatformType.wasm -> Unit
+            else -> Unit
         }
     }
 }
