@@ -34,7 +34,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 api("org.jetbrains.kotlin:kotlin-test-junit:2.1.0")
-                api("androidx.test:core:1.6.1")
+                api("androidx.test:core:1.5.0")
                 api("org.robolectric:robolectric:4.12.2")
                 api("junit:junit:4.13.2")
             }
