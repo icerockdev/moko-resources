@@ -46,6 +46,7 @@ actual class FontResource(
     val bundle: NSBundle = NSBundle.mainBundle,
 ) {
     @OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
+    @Suppress("UNCHECKED_CAST")
     internal val fontRef: CGFontRef by lazy {
         val fontData: NSData = this.data
         val cfDataRef: CPointer<__CFData>? = CFDataCreate(

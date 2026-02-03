@@ -43,6 +43,10 @@ kotlin {
             export(moko.resources)
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 }
 
 dependencies {

@@ -4,6 +4,7 @@
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id("com.android.library")
@@ -14,16 +15,20 @@ plugins {
 
 kotlin {
     jvm()
-    androidTarget()
+    androidTarget {
+        publishAllLibraryVariants()
+    }
     iosX64()
     iosArm64()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
-    js(IR) {
+    js {
         browser()
         useCommonJs()
     }
+
+    @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         useCommonJs()

@@ -17,3 +17,4 @@ set -e
 (cd samples/kotlin-2-dynamic-sample && ./local-check.sh)
 (cd samples/kotlin-2-tests && ./local-check.sh)
 (cd samples/cm-resources-sample && ./local-check.sh)
+(cd samples/gradle-agp-9-sample && ./local-check.sh)

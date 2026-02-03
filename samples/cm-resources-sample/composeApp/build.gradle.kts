@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.application)
     id("dev.icerock.mobile.multiplatform-resources")
 }
@@ -48,6 +49,10 @@ kotlin {
 
             export(moko.resources)
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     sourceSets {

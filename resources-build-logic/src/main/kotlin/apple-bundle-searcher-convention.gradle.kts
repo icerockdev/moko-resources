@@ -5,6 +5,8 @@
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
+import java.util.Locale
+import java.util.Locale.getDefault
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
@@ -52,12 +54,12 @@ kotlin.targets
 
         val sdkPath: String = getSdkPath(sdk)
 
-        val libsDir = File(buildDir, "moko-resources/cinterop/$name")
+        val libsDir = layout.buildDirectory.dir("moko-resources/cinterop/$name").get().asFile
         libsDir.mkdirs()
         val sourceFile = File(projectDir, "src/appleMain/objective-c/MRResourcesBundle.m")
         val objectFile = File(libsDir, "MRResourcesBundle.o")
         val libFile = File(libsDir, "libMRResourcesBundle.a")
-        val kotlinTargetPostfix: String = this.name.capitalize()
+        val kotlinTargetPostfix: String = this.name.replaceFirstChar { it.titlecase() }
 
         val compileStaticLibrary = tasks.register("mokoBundleSearcherCompile$kotlinTargetPostfix", Exec::class) {
             group = "moko-resources"

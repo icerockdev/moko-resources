@@ -15,5 +15,6 @@ buildscript {
 
     dependencies {
         classpath(moko.resourcesGradlePlugin)
+        classpath("org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.1.0")
     }
 }
