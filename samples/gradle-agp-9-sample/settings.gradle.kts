@@ -27,3 +27,4 @@ dependencyResolutionManagement {
 rootProject.name = "gradle9_sample"
 include(":androidApp")
 include(":shared")
+include(":shared:test-utils")

@@ -121,7 +121,9 @@ private fun registerGenerateTask(
                 "androidTest",
                 "androidInstrumentedTest",
                 "main",
-                "test"
+                "test",
+                "androidHostTest",
+                "androidDeviceTest"
             )
         }
     }

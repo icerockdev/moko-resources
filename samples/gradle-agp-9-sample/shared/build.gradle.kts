@@ -9,6 +9,12 @@ kotlin {
         namespace = "com.gradle9sample.android.library"
         compileSdk = 36
         minSdk = 26
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+
+        withDeviceTest { }
     }
 
     listOf(
@@ -29,6 +35,8 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(moko.resourcesTest)
+            implementation(project(":shared:test-utils"))
         }
     }
 

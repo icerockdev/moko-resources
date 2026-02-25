@@ -65,7 +65,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "dev.icerock.moko:resources-generator:0.25.2"
+        classpath "dev.icerock.moko:resources-generator:0.26.1"
     }
 }
 
@@ -83,10 +83,10 @@ project build.gradle
 apply plugin: "dev.icerock.mobile.multiplatform-resources"
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.25.1")
-    commonMainApi("dev.icerock.moko:resources-compose:0.25.2") // for compose multiplatform
+    commonMainApi("dev.icerock.moko:resources:0.26.1")
+    commonMainApi("dev.icerock.moko:resources-compose:0.26.1") // for compose multiplatform
 
-    commonTestImplementation("dev.icerock.moko:resources-test:0.25.2")
+    commonTestImplementation("dev.icerock.moko:resources-test:0.26.1")
 }
 
 multiplatformResources {
@@ -133,7 +133,7 @@ should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-bui
 
 ```
 framework {
-    export("dev.icerock.moko:resources:0.25.1")
+    export("dev.icerock.moko:resources:0.26.1")
     export("dev.icerock.moko:graphics:0.10.0") // toUIColor here
 }
 ```
@@ -148,6 +148,47 @@ If you have multiple gradle modules and resources stored not in module that comp
 -- feature-2
 ```
 You should enable moko-resources gradle plugin in `resources` module, that contains resources, AND in `shared` module, that compiles into framework for iOS (same for jvm, JS, macos targets. Only android will works without this).
+
+#### Android Host Tests (Unit Tests)
+If you use the new Android Multiplatform Library plugin (`com.android.kotlin.multiplatform.library`),
+enabling Android resources for host tests (Unit tests) depends on your AGP version. 
+This is required for moko-resources to access generated R classes during testing.
+
+For AGP 8.8.0 and higher
+Use the native DSL directly inside the androidLibrary block:
+
+```kotlin
+kotlin {
+    androidLibrary {
+        // ... base configuration (namespace, compileSdk, etc.)
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+        
+        // OR if you use builder for advanced configuration:
+        /*
+        withHostTestBuilder {
+            // your builder config
+        }.configure {
+            isIncludeAndroidResources = true
+        }
+        */
+    }
+}
+```
+For AGP 8.2.0 - 8.7.x
+The withHostTest DSL is not yet available.
+
+As a workaround, enable Android resources using the legacy android block::
+
+```kotlin
+android {
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+}
+```
 
 ### Xcode setup
 
