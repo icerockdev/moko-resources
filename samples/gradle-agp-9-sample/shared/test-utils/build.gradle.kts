@@ -1,0 +1,53 @@
+/*
+ * Copyright 2020 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+plugins {
+    id("com.android.kotlin.multiplatform.library")
+    id("org.jetbrains.kotlin.multiplatform")
+}
+
+// disable android lint for test utils (no need here)
+tasks.matching { it.name.startsWith("lint") }.configureEach { enabled = false }
+
+kotlin {
+    applyDefaultHierarchyTemplate()
+
+    androidLibrary {
+        namespace = "com.gradle9sample.library.testutils"
+        compileSdk = 36
+        minSdk = 26
+    }
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+            export(moko.resources)
+        }
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api("org.jetbrains.kotlin:kotlin-test:2.2.10")
+                api("org.jetbrains.kotlin:kotlin-test-annotations-common:2.2.10")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+                api(moko.resourcesTest)
+            }
+        }
+
+        val androidMain by getting {
+            dependencies {
+                api("org.jetbrains.kotlin:kotlin-test-junit:2.2.10")
+                api("androidx.test:core:1.5.0")
+                api("org.robolectric:robolectric:4.15.1")
+                api("junit:junit:4.13.2")
+            }
+        }
+    }
+}
