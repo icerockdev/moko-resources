@@ -8,8 +8,6 @@ import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
 import com.android.build.api.variant.Component
-import com.android.build.api.variant.HasAndroidTest
-import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.android.build.api.variant.KotlinMultiplatformAndroidVariant
 import com.android.build.api.variant.Variant
