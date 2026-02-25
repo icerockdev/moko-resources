@@ -7,6 +7,9 @@ package dev.icerock.gradle.generator.platform.android
 import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
+import com.android.build.api.variant.Component
+import com.android.build.api.variant.HasAndroidTest
+import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.android.build.api.variant.KotlinMultiplatformAndroidVariant
 import com.android.build.api.variant.Variant
@@ -101,11 +104,17 @@ private fun variantHandler(
 ) {
     if (compilation !is KotlinMultiplatformAndroidCompilation) return
 
-    if (variant.name == compilation.componentName) {
-        variant.sources.addKmpAndroidGeneratedSources(genTaskProvider)
+    val allComponents: List<Component> = listOf(variant) + variant.nestedComponents
 
-        genTaskProvider.configure {
-            it.androidSourceSetName.set(variant.name)
-        }
+    val matchingComponent: Component = allComponents.find { component ->
+        component.name == compilation.componentName ||
+            compilation.componentName.endsWith(component.name, ignoreCase = true) ||
+            component.name == compilation.name
+    } ?: return
+
+    variant.sources.addKmpAndroidGeneratedSources(genTaskProvider)
+
+    genTaskProvider.configure {
+        it.androidSourceSetName.set(matchingComponent.name)
     }
 }
