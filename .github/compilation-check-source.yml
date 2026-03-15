@@ -353,3 +353,24 @@ jobs:
 
       - *publish_test_report
       - *upload_reports
+
+  check-gradle-agp-9-sample:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - gradle-agp-9-sample
+        run: cd samples/gradle-agp-9-sample && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
