@@ -6,6 +6,7 @@ package dev.icerock.gradle.data
 
 import java.io.File
 import java.nio.file.Files
+import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
 private const val DEFAULT_COMPONENT = "default"
@@ -48,15 +49,19 @@ private fun extractResourcesFromPackedKlib(klibFile: File): File? {
             .filter { it.name.startsWith(RESOURCES_PREFIX) }
             .forEach { entry ->
                 val relativeName = entry.name.removePrefix(RESOURCES_PREFIX)
-                if (relativeName.isEmpty()) return@forEach
-                val output = File(temporary, relativeName)
-                if (entry.isDirectory) {
-                    output.mkdirs()
-                } else {
-                    output.parentFile?.mkdirs()
-                    zip.getInputStream(entry).use { it.copyTo(output.outputStream()) }
+                if (relativeName.isNotEmpty()) {
+                    extractZipEntry(zip, entry, File(temporary, relativeName))
                 }
             }
         return temporary
+    }
+}
+
+private fun extractZipEntry(zip: ZipFile, entry: ZipEntry, output: File) {
+    if (entry.isDirectory) {
+        output.mkdirs()
+    } else {
+        output.parentFile?.mkdirs()
+        zip.getInputStream(entry).use { it.copyTo(output.outputStream()) }
     }
 }
