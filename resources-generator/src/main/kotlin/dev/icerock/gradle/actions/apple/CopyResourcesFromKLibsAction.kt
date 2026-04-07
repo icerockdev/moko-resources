@@ -66,7 +66,7 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
     private fun getBundlesFromKotlinLibrary(
         klibFile: File
     ): List<File> {
-        val resourcesDir: File = getKlibResourcesDir(klibFile)
+        val resourcesDir: File = getKlibResourcesDir(klibFile) ?: return emptyList()
         return resourcesDir.listFiles()
             ?.filter { it.isDirectory && it.extension == "bundle" }
             ?: emptyList()

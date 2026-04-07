@@ -125,7 +125,10 @@ internal class CopyResourcesToExecutableAction(
         if (inputFile.exists().not()) return
 
         logger.info("copy resources from $inputFile into $outputDir")
-        val resourcesDir: File = getKlibResourcesDir(inputFile)
+        val resourcesDir: File = getKlibResourcesDir(inputFile) ?: run {
+            logger.info("resources in $inputFile not found")
+            return
+        }
 
         try {
             File(resourcesDir, "moko-resources-js").copyRecursively(

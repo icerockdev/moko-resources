@@ -36,7 +36,7 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
             .filter { library -> library.extension == "klib" }
             .filter(File::exists)
             .forEach { inputFile ->
-                val resourcesDir: File = getKlibResourcesDir(inputFile)
+                val resourcesDir: File = getKlibResourcesDir(inputFile) ?: return@forEach
 
                 // extracting bundles
                 resourcesDir
