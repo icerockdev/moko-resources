@@ -4,8 +4,7 @@
 
 package dev.icerock.gradle.tasks
 
-import dev.icerock.gradle.data.ExtractingBaseLibraryImpl
-import dev.icerock.gradle.utils.toKonanFile
+import dev.icerock.gradle.data.getKlibResourcesDir
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
@@ -13,8 +12,6 @@ import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.jetbrains.kotlin.library.KotlinLibraryLayout
-import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 import java.io.FileFilter
 
@@ -39,15 +36,10 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
             .filter { library -> library.extension == "klib" }
             .filter(File::exists)
             .forEach { inputFile ->
-                val klibKonan: org.jetbrains.kotlin.konan.file.File = inputFile.toKonanFile()
-                val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-                val layout: KotlinLibraryLayout = ExtractingBaseLibraryImpl(klib)
+                val resourcesDir: File = getKlibResourcesDir(inputFile)
 
                 // extracting bundles
-                layout
-                    .resourcesDir
-                    .absolutePath
-                    .let(::File)
+                resourcesDir
                     .listFiles(FileFilter { it.extension == "bundle" })
                     // copying bundles to app
                     ?.forEach {

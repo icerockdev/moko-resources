@@ -4,14 +4,12 @@
 
 package dev.icerock.gradle.actions.apple
 
-import dev.icerock.gradle.data.ExtractingBaseLibraryImpl
+import dev.icerock.gradle.data.getKlibResourcesDir
 import dev.icerock.gradle.utils.klibs
 import org.gradle.api.Action
 import org.gradle.api.Task
 import org.gradle.api.logging.Logger
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
-import org.jetbrains.kotlin.library.KotlinLibraryLayout
-import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
 import java.io.File
 
 internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
@@ -68,21 +66,10 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
     private fun getBundlesFromKotlinLibrary(
         klibFile: File
     ): List<File> {
-        val layout: KotlinLibraryLayout = getKotlinLibraryLayout(klibFile)
-        return layout.resourcesDir.listFilesOrEmpty
-            .filter { it.isDirectory && it.extension == "bundle" }
-            .map { File(it.path) }
-    }
-
-    private fun getKotlinLibraryLayout(file: File): KotlinLibraryLayout {
-        val klibKonan = org.jetbrains.kotlin.konan.file.File(file.path)
-        val klib = KotlinLibraryLayoutImpl(klib = klibKonan, component = "default")
-
-        // while klib zipped we can't check resources directory, so we should unpack all klibs :(
-        // maybe will be better if we will write some state in cache as build result file with
-        // klib path, hash, resources count. to not extract klibs that we already know that not
-        // contains any resources. BUT maybe extraction will be faster then hashing for this logic.
-        // so this improvement should be checked in future
-        return if (klib.isZipped) ExtractingBaseLibraryImpl(klib) else klib
+        val resourcesDir: File = getKlibResourcesDir(klibFile)
+        return resourcesDir.listFiles()
+            ?.filter { it.isDirectory && it.extension == "bundle" }
+            ?.map { File(it.path) }
+            ?: emptyList()
     }
 }

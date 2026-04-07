@@ -4,44 +4,38 @@
 
 package dev.icerock.gradle.data
 
-import org.jetbrains.kotlin.konan.file.File
-import org.jetbrains.kotlin.konan.file.file
+import org.jetbrains.kotlin.konan.file.File as KonanFile
+import org.jetbrains.kotlin.konan.file.createTempDir
 import org.jetbrains.kotlin.konan.file.unzipTo
-import org.jetbrains.kotlin.konan.file.withZipFileSystem
-import org.jetbrains.kotlin.library.KotlinLibraryLayout
-import org.jetbrains.kotlin.library.impl.KotlinLibraryLayoutImpl
+import java.io.File
+
+private const val DEFAULT_COMPONENT = "default"
+private const val RESOURCES_DIR_NAME = "resources"
 
 /**
- * The code in this file is pulled from a previous version of Kotlin to replicate
- * removed functionality that MR relies on for extracting klibs.
- * https://github.com/JetBrains/kotlin/blob/00984f32ac1ebc2e7fb71b440c282be2a8b05f36/compiler/util-klib/src/org/jetbrains/kotlin/library/impl/KotlinLibraryLayoutImpl.kt
+ * Gets the resources directory from a klib file (packed or unpacked).
+ *
+ * For a packed (zipped) klib (single .klib file), extracts the resources
+ * directory to a temporary location and returns it.
+ *
+ * For an unpacked klib (directory), returns the direct path to the
+ * resources directory.
+ *
+ * The structure of a klib is:
+ * - Packed: a .klib zip containing `default/resources/`
+ * - Unpacked: a directory with `default/resources/` subdirectory
  */
-
-internal open class ExtractingKotlinLibraryLayout(zipped: KotlinLibraryLayoutImpl) : KotlinLibraryLayout {
-    override val libFile: File get() = error("Extracting layout doesn't extract its own root")
-    override val libraryName = zipped.libraryName
-    override val component = zipped.component
-}
-
-internal class ExtractingBaseLibraryImpl(zipped: KotlinLibraryLayoutImpl) : ExtractingKotlinLibraryLayout(zipped) {
-    override val manifestFile: File by lazy { zipped.extract(zipped.manifestFile) }
-    override val resourcesDir: File by lazy { zipped.extractDir(zipped.resourcesDir) }
-}
-
-private fun KotlinLibraryLayoutImpl.extract(file: File): File = extract(this.klib, file)
-
-private fun extract(zipFile: File, file: File) = zipFile.withZipFileSystem { zipFileSystem ->
-    val temporary = org.jetbrains.kotlin.konan.file.createTempFile(file.name)
-    zipFileSystem.file(file).copyTo(temporary)
-    temporary.deleteOnExit()
-    temporary
-}
-
-private fun KotlinLibraryLayoutImpl.extractDir(directory: File): File = extractDir(this.klib, directory)
-
-private fun extractDir(zipFile: File, directory: File): File {
-    val temporary = org.jetbrains.kotlin.konan.file.createTempDir(directory.name)
-    temporary.deleteOnExitRecursively()
-    zipFile.unzipTo(temporary, fromSubdirectory = directory)
-    return temporary
+internal fun getKlibResourcesDir(klibFile: File): File {
+    return if (klibFile.isFile) {
+        // Packed (zipped) klib - extract resources to temp
+        val konanFile = KonanFile(klibFile.path)
+        val resourcesSubdir = konanFile.child(DEFAULT_COMPONENT).child(RESOURCES_DIR_NAME)
+        val temporary = createTempDir(RESOURCES_DIR_NAME)
+        temporary.deleteOnExitRecursively()
+        konanFile.unzipTo(temporary, fromSubdirectory = resourcesSubdir)
+        File(temporary.path)
+    } else {
+        // Unpacked klib directory - navigate to resources
+        File(klibFile, "$DEFAULT_COMPONENT/$RESOURCES_DIR_NAME")
+    }
 }
