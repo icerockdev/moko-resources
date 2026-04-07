@@ -29,10 +29,10 @@ internal fun getKlibResourcesDir(klibFile: File): File {
     return if (klibFile.isFile) {
         // Packed (zipped) klib - extract resources to temp
         val konanFile = KonanFile(klibFile.path)
-        val resourcesSubdir = konanFile.child(DEFAULT_COMPONENT).child(RESOURCES_DIR_NAME)
+        val resourcesPath = konanFile.child(DEFAULT_COMPONENT).child(RESOURCES_DIR_NAME)
         val temporary = createTempDir(RESOURCES_DIR_NAME)
         temporary.deleteOnExitRecursively()
-        konanFile.unzipTo(temporary, fromSubdirectory = resourcesSubdir)
+        konanFile.unzipTo(temporary, fromSubdirectory = resourcesPath)
         File(temporary.path)
     } else {
         // Unpacked klib directory - navigate to resources

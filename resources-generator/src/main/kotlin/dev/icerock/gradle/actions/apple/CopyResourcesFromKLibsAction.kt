@@ -69,7 +69,6 @@ internal abstract class CopyResourcesFromKLibsAction : Action<Task> {
         val resourcesDir: File = getKlibResourcesDir(klibFile)
         return resourcesDir.listFiles()
             ?.filter { it.isDirectory && it.extension == "bundle" }
-            ?.map { File(it.path) }
             ?: emptyList()
     }
 }
