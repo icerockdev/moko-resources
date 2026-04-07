@@ -4,10 +4,10 @@
 
 package dev.icerock.gradle.data
 
-import org.jetbrains.kotlin.konan.file.File as KonanFile
 import org.jetbrains.kotlin.konan.file.createTempDir
 import org.jetbrains.kotlin.konan.file.unzipTo
 import java.io.File
+import org.jetbrains.kotlin.konan.file.File as KonanFile
 
 private const val DEFAULT_COMPONENT = "default"
 private const val RESOURCES_DIR_NAME = "resources"
