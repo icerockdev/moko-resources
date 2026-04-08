@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatfrom)
-    alias(libs.plugins.multiplatformResources)
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {

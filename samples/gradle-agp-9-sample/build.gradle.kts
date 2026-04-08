@@ -4,3 +4,9 @@ plugins {
     alias(libs.plugins.androidMultiplatfrom).apply(false)
     alias(libs.plugins.kotlinMultiplatform).apply(false)
 }
+
+buildscript{
+    dependencies {
+        classpath(moko.resourcesGradlePlugin)
+    }
+}

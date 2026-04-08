@@ -11,7 +11,7 @@ androidSdkCommonVersion = "31.13.2"
 # We use current APIs (available in 8.13.2+) to ensure compatibility with
 # the widest range of AGP versions: from the minimum (8.3)
 # to the current (9.0+ at this time).
-pluginKotlinVersion = "2.3.0"
+pluginKotlinVersion = "2.3.20"
 pluginAndroidGradleVersion = "8.13.2"
 
 
