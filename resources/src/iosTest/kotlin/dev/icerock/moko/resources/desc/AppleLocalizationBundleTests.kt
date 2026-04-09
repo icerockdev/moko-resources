@@ -44,4 +44,19 @@ class AppleLocalizationBundleTests {
         )
         StringDesc.localeType = StringDesc.LocaleType.System
     }
+
+    @Test
+    fun localizedStringSameAsKeyInLocalizedBundleTest() {
+        val resource = StringResource(
+            resourceId = "middag",
+            bundle = NSBundle.bundleWithPath(NSBundle.mainBundle.bundlePath + "/tests.bundle")!!
+        )
+        StringDesc.localeType = StringDesc.LocaleType.Custom("nl")
+        val stringDesc = ResourceStringDesc(resource)
+        assertEquals(
+            expected = "middag",
+            actual = stringDesc.localized()
+        )
+        StringDesc.localeType = StringDesc.LocaleType.System
+    }
 }
