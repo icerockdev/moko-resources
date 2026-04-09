@@ -5,41 +5,49 @@
 package dev.icerock.moko.resources.desc
 
 import dev.icerock.moko.resources.StringResource
+import platform.Foundation.NSBundle
 import platform.Foundation.NSString
 import platform.Foundation.stringWithFormat
 
 object Utils {
     const val BASE_LOCALIZATION: String = "Base"
+    private const val MISSING_STRING_PREFIX: String = "__moko.resources.missing__"
 
     fun processArgs(args: List<Any>): Array<out Any> {
         return args.map { (it as? StringDesc)?.localized() ?: it }.toTypedArray()
     }
 
+    fun localizedStringOrNull(bundle: NSBundle, resourceId: String): String? {
+        val missingMarker = "$MISSING_STRING_PREFIX$resourceId"
+        return bundle.localizedStringForKey(
+            key = resourceId,
+            value = missingMarker,
+            table = null
+        ).takeUnless { it == missingMarker }
+    }
+
     fun localizedString(stringRes: StringResource): String {
         val bundle = StringDesc.localeType.getLocaleBundle(stringRes.bundle)
-        val stringInCurrentLocale = bundle.localizedStringForKey(
-            key = stringRes.resourceId,
-            value = null,
-            table = null
+        val stringInCurrentLocale = localizedStringOrNull(
+            bundle = bundle,
+            resourceId = stringRes.resourceId
         )
 
-        return if (stringInCurrentLocale == stringRes.resourceId) {
-            val stringInDefaultBundle = stringRes.bundle.localizedStringForKey(
-                key = stringRes.resourceId,
-                value = null,
-                table = null
+        return if (stringInCurrentLocale == null) {
+            val stringInDefaultBundle = localizedStringOrNull(
+                bundle = stringRes.bundle,
+                resourceId = stringRes.resourceId
             )
 
-            if (stringInDefaultBundle == stringRes.resourceId) {
+            if (stringInDefaultBundle == null) {
                 val fallbackLocale = stringRes.bundle.developmentLocalization ?: BASE_LOCALIZATION
                 val fallbackLocaleBundle = StringDesc.LocaleType
                     .Custom(fallbackLocale)
                     .getLocaleBundle(stringRes.bundle)
-                fallbackLocaleBundle.localizedStringForKey(
-                    key = stringRes.resourceId,
-                    value = null,
-                    table = null
-                )
+                localizedStringOrNull(
+                    bundle = fallbackLocaleBundle,
+                    resourceId = stringRes.resourceId
+                ) ?: stringRes.resourceId
             } else {
                 stringInDefaultBundle
             }

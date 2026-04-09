@@ -41,12 +41,16 @@ internal fun pluralizedString(
     number: Int
 ): String {
     val fallbackLocale = bundle.developmentLocalization ?: BASE_LOCALIZATION
-    val localized = bundle
-        .localizedStringForKey(resourceId, null, null)
-        .takeUnless { it == resourceId }
-        ?: baseBundle.localizedStringForKey(resourceId, null, null)
-            .takeUnless { it == resourceId } ?: StringDesc.LocaleType.Custom(fallbackLocale)
-            .getLocaleBundle(bundle).localizedStringForKey(resourceId, null, null)
+    val localized = Utils.localizedStringOrNull(
+        bundle = bundle,
+        resourceId = resourceId
+    ) ?: Utils.localizedStringOrNull(
+        bundle = baseBundle,
+        resourceId = resourceId
+    ) ?: Utils.localizedStringOrNull(
+        bundle = StringDesc.LocaleType.Custom(fallbackLocale).getLocaleBundle(bundle),
+        resourceId = resourceId
+    ) ?: resourceId
     @Suppress("CAST_NEVER_SUCCEEDS")
     return NSString.create(
         format = localized,
