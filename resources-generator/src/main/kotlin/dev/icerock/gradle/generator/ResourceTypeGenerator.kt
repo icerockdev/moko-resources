@@ -37,7 +37,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         parentObjectName: String,
         resources: List<ResourceMetadata>,
     ): GenerationResult? {
-        val typeMetadata: List<T> = resources.filterClass(typeClass = metadataClass)
+        val typeMetadata: List<T> = resources
+            .filterClass(typeClass = metadataClass)
+            .sortedBy { it.key }
 
         // if we not have any resources of our type at all - not generate object
         if (typeMetadata.isEmpty()) return null
@@ -128,7 +130,9 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         parentObjectName: String,
         resources: List<ResourceMetadata>,
     ): GenerationResult? {
-        val typeResources: List<T> = resources.filterClass(metadataClass)
+        val typeResources: List<T> = resources
+            .filterClass(typeClass = metadataClass)
+            .sortedBy { it.key }
 
         // if we not have any resources of our type at all - not generate object
         if (typeResources.isEmpty()) return null
