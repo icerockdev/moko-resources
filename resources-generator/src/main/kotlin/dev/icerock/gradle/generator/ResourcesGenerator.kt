@@ -43,6 +43,7 @@ internal class ResourcesGenerator(
         )
 
         val outputMetadata: MutableList<ContainerMetadata> = mutableListOf()
+        val additionalFileSpecs: MutableList<FileSpec> = mutableListOf()
 
         if (inputMetadata.isEmpty()) {
             // we not have expect - we should generate simple object
@@ -51,7 +52,8 @@ internal class ResourcesGenerator(
                 outputMetadata = outputMetadata,
                 parentObjectName = resourcesClassName,
                 fileSpec = fileSpec,
-                inputMetadata = inputMetadata
+                inputMetadata = inputMetadata,
+                additionalFileSpecs = additionalFileSpecs
             )
         } else {
             val inputMetadataObjectsMap: Map<String, List<ContainerMetadata>> =
@@ -67,10 +69,12 @@ internal class ResourcesGenerator(
                 val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
                     typeGenerator.generateActualObject(
                         parentObjectName = expectObjectName,
-                        objects = inputMetadataList
+                        objects = inputMetadataList,
+                        sourceSetName = sourceSetName
                     )
                 }
                 objects.forEach { outputMetadata.add(it.metadata) }
+                objects.flatMapTo(additionalFileSpecs) { it.fileSpecs }
 
                 val objectSpec: TypeSpec.Builder =
                     TypeSpec.objectBuilder(expectObjectName) // default: object MR
@@ -97,13 +101,17 @@ internal class ResourcesGenerator(
                     outputMetadata = outputMetadata,
                     parentObjectName = targetObjectResourceName,
                     fileSpec = fileSpec,
-                    inputMetadata = inputMetadata
+                    inputMetadata = inputMetadata,
+                    additionalFileSpecs = additionalFileSpecs
                 )
             }
         }
 
         // write file
         fileSpec.build().writeTo(sourcesGenerationDir)
+        additionalFileSpecs
+            .distinctBy { it.packageName + "." + it.name }
+            .forEach { it.writeTo(sourcesGenerationDir) }
 
         return outputMetadata
     }
@@ -114,14 +122,17 @@ internal class ResourcesGenerator(
         outputMetadata: MutableList<ContainerMetadata>,
         fileSpec: Builder,
         inputMetadata: List<ContainerMetadata>,
+        additionalFileSpecs: MutableList<FileSpec>,
     ) {
         val objects: List<GenerationResult> = typesGenerators.mapNotNull { typeGenerator ->
             typeGenerator.generateObject(
                 parentObjectName = parentObjectName,
-                resources = ownMetadata
+                resources = ownMetadata,
+                sourceSetName = sourceSetName
             )
         }
         objects.forEach { outputMetadata.add(it.metadata) }
+        objects.flatMapTo(additionalFileSpecs) { it.fileSpecs }
 
         val objectSpec: TypeSpec.Builder =
             TypeSpec.objectBuilder(parentObjectName) // default: object MR
@@ -155,6 +166,7 @@ internal class ResourcesGenerator(
         )
 
         val outputMetadata: MutableList<ContainerMetadata> = mutableListOf()
+        val additionalFileSpecs: MutableList<FileSpec> = mutableListOf()
 
         // if previous levels doesn't have resources should use "MR"
         // but if resources is found, need generate "MRsourceSet" object
@@ -170,6 +182,7 @@ internal class ResourcesGenerator(
             typeGenerator.generateExpectObject(
                 parentObjectName = expectObjectName,
                 resources = ownMetadata,
+                sourceSetName = sourceSetName
             )
         }
 
@@ -182,12 +195,16 @@ internal class ResourcesGenerator(
         objects.forEach { result ->
             objectSpec.addType(result.typeSpec)
             outputMetadata.add(result.metadata)
+            additionalFileSpecs.addAll(result.fileSpecs)
         }
 
         fileSpec.addType(objectSpec.build())
 
         // write file
         fileSpec.build().writeTo(sourcesGenerationDir)
+        additionalFileSpecs
+            .distinctBy { it.packageName + "." + it.name }
+            .forEach { it.writeTo(sourcesGenerationDir) }
 
         return outputMetadata
     }

@@ -6,11 +6,14 @@ package dev.icerock.gradle.generator.resources.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
-import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
@@ -20,6 +23,7 @@ import java.io.File
 internal class AppleStringResourceGenerator(
     private val baseLocalizationRegion: String,
     private val resourcesGenerationDir: File,
+    private val bundleIdentifier: String,
 ) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
@@ -27,7 +31,56 @@ internal class AppleStringResourceGenerator(
         return CodeBlock.of(
             "StringResource(resourceId = %S, bundle = %L)",
             metadata.key,
-            Constants.Apple.platformContainerBundlePropertyName
+            "$PLATFORM_DETAILS_PROVIDER_NAME.$BUNDLE_PROPERTY_NAME"
+        )
+    }
+
+    override fun supportsBatchedAccessors(): Boolean = true
+
+    override fun generateBatchedInitializer(metadata: StringMetadata): CodeBlock {
+        return generateInitializer(metadata)
+    }
+
+    override fun generateAdditionalBatchedFiles(packageName: String): List<FileSpec> {
+        val providerObject = TypeSpec.objectBuilder(PLATFORM_DETAILS_PROVIDER_NAME)
+            .addModifiers(KModifier.INTERNAL)
+            .addProperty(
+                PropertySpec.builder(BUNDLE_PROPERTY_NAME, Constants.Apple.nsBundleName)
+                    .delegate(
+                        CodeBlock.of(
+                            "lazy { NSBundle.loadableBundle(%S) }",
+                            bundleIdentifier
+                        )
+                    )
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder(DETAILS_PROPERTY_NAME, Constants.resourcePlatformDetailsName)
+                    .getter(
+                        FunSpec.getterBuilder()
+                            .addStatement(
+                                "return %T(%N)",
+                                Constants.resourcePlatformDetailsName,
+                                BUNDLE_PROPERTY_NAME
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+
+        return listOf(
+            FileSpec.builder(packageName, PLATFORM_DETAILS_PROVIDER_NAME)
+                .addImport(
+                    Constants.Apple.nsBundleName.packageName,
+                    Constants.Apple.nsBundleName.simpleNames
+                )
+                .addImport(
+                    Constants.Apple.loadableBundleName.packageName,
+                    Constants.Apple.loadableBundleName.simpleNames
+                )
+                .addType(providerObject)
+                .build()
         )
     }
 
@@ -45,7 +98,21 @@ internal class AppleStringResourceGenerator(
         metadata: List<StringMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addAppleContainerBundleInitializerProperty(modifier)
+        val resourcePlatformDetailsPropertySpec = PropertySpec
+            .builder(
+                Constants.PlatformDetails.platformDetailsPropertyName,
+                Constants.resourcePlatformDetailsName
+            )
+            .also {
+                if (modifier != null) {
+                    it.addModifiers(modifier)
+                }
+            }
+            .addModifiers(KModifier.OVERRIDE)
+            .initializer(CodeBlock.of("$PLATFORM_DETAILS_PROVIDER_NAME.$DETAILS_PROPERTY_NAME"))
+            .build()
+
+        builder.addProperty(resourcePlatformDetailsPropertySpec)
     }
 
     override fun generateAfterProperties(
@@ -78,5 +145,11 @@ internal class AppleStringResourceGenerator(
             val regionFile = File(regionDir, "Localizable.strings")
             regionFile.writeText(content)
         }
+    }
+
+    private companion object {
+        const val PLATFORM_DETAILS_PROVIDER_NAME = "PlatformDetailsProvider"
+        const val BUNDLE_PROPERTY_NAME = "bundle"
+        const val DETAILS_PROPERTY_NAME = "details"
     }
 }

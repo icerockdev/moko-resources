@@ -138,6 +138,51 @@ internal fun <T : ResourceMetadata> TypeSpec.Builder.addValuesFunction(
     metadata: List<T>,
     classType: ClassName,
     modifier: KModifier? = null,
+    isExpect: Boolean = false,
+) {
+    addResourceValuesFunction(
+        metadata = metadata,
+        classType = classType,
+        modifier = modifier,
+        isOverride = true,
+        isExpect = isExpect
+    )
+}
+
+internal fun <T : ResourceMetadata> TypeSpec.Builder.addPlainValuesFunction(
+    metadata: List<T>,
+    classType: ClassName,
+    modifier: KModifier? = null,
+    isExpect: Boolean = false,
+) {
+    addResourceValuesFunction(
+        metadata = metadata,
+        classType = classType,
+        modifier = modifier,
+        isOverride = false,
+        isExpect = isExpect
+    )
+}
+
+internal fun TypeSpec.Builder.addAbstractValuesFunction(
+    classType: ClassName,
+): TypeSpec.Builder {
+    val valuesFun: FunSpec = FunSpec.builder("values")
+        .returns(
+            ClassName(packageName = "kotlin.collections", "List")
+                .parameterizedBy(classType)
+        )
+        .build()
+
+    return addFunction(valuesFun)
+}
+
+private fun <T : ResourceMetadata> TypeSpec.Builder.addResourceValuesFunction(
+    metadata: List<T>,
+    classType: ClassName,
+    modifier: KModifier?,
+    isOverride: Boolean,
+    isExpect: Boolean = false,
 ) {
     // Find metadata type
     val resourceMetadata: T = metadata.first()
@@ -165,9 +210,55 @@ internal fun <T : ResourceMetadata> TypeSpec.Builder.addValuesFunction(
             if (modifier != null) {
                 it.addModifiers(modifier)
             }
+            if (isOverride) {
+                it.addModifiers(KModifier.OVERRIDE)
+            }
+        }
+        .apply {
+            if (isExpect) {
+                // No body for expect
+            } else {
+                addStatement("return listOf($languageKeysList)")
+            }
+        }
+        .returns(
+            ClassName(packageName = "kotlin.collections", "List")
+                .parameterizedBy(classType)
+        )
+        .build()
+
+    addFunction(valuesFun)
+}
+
+internal fun TypeSpec.Builder.addBatchValuesFunction(
+    groupNames: List<String>,
+    classType: ClassName,
+    modifier: KModifier? = null,
+) {
+    val valuesFun: FunSpec = FunSpec.builder("values")
+        .also {
+            if (modifier != null) {
+                it.addModifiers(modifier)
+            }
         }
         .addModifiers(KModifier.OVERRIDE)
-        .addStatement("return listOf($languageKeysList)")
+        .addCode(
+            CodeBlock.builder()
+                .apply {
+                    if (groupNames.isEmpty()) {
+                        addStatement("return emptyList()")
+                    } else if (groupNames.size == 1) {
+                        addStatement("return %N.values()", groupNames.single())
+                    } else {
+                        add("return listOf(\n")
+                        groupNames.forEach { groupName ->
+                            add("%N.values(),\n", groupName)
+                        }
+                        add(").flatten()\n")
+                    }
+                }
+                .build()
+        )
         .returns(
             ClassName(packageName = "kotlin.collections", "List")
                 .parameterizedBy(classType)

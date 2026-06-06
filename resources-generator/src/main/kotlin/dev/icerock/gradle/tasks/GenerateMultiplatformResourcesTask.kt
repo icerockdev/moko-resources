@@ -215,6 +215,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
             iosBaseLocalizationRegion = iosBaseLocalizationRegion::get,
+            appleBundleIdentifier = appleBundleIdentifier::get,
         ).create(),
         PluralGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
