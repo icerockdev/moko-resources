@@ -264,6 +264,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         }
     }
 
+    @Suppress("LongMethod")
     private fun createBatchFileSpecs(
         parentObjectName: String,
         objectName: String,
@@ -349,8 +350,18 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     ) {
         resources.forEach { resource ->
             fileSpec.addProperty(
-                PropertySpec.builder(resource.key, resourceClass)
-                    .receiver(getReceiverClassName(parentObjectName, objectName, resource.pathSegments()))
+                PropertySpec
+                    .builder(
+                        name = resource.key,
+                        type = resourceClass
+                    )
+                    .receiver(
+                        receiverType = getReceiverClassName(
+                            parentObjectName = parentObjectName,
+                            objectName = objectName,
+                            path = resource.pathSegments()
+                        )
+                    )
                     .addModifiers(visibilityModifier, KModifier.EXPECT)
                     .build()
             )
@@ -368,8 +379,18 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         resources.forEach { resource ->
             val resourcePath: List<String> = resource.metadata.pathSegments()
             fileSpec.addProperty(
-                PropertySpec.builder(resource.metadata.key, resourceClass)
-                    .receiver(getReceiverClassName(parentObjectName, objectName, resourcePath))
+                PropertySpec
+                    .builder(
+                        name = resource.metadata.key,
+                        type = resourceClass
+                    )
+                    .receiver(
+                        receiverType = getReceiverClassName(
+                            parentObjectName = parentObjectName,
+                            objectName = objectName,
+                            path = resourcePath
+                        )
+                    )
                     .addModifiers(visibilityModifier)
                     .also { property ->
                         if (actualModifier != null) {
@@ -395,7 +416,10 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             fileName = fileName
         ).also { fileSpec ->
             platformResourceGenerator.imports().forEach { import ->
-                fileSpec.addImport(import.packageName, import.simpleNames)
+                fileSpec.addImport(
+                    packageName = import.packageName,
+                    names = import.simpleNames
+                )
             }
         }
     }
@@ -405,17 +429,22 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         objectName: String,
         path: List<String> = emptyList(),
     ): ClassName {
-        val simpleNames: Array<String> = arrayOf(parentObjectName, objectName, *path.toTypedArray())
         return ClassName(
             packageName = requireResourcesPackageName(),
-            *simpleNames
+            simpleNames = listOf(
+                parentObjectName,
+                objectName
+            ) + path
         )
     }
 
     private fun buildBatchedResources(resources: List<T>): List<BatchedResource<T>> {
         if (!isHierarchyPropertiesStrategy()) {
             return resources.map { resource ->
-                BatchedResource(metadata = resource, internalName = resource.key)
+                BatchedResource(
+                    metadata = resource,
+                    internalName = resource.key
+                )
             }
         }
 

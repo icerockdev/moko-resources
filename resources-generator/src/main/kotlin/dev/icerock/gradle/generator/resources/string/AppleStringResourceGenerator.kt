@@ -97,5 +97,4 @@ internal class AppleStringResourceGenerator(
             regionFile.writeText(content)
         }
     }
-
 }
