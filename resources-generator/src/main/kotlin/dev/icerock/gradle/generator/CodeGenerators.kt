@@ -25,7 +25,7 @@ import org.gradle.api.GradleException
 
 internal fun TypeSpec.Builder.addContentHashProperty(hash: String) {
     val bundleProperty: PropertySpec =
-        PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
+        PropertySpec.builder("contentHash", STRING, KModifier.PUBLIC, KModifier.CONST)
             .initializer("%S", hash)
             .build()
 
