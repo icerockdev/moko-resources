@@ -62,7 +62,16 @@ internal class AppleImageResourceGenerator(
 
             resourceIsValidOrError(validItems, imageMetadata)
 
-            validItems.forEach { it.filePath.copyTo(File(assetDir, it.filePath.name)) }
+            validItems.forEach { item ->
+                val targetFile = File(assetDir, item.filePath.name)
+                if (item.filePath.extension.equals("svg", ignoreCase = true)) {
+                    val content = item.filePath.readText()
+                    val processedContent = SvgColorTransformer.transform(content)
+                    targetFile.writeText(processedContent)
+                } else {
+                    item.filePath.copyTo(targetFile)
+                }
+            }
 
             val imagesContent: JsonArray = getImagesContent(validItems, imageMetadata)
             val content: String = prepareContentInfo(imagesContent, validItems)
