@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.image
 
 import java.util.Locale
 
+@Suppress("MagicNumber")
 internal object SvgColorTransformer {
     private const val HEX_8_LENGTH = 8
     private const val HEX_4_LENGTH = 4
