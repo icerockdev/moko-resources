@@ -34,30 +34,27 @@ class StringBatchingTest {
             containerSource
         )
         assertTrue(
+            containerSource.contains("public override val __platformDetails"),
+            containerSource
+        )
+        assertTrue(
             result.typeSpec.funSpecs.any { it.name == "values" },
             containerSource
         )
 
         assertEquals(expected = 1, actual = result.fileSpecs.size)
-        assertEquals(expected = "Strings0.commonMain", actual = result.fileSpecs.single().name)
+        assertEquals(expected = "CommonMainStrings0.commonMain", actual = result.fileSpecs.single().name)
 
         val accessorSource = result.fileSpecs.single().toString()
         assertTrue(
-            accessorSource.contains("internal expect object CommonMainStrings0"),
+            accessorSource.contains("public expect val MR.strings.key_000: StringResource"),
             accessorSource
         )
-        assertTrue(
-            accessorSource.contains("public val MR.strings.key_000: StringResource"),
-            accessorSource
-        )
-        assertTrue(
-            accessorSource.contains("get() = CommonMainStrings0.key_000"),
-            accessorSource
-        )
+        assertFalse(accessorSource.contains("CommonMainStrings0"), accessorSource)
     }
 
     @Test
-    fun commonStringsAreSplitIntoHundredItemBatches() {
+    fun commonStringsAreSplitIntoFiftyItemBatches() {
         val oneHundredResult = createCommonGenerator().generateExpectObject(
             parentObjectName = MR_CLASS_NAME,
             resources = createStrings(count = 100),
@@ -74,14 +71,18 @@ class StringBatchingTest {
             sourceSetName = COMMON_SOURCE_SET
         )!!
 
-        assertEquals(expected = 1, actual = oneHundredResult.fileSpecs.size)
+        assertEquals(expected = 2, actual = oneHundredResult.fileSpecs.size)
         assertEquals(
-            expected = listOf("Strings0.commonMain", "Strings1.commonMain"),
+            expected = listOf(
+                "CommonMainStrings0.commonMain",
+                "CommonMainStrings1.commonMain",
+                "CommonMainStrings2.commonMain"
+            ),
             actual = oneHundredOneResult.fileSpecs.map { it.name }
         )
-        assertEquals(expected = 10, actual = largeResult.fileSpecs.size)
-        assertEquals(expected = "Strings0.commonMain", actual = largeResult.fileSpecs.first().name)
-        assertEquals(expected = "Strings9.commonMain", actual = largeResult.fileSpecs.last().name)
+        assertEquals(expected = 20, actual = largeResult.fileSpecs.size)
+        assertEquals(expected = "CommonMainStrings0.commonMain", actual = largeResult.fileSpecs.first().name)
+        assertEquals(expected = "CommonMainStrings19.commonMain", actual = largeResult.fileSpecs.last().name)
     }
 
     @Test
@@ -101,33 +102,34 @@ class StringBatchingTest {
         assertFalse(containerSource.contains("val key_000: StringResource"), containerSource)
         assertTrue(containerSource.contains("CommonMainStrings0.values()"), containerSource)
         assertTrue(containerSource.contains("CommonMainStrings1.values()"), containerSource)
+        assertTrue(containerSource.contains("CommonMainStrings2.values()"), containerSource)
 
         val firstBatchSource = androidResult.fileSpecs
             .single { it.name == "CommonMainStrings0.androidMain" }
             .toString()
         assertTrue(
-            firstBatchSource.contains("internal actual object CommonMainStrings0"),
+            firstBatchSource.contains("internal object CommonMainStrings0"),
             firstBatchSource
         )
         assertTrue(
-            firstBatchSource.contains("public actual val key_000: StringResource by"),
-            firstBatchSource
-        )
-        assertFalse(
-            firstBatchSource.contains("public actual val MR.strings.key_000: StringResource"),
+            firstBatchSource.contains("internal val key_000: StringResource by"),
             firstBatchSource
         )
         assertTrue(firstBatchSource.contains("private fun init_key_000(): StringResource"), firstBatchSource)
         assertTrue(firstBatchSource.contains("StringResource(R.string.key_000)"), firstBatchSource)
+        assertTrue(
+            firstBatchSource.contains("public actual val MR.strings.key_000: StringResource"),
+            firstBatchSource
+        )
 
         val secondBatchSource = androidResult.fileSpecs
-            .single { it.name == "CommonMainStrings1.androidMain" }
+            .single { it.name == "CommonMainStrings2.androidMain" }
             .toString()
         assertTrue(secondBatchSource.contains("StringResource(R.string.key_100)"), secondBatchSource)
     }
 
     @Test
-    fun appleActualStringsUsePlatformDetailsProvider() {
+    fun appleActualStringsUseSharedPlatformDetailsProvider() {
         val commonResult = createCommonGenerator().generateExpectObject(
             parentObjectName = MR_CLASS_NAME,
             resources = createStrings(count = 1),
@@ -140,35 +142,46 @@ class StringBatchingTest {
         )!!
 
         val containerSource = appleResult.typeSpec.toString()
+        assertTrue(containerSource.contains("public actual override val __platformDetails"), containerSource)
         assertTrue(containerSource.contains("PlatformDetailsProvider.details"), containerSource)
 
         val batchSource = appleResult.fileSpecs
             .single { it.name == "CommonMainStrings0.iosMain" }
             .toString()
         assertTrue(
-            batchSource.contains("internal actual object CommonMainStrings0"),
+            batchSource.contains("internal object CommonMainStrings0"),
             batchSource
         )
-        assertTrue(batchSource.contains("public actual val key_000: StringResource by"), batchSource)
+        assertTrue(batchSource.contains("internal val key_000: StringResource by"), batchSource)
         assertTrue(
             batchSource.contains("resourceId = \"key_000\""),
             batchSource
         )
         assertTrue(
-            batchSource.contains("PlatformDetailsProvider.bundle"),
+            batchSource.contains("PlatformDetailsProvider.details.nsBundle"),
             batchSource
         )
-        assertFalse(
-            batchSource.contains("public actual val MR.strings.key_000: StringResource"),
-            batchSource
-        )
+        assertFalse(batchSource.contains("private val bundle"), batchSource)
+        assertFalse(batchSource.contains("private val __platformDetails"), batchSource)
+        assertTrue(batchSource.contains("public actual val MR.strings.key_000: StringResource"), batchSource)
+    }
 
-        val providerSource = appleResult.fileSpecs
-            .single { it.name == "PlatformDetailsProvider" }
+    @Test
+    fun targetSpecificStringsUseCorrectVisibility() {
+        val result = createAndroidGenerator().generateObject(
+            parentObjectName = "MRandroidMain",
+            resources = createStrings(count = 1),
+            sourceSetName = ANDROID_SOURCE_SET
+        )!!
+
+        val batchSource = result.fileSpecs
+            .single { it.name == "AndroidMainStrings0.androidMain" }
             .toString()
-        assertTrue(providerSource.contains("internal object PlatformDetailsProvider"), providerSource)
-        assertTrue(providerSource.contains("NSBundle.loadableBundle(\"com.example.bundle\")"), providerSource)
-        assertTrue(providerSource.contains("ResourcePlatformDetails(bundle)"), providerSource)
+
+        // Batch object should be public (visibilityModifier)
+        assertTrue(batchSource.contains("internal object AndroidMainStrings0"), batchSource)
+        // Extension property should be public
+        assertTrue(batchSource.contains("public val MRandroidMain.strings.key_000: StringResource"), batchSource)
     }
 
     private fun createCommonGenerator(): ResourceTypeGenerator<StringMetadata> {
@@ -188,8 +201,7 @@ class StringBatchingTest {
         return createGenerator(
             platformResourceGenerator = AppleStringResourceGenerator(
                 baseLocalizationRegion = "en",
-                resourcesGenerationDir = File("."),
-                bundleIdentifier = "com.example.bundle"
+                resourcesGenerationDir = File(".")
             )
         )
     }
@@ -206,8 +218,7 @@ class StringBatchingTest {
             generator = StringResourceGenerator(strictLineBreaks = false),
             platformResourceGenerator = platformResourceGenerator,
             filter = {},
-            resourcesPackageName = PACKAGE_NAME,
-            generatePropertiesAsExtensions = true
+            resourcesPackageName = PACKAGE_NAME
         )
     }
 
