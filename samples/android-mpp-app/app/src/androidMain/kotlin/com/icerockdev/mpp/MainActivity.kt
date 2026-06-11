@@ -6,13 +6,20 @@ package com.icerockdev.mpp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.icerockdev.library.TestRes
+import com.icerockdev.library.MR
+import com.icerockdev.library.MRandroidMain
+import com.icerockdev.library.android_name
+import com.icerockdev.library.common_name
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println(MR.strings.common_name)
+        println(MRandroidMain.strings.android_name)
+        MR.strings.values().forEach {
+            println("DBG: $it ${it.getString(this)}")
 
-        TestRes.test()
+        }
     }
 }

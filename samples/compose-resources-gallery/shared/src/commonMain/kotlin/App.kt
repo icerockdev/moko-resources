@@ -23,6 +23,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.icerockdev.library.MR
+import com.icerockdev.library.car_black
+import com.icerockdev.library.chars_count
+import com.icerockdev.library.cormorant_italic
+import com.icerockdev.library.cr
+import com.icerockdev.library.font_style_text
+import com.icerockdev.library.hello_world
+import com.icerockdev.library.innerFile_txt
+import com.icerockdev.library.innerText_txt
+import com.icerockdev.library.moko_logo
+import com.icerockdev.library.new_line_test
+import com.icerockdev.library.second_inner_text_file_txt
+import com.icerockdev.library.some_asset_txt
+import com.icerockdev.library.symbols_text
+import com.icerockdev.library.textColor
 import dev.icerock.moko.resources.compose.colorResource
 import dev.icerock.moko.resources.compose.fontFamilyResource
 import dev.icerock.moko.resources.compose.painterResource
@@ -103,7 +117,7 @@ internal fun App() {
                 color = MaterialTheme.colors.onBackground,
             )
 
-            val fileContent: String? by MR.files.some_file_txt.readTextAsState()
+            val fileContent: String? by MR.files.innerDirWithSingleFile.innerFile_txt.readTextAsState()
             Text(
                 modifier = Modifier.padding(top = 16.dp),
                 text = fileContent.orEmpty(),
