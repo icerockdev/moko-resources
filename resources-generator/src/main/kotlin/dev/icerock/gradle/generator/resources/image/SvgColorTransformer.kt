@@ -11,10 +11,11 @@ internal object SvgColorTransformer {
     private const val HEX_8_LENGTH = 8
     private const val HEX_4_LENGTH = 4
 
+    @Suppress("LongMethod")
     fun transform(content: String): String {
         val attrNamesPattern = ColorAttribute.allNames.joinToString("|")
         val attrRegex = Regex("""($attrNamesPattern)\s*=\s*(['"])#([0-9a-fA-F]+)\2""")
-        
+
         var result = attrRegex.replace(content) { matchResult ->
             val attrName = matchResult.groupValues[1]
             val quote = matchResult.groupValues[2]
@@ -27,7 +28,7 @@ internal object SvgColorTransformer {
                     val alpha = hex.substring(6, 8)
                     val alphaStr = hexToAlpha(alpha)
                     val opacityAttr = colorAttr?.opacityAttrName
-                    
+
                     if (opacityAttr != null) {
                         """$attrName=$quote#$rgb$quote $opacityAttr=$quote$alphaStr$quote"""
                     } else {
@@ -40,7 +41,7 @@ internal object SvgColorTransformer {
                     val rgb = rgbShort.map { "$it$it" }.joinToString("")
                     val alphaStr = hexToAlpha("$alpha$alpha")
                     val opacityAttr = colorAttr?.opacityAttrName
-                    
+
                     if (opacityAttr != null) {
                         """$attrName=$quote#$rgb$quote $opacityAttr=$quote$alphaStr$quote"""
                     } else {
@@ -68,7 +69,7 @@ internal object SvgColorTransformer {
                         val alpha = hex.substring(6, 8)
                         val alphaStr = hexToAlpha(alpha)
                         val opacityAttr = colorAttr?.opacityAttrName
-                        
+
                         if (opacityAttr != null) {
                             """$attrName:#$rgb;$opacityAttr:$alphaStr"""
                         } else {
@@ -81,7 +82,7 @@ internal object SvgColorTransformer {
                         val rgb = rgbShort.map { "$it$it" }.joinToString("")
                         val alphaStr = hexToAlpha("$alpha$alpha")
                         val opacityAttr = colorAttr?.opacityAttrName
-                        
+
                         if (opacityAttr != null) {
                             """$attrName:#$rgb;$opacityAttr:$alphaStr"""
                         } else {
