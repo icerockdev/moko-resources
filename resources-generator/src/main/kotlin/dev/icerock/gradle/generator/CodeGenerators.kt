@@ -6,7 +6,6 @@
 
 package dev.icerock.gradle.generator
 
-import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
@@ -228,7 +227,6 @@ internal fun TypeSpec.Builder.addOverridePlatformProperty(): TypeSpec.Builder {
         Constants.resourcePlatformDetailsName,
         KModifier.OVERRIDE
     )
-        .addAnnotation(hiddenInternalApiAnnotation())
         .build()
 
     return addProperty(resourcePlatformDetailsPropertySpec)
@@ -246,13 +244,6 @@ internal fun TypeSpec.Builder.addOverrideAbstractValuesFunction(
         .build()
 
     return addFunction(valuesFun)
-}
-
-private fun hiddenInternalApiAnnotation(): AnnotationSpec {
-    return AnnotationSpec.builder(Deprecated::class)
-        .addMember("message = %S", "Internal resource container detail")
-        .addMember("level = %T.HIDDEN", DeprecationLevel::class)
-        .build()
 }
 
 internal fun TypeSpec.Builder.addJsFallbackProperty(
@@ -391,7 +382,6 @@ private fun TypeSpec.Builder.addContainerPlatformDetailsProperty(
             PlatformDetails.platformDetailsPropertyName,
             Constants.resourcePlatformDetailsName
         )
-        .addAnnotation(hiddenInternalApiAnnotation())
         .also {
             if (modifier != null) {
                 it.addModifiers(modifier)
