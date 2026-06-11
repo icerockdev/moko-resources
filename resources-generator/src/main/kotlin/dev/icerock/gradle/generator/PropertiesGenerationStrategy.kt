@@ -17,6 +17,13 @@ internal interface PropertiesGenerationStrategy<T : ResourceMetadata> {
         modifier: KModifier?,
         generateProperty: (T) -> PropertySpec,
     )
+
+    fun generateSkeleton(
+        builder: TypeSpec.Builder,
+        resources: List<T>,
+        modifier: KModifier?,
+        generateProperty: (T) -> PropertySpec,
+    ) = Unit
 }
 
 internal class FlatPropertiesGenerationStrategy<T : ResourceMetadata> :
@@ -50,6 +57,19 @@ internal class HierarchyPropertiesGenerationStrategy<T : HierarchyMetadata> :
         )
     }
 
+    override fun generateSkeleton(
+        builder: TypeSpec.Builder,
+        resources: List<T>,
+        modifier: KModifier?,
+        generateProperty: (T) -> PropertySpec,
+    ) {
+        builder.addObjectsSkeleton(
+            typeResources = resources,
+            generateProperty = generateProperty,
+            modifier = modifier
+        )
+    }
+
     private fun TypeSpec.Builder.addObjectsProperties(
         typeResources: List<T>,
         generateProperty: (T) -> PropertySpec,
@@ -64,6 +84,26 @@ internal class HierarchyPropertiesGenerationStrategy<T : HierarchyMetadata> :
         }
 
         this.generateObjects(
+            map = filesMap,
+            objectKey = emptyList(),
+            modifier = modifier
+        )
+    }
+
+    private fun TypeSpec.Builder.addObjectsSkeleton(
+        typeResources: List<T>,
+        generateProperty: (T) -> PropertySpec,
+        modifier: KModifier? = null,
+    ) {
+        val filesMap = typeResources.groupBy {
+            it.path
+        }.mapValues {
+            it.value.map { resValue ->
+                generateProperty(resValue)
+            }
+        }
+
+        this.generateSkeletonObjects(
             map = filesMap,
             objectKey = emptyList(),
             modifier = modifier
@@ -94,6 +134,34 @@ internal class HierarchyPropertiesGenerationStrategy<T : HierarchyMetadata> :
                     }.also { builder ->
                         if (modifier != null) {
                             builder.addModifiers(modifier)
+                        }
+                    }.build()
+            }
+        )
+    }
+
+    private fun TypeSpec.Builder.generateSkeletonObjects(
+        map: Map<List<String>, List<PropertySpec>>,
+        objectKey: List<String>,
+        modifier: KModifier?,
+    ) {
+        addTypes(
+            map.filter {
+                it.key.size == objectKey.size + 1
+            }.filter {
+                it.key.dropLast(1) == objectKey
+            }.map {
+                TypeSpec
+                    .objectBuilder(it.key.last())
+                    .also { builder ->
+                        builder.generateSkeletonObjects(
+                            map = map,
+                            objectKey = it.key,
+                            modifier = modifier
+                        )
+                    }.also { builder ->
+                        if (modifier == KModifier.ACTUAL) {
+                            builder.addModifiers(KModifier.ACTUAL)
                         }
                     }.build()
             }

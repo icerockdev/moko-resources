@@ -20,15 +20,24 @@ internal interface PlatformResourceGenerator<T : ResourceMetadata> {
         modifier: KModifier? = null,
     ) = Unit
 
+    fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<T>,
+        objectName: String,
+    ) = Unit
+
     fun generateAfterProperties(
         builder: Builder,
         metadata: List<T>,
         modifier: KModifier? = null,
     ) = Unit
 
-    fun supportsBatchedAccessors(): Boolean = false
-
     fun generateBatchedInitializer(metadata: T): CodeBlock = generateInitializer(metadata)
+
+    fun generateBatchedInitializer(
+        metadata: T,
+        batchObjectName: String,
+    ): CodeBlock = generateBatchedInitializer(metadata)
 
     fun generateAdditionalBatchedFiles(packageName: String): List<FileSpec> = emptyList()
 

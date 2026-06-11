@@ -14,6 +14,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 import dev.icerock.gradle.metadata.container.ResourceType
+import dev.icerock.gradle.metadata.resource.HierarchyMetadata
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.capitalize
 import dev.icerock.gradle.utils.filterClass
@@ -31,7 +32,6 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     private val platformResourceGenerator: PlatformResourceGenerator<T>,
     private val filter: PatternFilterable.() -> Unit,
     private val resourcesPackageName: String? = null,
-    private val generatePropertiesAsExtensions: Boolean = false,
     private val batchSize: Int = DEFAULT_BATCH_SIZE,
 ) {
     fun generateMetadata(files: ResourcesFiles): List<T> {
@@ -47,7 +47,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     ): GenerationResult? {
         val typeMetadata: List<T> = resources
             .filterClass(typeClass = metadataClass)
-            .sortedBy { it.key }
+            .sortedResources()
 
         // if we not have any resources of our type at all - not generate object
         if (typeMetadata.isEmpty()) return null
@@ -61,12 +61,11 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             // implement ResourceContainer platform property
             .addOverridePlatformProperty()
             .also { builder ->
-                if (!generatePropertiesAsExtensions) {
-                    // add all properties of available resources
-                    propertiesGenerationStrategy.generateProperties(
+                if (isHierarchyPropertiesStrategy()) {
+                    propertiesGenerationStrategy.generateSkeleton(
                         builder = builder,
                         resources = typeMetadata,
-                        modifier = null,
+                        modifier = KModifier.EXPECT,
                         generateProperty = {
                             generator.generateProperty(it).build()
                         }
@@ -76,16 +75,12 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             // implement ResourceContainer values function
             .addOverrideAbstractValuesFunction(resourceClass)
 
-        val fileSpecs: List<FileSpec> = if (generatePropertiesAsExtensions) {
-            createExpectExtensionFileSpecs(
-                parentObjectName = parentObjectName,
-                objectName = objectName,
-                sourceSetName = sourceSetName,
-                resources = typeMetadata
-            )
-        } else {
-            emptyList()
-        }
+        val fileSpecs: List<FileSpec> = createExpectExtensionFileSpecs(
+            parentObjectName = parentObjectName,
+            objectName = objectName,
+            sourceSetName = sourceSetName,
+            resources = typeMetadata
+        )
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
@@ -110,9 +105,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
 
         val typeResources: List<T> = typeObject.resources
             .filterClass(metadataClass)
-            .sortedBy { it.key }
-        val useBatchedAccessors: Boolean = generatePropertiesAsExtensions &&
-            platformResourceGenerator.supportsBatchedAccessors()
+            .sortedResources()
 
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(typeObject.name)
@@ -128,51 +121,35 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 )
             }
             .also { builder ->
-                if (useBatchedAccessors) {
-                    builder.addBatchValuesFunction(
-                        groupNames = getBatchGroupNames(
-                            sourceSetName = typeObject.sourceSetName ?: sourceSetName,
-                            objectName = typeObject.name,
-                            resources = typeResources
-                        ),
-                        classType = resourceClass,
-                        modifier = KModifier.ACTUAL
-                    )
-                } else if (!generatePropertiesAsExtensions) {
-                    propertiesGenerationStrategy.generateProperties(
+                if (isHierarchyPropertiesStrategy()) {
+                    propertiesGenerationStrategy.generateSkeleton(
                         builder = builder,
                         resources = typeResources,
                         modifier = KModifier.ACTUAL,
-                        generateProperty = ::createActualProperty
+                        generateProperty = {
+                            generator.generateProperty(it).build()
+                        }
                     )
                 }
-            }
-            .also { builder ->
-                if (!useBatchedAccessors) {
-                    platformResourceGenerator.generateAfterProperties(
-                        builder = builder,
-                        metadata = typeResources,
-                        modifier = KModifier.ACTUAL,
-                    )
-                }
+                builder.addBatchValuesFunction(
+                    groupNames = getBatchGroupNames(
+                        sourceSetName = typeObject.sourceSetName ?: sourceSetName,
+                        objectName = typeObject.name,
+                        resources = typeResources
+                    ),
+                    classType = resourceClass,
+                    modifier = KModifier.ACTUAL
+                )
             }
 
-        val fileSpecs: List<FileSpec> = if (generatePropertiesAsExtensions) {
-            if (useBatchedAccessors) {
-                createBatchFileSpecs(
-                    parentObjectName = parentObjectName,
-                    objectName = typeObject.name,
-                    resourceSourceSetName = typeObject.sourceSetName ?: sourceSetName,
-                    targetSourceSetName = sourceSetName,
-                    resources = typeResources,
-                    actualModifier = KModifier.ACTUAL
-                ) + platformResourceGenerator.generateAdditionalBatchedFiles(requireResourcesPackageName())
-            } else {
-                emptyList()
-            }
-        } else {
-            emptyList()
-        }
+        val fileSpecs: List<FileSpec> = createBatchFileSpecs(
+            parentObjectName = parentObjectName,
+            objectName = typeObject.name,
+            resourceSourceSetName = typeObject.sourceSetName ?: sourceSetName,
+            targetSourceSetName = sourceSetName,
+            resources = typeResources,
+            actualModifier = KModifier.ACTUAL
+        ) + platformResourceGenerator.generateAdditionalBatchedFiles(requireResourcesPackageName())
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
@@ -194,14 +171,12 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     ): GenerationResult? {
         val typeResources: List<T> = resources
             .filterClass(typeClass = metadataClass)
-            .sortedBy { it.key }
+            .sortedResources()
 
         // if we not have any resources of our type at all - not generate object
         if (typeResources.isEmpty()) return null
 
         val objectName: String = resourceType.name.lowercase()
-        val useBatchedAccessors: Boolean = generatePropertiesAsExtensions &&
-            platformResourceGenerator.supportsBatchedAccessors()
         val objectBuilder: TypeSpec.Builder = TypeSpec
             .objectBuilder(objectName)
             .addModifiers(visibilityModifier)
@@ -215,51 +190,34 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 )
             }
             .also { builder ->
-                if (useBatchedAccessors) {
-                    builder.addBatchValuesFunction(
-                        groupNames = getBatchGroupNames(
-                            sourceSetName = sourceSetName,
-                            objectName = objectName,
-                            resources = typeResources
-                        ),
-                        classType = resourceClass
-                    )
-                } else if (!generatePropertiesAsExtensions) {
-                    propertiesGenerationStrategy.generateProperties(
+                if (isHierarchyPropertiesStrategy()) {
+                    propertiesGenerationStrategy.generateSkeleton(
                         builder = builder,
                         resources = typeResources,
                         modifier = null,
-                        generateProperty = ::createSimpleProperty
+                        generateProperty = {
+                            generator.generateProperty(it).build()
+                        }
                     )
                 }
-            }
-            .also { builder ->
-                if (!useBatchedAccessors) {
-                    platformResourceGenerator.generateAfterProperties(
-                        builder = builder,
-                        metadata = typeResources,
-                    )
-                }
-            }
-
-        val fileSpecs: List<FileSpec> = if (generatePropertiesAsExtensions) {
-            val batchFiles = if (useBatchedAccessors) {
-                createBatchFileSpecs(
-                    parentObjectName = parentObjectName,
-                    objectName = objectName,
-                    resourceSourceSetName = sourceSetName,
-                    targetSourceSetName = sourceSetName,
-                    resources = typeResources,
-                    actualModifier = null
-                ) + platformResourceGenerator.generateAdditionalBatchedFiles(requireResourcesPackageName())
-            } else {
-                emptyList()
+                builder.addBatchValuesFunction(
+                    groupNames = getBatchGroupNames(
+                        sourceSetName = sourceSetName,
+                        objectName = objectName,
+                        resources = typeResources
+                    ),
+                    classType = resourceClass
+                )
             }
 
-            batchFiles
-        } else {
-            emptyList()
-        }
+        val fileSpecs: List<FileSpec> = createBatchFileSpecs(
+            parentObjectName = parentObjectName,
+            objectName = objectName,
+            resourceSourceSetName = sourceSetName,
+            targetSourceSetName = sourceSetName,
+            resources = typeResources,
+            actualModifier = null
+        ) + platformResourceGenerator.generateAdditionalBatchedFiles(requireResourcesPackageName())
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
@@ -280,26 +238,6 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         platformResourceGenerator.generateResourceFiles(typeMetadata)
     }
 
-    private fun createSimpleProperty(resource: T): PropertySpec {
-        return createProperty(resource)
-    }
-
-    private fun createActualProperty(resource: T): PropertySpec {
-        return createProperty(resource, KModifier.ACTUAL)
-    }
-
-    private fun createProperty(
-        resource: T,
-        modifier: KModifier? = null,
-    ): PropertySpec {
-        return generator.generateProperty(resource)
-            .apply {
-                if (modifier != null) addModifiers(modifier)
-            }
-            .initializer(platformResourceGenerator.generateInitializer(resource))
-            .build()
-    }
-
     private fun createExpectExtensionFileSpecs(
         parentObjectName: String,
         objectName: String,
@@ -313,49 +251,16 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 index = index
             )
 
-            val fileSpec = FileSpec.builder(
-                packageName = requireResourcesPackageName(),
-                fileName = getBatchFileName(
-                    objectName = objectName,
-                    index = index,
-                    targetSourceSetName = sourceSetName
-                )
-            )
-
-            val groupObject = TypeSpec.objectBuilder(groupName)
-                .addModifiers(KModifier.INTERNAL, KModifier.EXPECT)
-                .addProperties(
-                    batch.map { resource ->
-                        generator.generateProperty(resource)
-                            .build()
-                    }
-                )
-                .also { builder ->
-                    builder.addPlainValuesFunction(
-                        metadata = batch,
-                        classType = resourceClass,
-                        isExpect = true
+            createExtensionFileSpecBuilder("$groupName.$sourceSetName")
+                .also { fileSpec ->
+                    addExpectExtensionAccessors(
+                        fileSpec = fileSpec,
+                        parentObjectName = parentObjectName,
+                        objectName = objectName,
+                        resources = batch
                     )
                 }
                 .build()
-
-            fileSpec.addType(groupObject)
-
-            batch.forEach { resource ->
-                fileSpec.addProperty(
-                    PropertySpec.builder(resource.key, resourceClass)
-                        .receiver(getReceiverClassName(parentObjectName, objectName))
-                        .addModifiers(visibilityModifier)
-                        .getter(
-                            FunSpec.getterBuilder()
-                                .addStatement("return %N.%N", groupName, resource.key)
-                                .build()
-                        )
-                        .build()
-                )
-            }
-
-            fileSpec.build()
         }
     }
 
@@ -373,66 +278,114 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 objectName = objectName,
                 index = index
             )
+            val batchedResources: List<BatchedResource<T>> = buildBatchedResources(batch)
             val fileSpec = createExtensionFileSpecBuilder(
                 fileName = "$groupName.$targetSourceSetName"
+            )
+
+            platformResourceGenerator.generateBeforeBatchedFile(
+                builder = fileSpec,
+                metadata = batch,
+                objectName = groupName
             )
 
             val groupObject = TypeSpec.objectBuilder(groupName)
                 .addModifiers(KModifier.INTERNAL)
                 .also { builder ->
-                    if (actualModifier != null) builder.addModifiers(actualModifier)
-                }
-                .addProperties(
-                    batch.map { resource ->
-                        generator.generateProperty(resource)
-                            .also { builder ->
-                                if (actualModifier != null) builder.addModifiers(actualModifier)
-                            }
-                            .delegate(CodeBlock.of("lazy { init_%L() }", resource.key))
-                            .build()
+                    batchedResources.forEach { resource ->
+                        builder.addProperty(
+                            PropertySpec.builder(resource.internalName, resourceClass)
+                                .addModifiers(KModifier.INTERNAL)
+                                .delegate(
+                                    CodeBlock.of(
+                                        "lazy { %L() }",
+                                        initFunctionName(resource.internalName)
+                                    )
+                                )
+                                .build()
+                        )
                     }
-                )
-                .also { builder ->
-                    builder.addPlainValuesFunction(
-                        metadata = batch,
+                    builder.addReferencedValuesFunction(
+                        propertyReferences = batchedResources.map { it.internalName },
                         classType = resourceClass,
-                        modifier = actualModifier
+                        memberModifier = KModifier.INTERNAL
                     )
                 }
                 .build()
 
             fileSpec.addType(groupObject)
 
-            if (actualModifier == null) {
-                batch.forEach { resource ->
-                    fileSpec.addProperty(
-                        PropertySpec.builder(resource.key, resourceClass)
-                            .receiver(getReceiverClassName(parentObjectName, objectName))
-                            .addModifiers(visibilityModifier)
-                            .getter(
-                                FunSpec.getterBuilder()
-                                    .addStatement("return %N.%N", groupName, resource.key)
-                                    .build()
-                            )
-                            .build()
-                    )
-                }
-            }
-
-            batch.forEach { resource ->
+            batchedResources.forEach { resource ->
                 fileSpec.addFunction(
-                    FunSpec.builder("init_${resource.key}")
+                    FunSpec.builder(initFunctionName(resource.internalName))
                         .addModifiers(KModifier.PRIVATE)
                         .returns(resourceClass)
                         .addStatement(
                             "return %L",
-                            platformResourceGenerator.generateBatchedInitializer(resource)
+                            platformResourceGenerator.generateBatchedInitializer(resource.metadata)
                         )
                         .build()
                 )
             }
 
+            addActualExtensionAccessors(
+                fileSpec = fileSpec,
+                parentObjectName = parentObjectName,
+                objectName = objectName,
+                groupName = groupName,
+                resources = batchedResources,
+                actualModifier = actualModifier
+            )
+
             fileSpec.build()
+        }
+    }
+
+    private fun addExpectExtensionAccessors(
+        fileSpec: FileSpec.Builder,
+        parentObjectName: String,
+        objectName: String,
+        resources: List<T>,
+    ) {
+        resources.forEach { resource ->
+            fileSpec.addProperty(
+                PropertySpec.builder(resource.key, resourceClass)
+                    .receiver(getReceiverClassName(parentObjectName, objectName, resource.pathSegments()))
+                    .addModifiers(visibilityModifier, KModifier.EXPECT)
+                    .build()
+            )
+        }
+    }
+
+    private fun addActualExtensionAccessors(
+        fileSpec: FileSpec.Builder,
+        parentObjectName: String,
+        objectName: String,
+        groupName: String,
+        resources: List<BatchedResource<T>>,
+        actualModifier: KModifier?,
+    ) {
+        resources.forEach { resource ->
+            val resourcePath: List<String> = resource.metadata.pathSegments()
+            fileSpec.addProperty(
+                PropertySpec.builder(resource.metadata.key, resourceClass)
+                    .receiver(getReceiverClassName(parentObjectName, objectName, resourcePath))
+                    .addModifiers(visibilityModifier)
+                    .also { property ->
+                        if (actualModifier != null) {
+                            property.addModifiers(actualModifier)
+                        }
+                    }
+                    .getter(
+                        FunSpec.getterBuilder()
+                            .addStatement(
+                                "return %L",
+                                "$groupName.${resource.internalName}"
+                            )
+                            .build()
+                    )
+                    .build()
+            )
         }
     }
 
@@ -447,12 +400,49 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         }
     }
 
-    private fun getReceiverClassName(parentObjectName: String, objectName: String): ClassName {
+    private fun getReceiverClassName(
+        parentObjectName: String,
+        objectName: String,
+        path: List<String> = emptyList(),
+    ): ClassName {
+        val simpleNames: Array<String> = arrayOf(parentObjectName, objectName, *path.toTypedArray())
         return ClassName(
             packageName = requireResourcesPackageName(),
-            parentObjectName,
-            objectName
+            *simpleNames
         )
+    }
+
+    private fun buildBatchedResources(resources: List<T>): List<BatchedResource<T>> {
+        if (!isHierarchyPropertiesStrategy()) {
+            return resources.map { resource ->
+                BatchedResource(metadata = resource, internalName = resource.key)
+            }
+        }
+
+        val duplicates: Map<String, List<T>> = resources
+            .groupBy { it.key }
+            .mapValues { (_, groupedResources) ->
+                groupedResources.sortedBy { resourceLogicalPath(it = it) }
+            }
+
+        return resources.map { resource ->
+            val duplicateGroup: List<T> = duplicates.getValue(resource.key)
+            val internalName = if (duplicateGroup.size == 1) {
+                resource.key
+            } else {
+                "${resource.key}__${duplicateGroup.indexOf(resource)}"
+            }
+
+            BatchedResource(metadata = resource, internalName = internalName)
+        }
+    }
+
+    private fun initFunctionName(internalName: String): String {
+        return "init_$internalName"
+    }
+
+    private fun resourceLogicalPath(it: T): String {
+        return it.pathSegments().joinToString(separator = "/") + "/${it.key}"
     }
 
     private fun getBatchGroupNames(
@@ -477,21 +467,37 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         return "${sourceSetName.capitalize()}${objectName.capitalize()}$index"
     }
 
-    private fun getBatchFileName(
-        objectName: String,
-        index: Int,
-        targetSourceSetName: String,
-    ): String {
-        return "${objectName.capitalize()}$index.$targetSourceSetName"
-    }
-
     private fun requireResourcesPackageName(): String {
         return requireNotNull(resourcesPackageName) {
             "resourcesPackageName should be provided to generate extension properties"
         }
     }
 
-    private companion object {
-        const val DEFAULT_BATCH_SIZE = 100
+    private fun isHierarchyPropertiesStrategy(): Boolean {
+        return propertiesGenerationStrategy is HierarchyPropertiesGenerationStrategy<*>
     }
+
+    private fun T.pathSegments(): List<String> {
+        return (this as? HierarchyMetadata)?.path.orEmpty()
+    }
+
+    private fun List<T>.sortedResources(): List<T> {
+        return if (firstOrNull() is HierarchyMetadata) {
+            sortedBy {
+                val hierarchy = it as HierarchyMetadata
+                hierarchy.path.joinToString(separator = "/") + "/" + it.key
+            }
+        } else {
+            sortedBy { it.key }
+        }
+    }
+
+    private companion object {
+        const val DEFAULT_BATCH_SIZE = 50
+    }
+
+    private data class BatchedResource<T : ResourceMetadata>(
+        val metadata: T,
+        val internalName: String,
+    )
 }

@@ -29,8 +29,6 @@ internal class AndroidStringResourceGenerator(
         return CodeBlock.of("StringResource(R.string.%L)", metadata.key)
     }
 
-    override fun supportsBatchedAccessors(): Boolean = true
-
     override fun generateBeforeProperties(
         builder: Builder,
         metadata: List<StringMetadata>,

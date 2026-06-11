@@ -5,10 +5,12 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 
 internal interface PlatformContainerGenerator {
     fun getImports(): List<ClassName> = emptyList()
+    fun generateAdditionalFiles(packageName: String): List<FileSpec> = emptyList()
     fun generateBeforeTypes(objectName: String, builder: TypeSpec.Builder) = Unit
     fun generateAfterTypes(builder: TypeSpec.Builder) = Unit
 }

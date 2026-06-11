@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
@@ -13,6 +14,7 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addJsBatchedStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
 import dev.icerock.gradle.generator.addJsSupportedLocalesProperty
@@ -77,6 +79,30 @@ internal class JsPluralResourceGenerator(
             filePathMode = filePathMode
         )
         builder.addJsContainerStringsLoaderProperty()
+    }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<PluralMetadata>,
+        objectName: String,
+    ) {
+        builder.addJsFallbackProperty(
+            fallbackFilePath = "./" + LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base),
+            filePathMode = filePathMode
+        )
+        builder.addJsSupportedLocalesProperty(
+            bcpLangToPath = metadata.asSequence()
+                .flatMap { resource ->
+                    resource.values.map { it.locale }
+                }.distinct().map { locale ->
+                    LanguageType.fromLanguage(locale)
+                }.filterIsInstance<LanguageType.Locale>().map { language ->
+                    val fileName: String = getFileNameForLanguage(language)
+                    language.toBcpString() to "./$LOCALIZATION_DIR/$fileName"
+                }.toList(),
+            filePathMode = filePathMode
+        )
+        builder.addJsBatchedStringsLoaderProperty()
     }
 
     override fun generateAfterProperties(

@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.font
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -18,13 +19,24 @@ import java.io.File
 internal class AppleFontResourceGenerator(
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FontMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: FontMetadata): CodeBlock {
         return CodeBlock.of(
             "FontResource(fontName = %S, bundle = %L)",
             metadata.filePath.name,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateBatchedInitializer(metadata: FontMetadata): CodeBlock {
+        return CodeBlock.of(
+            "FontResource(fontName = %S, bundle = %L)",
+            metadata.filePath.name,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -41,6 +53,12 @@ internal class AppleFontResourceGenerator(
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<FontMetadata>,
+        objectName: String,
+    ) = Unit
 
     override fun generateAfterProperties(
         builder: Builder,

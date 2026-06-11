@@ -35,7 +35,6 @@ internal class StringGeneratorFactory(
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
     private val iosBaseLocalizationRegion: () -> String,
-    private val appleBundleIdentifier: () -> String,
 ) {
     fun create(): ResourceTypeGenerator<StringMetadata> {
         return ResourceTypeGenerator(
@@ -49,8 +48,7 @@ internal class StringGeneratorFactory(
             ),
             platformResourceGenerator = createPlatformStringGenerator(),
             filter = { include("**/strings*.xml") },
-            resourcesPackageName = resourcesPackageName,
-            generatePropertiesAsExtensions = true
+            resourcesPackageName = resourcesPackageName
         )
     }
 
@@ -69,8 +67,7 @@ internal class StringGeneratorFactory(
             createApple = {
                 AppleStringResourceGenerator(
                     baseLocalizationRegion = iosBaseLocalizationRegion(),
-                    resourcesGenerationDir = outputResourcesDir,
-                    bundleIdentifier = appleBundleIdentifier()
+                    resourcesGenerationDir = outputResourcesDir
                 )
             },
             createJvm = {

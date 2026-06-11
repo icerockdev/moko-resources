@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.image
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -50,6 +51,33 @@ internal class JvmImageResourceGenerator(
         )
     }
 
+    override fun generateBatchedInitializer(metadata: ImageMetadata): CodeBlock {
+        var fileName: String = ""
+        var darkFileName: String? = null
+
+        metadata.values.groupBy { it.appearance }.forEach { (theme, resources) ->
+            val item: ImageMetadata.ImageItem = resources.getHighestQualityItem(theme)
+
+            if (theme == Appearance.DARK) {
+                darkFileName = "${metadata.key}${theme.themeSuffix}.${item.filePath.extension}"
+            } else {
+                fileName = "${metadata.key}.${item.filePath.extension}"
+            }
+        }
+
+        val darkFilePath: String = if (darkFileName != null) {
+            "\"$IMAGES_DIR/$darkFileName\""
+        } else {
+            "null"
+        }
+
+        return CodeBlock.of(
+            "ImageResource(resourcesClassLoader = %L, filePath = %S, darkFilePath = $darkFilePath)",
+            Jvm.providerClassLoaderReference,
+            "$IMAGES_DIR/$fileName"
+        )
+    }
+
     override fun generateResourceFiles(data: List<ImageMetadata>) {
         generateHighestQualityImageResources(
             resourcesGenerationDir = resourcesGenerationDir,
@@ -65,6 +93,12 @@ internal class JvmImageResourceGenerator(
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<ImageMetadata>,
+        objectName: String,
+    ) = Unit
 
     override fun generateAfterProperties(
         builder: Builder,

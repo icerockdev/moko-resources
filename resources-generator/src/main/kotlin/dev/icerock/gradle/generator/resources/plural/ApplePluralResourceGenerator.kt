@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -21,13 +22,24 @@ internal class ApplePluralResourceGenerator(
     private val baseLocalizationRegion: String,
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<PluralMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: PluralMetadata): CodeBlock {
         return CodeBlock.of(
             "PluralsResource(resourceId = %S, bundle = %L)",
             metadata.key,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateBatchedInitializer(metadata: PluralMetadata): CodeBlock {
+        return CodeBlock.of(
+            "PluralsResource(resourceId = %S, bundle = %L)",
+            metadata.key,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -47,6 +59,12 @@ internal class ApplePluralResourceGenerator(
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<PluralMetadata>,
+        objectName: String,
+    ) = Unit
 
     override fun generateAfterProperties(
         builder: Builder,

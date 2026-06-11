@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.image
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -24,13 +25,24 @@ import java.io.File
 internal class AppleImageResourceGenerator(
     private val assetsGenerationDir: File,
 ) : PlatformResourceGenerator<ImageMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: ImageMetadata): CodeBlock {
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = %L)",
             metadata.key,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateBatchedInitializer(metadata: ImageMetadata): CodeBlock {
+        return CodeBlock.of(
+            "ImageResource(assetImageName = %S, bundle = %L)",
+            metadata.key,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -66,6 +78,12 @@ internal class AppleImageResourceGenerator(
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<ImageMetadata>,
+        objectName: String,
+    ) = Unit
 
     override fun generateAfterProperties(
         builder: Builder,

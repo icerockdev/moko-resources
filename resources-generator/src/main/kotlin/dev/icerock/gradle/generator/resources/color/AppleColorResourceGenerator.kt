@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.color
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -23,13 +24,24 @@ import java.io.File
 internal class AppleColorResourceGenerator(
     private val assetsGenerationDir: File,
 ) : PlatformResourceGenerator<ColorMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: ColorMetadata): CodeBlock {
         return CodeBlock.of(
             "ColorResource(name = %S, bundle = %L)",
             metadata.key,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateBatchedInitializer(metadata: ColorMetadata): CodeBlock {
+        return CodeBlock.of(
+            "ColorResource(name = %S, bundle = %L)",
+            metadata.key,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -94,6 +106,12 @@ internal class AppleColorResourceGenerator(
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<ColorMetadata>,
+        objectName: String,
+    ) = Unit
 
     override fun generateAfterProperties(
         builder: Builder,

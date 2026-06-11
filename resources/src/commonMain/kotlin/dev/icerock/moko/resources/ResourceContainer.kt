@@ -9,6 +9,10 @@ expect fun ResourceContainer<AssetResource>.getAssetByFilePath(filePath: String)
 
 interface ResourceContainer<T> {
     @Suppress("VariableNaming")
+    @Deprecated(
+        message = "Internal resource container detail",
+        level = DeprecationLevel.HIDDEN
+    )
     val __platformDetails: ResourcePlatformDetails
     fun values(): List<T>
 }

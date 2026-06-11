@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.asset
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -31,6 +32,15 @@ internal class JvmAssetResourceGenerator(
         )
     }
 
+    override fun generateBatchedInitializer(metadata: AssetMetadata): CodeBlock {
+        return CodeBlock.of(
+            "AssetResource(resourcesClassLoader = %L, originalPath = %S, path = %S)",
+            Jvm.providerClassLoaderReference,
+            metadata.pathRelativeToBase.invariantSeparatorsPath,
+            buildAssetPath(metadata)
+        )
+    }
+
     override fun generateResourceFiles(data: List<AssetMetadata>) {
         data.forEach { metadata ->
             metadata.filePath.copyTo(File(resourcesGenerationDir, buildAssetPath(metadata)))
@@ -44,6 +54,12 @@ internal class JvmAssetResourceGenerator(
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<AssetMetadata>,
+        objectName: String,
+    ) = Unit
 
     override fun generateAfterProperties(
         builder: Builder,

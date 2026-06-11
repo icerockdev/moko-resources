@@ -44,6 +44,7 @@ internal class ResourcesGenerator(
 
         val outputMetadata: MutableList<ContainerMetadata> = mutableListOf()
         val additionalFileSpecs: MutableList<FileSpec> = mutableListOf()
+        additionalFileSpecs.addAll(containerGenerator.generateAdditionalFiles(resourcesPackageName))
 
         if (inputMetadata.isEmpty()) {
             // we not have expect - we should generate simple object
@@ -167,6 +168,7 @@ internal class ResourcesGenerator(
 
         val outputMetadata: MutableList<ContainerMetadata> = mutableListOf()
         val additionalFileSpecs: MutableList<FileSpec> = mutableListOf()
+        additionalFileSpecs.addAll(containerGenerator.generateAdditionalFiles(resourcesPackageName))
 
         // if previous levels doesn't have resources should use "MR"
         // but if resources is found, need generate "MRsourceSet" object

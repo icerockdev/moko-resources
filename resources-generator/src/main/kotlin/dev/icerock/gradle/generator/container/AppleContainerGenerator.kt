@@ -5,10 +5,13 @@
 package dev.icerock.gradle.generator.container
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
-import dev.icerock.gradle.generator.addAppleResourcesBundleProperty
 
 internal class AppleContainerGenerator(
     private val bundleIdentifier: String,
@@ -20,7 +23,43 @@ internal class AppleContainerGenerator(
         )
     }
 
-    override fun generateBeforeTypes(objectName: String, builder: TypeSpec.Builder) {
-        builder.addAppleResourcesBundleProperty(bundleIdentifier)
+    override fun generateAdditionalFiles(packageName: String): List<FileSpec> {
+        val provider = TypeSpec.objectBuilder(Constants.PlatformDetails.providerObjectName)
+            .addModifiers(KModifier.INTERNAL)
+            .addProperty(
+                PropertySpec.builder(
+                    Constants.Apple.resourcesBundlePropertyName,
+                    Constants.Apple.nsBundleName,
+                    KModifier.PRIVATE
+                ).delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(%S) }", bundleIdentifier))
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder(
+                    Constants.PlatformDetails.providerDetailsPropertyName,
+                    Constants.resourcePlatformDetailsName
+                ).delegate(
+                    CodeBlock.of(
+                        "lazy { %T(%N) }",
+                        Constants.resourcePlatformDetailsName,
+                        Constants.Apple.resourcesBundlePropertyName
+                    )
+                ).build()
+            )
+            .build()
+
+        return listOf(
+            FileSpec.builder(packageName, Constants.PlatformDetails.providerObjectName)
+                .addImport(
+                    Constants.Apple.nsBundleName.packageName,
+                    Constants.Apple.nsBundleName.simpleNames
+                )
+                .addImport(
+                    Constants.Apple.loadableBundleName.packageName,
+                    Constants.Apple.loadableBundleName.simpleNames
+                )
+                .addType(provider)
+                .build()
+        )
     }
 }

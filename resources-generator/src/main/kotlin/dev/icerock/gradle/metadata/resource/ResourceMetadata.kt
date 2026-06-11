@@ -256,7 +256,11 @@ internal data class FileMetadata(
 
     override val path: List<String> = getFilePath(filePath, relativePath)
 
-    override fun contentHash(): String = filePath.calculateResourcesHash()
+    override fun contentHash(): String = listOf(
+        key,
+        path.joinToString(separator = "/"),
+        filePath.calculateResourcesHash()
+    ).calculateHash()
 }
 
 @Serializable
@@ -278,7 +282,11 @@ internal data class AssetMetadata(
 
     override val path: List<String> = getFilePath(filePath, relativePath)
 
-    override fun contentHash(): String = filePath.calculateResourcesHash()
+    override fun contentHash(): String = listOf(
+        key,
+        path.joinToString(separator = "/"),
+        filePath.calculateResourcesHash()
+    ).calculateHash()
 }
 
 interface HierarchyMetadata : ResourceMetadata {

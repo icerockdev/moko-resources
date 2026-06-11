@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -35,6 +36,15 @@ internal class JvmPluralResourceGenerator(
         )
     }
 
+    override fun generateBatchedInitializer(metadata: PluralMetadata): CodeBlock {
+        return CodeBlock.of(
+            "PluralsResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
+            Jvm.providerClassLoaderReference,
+            pluralsBundlePropertyName,
+            metadata.key
+        )
+    }
+
     override fun generateResourceFiles(data: List<PluralMetadata>) {
         data.processLanguages().forEach { (lang, strings) ->
             generateLanguageFile(
@@ -51,6 +61,17 @@ internal class JvmPluralResourceGenerator(
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
 
+        builder.addJvmPlatformResourceBundleProperty(
+            bundlePropertyName = pluralsBundlePropertyName,
+            bundlePath = getBundlePath()
+        )
+    }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<PluralMetadata>,
+        objectName: String,
+    ) {
         builder.addJvmPlatformResourceBundleProperty(
             bundlePropertyName = pluralsBundlePropertyName,
             bundlePath = getBundlePath()

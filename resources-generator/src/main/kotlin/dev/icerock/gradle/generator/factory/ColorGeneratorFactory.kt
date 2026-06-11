@@ -25,6 +25,7 @@ import java.io.File
 
 @Suppress("LongParameterList")
 internal class ColorGeneratorFactory(
+    private val resourcesPackageName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val outputAssetsDir: File,
@@ -41,7 +42,8 @@ internal class ColorGeneratorFactory(
             visibilityModifier = resourcesVisibility.toModifier(),
             generator = ColorResourceGenerator(),
             platformResourceGenerator = createPlatformColorGenerator(),
-            filter = { include("**/colors*.xml") }
+            filter = { include("**/colors*.xml") },
+            resourcesPackageName = resourcesPackageName
         )
     }
 

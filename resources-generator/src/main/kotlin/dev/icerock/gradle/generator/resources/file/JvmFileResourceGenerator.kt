@@ -6,6 +6,7 @@ package dev.icerock.gradle.generator.resources.file
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
@@ -30,6 +31,14 @@ internal class JvmFileResourceGenerator(
         )
     }
 
+    override fun generateBatchedInitializer(metadata: FileMetadata): CodeBlock {
+        return CodeBlock.of(
+            "FileResource(resourcesClassLoader = %L, filePath = %S)",
+            Jvm.providerClassLoaderReference,
+            "$FILES_DIR/${metadata.filePath.name}"
+        )
+    }
+
     override fun generateResourceFiles(data: List<FileMetadata>) {
         val fontsDir = File(resourcesGenerationDir, FILES_DIR)
         fontsDir.mkdirs()
@@ -46,6 +55,12 @@ internal class JvmFileResourceGenerator(
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
+
+    override fun generateBeforeBatchedFile(
+        builder: FileSpec.Builder,
+        metadata: List<FileMetadata>,
+        objectName: String,
+    ) = Unit
 
     override fun generateAfterProperties(
         builder: Builder,
