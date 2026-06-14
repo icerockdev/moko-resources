@@ -18,7 +18,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.platform.js.JsFilePathMode
-import dev.icerock.gradle.metadata.resource.ResourceMetadata
 
 internal fun TypeSpec.Builder.addContentHashProperty(hash: String) {
     val bundleProperty: PropertySpec =
@@ -83,7 +82,6 @@ internal fun TypeSpec.Builder.addEmptyPlatformResourceProperty(
         modifier = modifier
     )
 }
-
 
 internal fun TypeSpec.Builder.addValuesFunctionFromAccessors(
     accessorObjectNames: List<String>,

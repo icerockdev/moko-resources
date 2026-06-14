@@ -95,6 +95,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         )
     }
 
+    @Suppress("LongMethod")
     fun generateActualObject(
         parentObjectName: String,
         objects: List<ContainerMetadata>,
@@ -169,6 +170,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         )
     }
 
+    @Suppress("LongMethod")
     fun generateObject(
         parentObjectName: String,
         resources: List<ResourceMetadata>,

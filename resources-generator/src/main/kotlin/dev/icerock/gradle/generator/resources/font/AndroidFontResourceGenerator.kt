@@ -42,5 +42,4 @@ internal class AndroidFontResourceGenerator(
             metadata.filePath.copyTo(File(fontResDir, fileName))
         }
     }
-
 }
