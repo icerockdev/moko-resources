@@ -12,7 +12,6 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
@@ -34,7 +33,7 @@ internal class AppleAssetResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: AssetMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: AssetMetadata): CodeBlock {
         return CodeBlock.of(
             "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = %L)",
             metadata.pathRelativeToBase.invariantSeparatorsPath,
@@ -56,7 +55,7 @@ internal class AppleAssetResourceGenerator(
             .replace('/', PATH_DELIMITER)
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?,
@@ -64,23 +63,11 @@ internal class AppleAssetResourceGenerator(
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<AssetMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<AssetMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.assetResourceName
-        )
-    }
 
     private companion object {
         const val PATH_DELIMITER = '+'

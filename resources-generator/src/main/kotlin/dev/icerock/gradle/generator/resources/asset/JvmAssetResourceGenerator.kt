@@ -14,7 +14,6 @@ import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
@@ -32,7 +31,7 @@ internal class JvmAssetResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: AssetMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: AssetMetadata): CodeBlock {
         return CodeBlock.of(
             "AssetResource(resourcesClassLoader = %L, originalPath = %S, path = %S)",
             Jvm.providerClassLoaderReference,
@@ -47,7 +46,7 @@ internal class JvmAssetResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?,
@@ -55,23 +54,11 @@ internal class JvmAssetResourceGenerator(
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<AssetMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<AssetMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.assetResourceName
-        )
-    }
 
     private fun buildAssetPath(metadata: AssetMetadata): String {
         return File(ASSETS_DIR, metadata.pathRelativeToBase.path).path

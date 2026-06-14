@@ -14,7 +14,6 @@ import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import java.io.File
@@ -51,7 +50,7 @@ internal class JvmImageResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: ImageMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: ImageMetadata): CodeBlock {
         var fileName: String = ""
         var darkFileName: String? = null
 
@@ -86,7 +85,7 @@ internal class JvmImageResourceGenerator(
         )
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<ImageMetadata>,
         modifier: KModifier?,
@@ -94,23 +93,11 @@ internal class JvmImageResourceGenerator(
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<ImageMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<ImageMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.imageResourceName
-        )
-    }
 
     private companion object {
         const val IMAGES_DIR = "images"

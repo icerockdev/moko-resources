@@ -12,7 +12,6 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
@@ -33,7 +32,7 @@ internal class AppleFileResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: FileMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: FileMetadata): CodeBlock {
         return CodeBlock.of(
             "FileResource(fileName = %S, extension = %S, bundle = %L)",
             metadata.filePath.nameWithoutExtension,
@@ -51,7 +50,7 @@ internal class AppleFileResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<FileMetadata>,
         modifier: KModifier?,
@@ -59,21 +58,9 @@ internal class AppleFileResourceGenerator(
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<FileMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<FileMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.fileResourceName
-        )
-    }
 }

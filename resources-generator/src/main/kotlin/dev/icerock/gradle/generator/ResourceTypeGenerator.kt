@@ -114,7 +114,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             // implement ResourceType<**Resource> for extensions
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             .also { builder ->
-                platformResourceGenerator.generateBeforeProperties(
+                platformResourceGenerator.generateContainerProperties(
                     builder = builder,
                     metadata = typeResources,
                     modifier = KModifier.ACTUAL,
@@ -131,8 +131,8 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                         }
                     )
                 }
-                builder.addBatchValuesFunction(
-                    groupNames = getBatchGroupNames(
+                builder.addValuesFunctionFromAccessors(
+                    accessorObjectNames = getAccessorObjectNames(
                         sourceSetName = typeObject.sourceSetName ?: sourceSetName,
                         objectName = typeObject.name,
                         resources = typeResources
@@ -140,16 +140,21 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                     classType = resourceClass,
                     modifier = KModifier.ACTUAL
                 )
+                platformResourceGenerator.generateContainerMembers(
+                    builder = builder,
+                    metadata = typeResources,
+                    modifier = KModifier.ACTUAL,
+                )
             }
 
-        val fileSpecs: List<FileSpec> = createBatchFileSpecs(
+        val fileSpecs: List<FileSpec> = createAccessorFileSpecs(
             parentObjectName = parentObjectName,
             objectName = typeObject.name,
             resourceSourceSetName = typeObject.sourceSetName ?: sourceSetName,
             targetSourceSetName = sourceSetName,
             resources = typeResources,
             actualModifier = KModifier.ACTUAL
-        ) + platformResourceGenerator.generateAdditionalBatchedFiles(requireResourcesPackageName())
+        ) + platformResourceGenerator.generateAdditionalAccessorFiles(requireResourcesPackageName())
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
@@ -184,7 +189,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
             .addSuperinterface(Constants.resourceContainerName.parameterizedBy(resourceClass))
             // implement interfaces for generated expect object
             .also { builder ->
-                platformResourceGenerator.generateBeforeProperties(
+                platformResourceGenerator.generateContainerProperties(
                     builder = builder,
                     metadata = typeResources,
                 )
@@ -200,24 +205,28 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                         }
                     )
                 }
-                builder.addBatchValuesFunction(
-                    groupNames = getBatchGroupNames(
+                builder.addValuesFunctionFromAccessors(
+                    accessorObjectNames = getAccessorObjectNames(
                         sourceSetName = sourceSetName,
                         objectName = objectName,
                         resources = typeResources
                     ),
                     classType = resourceClass
                 )
+                platformResourceGenerator.generateContainerMembers(
+                    builder = builder,
+                    metadata = typeResources,
+                )
             }
 
-        val fileSpecs: List<FileSpec> = createBatchFileSpecs(
+        val fileSpecs: List<FileSpec> = createAccessorFileSpecs(
             parentObjectName = parentObjectName,
             objectName = objectName,
             resourceSourceSetName = sourceSetName,
             targetSourceSetName = sourceSetName,
             resources = typeResources,
             actualModifier = null
-        ) + platformResourceGenerator.generateAdditionalBatchedFiles(requireResourcesPackageName())
+        ) + platformResourceGenerator.generateAdditionalAccessorFiles(requireResourcesPackageName())
 
         return GenerationResult(
             typeSpec = objectBuilder.build(),
@@ -245,13 +254,13 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         resources: List<T>,
     ): List<FileSpec> {
         return resources.chunked(batchSize).mapIndexed { index, batch ->
-            val groupName: String = getBatchGroupName(
+            val accessorObjectName: String = getAccessorObjectName(
                 sourceSetName = sourceSetName,
                 objectName = objectName,
                 index = index
             )
 
-            createExtensionFileSpecBuilder("$groupName.$sourceSetName")
+            createExtensionFileSpecBuilder("$accessorObjectName.$sourceSetName")
                 .also { fileSpec ->
                     addExpectExtensionAccessors(
                         fileSpec = fileSpec,
@@ -265,7 +274,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     }
 
     @Suppress("LongMethod")
-    private fun createBatchFileSpecs(
+    private fun createAccessorFileSpecs(
         parentObjectName: String,
         objectName: String,
         resourceSourceSetName: String,
@@ -274,26 +283,26 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         actualModifier: KModifier?,
     ): List<FileSpec> {
         return resources.chunked(batchSize).mapIndexed { index, batch ->
-            val groupName: String = getBatchGroupName(
+            val accessorObjectName: String = getAccessorObjectName(
                 sourceSetName = resourceSourceSetName,
                 objectName = objectName,
                 index = index
             )
-            val batchedResources: List<BatchedResource<T>> = buildBatchedResources(batch)
+            val accessorResources: List<AccessorResource<T>> = buildAccessorResources(batch)
             val fileSpec = createExtensionFileSpecBuilder(
-                fileName = "$groupName.$targetSourceSetName"
+                fileName = "$accessorObjectName.$targetSourceSetName"
             )
 
-            platformResourceGenerator.generateBeforeBatchedFile(
+            platformResourceGenerator.generateAccessorFilePreamble(
                 builder = fileSpec,
                 metadata = batch,
-                objectName = groupName
+                objectName = accessorObjectName
             )
 
-            val groupObject = TypeSpec.objectBuilder(groupName)
+            val groupObject = TypeSpec.objectBuilder(accessorObjectName)
                 .addModifiers(KModifier.INTERNAL)
                 .also { builder ->
-                    batchedResources.forEach { resource ->
+                    accessorResources.forEach { resource ->
                         builder.addProperty(
                             PropertySpec.builder(resource.internalName, resourceClass)
                                 .addModifiers(KModifier.INTERNAL)
@@ -306,8 +315,8 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                                 .build()
                         )
                     }
-                    builder.addReferencedValuesFunction(
-                        propertyReferences = batchedResources.map { it.internalName },
+                    builder.addAccessorValuesFunction(
+                        propertyReferences = accessorResources.map { it.internalName },
                         classType = resourceClass,
                         memberModifier = KModifier.INTERNAL
                     )
@@ -316,14 +325,17 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
 
             fileSpec.addType(groupObject)
 
-            batchedResources.forEach { resource ->
+            accessorResources.forEach { resource ->
                 fileSpec.addFunction(
                     FunSpec.builder(initFunctionName(resource.internalName))
                         .addModifiers(KModifier.PRIVATE)
                         .returns(resourceClass)
                         .addStatement(
                             "return %L",
-                            platformResourceGenerator.generateBatchedInitializer(resource.metadata)
+                            platformResourceGenerator.generateAccessorInitializer(
+                                metadata = resource.metadata,
+                                accessorObjectName = accessorObjectName
+                            )
                         )
                         .build()
                 )
@@ -333,8 +345,8 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 fileSpec = fileSpec,
                 parentObjectName = parentObjectName,
                 objectName = objectName,
-                groupName = groupName,
-                resources = batchedResources,
+                groupName = accessorObjectName,
+                resources = accessorResources,
                 actualModifier = actualModifier
             )
 
@@ -373,7 +385,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         parentObjectName: String,
         objectName: String,
         groupName: String,
-        resources: List<BatchedResource<T>>,
+        resources: List<AccessorResource<T>>,
         actualModifier: KModifier?,
     ) {
         resources.forEach { resource ->
@@ -438,10 +450,10 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         )
     }
 
-    private fun buildBatchedResources(resources: List<T>): List<BatchedResource<T>> {
+    private fun buildAccessorResources(resources: List<T>): List<AccessorResource<T>> {
         if (!isHierarchyPropertiesStrategy()) {
             return resources.map { resource ->
-                BatchedResource(
+                AccessorResource(
                     metadata = resource,
                     internalName = resource.key
                 )
@@ -462,7 +474,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                 "${resource.key}__${duplicateGroup.indexOf(resource)}"
             }
 
-            BatchedResource(metadata = resource, internalName = internalName)
+            AccessorResource(metadata = resource, internalName = internalName)
         }
     }
 
@@ -474,13 +486,13 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         return it.pathSegments().joinToString(separator = "/") + "/${it.key}"
     }
 
-    private fun getBatchGroupNames(
+    private fun getAccessorObjectNames(
         sourceSetName: String,
         objectName: String,
         resources: List<T>,
     ): List<String> {
         return resources.chunked(batchSize).indices.map { index ->
-            getBatchGroupName(
+            getAccessorObjectName(
                 sourceSetName = sourceSetName,
                 objectName = objectName,
                 index = index
@@ -488,7 +500,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         }
     }
 
-    private fun getBatchGroupName(
+    private fun getAccessorObjectName(
         sourceSetName: String,
         objectName: String,
         index: Int,
@@ -525,7 +537,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
         const val DEFAULT_BATCH_SIZE = 50
     }
 
-    private data class BatchedResource<T : ResourceMetadata>(
+    private data class AccessorResource<T : ResourceMetadata>(
         val metadata: T,
         val internalName: String,
     )

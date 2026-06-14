@@ -14,7 +14,6 @@ import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
 
@@ -31,7 +30,7 @@ internal class JvmFontResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: FontMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: FontMetadata): CodeBlock {
         return CodeBlock.of(
             "FontResource(resourcesClassLoader = %L, filePath = %S)",
             Jvm.providerClassLoaderReference,
@@ -48,7 +47,7 @@ internal class JvmFontResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,
@@ -56,23 +55,11 @@ internal class JvmFontResourceGenerator(
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<FontMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<FontMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.fontResourceName
-        )
-    }
 
     private companion object {
         const val FONTS_DIR = "fonts"

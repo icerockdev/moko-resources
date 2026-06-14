@@ -9,13 +9,11 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.convertXmlStringToLocalization
@@ -36,7 +34,7 @@ internal class JvmStringResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: StringMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: StringMetadata): CodeBlock {
         return CodeBlock.of(
             "StringResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
             Jvm.providerClassLoaderReference,
@@ -54,7 +52,7 @@ internal class JvmStringResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<StringMetadata>,
         modifier: KModifier?,
@@ -67,7 +65,7 @@ internal class JvmStringResourceGenerator(
         )
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<StringMetadata>,
         objectName: String,
@@ -75,18 +73,6 @@ internal class JvmStringResourceGenerator(
         builder.addJvmPlatformResourceBundleProperty(
             bundlePropertyName = stringsBundlePropertyName,
             bundlePath = getBundlePath()
-        )
-    }
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<StringMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.stringResourceName
         )
     }
 

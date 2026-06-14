@@ -14,7 +14,6 @@ import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
@@ -31,7 +30,7 @@ internal class JvmFileResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: FileMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: FileMetadata): CodeBlock {
         return CodeBlock.of(
             "FileResource(resourcesClassLoader = %L, filePath = %S)",
             Jvm.providerClassLoaderReference,
@@ -48,7 +47,7 @@ internal class JvmFileResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<FileMetadata>,
         modifier: KModifier?,
@@ -56,23 +55,11 @@ internal class JvmFileResourceGenerator(
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<FileMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<FileMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.fileResourceName
-        )
-    }
 
     private companion object {
         const val FILES_DIR = "files"

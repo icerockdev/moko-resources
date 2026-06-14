@@ -12,7 +12,6 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.convertXmlStringToApplePluralLocalization
@@ -35,7 +34,7 @@ internal class ApplePluralResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: PluralMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: PluralMetadata): CodeBlock {
         return CodeBlock.of(
             "PluralsResource(resourceId = %S, bundle = %L)",
             metadata.key,
@@ -52,7 +51,7 @@ internal class ApplePluralResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?,
@@ -60,23 +59,11 @@ internal class ApplePluralResourceGenerator(
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<PluralMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<PluralMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.pluralsResourceName
-        )
-    }
 
     private fun generateLanguageFile(
         language: LanguageType,

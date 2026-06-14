@@ -12,7 +12,6 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -37,7 +36,7 @@ internal class AppleColorResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: ColorMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: ColorMetadata): CodeBlock {
         return CodeBlock.of(
             "ColorResource(name = %S, bundle = %L)",
             metadata.key,
@@ -99,7 +98,7 @@ internal class AppleColorResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<ColorMetadata>,
         modifier: KModifier?,
@@ -107,23 +106,11 @@ internal class AppleColorResourceGenerator(
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<ColorMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<ColorMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.colorResourceName
-        )
-    }
 
     private fun buildAppearancesIdiomJson(
         valueTag: String,

@@ -34,7 +34,7 @@ internal class StringGeneratorFactory(
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
-    private val iosBaseLocalizationRegion: () -> String,
+    private val iosBaseLocalizationRegion: () -> String
 ) {
     fun create(): ResourceTypeGenerator<StringMetadata> {
         return ResourceTypeGenerator(

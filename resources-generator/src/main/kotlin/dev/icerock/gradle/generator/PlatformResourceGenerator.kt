@@ -14,32 +14,32 @@ import dev.icerock.gradle.metadata.resource.ResourceMetadata
 internal interface PlatformResourceGenerator<T : ResourceMetadata> {
     fun imports(): List<ClassName>
 
-    fun generateBeforeProperties(
+    fun generateContainerProperties(
         builder: Builder,
         metadata: List<T>,
         modifier: KModifier? = null,
     ) = Unit
 
-    fun generateBeforeBatchedFile(
+    fun generateContainerMembers(
+        builder: Builder,
+        metadata: List<T>,
+        modifier: KModifier? = null,
+    ) = Unit
+
+    fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<T>,
         objectName: String,
     ) = Unit
 
-    fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<T>,
-        modifier: KModifier? = null,
-    ) = Unit
+    fun generateAccessorInitializer(metadata: T): CodeBlock = generateInitializer(metadata)
 
-    fun generateBatchedInitializer(metadata: T): CodeBlock = generateInitializer(metadata)
-
-    fun generateBatchedInitializer(
+    fun generateAccessorInitializer(
         metadata: T,
-        batchObjectName: String,
-    ): CodeBlock = generateBatchedInitializer(metadata)
+        accessorObjectName: String,
+    ): CodeBlock = generateAccessorInitializer(metadata)
 
-    fun generateAdditionalBatchedFiles(packageName: String): List<FileSpec> = emptyList()
+    fun generateAdditionalAccessorFiles(packageName: String): List<FileSpec> = emptyList()
 
     fun generateInitializer(metadata: T): CodeBlock
     fun generateResourceFiles(data: List<T>)

@@ -12,7 +12,6 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata.ImageItem
 import kotlinx.serialization.json.JsonArray
@@ -38,7 +37,7 @@ internal class AppleImageResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: ImageMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: ImageMetadata): CodeBlock {
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = %L)",
             metadata.key,
@@ -80,7 +79,7 @@ internal class AppleImageResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<ImageMetadata>,
         modifier: KModifier?,
@@ -88,23 +87,11 @@ internal class AppleImageResourceGenerator(
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<ImageMetadata>,
         objectName: String,
     ) = Unit
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<ImageMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            metadata = metadata,
-            classType = Constants.imageResourceName,
-            modifier = modifier
-        )
-    }
 
     private fun getImagesContent(
         validItems: List<ImageItem>,

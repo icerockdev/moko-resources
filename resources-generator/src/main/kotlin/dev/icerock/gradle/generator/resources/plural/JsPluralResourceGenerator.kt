@@ -7,14 +7,12 @@ package dev.icerock.gradle.generator.resources.plural
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
-import dev.icerock.gradle.generator.addJsBatchedStringsLoaderProperty
+import dev.icerock.gradle.generator.addJsAccessorFileStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
 import dev.icerock.gradle.generator.addJsSupportedLocalesProperty
@@ -53,7 +51,7 @@ internal class JsPluralResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?
@@ -81,7 +79,7 @@ internal class JsPluralResourceGenerator(
         builder.addJsContainerStringsLoaderProperty()
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<PluralMetadata>,
         objectName: String,
@@ -102,31 +100,7 @@ internal class JsPluralResourceGenerator(
                 }.toList(),
             filePathMode = filePathMode
         )
-        builder.addJsBatchedStringsLoaderProperty()
-    }
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<PluralMetadata>,
-        modifier: KModifier?
-    ) {
-        val languageKeysList: String = metadata.joinToString { it.key }
-
-        val valuesFun: FunSpec = FunSpec.builder("values")
-            .also {
-                if (modifier != null) {
-                    it.addModifiers(modifier)
-                }
-            }
-            .addModifiers(KModifier.OVERRIDE)
-            .addStatement("return listOf($languageKeysList)")
-            .returns(
-                ClassName("kotlin.collections", "List")
-                    .parameterizedBy(Constants.pluralsResourceName)
-            )
-            .build()
-
-        builder.addFunction(valuesFun)
+        builder.addJsAccessorFileStringsLoaderProperty()
     }
 
     private fun generateLanguageFile(

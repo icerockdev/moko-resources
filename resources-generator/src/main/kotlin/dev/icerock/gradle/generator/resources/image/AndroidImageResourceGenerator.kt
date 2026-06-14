@@ -9,10 +9,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import org.slf4j.Logger
 import java.io.File
@@ -35,24 +33,12 @@ internal class AndroidImageResourceGenerator(
         return CodeBlock.of("ImageResource(R.drawable.%L)", processKey(metadata.key))
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<ImageMetadata>,
         modifier: KModifier?,
     ) {
         builder.addEmptyPlatformResourceProperty(modifier)
-    }
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<ImageMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            metadata = metadata,
-            classType = Constants.imageResourceName,
-            modifier = modifier
-        )
     }
 
     override fun generateResourceFiles(data: List<ImageMetadata>) {

@@ -8,10 +8,8 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.convertXmlStringToAndroidLocalization
@@ -29,7 +27,7 @@ internal class AndroidPluralResourceGenerator(
         return CodeBlock.of("PluralsResource(R.plurals.%L)", metadata.key)
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?,
@@ -44,18 +42,6 @@ internal class AndroidPluralResourceGenerator(
                 strings = pluralMap
             )
         }
-    }
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<PluralMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.pluralsResourceName
-        )
     }
 
     private fun generateLanguageFile(

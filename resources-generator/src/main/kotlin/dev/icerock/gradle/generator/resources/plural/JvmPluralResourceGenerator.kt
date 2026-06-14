@@ -15,7 +15,6 @@ import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.convertXmlStringToLocalization
@@ -36,7 +35,7 @@ internal class JvmPluralResourceGenerator(
         )
     }
 
-    override fun generateBatchedInitializer(metadata: PluralMetadata): CodeBlock {
+    override fun generateAccessorInitializer(metadata: PluralMetadata): CodeBlock {
         return CodeBlock.of(
             "PluralsResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
             Jvm.providerClassLoaderReference,
@@ -54,7 +53,7 @@ internal class JvmPluralResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
+    override fun generateContainerProperties(
         builder: Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?,
@@ -67,7 +66,7 @@ internal class JvmPluralResourceGenerator(
         )
     }
 
-    override fun generateBeforeBatchedFile(
+    override fun generateAccessorFilePreamble(
         builder: FileSpec.Builder,
         metadata: List<PluralMetadata>,
         objectName: String,
@@ -75,18 +74,6 @@ internal class JvmPluralResourceGenerator(
         builder.addJvmPlatformResourceBundleProperty(
             bundlePropertyName = pluralsBundlePropertyName,
             bundlePath = getBundlePath()
-        )
-    }
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<PluralMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.pluralsResourceName
         )
     }
 
