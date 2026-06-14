@@ -5,6 +5,8 @@
 package com.icerock.library
 
 import app.gradle9sample.library.MR
+import app.gradle9sample.library.test_plural
+import app.gradle9sample.library.test_plural_fallback
 import dev.icerock.moko.resources.desc.desc
 import kotlin.test.Ignore
 import kotlin.test.Test
