@@ -14,6 +14,7 @@ import dev.icerock.gradle.metadata.container.ResourceType
 import dev.icerock.gradle.metadata.resource.ResourceMetadata
 import dev.icerock.gradle.utils.filterClass
 import org.gradle.api.tasks.util.PatternFilterable
+import java.io.File
 import kotlin.reflect.KClass
 
 @Suppress("LongParameterList", "TooManyFunctions", "UnusedPrivateMember")
@@ -28,7 +29,11 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
     private val filter: PatternFilterable.() -> Unit,
 ) {
     fun generateMetadata(files: ResourcesFiles): List<T> {
-        return generator.generateMetadata(files.matching(filter).ownSourceSet.fileTree.files)
+        // Sort for deterministic output; FileTree.files iteration is filesystem-dependent.
+        val sortedFiles: Set<File> = files.matching(filter).ownSourceSet.fileTree.files
+            .sortedBy { it.absolutePath }
+            .toCollection(LinkedHashSet())
+        return generator.generateMetadata(sortedFiles)
     }
 
     fun getImports(): List<ClassName> = platformResourceGenerator.imports()
