@@ -47,7 +47,7 @@ internal class PluralGeneratorFactory(
                 strictLineBreaks = strictLineBreaks
             ),
             platformResourceGenerator = createPlatformPluralGenerator(),
-            filter = { include("**/plurals*.xml") }
+            filter = { include("**/plurals*.xml", "**/strings*.xml") }
         )
     }
 
