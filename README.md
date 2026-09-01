@@ -134,7 +134,7 @@ should [add `export` declarations](https://kotlinlang.org/docs/multiplatform-bui
 ```
 framework {
     export("dev.icerock.moko:resources:0.26.4")
-    export("dev.icerock.moko:graphics:0.10.0") // toUIColor here
+    export("dev.icerock.moko:graphics:0.10.2") // toUIColor here
 }
 ```
 

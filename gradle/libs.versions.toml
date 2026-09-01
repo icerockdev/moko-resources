@@ -38,7 +38,7 @@ commonsCodecVersion = "1.15"
 batikVersion = "1.17"
 
 # moko
-mokoGraphicsVersion = "0.10.0"
+mokoGraphicsVersion = "0.10.2"
 mokoTestVersion = "0.6.1"
 mokoMultiplatformPluginVersion = "0.14.2"
 

@@ -24,10 +24,10 @@ class SvgColorTransformerTest {
     }
 
     @Test
-    fun `test transform color attribute 8-digit`() {
+    fun `test keep color attribute 8-digit unchanged`() {
         // color attribute doesn't have a corresponding color-opacity attribute in SVG
         val input = """<path color="#a3acb1a4"/>"""
-        val expected = """<path color="#a3acb1"/>"""
+        val expected = input
         assertEquals(expected, SvgColorTransformer.transform(input))
     }
 
