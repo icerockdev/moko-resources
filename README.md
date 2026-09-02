@@ -98,6 +98,37 @@ multiplatformResources {
 }
 ```
 
+#### Default resource source sets
+
+By default, resources for each Kotlin source set must be placed in
+`src/<sourceSetName>/moko-resources`. No additional `resourcesSourceSets` configuration is required.
+For example, common resources belong in `src/commonMain/moko-resources`, Android-only resources in
+`src/androidMain/moko-resources`, and common test resources in `src/commonTest/moko-resources`.
+
+The default common resource directory has the following structure:
+
+```
+projectDirectory
+└── src
+    └── commonMain
+        └── moko-resources
+            ├── base
+            │   ├── strings.xml
+            │   └── plurals.xml
+            ├── <languageCode>
+            │   ├── strings.xml
+            │   └── plurals.xml
+            ├── images
+            ├── fonts
+            ├── files
+            └── assets
+```
+
+This directory layout was introduced in moko-resources 0.24.0. When upgrading from 0.23.x, move
+resources from `src/commonMain/resources/MR` to `src/commonMain/moko-resources`; the directory
+structure inside the resource root remains unchanged. See the
+[0.24.0 changelog and migration guide](https://github.com/icerockdev/moko-resources/discussions/730).
+
 #### Custom resource sourceSet
 
 If you need custom path for source of resources, you need add in plugin configuration resourcesSourceSets option:
@@ -121,7 +152,7 @@ On next step, you must create inside of project directory folder with name: `cus
 -- customResources
 --- assets
 --- base
---- image
+--- images
 ```
 
 Example of custom sourceSet in: `resources-gallery` sample, inside `jvm-app`
