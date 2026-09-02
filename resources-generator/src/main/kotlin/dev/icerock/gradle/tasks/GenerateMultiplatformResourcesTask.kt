@@ -155,9 +155,12 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         )
         val serializer: KSerializer<List<ContainerMetadata>> =
             ListSerializer(ContainerMetadata.serializer())
-        val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files.flatMap { file ->
-            json.decodeFromString(serializer, file.readText())
-        }
+        // Sort for deterministic output.
+        val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files
+            .sortedBy { it.absolutePath }
+            .flatMap { file ->
+                json.decodeFromString(serializer, file.readText())
+            }
 
         val outputMetadata: List<ContainerMetadata> = if (kotlinPlatformType.isCommon) {
             generator.generateCommonKotlin(files, inputMetadata)

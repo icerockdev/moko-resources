@@ -61,7 +61,7 @@ internal data class StringMetadata(
     )
 
     @Suppress("MagicNumber")
-    override fun contentHash(): String = values.hashCode().toString(16)
+    override fun contentHash(): String = values.toString().hashCode().toString(16)
 }
 
 @Serializable
@@ -94,7 +94,7 @@ internal data class PluralMetadata(
     }
 
     @Suppress("MagicNumber")
-    override fun contentHash(): String = values.hashCode().toString(16)
+    override fun contentHash(): String = values.toString().hashCode().toString(16)
 }
 
 @Serializable
