@@ -12,8 +12,11 @@ import java.io.InputStream
 import java.io.SequenceInputStream
 
 internal fun File.calculateResourcesHash(): String {
+    val root: File = this
+    // Sort for deterministic output; walkTopDown() order is filesystem-dependent.
     val inputStreams: List<InputStream> = walkTopDown()
         .filterNot { it.isDirectory }
+        .sortedBy { it.relativeTo(root).path }
         .map { it.inputStream() }.toList()
     val singleInputStream: InputStream = SequenceInputStream(inputStreams.toEnumeration())
 
