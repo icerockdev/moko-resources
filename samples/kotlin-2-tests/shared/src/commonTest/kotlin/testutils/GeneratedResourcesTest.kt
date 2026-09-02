@@ -7,6 +7,7 @@ package testutils
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import template.composemultiplatform.shared.SharedRes
+import template.composemultiplatform.shared.appName
 import kotlin.test.Test
 
 class GeneratedResourcesTest : MultiPlatformTest() {

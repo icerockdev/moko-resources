@@ -6,19 +6,22 @@ package dev.icerock.gradle.generator.resources.file
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FileMetadata
 import java.io.File
 
 internal class AppleFileResourceGenerator(
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FileMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: FileMetadata): CodeBlock {
         return CodeBlock.of(
@@ -26,6 +29,15 @@ internal class AppleFileResourceGenerator(
             metadata.filePath.nameWithoutExtension,
             metadata.filePath.extension,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateAccessorInitializer(metadata: FileMetadata): CodeBlock {
+        return CodeBlock.of(
+            "FileResource(fileName = %S, extension = %S, bundle = %L)",
+            metadata.filePath.nameWithoutExtension,
+            metadata.filePath.extension,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -38,23 +50,17 @@ internal class AppleFileResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<FileMetadata>,
         modifier: KModifier?,
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<FileMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.fileResourceName
-        )
-    }
+        objectName: String,
+    ) = Unit
 }

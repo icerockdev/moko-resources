@@ -9,11 +9,11 @@ import dev.icerock.gradle.tasks.GenerateMultiplatformResourcesTask
 import org.gradle.api.tasks.TaskProvider
 
 /**
- * Registers generated Kotlin sources and assets for Android variants when using the
+ * Registers generated Kotlin sources, resources and assets for Android variants when using the
  * classic AGP plugin (`com.android.library`).
  *
- * The generated resource directory (`res`) is not attached here; it is added later during
- * source set configuration, as required by the legacy AGP source set wiring model.
+ * Resources are also registered through the legacy source set API for IDE indexing. Registering
+ * them here exposes the task-backed generated directory to variant consumers such as Paparazzi.
  *
  * Use this function only with the traditional Android plugin.
  */
@@ -25,13 +25,10 @@ internal fun Sources.addLegacyAndroidGeneratedSources(
         wiredWith = GenerateMultiplatformResourcesTask::outputSourcesDir
     )
 
-    // Resources doesn't add in android variants for IDE indexing
-    // Resource directory set here:
-    // dev.icerock.gradle.MultiplatformResourcesPlugin.setupSourceSets
-    //    res?.addGeneratedSourceDirectory(
-    //        taskProvider = provider,
-    //        wiredWith = GenerateMultiplatformResourcesTask::outputResourcesDir
-    //    )
+    res?.addGeneratedSourceDirectory(
+        taskProvider = provider,
+        wiredWith = GenerateMultiplatformResourcesTask::outputResourcesDir
+    )
 
     // Assets add here, for correct compilation
     assets?.addGeneratedSourceDirectory(

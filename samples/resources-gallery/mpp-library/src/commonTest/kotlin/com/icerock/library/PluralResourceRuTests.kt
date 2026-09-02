@@ -6,6 +6,8 @@ package com.icerock.library
 
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
+import com.icerockdev.library.test_plural
+import com.icerockdev.library.test_plural_fallback
 import dev.icerock.moko.resources.desc.desc
 import kotlin.test.Ignore
 import kotlin.test.Test

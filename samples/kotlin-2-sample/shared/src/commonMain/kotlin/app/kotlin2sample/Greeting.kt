@@ -1,6 +1,7 @@
 package app.kotlin2sample
 
 import app.kotlin2sample.library.MR
+import app.kotlin2sample.library.hello_world
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 

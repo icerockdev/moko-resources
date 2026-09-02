@@ -6,19 +6,22 @@ package dev.icerock.gradle.generator.resources.font
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
 
 internal class AppleFontResourceGenerator(
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<FontMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: FontMetadata): CodeBlock {
         return CodeBlock.of(
@@ -28,29 +31,31 @@ internal class AppleFontResourceGenerator(
         )
     }
 
+    override fun generateAccessorInitializer(metadata: FontMetadata): CodeBlock {
+        return CodeBlock.of(
+            "FontResource(fontName = %S, bundle = %L)",
+            metadata.filePath.name,
+            Constants.Apple.providerBundleReference
+        )
+    }
+
     override fun generateResourceFiles(data: List<FontMetadata>) {
         data.map { it.filePath }.forEach { file ->
             file.copyTo(File(resourcesGenerationDir, file.name))
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<FontMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.fontResourceName
-        )
-    }
+        objectName: String,
+    ) = Unit
 }

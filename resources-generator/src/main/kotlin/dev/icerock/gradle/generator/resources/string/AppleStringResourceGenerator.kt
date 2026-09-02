@@ -6,12 +6,12 @@ package dev.icerock.gradle.generator.resources.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.convertXmlStringToLocalization
@@ -21,13 +21,24 @@ internal class AppleStringResourceGenerator(
     private val baseLocalizationRegion: String,
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<StringMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: StringMetadata): CodeBlock {
         return CodeBlock.of(
             "StringResource(resourceId = %S, bundle = %L)",
             metadata.key,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateAccessorInitializer(metadata: StringMetadata): CodeBlock {
+        return CodeBlock.of(
+            "StringResource(resourceId = %S, bundle = %L)",
+            metadata.key,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -40,25 +51,19 @@ internal class AppleStringResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<StringMetadata>,
         modifier: KModifier?,
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<StringMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.stringResourceName
-        )
-    }
+        objectName: String,
+    ) = Unit
 
     private fun generateLanguageFile(language: LanguageType, strings: Map<String, String>) {
         val resDir = File(resourcesGenerationDir, language.appleResourcesDir)

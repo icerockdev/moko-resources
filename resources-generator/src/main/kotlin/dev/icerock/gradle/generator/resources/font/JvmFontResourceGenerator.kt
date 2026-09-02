@@ -6,14 +6,13 @@ package dev.icerock.gradle.generator.resources.font
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
 
@@ -30,6 +29,14 @@ internal class JvmFontResourceGenerator(
         )
     }
 
+    override fun generateAccessorInitializer(metadata: FontMetadata): CodeBlock {
+        return CodeBlock.of(
+            "FontResource(resourcesClassLoader = %L, filePath = %S)",
+            Jvm.providerClassLoaderReference,
+            "$FONTS_DIR/${metadata.filePath.name}"
+        )
+    }
+
     override fun generateResourceFiles(data: List<FontMetadata>) {
         val fontsDir = File(resourcesGenerationDir, FONTS_DIR)
         fontsDir.mkdirs()
@@ -39,25 +46,19 @@ internal class JvmFontResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<FontMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.fontResourceName
-        )
-    }
+        objectName: String,
+    ) = Unit
 
     private companion object {
         const val FONTS_DIR = "fonts"

@@ -8,34 +8,20 @@ package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
-import dev.icerock.gradle.generator.Constants.Apple
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.platform.js.JsFilePathMode
-import dev.icerock.gradle.metadata.resource.HierarchyMetadata
-import dev.icerock.gradle.metadata.resource.ResourceMetadata
-import org.gradle.api.GradleException
-
-internal fun TypeSpec.Builder.addAppleResourcesBundleProperty(bundleIdentifier: String) {
-    val bundleProperty: PropertySpec = PropertySpec.builder(
-        Apple.resourcesBundlePropertyName,
-        Apple.nsBundleName,
-        KModifier.PRIVATE
-    ).delegate(CodeBlock.of("lazy { NSBundle.loadableBundle(%S) }", bundleIdentifier))
-        .build()
-
-    addProperty(bundleProperty)
-}
 
 internal fun TypeSpec.Builder.addContentHashProperty(hash: String) {
     val bundleProperty: PropertySpec =
-        PropertySpec.builder("contentHash", STRING, KModifier.PRIVATE)
+        PropertySpec.builder("contentHash", STRING, KModifier.PUBLIC, KModifier.CONST)
             .initializer("%S", hash)
             .build()
 
@@ -45,58 +31,19 @@ internal fun TypeSpec.Builder.addContentHashProperty(hash: String) {
 internal fun TypeSpec.Builder.addAppleContainerBundleInitializerProperty(
     modifier: KModifier? = null,
 ) {
-    val codeBlock = "${PlatformDetails.platformDetailsClass}(${Apple.resourcesBundlePropertyName})"
-
-    val resourcePlatformDetailsPropertySpec = PropertySpec
-        .builder(
-            PlatformDetails.platformDetailsPropertyName,
-            Constants.resourcePlatformDetailsName
-        )
-        .also {
-            if (modifier != null) {
-                it.addModifiers(modifier)
-            }
-        }
-        .addModifiers(KModifier.OVERRIDE)
-        .initializer(
-            CodeBlock.of(codeBlock)
-        ).build()
-
-    addProperty(resourcePlatformDetailsPropertySpec)
-}
-
-internal fun TypeSpec.Builder.addJvmClassLoaderProperty(resourcesClassName: String) {
-    val property: PropertySpec = PropertySpec.builder(
-        Jvm.resourcesClassLoaderPropertyName,
-        Jvm.classLoaderName,
-        KModifier.PRIVATE
-    ).initializer(CodeBlock.of("$resourcesClassName::class.java.classLoader"))
-        .build()
-
-    addProperty(property)
+    addContainerPlatformDetailsProperty(
+        initializer = CodeBlock.of(PlatformDetails.providerReference),
+        modifier = modifier
+    )
 }
 
 internal fun TypeSpec.Builder.addJvmPlatformResourceClassLoaderProperty(
     modifier: KModifier? = null,
 ) {
-    val codeBlock =
-        "${PlatformDetails.platformDetailsClass}(${Jvm.resourcesClassLoaderPropertyName})"
-
-    val resourcePlatformDetailsPropertySpec = PropertySpec
-        .builder(
-            PlatformDetails.platformDetailsPropertyName,
-            Constants.resourcePlatformDetailsName
-        )
-        .also {
-            if (modifier != null) {
-                it.addModifiers(modifier)
-            }
-        }
-        .addModifiers(KModifier.OVERRIDE)
-        .initializer(CodeBlock.of(codeBlock))
-        .build()
-
-    addProperty(resourcePlatformDetailsPropertySpec)
+    addContainerPlatformDetailsProperty(
+        initializer = CodeBlock.of(PlatformDetails.providerReference),
+        modifier = modifier
+    )
 }
 
 internal fun TypeSpec.Builder.addJvmPlatformResourceBundleProperty(
@@ -113,53 +60,34 @@ internal fun TypeSpec.Builder.addJvmPlatformResourceBundleProperty(
     addProperty(property)
 }
 
+internal fun FileSpec.Builder.addJvmPlatformResourceBundleProperty(
+    bundlePropertyName: String,
+    bundlePath: String
+) {
+    addProperty(
+        PropertySpec.builder(
+            name = bundlePropertyName,
+            type = STRING,
+            KModifier.PRIVATE
+        ).initializer(CodeBlock.of("\"%L/%L\"", Jvm.localizationDir, bundlePath))
+            .build()
+    )
+}
+
 internal fun TypeSpec.Builder.addEmptyPlatformResourceProperty(
     modifier: KModifier? = null,
 ) {
-    val resourcePlatformDetailsPropertySpec = PropertySpec
-        .builder(
-            PlatformDetails.platformDetailsPropertyName,
-            Constants.resourcePlatformDetailsName
-        )
-        .also {
-            if (modifier != null) {
-                it.addModifiers(modifier)
-            }
-        }
-        .addModifiers(KModifier.OVERRIDE)
-        .initializer(
-            CodeBlock.of("${PlatformDetails.platformDetailsClass}()")
-        ).build()
-
-    addProperty(resourcePlatformDetailsPropertySpec)
+    addContainerPlatformDetailsProperty(
+        initializer = CodeBlock.of("${PlatformDetails.platformDetailsClass}()"),
+        modifier = modifier
+    )
 }
 
-internal fun <T : ResourceMetadata> TypeSpec.Builder.addValuesFunction(
-    metadata: List<T>,
+internal fun TypeSpec.Builder.addValuesFunctionFromAccessors(
+    accessorObjectNames: List<String>,
     classType: ClassName,
     modifier: KModifier? = null,
 ) {
-    // Find metadata type
-    val resourceMetadata: T = metadata.first()
-    val languageKeysList: String =
-        if (resourceMetadata is HierarchyMetadata) {
-            // For Assets and Files need create key considering File path
-            val hierarchyMetadata: List<HierarchyMetadata> = metadata
-                .filterIsInstance<HierarchyMetadata>()
-                .takeIf {
-                    it.size == metadata.size
-                } ?: throw GradleException("Invalid ResourceMetadata type for Assets or Files")
-
-            hierarchyMetadata.joinToString { meta ->
-                meta.path.joinToString(separator = ".") +
-                    (".".takeIf { meta.path.isNotEmpty() } ?: "") +
-                    meta.key
-            }
-        } else {
-            // Create simple resource key
-            metadata.joinToString { it.key }
-        }
-
     val valuesFun: FunSpec = FunSpec.builder("values")
         .also {
             if (modifier != null) {
@@ -167,7 +95,47 @@ internal fun <T : ResourceMetadata> TypeSpec.Builder.addValuesFunction(
             }
         }
         .addModifiers(KModifier.OVERRIDE)
-        .addStatement("return listOf($languageKeysList)")
+        .addCode(
+            CodeBlock.builder()
+                .apply {
+                    if (accessorObjectNames.isEmpty()) {
+                        addStatement("return emptyList()")
+                    } else if (accessorObjectNames.size == 1) {
+                        addStatement("return %N.values()", accessorObjectNames.single())
+                    } else {
+                        add("return listOf(\n")
+                        accessorObjectNames.forEach { accessorObjectName ->
+                            add("%N.values(),\n", accessorObjectName)
+                        }
+                        add(").flatten()\n")
+                    }
+                }
+                .build()
+        )
+        .returns(
+            ClassName(packageName = "kotlin.collections", "List")
+                .parameterizedBy(classType)
+        )
+        .build()
+
+    addFunction(valuesFun)
+}
+
+internal fun TypeSpec.Builder.addAccessorValuesFunction(
+    propertyReferences: List<String>,
+    classType: ClassName,
+    memberModifier: KModifier? = null,
+) {
+    val valuesFun: FunSpec = FunSpec.builder("values")
+        .also {
+            if (memberModifier != null) {
+                it.addModifiers(memberModifier)
+            }
+        }
+        .addStatement(
+            "return listOf(%L)",
+            propertyReferences.joinToString()
+        )
         .returns(
             ClassName(packageName = "kotlin.collections", "List")
                 .parameterizedBy(classType)
@@ -182,7 +150,8 @@ internal fun TypeSpec.Builder.addOverridePlatformProperty(): TypeSpec.Builder {
         PlatformDetails.platformDetailsPropertyName,
         Constants.resourcePlatformDetailsName,
         KModifier.OVERRIDE
-    ).build()
+    )
+        .build()
 
     return addProperty(resourcePlatformDetailsPropertySpec)
 }
@@ -219,6 +188,24 @@ internal fun TypeSpec.Builder.addJsFallbackProperty(
     addProperty(property)
 }
 
+internal fun FileSpec.Builder.addJsFallbackProperty(
+    fallbackFilePath: String,
+    filePathMode: JsFilePathMode
+) {
+    addProperty(
+        PropertySpec
+            .builder(Constants.Js.fallbackFilePropertyName, String::class, KModifier.PRIVATE)
+            .initializer(
+                CodeBlock.of(
+                    "${filePathMode.format} as %T",
+                    filePathMode.argument(fallbackFilePath),
+                    String::class
+                )
+            )
+            .build()
+    )
+}
+
 internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
     bcpLangToPath: List<Pair<String, String>>,
     filePathMode: JsFilePathMode
@@ -249,6 +236,36 @@ internal fun TypeSpec.Builder.addJsSupportedLocalesProperty(
     addProperty(property)
 }
 
+internal fun FileSpec.Builder.addJsSupportedLocalesProperty(
+    bcpLangToPath: List<Pair<String, String>>,
+    filePathMode: JsFilePathMode
+) {
+    addProperty(
+        PropertySpec
+            .builder(
+                Constants.Js.supportedLocalesPropertyName,
+                Constants.Js.supportedLocalesName,
+                KModifier.PRIVATE
+            ).initializer(
+                CodeBlock
+                    .builder()
+                    .apply {
+                        add("%T(listOf(\n", Constants.Js.supportedLocalesName)
+                        bcpLangToPath.forEach { (bcpLang, filePath) ->
+                            add(
+                                "%T(%S, ${filePathMode.format} as %T),\n",
+                                Constants.Js.supportedLocaleName,
+                                bcpLang,
+                                filePathMode.argument(filePath),
+                                String::class
+                            )
+                        }
+                        add("))")
+                    }.build()
+            ).build()
+    )
+}
+
 internal fun TypeSpec.Builder.addJsContainerStringsLoaderProperty() {
     val property = PropertySpec.builder(
         Constants.Js.stringsLoaderPropertyName,
@@ -262,4 +279,41 @@ internal fun TypeSpec.Builder.addJsContainerStringsLoaderProperty() {
         )
     ).build()
     addProperty(property)
+}
+
+internal fun FileSpec.Builder.addJsAccessorFileStringsLoaderProperty() {
+    addProperty(
+        PropertySpec.builder(
+            Constants.Js.stringsLoaderPropertyName,
+            Constants.Js.stringLoaderName,
+            KModifier.PRIVATE
+        ).initializer(
+            CodeBlock.of(
+                "${Constants.Js.remoteStringLoaderClassName}.Impl(supportedLocales = %N, fallbackFileUri = %N)",
+                Constants.Js.supportedLocalesPropertyName,
+                Constants.Js.fallbackFilePropertyName
+            )
+        ).build()
+    )
+}
+
+private fun TypeSpec.Builder.addContainerPlatformDetailsProperty(
+    initializer: CodeBlock,
+    modifier: KModifier? = null,
+) {
+    val resourcePlatformDetailsPropertySpec = PropertySpec
+        .builder(
+            PlatformDetails.platformDetailsPropertyName,
+            Constants.resourcePlatformDetailsName
+        )
+        .also {
+            if (modifier != null) {
+                it.addModifiers(modifier)
+            }
+        }
+        .addModifiers(KModifier.OVERRIDE)
+        .initializer(initializer)
+        .build()
+
+    addProperty(resourcePlatformDetailsPropertySpec)
 }

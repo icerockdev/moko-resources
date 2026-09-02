@@ -6,19 +6,22 @@ package dev.icerock.gradle.generator.resources.asset
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
 internal class AppleAssetResourceGenerator(
     private val resourcesGenerationDir: File,
 ) : PlatformResourceGenerator<AssetMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: AssetMetadata): CodeBlock {
         return CodeBlock.of(
@@ -27,6 +30,16 @@ internal class AppleAssetResourceGenerator(
             processedFilePath(metadata).substringBeforeLast('.'),
             metadata.filePath.extension,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateAccessorInitializer(metadata: AssetMetadata): CodeBlock {
+        return CodeBlock.of(
+            "AssetResource(originalPath = %S, fileName = %S, extension = %S, bundle = %L)",
+            metadata.pathRelativeToBase.invariantSeparatorsPath,
+            processedFilePath(metadata).substringBeforeLast('.'),
+            metadata.filePath.extension,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -42,25 +55,19 @@ internal class AppleAssetResourceGenerator(
             .replace('/', PATH_DELIMITER)
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?,
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<AssetMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.assetResourceName
-        )
-    }
+        objectName: String,
+    ) = Unit
 
     private companion object {
         const val PATH_DELIMITER = '+'

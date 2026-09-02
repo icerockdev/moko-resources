@@ -42,7 +42,8 @@ internal class FontGeneratorFactory(
             visibilityModifier = resourcesVisibility.toModifier(),
             generator = FontResourceGenerator(),
             platformResourceGenerator = createPlatformFontGenerator(),
-            filter = { include("fonts/**.ttf", "fonts/**.otf") }
+            filter = { include("fonts/**.ttf", "fonts/**.otf") },
+            resourcesPackageName = resourcesPackageName
         )
     }
 

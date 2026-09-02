@@ -10,6 +10,7 @@ kotlin {
     watchosX64()
     watchosArm32()
     watchosArm64()
+    watchosDeviceArm64()
     watchosSimulatorArm64()
 
     sourceSets {
@@ -27,9 +28,11 @@ kotlin {
         val watchosArm64Main by getting{
             dependsOn(watchosMain)
         }
+        val watchosDeviceArm64Main by getting {
+            dependsOn(watchosMain)
+        }
         val watchosSimulatorArm64Main by getting{
             dependsOn(watchosMain)
         }
     }
 }
-

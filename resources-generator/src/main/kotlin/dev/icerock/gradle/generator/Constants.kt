@@ -23,6 +23,9 @@ internal object Constants {
     object PlatformDetails {
         const val platformDetailsPropertyName = "__platformDetails"
         const val platformDetailsClass: String = "ResourcePlatformDetails"
+        const val providerObjectName = "PlatformDetailsProvider"
+        const val providerDetailsPropertyName = "details"
+        const val providerReference = "$providerObjectName.$providerDetailsPropertyName"
     }
 
     object Apple {
@@ -34,12 +37,15 @@ internal object Constants {
         const val resourcesBundlePropertyName = "bundle"
         private const val containerBundlePropertyName = "nsBundle"
         val platformContainerBundlePropertyName = "$platformDetailsPropertyName.$containerBundlePropertyName"
+        val providerBundleReference = "${PlatformDetails.providerReference}.$containerBundlePropertyName"
     }
 
     object Jvm {
         val classLoaderName = ClassName("java.lang", "ClassLoader")
         const val resourcesClassLoaderPropertyName = "resourcesClassLoader"
         const val localizationDir = "localization"
+        val providerClassLoaderReference =
+            "${PlatformDetails.providerReference}.$resourcesClassLoaderPropertyName"
     }
 
     object Js {

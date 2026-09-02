@@ -28,6 +28,7 @@ import java.io.File
 
 @Suppress("LongParameterList")
 internal class AssetGeneratorFactory(
+    private val resourcesPackageName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val outputAssetsDir: File,
@@ -51,6 +52,7 @@ internal class AssetGeneratorFactory(
                     .toSet()
             ),
             platformResourceGenerator = createPlatformAssetGenerator(),
+            resourcesPackageName = resourcesPackageName,
             filter = { include("assets/**") }
         )
     }

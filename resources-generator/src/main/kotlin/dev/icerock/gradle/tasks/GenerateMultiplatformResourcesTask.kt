@@ -36,6 +36,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
@@ -61,7 +62,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val ownResources: ConfigurableFileCollection
 
-    @get:Input
+    @get:Internal
     abstract val upperSourceSets: MapProperty<String, FileCollection>
 
     @get:Optional
@@ -230,6 +231,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             iosBaseLocalizationRegion = iosBaseLocalizationRegion::get,
         ).create(),
         ImageGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,
@@ -239,6 +241,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             logger = logger
         ).create(),
         ColorGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,
@@ -255,6 +258,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             androidRClassPackage = androidRClassPackage::get,
         ).create(),
         FileGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
@@ -263,6 +267,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             ownResources = ownResources
         ).create(),
         AssetGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,

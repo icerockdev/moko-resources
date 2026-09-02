@@ -6,13 +6,13 @@ package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
+import dev.icerock.gradle.generator.addJsAccessorFileStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsFallbackProperty
 import dev.icerock.gradle.generator.addJsSupportedLocalesProperty
@@ -51,8 +51,8 @@ internal class JsPluralResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?
     ) {
@@ -79,28 +79,28 @@ internal class JsPluralResourceGenerator(
         builder.addJsContainerStringsLoaderProperty()
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<PluralMetadata>,
-        modifier: KModifier?
+        objectName: String,
     ) {
-        val languageKeysList: String = metadata.joinToString { it.key }
-
-        val valuesFun: FunSpec = FunSpec.builder("values")
-            .also {
-                if (modifier != null) {
-                    it.addModifiers(modifier)
-                }
-            }
-            .addModifiers(KModifier.OVERRIDE)
-            .addStatement("return listOf($languageKeysList)")
-            .returns(
-                ClassName("kotlin.collections", "List")
-                    .parameterizedBy(Constants.pluralsResourceName)
-            )
-            .build()
-
-        builder.addFunction(valuesFun)
+        builder.addJsFallbackProperty(
+            fallbackFilePath = "./" + LOCALIZATION_DIR + "/" + getFileNameForLanguage(LanguageType.Base),
+            filePathMode = filePathMode
+        )
+        builder.addJsSupportedLocalesProperty(
+            bcpLangToPath = metadata.asSequence()
+                .flatMap { resource ->
+                    resource.values.map { it.locale }
+                }.distinct().map { locale ->
+                    LanguageType.fromLanguage(locale)
+                }.filterIsInstance<LanguageType.Locale>().map { language ->
+                    val fileName: String = getFileNameForLanguage(language)
+                    language.toBcpString() to "./$LOCALIZATION_DIR/$fileName"
+                }.toList(),
+            filePathMode = filePathMode
+        )
+        builder.addJsAccessorFileStringsLoaderProperty()
     }
 
     private fun generateLanguageFile(

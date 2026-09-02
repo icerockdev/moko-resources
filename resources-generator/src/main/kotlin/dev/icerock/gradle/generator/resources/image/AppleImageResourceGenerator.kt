@@ -6,12 +6,12 @@ package dev.icerock.gradle.generator.resources.image
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata.ImageItem
 import kotlinx.serialization.json.JsonArray
@@ -24,13 +24,24 @@ import java.io.File
 internal class AppleImageResourceGenerator(
     private val assetsGenerationDir: File,
 ) : PlatformResourceGenerator<ImageMetadata> {
-    override fun imports(): List<ClassName> = emptyList()
+    override fun imports(): List<ClassName> = listOf(
+        Constants.Apple.nsBundleName,
+        Constants.Apple.loadableBundleName
+    )
 
     override fun generateInitializer(metadata: ImageMetadata): CodeBlock {
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = %L)",
             metadata.key,
             Constants.Apple.platformContainerBundlePropertyName
+        )
+    }
+
+    override fun generateAccessorInitializer(metadata: ImageMetadata): CodeBlock {
+        return CodeBlock.of(
+            "ImageResource(assetImageName = %S, bundle = %L)",
+            metadata.key,
+            Constants.Apple.providerBundleReference
         )
     }
 
@@ -50,7 +61,16 @@ internal class AppleImageResourceGenerator(
 
             resourceIsValidOrError(validItems, imageMetadata)
 
-            validItems.forEach { it.filePath.copyTo(File(assetDir, it.filePath.name)) }
+            validItems.forEach { item ->
+                val targetFile = File(assetDir, item.filePath.name)
+                if (item.filePath.extension.equals("svg", ignoreCase = true)) {
+                    val content = item.filePath.readText()
+                    val processedContent = SvgColorTransformer.transform(content)
+                    targetFile.writeText(processedContent)
+                } else {
+                    item.filePath.copyTo(targetFile)
+                }
+            }
 
             val imagesContent: JsonArray = getImagesContent(validItems, imageMetadata)
             val content: String = prepareContentInfo(imagesContent, validItems)
@@ -59,25 +79,19 @@ internal class AppleImageResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<ImageMetadata>,
         modifier: KModifier?,
     ) {
         builder.addAppleContainerBundleInitializerProperty(modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<ImageMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            metadata = metadata,
-            classType = Constants.imageResourceName,
-            modifier = modifier
-        )
-    }
+        objectName: String,
+    ) = Unit
 
     private fun getImagesContent(
         validItems: List<ImageItem>,

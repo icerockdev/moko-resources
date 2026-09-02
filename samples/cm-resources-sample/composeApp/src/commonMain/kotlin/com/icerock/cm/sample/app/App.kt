@@ -52,6 +52,9 @@ import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import com.icerock.cm.sample.library.MokoRes
+import com.icerock.cm.sample.library.hello_world
+import com.icerock.cm.sample.library.moko_logo
+import  dev.icerock.moko.resources.compose.stringResource as mokoStringResource
 
 @Composable
 internal fun App() = AppTheme {
@@ -127,7 +130,7 @@ internal fun App() = AppTheme {
         }
         Text("Moko resources:")
         Text(
-            text = dev.icerock.moko.resources.compose.stringResource(MokoRes.strings.hello_world)
+            text = mokoStringResource(MokoRes.strings.hello_world)
         )
         Image(
             modifier = Modifier

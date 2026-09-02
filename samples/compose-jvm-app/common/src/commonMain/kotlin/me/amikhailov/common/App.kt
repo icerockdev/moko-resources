@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.icerockdev.app.MR
+import com.icerockdev.app.hello_world
 
 @Composable
 fun App() {

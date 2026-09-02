@@ -1,5 +1,6 @@
 import androidx.compose.ui.window.Window
 import com.icerockdev.library.MR
+import com.icerockdev.library.hello_world
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.staticCFunction

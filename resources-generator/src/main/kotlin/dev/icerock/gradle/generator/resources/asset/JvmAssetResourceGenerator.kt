@@ -6,14 +6,13 @@ package dev.icerock.gradle.generator.resources.asset
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
@@ -31,31 +30,34 @@ internal class JvmAssetResourceGenerator(
         )
     }
 
+    override fun generateAccessorInitializer(metadata: AssetMetadata): CodeBlock {
+        return CodeBlock.of(
+            "AssetResource(resourcesClassLoader = %L, originalPath = %S, path = %S)",
+            Jvm.providerClassLoaderReference,
+            metadata.pathRelativeToBase.invariantSeparatorsPath,
+            buildAssetPath(metadata)
+        )
+    }
+
     override fun generateResourceFiles(data: List<AssetMetadata>) {
         data.forEach { metadata ->
             metadata.filePath.copyTo(File(resourcesGenerationDir, buildAssetPath(metadata)))
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?,
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<AssetMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.assetResourceName
-        )
-    }
+        objectName: String,
+    ) = Unit
 
     private fun buildAssetPath(metadata: AssetMetadata): String {
         return File(ASSETS_DIR, metadata.pathRelativeToBase.path).path

@@ -9,7 +9,7 @@ class InvalidResourceKeyException(val key: String) : Exception(
         " underscores or digits: $key"
 )
 
-class InvalidImageResourceConfiguration(val imageName: String) : Exception(
+class InvalidImageResourceConfiguration(imageName: String) : Exception(
     "For image {$imageName} found only dark image resources." +
         " Please, add correct resources, or remove '-dark' flag from name."
 )

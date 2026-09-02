@@ -7,5 +7,9 @@ package com.icerockdev.library
 object TestRes {
     fun test() {
         println(MR.strings.common_name)
+        println(MR.strings.common_name1)
+        println(MR.strings.common_name10)
+        println(MR.strings.common_name20)
+        println(MR.strings.common_name22)
     }
 }

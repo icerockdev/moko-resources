@@ -7,11 +7,9 @@ package dev.icerock.gradle.generator.resources.string
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.convertXmlStringToAndroidLocalization
@@ -29,24 +27,12 @@ internal class AndroidStringResourceGenerator(
         return CodeBlock.of("StringResource(R.string.%L)", metadata.key)
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<StringMetadata>,
         modifier: KModifier?,
     ) {
         builder.addEmptyPlatformResourceProperty(modifier)
-    }
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<StringMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.stringResourceName
-        )
     }
 
     override fun generateResourceFiles(data: List<StringMetadata>) {
