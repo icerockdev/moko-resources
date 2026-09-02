@@ -7,7 +7,7 @@ package dev.icerock.gradle.generator.resources.asset
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.platform.js.JsFilePathMode
@@ -34,7 +34,7 @@ internal class JsAssetResourceGenerator(
     }
 
     override fun generateContainerProperties(
-        builder: Builder,
+        builder: TypeSpec.Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?,
     ) {

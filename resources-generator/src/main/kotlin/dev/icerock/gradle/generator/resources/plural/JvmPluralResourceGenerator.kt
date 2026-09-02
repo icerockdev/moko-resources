@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
@@ -54,7 +54,7 @@ internal class JvmPluralResourceGenerator(
     }
 
     override fun generateContainerProperties(
-        builder: Builder,
+        builder: TypeSpec.Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?,
     ) {

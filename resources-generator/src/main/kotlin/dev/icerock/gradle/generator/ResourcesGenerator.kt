@@ -5,7 +5,6 @@
 package dev.icerock.gradle.generator
 
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FileSpec.Builder
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.container.ContainerMetadata
@@ -121,7 +120,7 @@ internal class ResourcesGenerator(
         ownMetadata: List<ResourceMetadata>,
         parentObjectName: String,
         outputMetadata: MutableList<ContainerMetadata>,
-        fileSpec: Builder,
+        fileSpec: FileSpec.Builder,
         inputMetadata: List<ContainerMetadata>,
         additionalFileSpecs: MutableList<FileSpec>,
     ) {
@@ -218,7 +217,7 @@ internal class ResourcesGenerator(
 
     private fun finalizeObjectSpec(
         objectName: String,
-        fileSpec: Builder,
+        fileSpec: FileSpec.Builder,
         objectSpec: TypeSpec.Builder,
         generatedObjects: List<GenerationResult>,
         inputMetadata: List<ContainerMetadata>,
