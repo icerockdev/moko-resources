@@ -4,12 +4,10 @@
 
 package dev.icerock.moko.resources.compose
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.InternalComposeUiApi
-import androidx.compose.ui.LocalSystemTheme
-import androidx.compose.ui.SystemTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -25,10 +23,9 @@ import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image
 import org.jetbrains.skia.svg.SVGDOM
 
-@OptIn(InternalComposeUiApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-    val fileUrl: String = if (LocalSystemTheme.current == SystemTheme.Dark) {
+    val fileUrl: String = if (isSystemInDarkTheme()) {
         imageResource.darkFileUrl ?: imageResource.fileUrl
     } else {
         imageResource.fileUrl
