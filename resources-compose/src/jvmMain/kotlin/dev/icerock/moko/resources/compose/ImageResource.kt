@@ -4,18 +4,15 @@
 
 package dev.icerock.moko.resources.compose
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.InternalComposeUiApi
-import androidx.compose.ui.LocalSystemTheme
-import androidx.compose.ui.SystemTheme
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import dev.icerock.moko.resources.ImageResource
 
-@OptIn(InternalComposeUiApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-    val filePath: String = if (LocalSystemTheme.current == SystemTheme.Dark) {
+    val filePath: String = if (isSystemInDarkTheme()) {
         imageResource.darkFilePath ?: imageResource.filePath
     } else {
         imageResource.filePath
