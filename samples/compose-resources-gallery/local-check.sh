@@ -8,7 +8,7 @@ log() {
   echo "\033[0;32m> $1\033[0m"
 }
 
-./gradlew clean assembleDebug
+./gradlew clean assembleDebug verifyPaparazziDebug
 log "compose-resources-gallery android success"
 
 ./gradlew clean jvmJar
@@ -39,4 +39,3 @@ else
     )
     log "compose-resources-gallery ios xcode success"
 fi
-
