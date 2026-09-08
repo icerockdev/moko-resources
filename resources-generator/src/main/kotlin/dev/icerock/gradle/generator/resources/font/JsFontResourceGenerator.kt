@@ -8,9 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.platform.js.JsFilePathMode
@@ -63,37 +61,19 @@ internal class JsFontResourceGenerator(
         cssDeclarationsFile.writeText(declarations)
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?,
     ) {
         builder.addEmptyPlatformResourceProperty(modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateContainerMembers(
+        builder: TypeSpec.Builder,
         metadata: List<FontMetadata>,
         modifier: KModifier?
     ) {
-        val languageKeysList: String = metadata.joinToString { it.key }
-
-        val valuesFun: FunSpec = FunSpec.builder("values")
-            .also {
-                if (modifier != null) {
-                    it.addModifiers(modifier)
-                }
-            }
-            .addModifiers(KModifier.OVERRIDE)
-            .addStatement("return listOf($languageKeysList)")
-            .returns(
-                ClassName("kotlin.collections", "List")
-                    .parameterizedBy(Constants.fontResourceName)
-            )
-            .build()
-
-        builder.addFunction(valuesFun)
-
         val addFontsFun: FunSpec = FunSpec.builder("addFontsToPage")
             .addCode(
                 filePathMode.format,

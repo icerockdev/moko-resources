@@ -16,6 +16,7 @@ internal data class ContainerMetadata(
     val parentObjectName: String,
     val resourceType: ResourceType,
     val resources: List<ResourceMetadata>,
+    val sourceSetName: String? = null,
 ) {
     fun contentHash(): String = resources.mapNotNull { it.contentHash() }.calculateHash()
 }

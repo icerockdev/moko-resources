@@ -5,6 +5,7 @@
 package com.icerock.library
 
 import app.gradle9sample.library.MR
+import app.gradle9sample.library.test
 import dev.icerock.moko.resources.desc.desc
 import kotlin.test.Test
 

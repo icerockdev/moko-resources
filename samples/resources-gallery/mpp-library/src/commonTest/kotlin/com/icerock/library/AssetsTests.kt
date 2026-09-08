@@ -6,6 +6,7 @@ package com.icerock.library
 
 import BaseUnitTest
 import com.icerockdev.library.MR
+import com.icerockdev.library.test2_txt
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import readTextContent

@@ -21,8 +21,11 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
+import com.icerockdev.app.AppMR
+import com.icerockdev.app.customHelloWorld
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
+import com.icerockdev.library.textColor
 
 fun main() {
     val testing = Testing
@@ -43,7 +46,7 @@ fun main() {
                     modifier = Modifier.size(56.dp)
                 )
 
-                Text(text = com.icerockdev.app.AppMR.strings.customHelloWorld.localized())
+                Text(text = AppMR.strings.customHelloWorld.localized())
 
                 val image by produceState <ImageBitmap?>(null){
                     try {

@@ -23,7 +23,7 @@ kotlin {
 
             isStatic = true
             export(moko.resources)
-            export("dev.icerock.moko:graphics:0.10.0")
+            export(moko.graphics)
         }
     }
 
@@ -39,6 +39,7 @@ kotlin {
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+                api(moko.graphics)
                 api(moko.resources)
                 api(moko.resourcesCompose)
             }

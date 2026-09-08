@@ -27,6 +27,7 @@ import java.io.File
 
 @Suppress("LongParameterList")
 internal class ImageGeneratorFactory(
+    private val resourcesPackageName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val outputAssetsDir: File,
@@ -44,6 +45,7 @@ internal class ImageGeneratorFactory(
             visibilityModifier = resourcesVisibility.toModifier(),
             generator = ImageResourceGenerator(),
             platformResourceGenerator = createPlatformImageGenerator(),
+            resourcesPackageName = resourcesPackageName,
             filter = {
                 include("images/**/*.png", "images/**/*.jpg", "images/**/*.svg")
             }

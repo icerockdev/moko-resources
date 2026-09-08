@@ -6,14 +6,13 @@ package dev.icerock.gradle.generator.resources.image
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance
 import java.io.File
@@ -50,6 +49,33 @@ internal class JvmImageResourceGenerator(
         )
     }
 
+    override fun generateAccessorInitializer(metadata: ImageMetadata): CodeBlock {
+        var fileName: String = ""
+        var darkFileName: String? = null
+
+        metadata.values.groupBy { it.appearance }.forEach { (theme, resources) ->
+            val item: ImageMetadata.ImageItem = resources.getHighestQualityItem(theme)
+
+            if (theme == Appearance.DARK) {
+                darkFileName = "${metadata.key}${theme.themeSuffix}.${item.filePath.extension}"
+            } else {
+                fileName = "${metadata.key}.${item.filePath.extension}"
+            }
+        }
+
+        val darkFilePath: String = if (darkFileName != null) {
+            "\"$IMAGES_DIR/$darkFileName\""
+        } else {
+            "null"
+        }
+
+        return CodeBlock.of(
+            "ImageResource(resourcesClassLoader = %L, filePath = %S, darkFilePath = $darkFilePath)",
+            Jvm.providerClassLoaderReference,
+            "$IMAGES_DIR/$fileName"
+        )
+    }
+
     override fun generateResourceFiles(data: List<ImageMetadata>) {
         generateHighestQualityImageResources(
             resourcesGenerationDir = resourcesGenerationDir,
@@ -58,25 +84,19 @@ internal class JvmImageResourceGenerator(
         )
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<ImageMetadata>,
         modifier: KModifier?,
     ) {
         builder.addJvmPlatformResourceClassLoaderProperty(modifier = modifier)
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<ImageMetadata>,
-        modifier: KModifier?,
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.imageResourceName
-        )
-    }
+        objectName: String,
+    ) = Unit
 
     private companion object {
         const val IMAGES_DIR = "images"

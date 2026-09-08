@@ -47,7 +47,8 @@ internal class StringGeneratorFactory(
                 strictLineBreaks = strictLineBreaks
             ),
             platformResourceGenerator = createPlatformStringGenerator(),
-            filter = { include("**/strings*.xml") }
+            filter = { include("**/strings*.xml") },
+            resourcesPackageName = resourcesPackageName
         )
     }
 

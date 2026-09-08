@@ -7,6 +7,9 @@ package com.icerock.library
 import BaseUnitTest
 import com.icerockdev.library.MR
 import com.icerockdev.library.Testing
+import com.icerockdev.library.format
+import com.icerockdev.library.test_dialect
+import com.icerockdev.library.test_simple
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format

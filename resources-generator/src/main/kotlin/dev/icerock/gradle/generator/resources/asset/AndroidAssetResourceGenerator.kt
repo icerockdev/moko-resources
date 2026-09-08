@@ -7,11 +7,9 @@ package dev.icerock.gradle.generator.resources.asset
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
@@ -30,24 +28,12 @@ internal class AndroidAssetResourceGenerator(
         )
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<AssetMetadata>,
         modifier: KModifier?
     ) {
         builder.addEmptyPlatformResourceProperty(modifier)
-    }
-
-    override fun generateAfterProperties(
-        builder: Builder,
-        metadata: List<AssetMetadata>,
-        modifier: KModifier?
-    ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.assetResourceName
-        )
     }
 
     override fun generateResourceFiles(data: List<AssetMetadata>) {

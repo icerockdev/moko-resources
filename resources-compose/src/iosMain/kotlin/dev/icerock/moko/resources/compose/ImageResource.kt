@@ -4,10 +4,9 @@
 
 package dev.icerock.moko.resources.compose
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.InternalComposeUiApi
-import androidx.compose.ui.LocalSystemTheme
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -18,10 +17,11 @@ import org.jetbrains.skia.Image
 import platform.CoreGraphics.CGImageRef
 import platform.UIKit.UIImage
 
-@OptIn(ExperimentalForeignApi::class, InternalComposeUiApi::class)
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun painterResource(imageResource: ImageResource): Painter {
-    return remember(LocalSystemTheme.current, imageResource) {
+    val isDarkTheme: Boolean = isSystemInDarkTheme()
+    return remember(isDarkTheme, imageResource) {
         val uiImage: UIImage = imageResource.toUIImage()
             ?: throw IllegalArgumentException("can't read UIImage of $imageResource")
 

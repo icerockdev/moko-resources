@@ -6,15 +6,14 @@ package dev.icerock.gradle.generator.resources.string
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import dev.icerock.gradle.generator.Constants
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
 import dev.icerock.gradle.utils.convertXmlStringToLocalization
@@ -35,6 +34,15 @@ internal class JvmStringResourceGenerator(
         )
     }
 
+    override fun generateAccessorInitializer(metadata: StringMetadata): CodeBlock {
+        return CodeBlock.of(
+            "StringResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
+            Jvm.providerClassLoaderReference,
+            stringsBundlePropertyName,
+            metadata.key
+        )
+    }
+
     override fun generateResourceFiles(data: List<StringMetadata>) {
         data.processLanguages().forEach { (lang, strings) ->
             generateLanguageFile(
@@ -44,8 +52,8 @@ internal class JvmStringResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<StringMetadata>,
         modifier: KModifier?,
     ) {
@@ -57,15 +65,14 @@ internal class JvmStringResourceGenerator(
         )
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<StringMetadata>,
-        modifier: KModifier?,
+        objectName: String,
     ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.stringResourceName
+        builder.addJvmPlatformResourceBundleProperty(
+            bundlePropertyName = stringsBundlePropertyName,
+            bundlePath = getBundlePath()
         )
     }
 

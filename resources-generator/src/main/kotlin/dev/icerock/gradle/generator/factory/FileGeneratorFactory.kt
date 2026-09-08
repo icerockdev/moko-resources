@@ -28,6 +28,7 @@ import java.io.File
 
 @Suppress("LongParameterList")
 internal class FileGeneratorFactory(
+    private val resourcesPackageName: String,
     private val resourcesVisibility: MRVisibility,
     private val outputResourcesDir: File,
     private val kotlinPlatformType: KotlinPlatformType,
@@ -50,6 +51,7 @@ internal class FileGeneratorFactory(
                     .toSet()
             ),
             platformResourceGenerator = createPlatformFileGenerator(),
+            resourcesPackageName = resourcesPackageName,
             filter = { include("files/**") }
         )
     }

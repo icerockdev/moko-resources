@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.icerockdev.app.MRdesktopMain
+import com.icerockdev.app.title
 
 fun main() {
     singleWindowApplication(

@@ -4,10 +4,12 @@
 
 package dev.icerock.gradle.generator
 
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.metadata.container.ContainerMetadata
 
 internal data class GenerationResult(
     val typeSpec: TypeSpec,
-    val metadata: ContainerMetadata
+    val metadata: ContainerMetadata,
+    val fileSpecs: List<FileSpec> = emptyList()
 )

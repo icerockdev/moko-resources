@@ -6,15 +6,15 @@ package dev.icerock.gradle.generator.resources.plural
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
 import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
-import dev.icerock.gradle.generator.addValuesFunction
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.PluralMetadata
 import dev.icerock.gradle.utils.convertXmlStringToLocalization
@@ -35,6 +35,15 @@ internal class JvmPluralResourceGenerator(
         )
     }
 
+    override fun generateAccessorInitializer(metadata: PluralMetadata): CodeBlock {
+        return CodeBlock.of(
+            "PluralsResource(resourcesClassLoader = %L, bundleName = %L, key = %S)",
+            Jvm.providerClassLoaderReference,
+            pluralsBundlePropertyName,
+            metadata.key
+        )
+    }
+
     override fun generateResourceFiles(data: List<PluralMetadata>) {
         data.processLanguages().forEach { (lang, strings) ->
             generateLanguageFile(
@@ -44,8 +53,8 @@ internal class JvmPluralResourceGenerator(
         }
     }
 
-    override fun generateBeforeProperties(
-        builder: Builder,
+    override fun generateContainerProperties(
+        builder: TypeSpec.Builder,
         metadata: List<PluralMetadata>,
         modifier: KModifier?,
     ) {
@@ -57,15 +66,14 @@ internal class JvmPluralResourceGenerator(
         )
     }
 
-    override fun generateAfterProperties(
-        builder: Builder,
+    override fun generateAccessorFilePreamble(
+        builder: FileSpec.Builder,
         metadata: List<PluralMetadata>,
-        modifier: KModifier?,
+        objectName: String,
     ) {
-        builder.addValuesFunction(
-            modifier = modifier,
-            metadata = metadata,
-            classType = Constants.pluralsResourceName
+        builder.addJvmPlatformResourceBundleProperty(
+            bundlePropertyName = pluralsBundlePropertyName,
+            bundlePath = getBundlePath()
         )
     }
 

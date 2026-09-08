@@ -11,14 +11,14 @@ import dev.icerock.gradle.metadata.resource.ResourceMetadata
 
 internal class NOPResourceGenerator<T : ResourceMetadata> : PlatformResourceGenerator<T> {
     override fun imports(): List<ClassName> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
     override fun generateResourceFiles(data: List<T>) {
-        TODO("Not yet implemented")
+        Unit
     }
 
     override fun generateInitializer(metadata: T): CodeBlock {
-        TODO("Not yet implemented")
+        return CodeBlock.of("error(%S)", "NOP resource generator should not create initializers")
     }
 }

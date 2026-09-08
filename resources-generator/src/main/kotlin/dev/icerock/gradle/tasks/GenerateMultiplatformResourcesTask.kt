@@ -36,6 +36,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
@@ -61,7 +62,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val ownResources: ConfigurableFileCollection
 
-    @get:Input
+    @get:Internal
     abstract val upperSourceSets: MapProperty<String, FileCollection>
 
     @get:Optional
@@ -155,9 +156,12 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         )
         val serializer: KSerializer<List<ContainerMetadata>> =
             ListSerializer(ContainerMetadata.serializer())
-        val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files.flatMap { file ->
-            json.decodeFromString(serializer, file.readText())
-        }
+        // Sort for deterministic output.
+        val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files
+            .sortedBy { it.absolutePath }
+            .flatMap { file ->
+                json.decodeFromString(serializer, file.readText())
+            }
 
         val outputMetadata: List<ContainerMetadata> = if (kotlinPlatformType.isCommon) {
             generator.generateCommonKotlin(files, inputMetadata)
@@ -227,6 +231,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             iosBaseLocalizationRegion = iosBaseLocalizationRegion::get,
         ).create(),
         ImageGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,
@@ -236,6 +241,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             logger = logger
         ).create(),
         ColorGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,
@@ -252,6 +258,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             androidRClassPackage = androidRClassPackage::get,
         ).create(),
         FileGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             kotlinPlatformType = kotlinPlatformType,
@@ -260,6 +267,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             ownResources = ownResources
         ).create(),
         AssetGeneratorFactory(
+            resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
             outputResourcesDir = outputResourcesDir.get().asFile,
             outputAssetsDir = outputAssetsDir.get().asFile,

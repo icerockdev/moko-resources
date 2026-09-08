@@ -61,7 +61,7 @@ internal data class StringMetadata(
     )
 
     @Suppress("MagicNumber")
-    override fun contentHash(): String = values.hashCode().toString(16)
+    override fun contentHash(): String = values.toString().hashCode().toString(16)
 }
 
 @Serializable
@@ -94,7 +94,7 @@ internal data class PluralMetadata(
     }
 
     @Suppress("MagicNumber")
-    override fun contentHash(): String = values.hashCode().toString(16)
+    override fun contentHash(): String = values.toString().hashCode().toString(16)
 }
 
 @Serializable
@@ -256,7 +256,11 @@ internal data class FileMetadata(
 
     override val path: List<String> = getFilePath(filePath, relativePath)
 
-    override fun contentHash(): String = filePath.calculateResourcesHash()
+    override fun contentHash(): String = listOf(
+        key,
+        path.joinToString(separator = "/"),
+        filePath.calculateResourcesHash()
+    ).calculateHash()
 }
 
 @Serializable
@@ -278,7 +282,11 @@ internal data class AssetMetadata(
 
     override val path: List<String> = getFilePath(filePath, relativePath)
 
-    override fun contentHash(): String = filePath.calculateResourcesHash()
+    override fun contentHash(): String = listOf(
+        key,
+        path.joinToString(separator = "/"),
+        filePath.calculateResourcesHash()
+    ).calculateHash()
 }
 
 interface HierarchyMetadata : ResourceMetadata {

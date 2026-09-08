@@ -5,6 +5,9 @@
 package com.icerock.library
 
 import com.icerockdev.library.MR
+import com.icerockdev.library.format
+import com.icerockdev.library.common_name
+import com.icerockdev.library.hello_formatted_string
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlin.test.Test
