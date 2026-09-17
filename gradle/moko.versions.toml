@@ -1,6 +1,6 @@
 [versions]
 graphicsVersion = "0.10.2"
-resourcesVersion = "0.27.0"
+resourcesVersion = "0.27.1"
 
 [libraries]
 graphics = { module = "dev.icerock.moko:graphics", version.ref = "graphicsVersion" }
