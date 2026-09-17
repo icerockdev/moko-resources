@@ -315,7 +315,7 @@ internal class ResourceTypeGenerator<T : ResourceMetadata>(
                                 .addModifiers(KModifier.INTERNAL)
                                 .delegate(
                                     CodeBlock.of(
-                                        "lazy { %L() }",
+                                        "lazy·{ %L() }",
                                         initFunctionName(resource.internalName)
                                     )
                                 )
