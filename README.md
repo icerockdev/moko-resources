@@ -52,6 +52,9 @@ implement all your UI in Kotlin with Jetpack Compose and MOKO resources.
 - iOS version 12.0+
 - Compose Multiplatform 1.6.0+
 
+The consumer compatibility policy and generator toolchain constraints are documented in
+[COMPATIBILITY.md](COMPATIBILITY.md).
+
 ## Installation
 
 ### Gradle setup
@@ -618,11 +621,11 @@ string source:
 
 ```kotlin
 fun getUserName(user: User?): StringDesc {
-    if (user != null) {
-        return StringDesc.Raw(user.name)
-    } else {
-        return StringDesc.Resource(MR.strings.name_placeholder)
-    }
+  return if (user != null) {
+    StringDesc.Raw(user.name)
+  } else {
+    StringDesc.Resource(MR.strings.name_placeholder)
+  }
 }
 ```
 
