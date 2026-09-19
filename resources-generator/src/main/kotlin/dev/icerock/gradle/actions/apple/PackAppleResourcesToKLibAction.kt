@@ -7,15 +7,14 @@ package dev.icerock.gradle.actions.apple
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.platform.apple.LoadableBundle
 import dev.icerock.gradle.utils.unzipTo
+import dev.icerock.gradle.utils.zipDirAs
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.konan.file.zipDirAs
 import java.io.File
 import java.util.Properties
-import org.jetbrains.kotlin.konan.file.File as KonanFile
 
 internal class PackAppleResourcesToKLibAction(
     private val assetsDirectory: Provider<File>,
@@ -66,11 +65,8 @@ internal class PackAppleResourcesToKLibAction(
                 task = task
             )
 
-            val repackKonan = KonanFile(repackDir.path)
-            val klibKonan = KonanFile(klibFile.path)
-
             klibFile.delete()
-            repackKonan.zipDirAs(klibKonan)
+            repackDir.zipDirAs(klibFile)
 
             repackDir.deleteRecursively()
         }
