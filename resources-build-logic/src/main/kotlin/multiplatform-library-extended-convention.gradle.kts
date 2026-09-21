@@ -13,6 +13,10 @@ kotlin {
     watchosDeviceArm64()
     watchosSimulatorArm64()
 
+    tvosX64()
+    tvosArm64()
+    tvosSimulatorArm64()
+
     sourceSets {
         val commonMain by getting
 
@@ -33,6 +37,19 @@ kotlin {
         }
         val watchosSimulatorArm64Main by getting{
             dependsOn(watchosMain)
+        }
+
+        val tvosMain by creating {
+            dependsOn(commonMain)
+        }
+        val tvosX64Main by getting {
+            dependsOn(tvosMain)
+        }
+        val tvosArm64Main by getting {
+            dependsOn(tvosMain)
+        }
+        val tvosSimulatorArm64Main by getting {
+            dependsOn(tvosMain)
         }
     }
 }
