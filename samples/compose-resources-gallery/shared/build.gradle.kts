@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
 
 plugins {
     kotlin("multiplatform")
@@ -41,8 +40,6 @@ kotlin {
             baseName = "shared"
             isStatic = true
         }
-        // TODO move to gradle plugin
-        extraSpecAttributes["resource"] = "'build/cocoapods/framework/shared.framework/*.bundle'"
     }
 
     compilerOptions {
@@ -101,27 +98,4 @@ android {
 
 multiplatformResources {
     resourcesPackage.set("com.icerockdev.library")
-}
-
-// TODO move to gradle plugin
-tasks.withType<DummyFrameworkTask>().configureEach {
-    @Suppress("ObjectLiteralToLambda")
-    doLast(object : Action<Task> {
-        override fun execute(task: Task) {
-            task as DummyFrameworkTask
-
-            val frameworkDir: File = task.outputFramework.get().asFile
-
-            // TODO here we should fill list from local gradle modules
-            //  AND from external dependencies with bundles
-            //  to fill full list of bundles
-            listOf(
-                "compose-resources-gallery:shared.bundle"
-            ).forEach { bundleName ->
-                val bundleDir = File(frameworkDir, bundleName)
-                bundleDir.mkdir()
-                File(bundleDir, "dummyFile").writeText("dummy")
-            }
-        }
-    })
 }
