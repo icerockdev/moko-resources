@@ -55,6 +55,19 @@ implement all your UI in Kotlin with Jetpack Compose and MOKO resources.
 The consumer compatibility policy and generator toolchain constraints are documented in
 [COMPATIBILITY.md](COMPATIBILITY.md).
 
+### Apple KLib cross-compilation
+
+With Kotlin 2.2.20 or newer, an Apple-target KLib can be compiled on Windows,
+Linux, and macOS when neither the library nor its dependencies use cinterop or
+CocoaPods. Linking, testing, and packaging a final Apple binary still require
+macOS and Xcode.
+
+Starting with moko-resources 0.28.0, Apple KLibs with image or color resources
+use a new raw asset catalog format. The macOS project that links the final Apple
+binary must use moko-resources Gradle plugin 0.28.0 or newer. See
+[COMPATIBILITY.md](COMPATIBILITY.md#apple-klib-resources-0280-breaking-klib-format-change)
+for the producer/consumer compatibility matrix.
+
 ## Installation
 
 ### Gradle setup
@@ -185,7 +198,8 @@ You should enable moko-resources gradle plugin in `resources` module, that conta
 
 #### Android Host Tests (Unit Tests)
 If you use the new Android Multiplatform Library plugin (`com.android.kotlin.multiplatform.library`),
-enabling Android resources for host tests (Unit tests) depends on your AGP version. 
+moko-resources generates Android resources and `R` accessors for its Android target.
+For host tests (Unit tests), enabling Android resources depends on your AGP version.
 This is required for moko-resources to access generated R classes during testing.
 
 For AGP 8.8.0 and higher
@@ -287,6 +301,10 @@ In Xcode add `Build Phase` (at end of list) with script:
 ```
 
 `YourFrameworkName` is name of your project framework. Please, see on a static framework warning for get correct task name.
+
+moko-resources automatically adds the framework bundle glob to the generated
+podspec. Do not add the same resource glob manually; an explicit
+`extraSpecAttributes["resource"]` value remains unchanged.
 
 #### Without org.jetbrains.kotlin.native.cocoapods
 
@@ -970,7 +988,7 @@ val assetContent: String? by MR.assets.test.readTextAsState()
 
 ### iOS shows key instead of localized text
 
-1. check that generated `Localizable.strings` file is valid - open it by Xcode (located in `shared/shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework/<project-name>:shared.bundle/Contents/Resources/Base.lproj/Localizable.strings` and in other `.lproj` directories. If Xcode show error in file - you should fix content of strings.xml (for example you use some special character that broke file).
+1. check that generated `Localizable.strings` file is valid - open it by Xcode (located in `shared/shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework/<resourcesPackage>.main.bundle/Contents/Resources/Base.lproj/Localizable.strings` and in other `.lproj` directories. If Xcode show error in file - you should fix content of strings.xml (for example you use some special character that broke file).
 
 2. check that your generated `.bundle` exist inside application at runtime. In Xcode inside group `Products` select your application and click `Show in Finder`. Then click `Show Package Contents`. Inside `.app` you should see `.bundle` in root directory if you use static framework. And in `Frameworks/shared.framework` if you use dynamic framework. If `bundle` missed - check installation guide. Specifically xcode build phase part if you use static framework. And check that you apply moko-resources plugin in `shared` gradle module.
 

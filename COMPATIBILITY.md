@@ -40,3 +40,26 @@ AGP 8.13.2 and Gradle 8.14.2 are unrelated version lines. The latter is a Gradle
 version used by compatibility samples, not a newer AGP 8 release.
 
 See the [AGP 8.13 release notes](https://developer.android.com/build/releases/agp-8-13-0-release-notes).
+
+## Apple KLib resources: 0.28.0 breaking KLib format change
+
+Starting with moko-resources 0.28.0, Apple KLibs with image or color resources
+contain raw `Assets.xcassets` instead of a precompiled `Assets.car`. This makes
+the KLib portable across Windows, Linux, and macOS, but moves asset catalog
+compilation to the macOS project that links the final Apple framework or
+executable.
+
+This is a breaking change to the KLib resource format, not to the runtime API.
+Gradle plugins are not inherited transitively from library dependencies, so the
+project that links the final Apple binary must choose a compatible plugin
+version itself.
+
+| Produced Apple KLib | Final Apple consumer Gradle plugin | Result |
+| --- | --- | --- |
+| `< 0.28.0`, contains `Assets.car` | Any version | Supported |
+| `>= 0.28.0`, no image/color resources | `< 0.28.0` | Supported; no asset catalog compilation is required |
+| `>= 0.28.0`, contains raw `Assets.xcassets` | `< 0.28.0` | Not supported for images and colors; the raw catalog is copied but not compiled |
+| `>= 0.28.0`, contains raw `Assets.xcassets` | `>= 0.28.0` | Supported; `actool` runs while linking the final Apple binary |
+
+Newer plugin versions remain compatible with older KLibs that already contain
+`Assets.car`.
