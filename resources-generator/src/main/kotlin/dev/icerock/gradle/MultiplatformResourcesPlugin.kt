@@ -11,6 +11,7 @@ import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
 import dev.icerock.gradle.generator.platform.android.AGP_8_11_0
 import dev.icerock.gradle.generator.platform.android.AndroidPluginType
 import dev.icerock.gradle.generator.platform.android.getAndroidSourceSetOrNull
+import dev.icerock.gradle.generator.platform.android.resourcesPlatformTypeName
 import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
 import dev.icerock.gradle.generator.platform.android.setupAndroidVariantsSync
 import dev.icerock.gradle.generator.platform.apple.registerCopyFrameworkResourcesToAppTask
@@ -141,7 +142,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         sourceSet.getOrRegisterGenerateResourcesTask(mrExtension)
 
                     genTaskProvider.configure {
-                        it.platformType.set(target.platformType.name)
+                        it.platformType.set(target.resourcesPlatformTypeName(project))
 
                         if (target is KotlinNativeTarget) {
                             it.konanTarget.set(target.konanTarget.name)
