@@ -49,7 +49,8 @@ kotlin {
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_11)
-        languageVersion.set(KotlinVersion.fromVersion("2.0"))
+        languageVersion.set(KotlinVersion.fromVersion("2.1"))
+        apiVersion.set(KotlinVersion.fromVersion("2.1"))
     }
 }
 

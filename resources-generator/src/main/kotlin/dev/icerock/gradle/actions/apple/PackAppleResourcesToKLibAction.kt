@@ -4,25 +4,20 @@
 
 package dev.icerock.gradle.actions.apple
 
-import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.platform.apple.LoadableBundle
 import dev.icerock.gradle.utils.unzipTo
+import dev.icerock.gradle.utils.zipDirAs
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
-import org.jetbrains.kotlin.konan.file.zipDirAs
 import java.io.File
-import java.util.Properties
-import org.jetbrains.kotlin.konan.file.File as KonanFile
 
 internal class PackAppleResourcesToKLibAction(
     private val assetsDirectory: Provider<File>,
     private val baseLocalizationRegion: Provider<String>,
     private val bundleIdentifier: Provider<String>,
     private val resourcesGenerationDir: Provider<File>,
-    private val iosMinimalDeploymentTarget: Provider<String>
 ) : Action<Task> {
     override fun execute(task: Task) {
         task as KotlinNativeCompile
@@ -52,7 +47,6 @@ internal class PackAppleResourcesToKLibAction(
                 klibDir = klibFile,
                 resourcesGenerationDir = resourcesGenerationDir,
                 assetsDirectory = assetsDirectory,
-                task = task
             )
         } else {
             task.logger.info("Adding resources to packed klib directory `{}`", klibFile)
@@ -63,14 +57,10 @@ internal class PackAppleResourcesToKLibAction(
                 klibDir = repackDir,
                 resourcesGenerationDir = resourcesGenerationDir,
                 assetsDirectory = assetsDirectory,
-                task = task
             )
 
-            val repackKonan = KonanFile(repackDir.path)
-            val klibKonan = KonanFile(klibFile.path)
-
             klibFile.delete()
-            repackKonan.zipDirAs(klibKonan)
+            repackDir.zipDirAs(klibFile)
 
             repackDir.deleteRecursively()
         }
@@ -80,22 +70,14 @@ internal class PackAppleResourcesToKLibAction(
         klibDir: File,
         resourcesGenerationDir: File,
         assetsDirectory: File,
-        task: KotlinNativeCompile
     ) {
         assert(klibDir.isDirectory) { "should be used directory as KLib" }
 
         val defaultDir = File(klibDir, "default")
         val resRepackDir = File(defaultDir, "resources")
 
-        val manifestFile = File(defaultDir, "manifest")
-        val manifest = Properties()
-        manifest.load(manifestFile.inputStream())
-
-        val uniqueName: String = manifest["unique_name"] as String
-
         val loadableBundle = LoadableBundle(
             directory = resRepackDir,
-            bundleName = uniqueName,
             developmentRegion = baseLocalizationRegion.get(),
             identifier = bundleIdentifier.get()
         )
@@ -113,41 +95,6 @@ internal class PackAppleResourcesToKLibAction(
                 loadableBundle.resourcesDir,
                 overwrite = true
             )
-        }
-
-        val rawAssetsDir = File(loadableBundle.resourcesDir, Constants.Apple.assetsDirectoryName)
-        if (rawAssetsDir.exists()) {
-            compileAppleAssets(rawAssetsDir, task)
-        } else {
-            task.logger.info("assets not found, compilation not required")
-        }
-    }
-
-    private fun compileAppleAssets(
-        rawAssetsDir: File,
-        task: KotlinNativeCompile
-    ) {
-        val process: Process = Runtime.getRuntime().exec(
-            buildString {
-                append("xcrun actool ")
-                append(rawAssetsDir.name)
-                append(" --compile . --platform iphoneos --minimum-deployment-target ")
-                append(iosMinimalDeploymentTarget.get())
-            },
-            emptyArray(),
-            rawAssetsDir.parentFile
-        )
-        val errors: String = process.errorStream.bufferedReader().readText()
-        val input: String = process.inputStream.bufferedReader().readText()
-        val result: Int = process.waitFor()
-        if (result != 0) {
-            task.logger.error("can't compile assets - $result")
-            task.logger.error(input)
-            task.logger.error(errors)
-            throw GradleException("Assets compilation failed: $errors")
-        } else {
-            task.logger.info("assets compiled")
-            rawAssetsDir.deleteRecursively()
         }
     }
 }

@@ -4,11 +4,14 @@
 
 package dev.icerock.gradle.tasks
 
+import dev.icerock.gradle.actions.apple.AppleAssetCatalogCompiler
 import dev.icerock.gradle.data.getKlibResourcesDir
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -24,6 +27,12 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
 
+    @get:Input
+    abstract val konanTarget: Property<String>
+
+    @get:Input
+    abstract val iosMinimalDeploymentTarget: Property<String>
+
     init {
         group = "moko-resources"
     }
@@ -31,6 +40,10 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
     @TaskAction
     fun copyResources() {
         val outputDir: File = outputDirectory.get().asFile
+        val assetCatalogCompiler = AppleAssetCatalogCompiler(
+            logger = logger,
+            iosMinimalDeploymentTarget = iosMinimalDeploymentTarget.get(),
+        )
 
         klibs
             .filter { library -> library.extension == "klib" }
@@ -43,8 +56,14 @@ abstract class CopyExecutableResourcesToApp : DefaultTask() {
                     .listFiles(FileFilter { it.extension == "bundle" })
                     // copying bundles to app
                     ?.forEach {
-                        logger.info("${it.absolutePath} copying to $outputDir")
-                        it.copyRecursively(target = File(outputDir, it.name), overwrite = true)
+                        val destinationBundle = File(outputDir, it.name)
+                        logger.info("${it.absolutePath} copying to $destinationBundle")
+                        destinationBundle.deleteRecursively()
+                        it.copyRecursively(target = destinationBundle, overwrite = false)
+                        assetCatalogCompiler.compile(
+                            bundleDirectory = destinationBundle,
+                            targetName = konanTarget.get(),
+                        )
                     }
             }
     }

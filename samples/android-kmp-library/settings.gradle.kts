@@ -1,10 +1,8 @@
-rootProject.name = "kotlin-2-tests"
-include(":shared")
-
 pluginManagement {
     repositories {
         mavenLocal()
         google()
+        mavenCentral()
         gradlePluginPortal()
     }
 }
@@ -22,3 +20,6 @@ dependencyResolutionManagement {
         }
     }
 }
+
+rootProject.name = "android-kmp-library"
+include(":core")

@@ -8,6 +8,7 @@ import dev.icerock.gradle.actions.apple.CopyAppleResourcesFromFrameworkToFatActi
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToExecutableAction
 import dev.icerock.gradle.actions.apple.CopyResourcesFromKLibsToFrameworkAction
 import dev.icerock.gradle.actions.apple.PackAppleResourcesToKLibAction
+import dev.icerock.gradle.actions.apple.PopulateDummyFrameworkResourcesAction
 import dev.icerock.gradle.tasks.CopyExecutableResourcesToApp
 import dev.icerock.gradle.tasks.CopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.tasks.CopyXCFrameworkResourcesToApp
@@ -22,7 +23,9 @@ import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
+import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
@@ -38,6 +41,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
+import org.jetbrains.kotlin.gradle.tasks.DummyFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import java.io.File
@@ -49,7 +53,6 @@ internal fun setupAppleKLibResources(
     resourcesGenerationDir: Provider<File>,
     iosLocalizationRegion: Provider<String>,
     appleBundleIdentifier: Provider<String>,
-    iosMinimalDeploymentTarget: Provider<String>,
 ) {
     compileTask.doLast(
         PackAppleResourcesToKLibAction(
@@ -57,17 +60,22 @@ internal fun setupAppleKLibResources(
             bundleIdentifier = appleBundleIdentifier,
             assetsDirectory = assetsDirectory,
             resourcesGenerationDir = resourcesGenerationDir,
-            iosMinimalDeploymentTarget = iosMinimalDeploymentTarget
         )
     )
 }
 
 internal fun setupFrameworkResources(
     target: KotlinNativeTarget,
+    iosMinimalDeploymentTarget: Provider<String>,
+    frameworkKlibs: ConfigurableFileCollection,
 ) {
     target.binaries.withType<Framework>().configureEach { framework ->
+        frameworkKlibs.from(framework.linkTaskProvider.map { it.klibs })
+
         framework.linkTaskProvider.configure { linkTask ->
-            linkTask.doLast(CopyResourcesFromKLibsToFrameworkAction())
+            linkTask.doLast(
+                CopyResourcesFromKLibsToFrameworkAction(iosMinimalDeploymentTarget)
+            )
         }
 
         val project: Project = framework.project
@@ -85,6 +93,41 @@ internal fun setupFrameworkResources(
         }
 
         createCopyFrameworkResourcesTask(framework)
+    }
+}
+
+internal fun setupCocoapodsDummyFrameworkResources(
+    project: Project,
+    bundleIdentifiers: Provider<Set<String>>,
+    frameworkKlibs: FileCollection,
+) {
+    project.plugins.withType(KotlinCocoapodsPlugin::class.java) {
+        project.afterEvaluate {
+            val kmpExtension = project.extensions.getByType<KotlinMultiplatformExtension>()
+            val cocoapodsExtension = (kmpExtension as ExtensionAware)
+                .extensions
+                .getByType<CocoapodsExtension>()
+            cocoapodsExtension.framework(
+                Action { framework ->
+                    cocoapodsExtension.extraSpecAttributes.putIfAbsent(
+                        "resource",
+                        "'build/cocoapods/framework/${framework.baseName}.framework/*.bundle'",
+                    )
+                }
+            )
+        }
+    }
+
+    project.tasks.withType<DummyFrameworkTask>().configureEach { task ->
+        // Dependency KLibs are intentionally not declared as task inputs: doing so would make
+        // Gradle build their producer tasks before CocoaPods has installed native dependencies.
+        task.outputs.upToDateWhen { false }
+        task.doLast(
+            PopulateDummyFrameworkResourcesAction(
+                bundleIdentifiers = bundleIdentifiers,
+                klibs = frameworkKlibs,
+            )
+        )
     }
 }
 
@@ -220,14 +263,20 @@ internal fun registerCopyXCFrameworkResourcesToAppTask(
     }
 }
 
-internal fun setupExecutableResources(target: KotlinNativeTarget) {
+internal fun setupExecutableResources(
+    target: KotlinNativeTarget,
+    iosMinimalDeploymentTarget: Provider<String>,
+) {
     target.binaries.withType<AbstractExecutable>().configureEach { executable ->
-        setupExecutableGradleResources(executable)
-        setupExecutableXcodeResources(executable)
+        setupExecutableGradleResources(executable, iosMinimalDeploymentTarget)
+        setupExecutableXcodeResources(executable, iosMinimalDeploymentTarget)
     }
 }
 
-internal fun setupExecutableXcodeResources(executable: AbstractExecutable) {
+internal fun setupExecutableXcodeResources(
+    executable: AbstractExecutable,
+    iosMinimalDeploymentTarget: Provider<String>,
+) {
     val copyTaskName: String = executable.linkTaskProvider.name.replace("link", "copyResources")
     val project: Project = executable.project
 
@@ -235,6 +284,8 @@ internal fun setupExecutableXcodeResources(executable: AbstractExecutable) {
         dependsOn(executable.linkTaskProvider)
 
         klibs.from(executable.linkTaskProvider.map { it.klibs })
+        konanTarget.set(executable.compilation.konanTarget.name)
+        this.iosMinimalDeploymentTarget.set(iosMinimalDeploymentTarget)
 
         outputDirectory.set(
             project.layout.dir(
@@ -251,9 +302,12 @@ internal fun setupExecutableXcodeResources(executable: AbstractExecutable) {
     }
 }
 
-internal fun setupExecutableGradleResources(executable: AbstractExecutable) {
+internal fun setupExecutableGradleResources(
+    executable: AbstractExecutable,
+    iosMinimalDeploymentTarget: Provider<String>,
+) {
     executable.linkTaskProvider.configure { link ->
-        link.doLast(CopyResourcesFromKLibsToExecutableAction())
+        link.doLast(CopyResourcesFromKLibsToExecutableAction(iosMinimalDeploymentTarget))
     }
 }
 
