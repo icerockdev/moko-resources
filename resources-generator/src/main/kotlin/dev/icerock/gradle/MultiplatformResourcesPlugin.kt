@@ -6,14 +6,17 @@ package dev.icerock.gradle
 
 import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
+import dev.icerock.gradle.data.AppleResourceBundleRegistry
 import dev.icerock.gradle.extra.getOrRegisterGenerateResourcesTask
 import dev.icerock.gradle.generator.platform.android.AGP_8_11_0
 import dev.icerock.gradle.generator.platform.android.AndroidPluginType
 import dev.icerock.gradle.generator.platform.android.getAndroidSourceSetOrNull
+import dev.icerock.gradle.generator.platform.android.resourcesPlatformTypeName
 import dev.icerock.gradle.generator.platform.android.setupAndroidTasks
 import dev.icerock.gradle.generator.platform.android.setupAndroidVariantsSync
 import dev.icerock.gradle.generator.platform.apple.registerCopyFrameworkResourcesToAppTask
 import dev.icerock.gradle.generator.platform.apple.setupAppleKLibResources
+import dev.icerock.gradle.generator.platform.apple.setupCocoapodsDummyFrameworkResources
 import dev.icerock.gradle.generator.platform.apple.setupExecutableResources
 import dev.icerock.gradle.generator.platform.apple.setupFatFrameworkTasks
 import dev.icerock.gradle.generator.platform.apple.setupFrameworkResources
@@ -25,6 +28,8 @@ import dev.icerock.gradle.utils.hasMinimalVersion
 import dev.icerock.gradle.utils.kotlinSourceSetsObservable
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskCollection
 import org.gradle.api.tasks.TaskProvider
@@ -51,6 +56,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             name = "multiplatformResources",
             type = MultiplatformResourcesPluginExtension::class
         ).apply { setupConvention(project) }
+        val appleResourceBundleRegistry: AppleResourceBundleRegistry = project.extensions.create(
+            name = APPLE_RESOURCE_BUNDLE_REGISTRY_EXTENSION_NAME,
+            type = AppleResourceBundleRegistry::class,
+        ).apply {
+            bundleIdentifiers.add(mrExtension.resourcesPackage.map { "$it.main" })
+        }
 
         project.plugins.withType(KotlinMultiplatformPluginWrapper::class) {
             val kmpExtension: KotlinMultiplatformExtension = project.extensions.getByType()
@@ -58,7 +69,8 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
             configureKotlinTargetGenerator(
                 project = project,
                 mrExtension = mrExtension,
-                kmpExtension = kmpExtension
+                kmpExtension = kmpExtension,
+                appleResourceBundleRegistry = appleResourceBundleRegistry,
             )
 
             setupFatFrameworkTasks(project = project)
@@ -93,15 +105,31 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         project: Project,
         mrExtension: MultiplatformResourcesPluginExtension,
         kmpExtension: KotlinMultiplatformExtension,
+        appleResourceBundleRegistry: AppleResourceBundleRegistry,
     ) {
+        val appleFrameworkKlibs: ConfigurableFileCollection = project.objects.fileCollection()
+        setupCocoapodsDummyFrameworkResources(
+            project = project,
+            bundleIdentifiers = appleResourceBundleRegistry.bundleIdentifiers,
+            frameworkKlibs = appleFrameworkKlibs,
+        )
+        val observedAppleDependencyConfigurations: MutableSet<String> = mutableSetOf()
+
         kmpExtension.sourceSets.configureEach { kotlinSourceSet: KotlinSourceSet ->
             kotlinSourceSet.getOrRegisterGenerateResourcesTask(mrExtension)
         }
 
         kmpExtension.targets.configureEach { target ->
             if (target is KotlinNativeTarget) {
-                setupExecutableResources(target = target)
-                setupFrameworkResources(target = target)
+                setupExecutableResources(
+                    target = target,
+                    iosMinimalDeploymentTarget = mrExtension.iosMinimalDeploymentTarget,
+                )
+                setupFrameworkResources(
+                    target = target,
+                    iosMinimalDeploymentTarget = mrExtension.iosMinimalDeploymentTarget,
+                    frameworkKlibs = appleFrameworkKlibs,
+                )
             }
 
             if (target is KotlinJsIrTarget) {
@@ -114,7 +142,7 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                         sourceSet.getOrRegisterGenerateResourcesTask(mrExtension)
 
                     genTaskProvider.configure {
-                        it.platformType.set(target.platformType.name)
+                        it.platformType.set(target.resourcesPlatformTypeName(project))
 
                         if (target is KotlinNativeTarget) {
                             it.konanTarget.set(target.konanTarget.name)
@@ -154,6 +182,13 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                     }
 
                     if (target is KotlinNativeTarget && target.konanTarget.family.isAppleFamily) {
+                        registerAppleProjectDependencies(
+                            project = project,
+                            sourceSet = sourceSet,
+                            registry = appleResourceBundleRegistry,
+                            observedConfigurations = observedAppleDependencyConfigurations,
+                        )
+
                         val appleIdentifier: Provider<String> = mrExtension.resourcesPackage
                             .map { it + "." + compilation.name }
 
@@ -173,7 +208,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                                     it.outputResourcesDir.asFile
                                 },
                                 iosLocalizationRegion = mrExtension.iosBaseLocalizationRegion,
-                                iosMinimalDeploymentTarget = mrExtension.iosMinimalDeploymentTarget,
                                 appleBundleIdentifier = appleIdentifier
                             )
                         }
@@ -183,11 +217,44 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
+    private fun registerAppleProjectDependencies(
+        project: Project,
+        sourceSet: KotlinSourceSet,
+        registry: AppleResourceBundleRegistry,
+        observedConfigurations: MutableSet<String>,
+    ) {
+        listOf(sourceSet.apiConfigurationName, sourceSet.implementationConfigurationName)
+            .filter(observedConfigurations::add)
+            .forEach { configurationName ->
+                project.configurations.named(configurationName).configure { configuration ->
+                    configuration.dependencies
+                        .withType(ProjectDependency::class.java)
+                        .all { dependency ->
+                            val dependencyProject = project.project(dependency.path)
+                            dependencyProject.pluginManager.withPlugin(PLUGIN_ID) {
+                                val dependencyRegistry = dependencyProject.extensions.getByType(
+                                    AppleResourceBundleRegistry::class.java
+                                )
+                                registry.bundleIdentifiers.addAll(
+                                    dependencyRegistry.bundleIdentifiers
+                                )
+                            }
+                        }
+                }
+            }
+    }
+
     private fun registerGenerateAllResources(project: Project) {
         project.tasks.register("generateMR") {
             it.group = "moko-resources"
             it.dependsOn(project.tasks.withType<GenerateMultiplatformResourcesTask>())
         }
+    }
+
+    private companion object {
+        const val PLUGIN_ID = "dev.icerock.mobile.multiplatform-resources"
+        const val APPLE_RESOURCE_BUNDLE_REGISTRY_EXTENSION_NAME =
+            "mokoResourcesAppleResourceBundleRegistry"
     }
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)

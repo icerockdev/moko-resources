@@ -311,6 +311,27 @@ jobs:
       - *publish_test_report
       - *upload_reports
 
+  check-android-kmp-library:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        <<: *runner_matrix
+    needs: build-library
+
+    steps:
+      - *checkout
+      - *setup_jdk
+      - *setup_gradle
+      - *cache_konan
+      - *download_maven
+
+      - name: Sample - android-kmp-library
+        run: cd samples/android-kmp-library && ./local-check.sh
+        shell: bash
+
+      - *publish_test_report
+      - *upload_reports
+
   check-kotlin-2-tests:
     runs-on: ${{ matrix.os }}
     strategy:

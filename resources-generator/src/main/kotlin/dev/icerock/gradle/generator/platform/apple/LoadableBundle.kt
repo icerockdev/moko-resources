@@ -8,11 +8,10 @@ import java.io.File
 
 internal class LoadableBundle(
     directory: File,
-    bundleName: String,
     private val developmentRegion: String,
     private val identifier: String
 ) {
-    val bundleDir: File = File(directory, "$bundleName.bundle")
+    val bundleDir: File = File(directory, "$identifier.bundle")
     val contentsDir: File = File(bundleDir, "Contents")
     val infoPListFile: File = File(contentsDir, "Info.plist")
     val resourcesDir: File = File(contentsDir, "Resources")

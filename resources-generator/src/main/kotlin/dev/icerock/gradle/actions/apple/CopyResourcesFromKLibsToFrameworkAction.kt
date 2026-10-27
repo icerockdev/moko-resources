@@ -5,9 +5,12 @@
 package dev.icerock.gradle.actions.apple
 
 import org.gradle.api.Task
+import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
-internal class CopyResourcesFromKLibsToFrameworkAction : CopyResourcesFromKLibsAction() {
+internal class CopyResourcesFromKLibsToFrameworkAction(
+    iosMinimalDeploymentTarget: Provider<String>,
+) : CopyResourcesFromKLibsAction(iosMinimalDeploymentTarget) {
     override fun execute(task: Task) {
         task as KotlinNativeLink
 

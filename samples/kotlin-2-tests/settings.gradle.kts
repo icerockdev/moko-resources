@@ -3,17 +3,17 @@ include(":shared")
 
 pluginManagement {
     repositories {
+        mavenLocal()
         google()
         gradlePluginPortal()
-        mavenLocal()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
-        mavenLocal()
     }
 
     versionCatalogs {
