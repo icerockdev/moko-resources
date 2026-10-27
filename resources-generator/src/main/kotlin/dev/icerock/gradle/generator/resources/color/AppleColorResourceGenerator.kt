@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.metadata.resource.ColorMetadata
 import kotlinx.serialization.json.JsonArray
@@ -22,6 +23,7 @@ import java.io.File
 
 internal class AppleColorResourceGenerator(
     private val assetsGenerationDir: File,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<ColorMetadata> {
     override fun imports(): List<ClassName> = listOf(
         Constants.Apple.nsBundleName,
@@ -40,7 +42,7 @@ internal class AppleColorResourceGenerator(
         return CodeBlock.of(
             "ColorResource(name = %S, bundle = %L)",
             metadata.key,
-            Constants.Apple.providerBundleReference
+            resourceGenerationNamespace.appleBundleReference
         )
     }
 
@@ -103,7 +105,10 @@ internal class AppleColorResourceGenerator(
         metadata: List<ColorMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addAppleContainerBundleInitializerProperty(modifier)
+        builder.addAppleContainerBundleInitializerProperty(
+            modifier = modifier,
+            resourceGenerationNamespace = resourceGenerationNamespace,
+        )
     }
 
     override fun generateAccessorFilePreamble(

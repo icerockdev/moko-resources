@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addEmptyPlatformResourceProperty
 import dev.icerock.gradle.generator.addJsAccessorFileStringsLoaderProperty
 import dev.icerock.gradle.generator.addJsContainerStringsLoaderProperty
@@ -28,7 +29,8 @@ import java.io.File
 internal class JsPluralResourceGenerator(
     resourcesPackageName: String,
     private val resourcesGenerationDir: File,
-    private val filePathMode: JsFilePathMode
+    private val filePathMode: JsFilePathMode,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<PluralMetadata> {
     private val flattenClassPackage: String = resourcesPackageName.flatName
 
@@ -142,7 +144,9 @@ internal class JsPluralResourceGenerator(
     }
 
     private fun getFileNameForLanguage(language: LanguageType): String {
-        return "${flattenClassPackage}_${PLURALS_JSON_NAME}${language.jsResourcesSuffix}.json"
+        return "${flattenClassPackage}_$PLURALS_JSON_NAME" +
+            resourceGenerationNamespace.localizationFileSuffix +
+            "${language.jsResourcesSuffix}.json"
     }
 
     private companion object {

@@ -11,12 +11,14 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.metadata.resource.FontMetadata
 import java.io.File
 
 internal class AppleFontResourceGenerator(
     private val resourcesGenerationDir: File,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<FontMetadata> {
     override fun imports(): List<ClassName> = listOf(
         Constants.Apple.nsBundleName,
@@ -35,7 +37,7 @@ internal class AppleFontResourceGenerator(
         return CodeBlock.of(
             "FontResource(fontName = %S, bundle = %L)",
             metadata.filePath.name,
-            Constants.Apple.providerBundleReference
+            resourceGenerationNamespace.appleBundleReference
         )
     }
 
@@ -50,7 +52,10 @@ internal class AppleFontResourceGenerator(
         metadata: List<FontMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addAppleContainerBundleInitializerProperty(modifier)
+        builder.addAppleContainerBundleInitializerProperty(
+            modifier = modifier,
+            resourceGenerationNamespace = resourceGenerationNamespace,
+        )
     }
 
     override fun generateAccessorFilePreamble(

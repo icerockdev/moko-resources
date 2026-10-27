@@ -12,9 +12,11 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformContainerGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 
 internal class AppleContainerGenerator(
     private val bundleIdentifier: String,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformContainerGenerator {
     override fun getImports(): List<ClassName> {
         return listOf(
@@ -24,7 +26,9 @@ internal class AppleContainerGenerator(
     }
 
     override fun generateAdditionalFiles(packageName: String): List<FileSpec> {
-        val provider = TypeSpec.objectBuilder(Constants.PlatformDetails.providerObjectName)
+        val provider = TypeSpec.objectBuilder(
+            resourceGenerationNamespace.applePlatformDetailsProviderName
+        )
             .addModifiers(KModifier.INTERNAL)
             .addProperty(
                 PropertySpec.builder(
@@ -49,7 +53,10 @@ internal class AppleContainerGenerator(
             .build()
 
         return listOf(
-            FileSpec.builder(packageName, Constants.PlatformDetails.providerObjectName)
+            FileSpec.builder(
+                packageName,
+                resourceGenerationNamespace.applePlatformDetailsProviderName,
+            )
                 .addImport(
                     Constants.Apple.nsBundleName.packageName,
                     Constants.Apple.nsBundleName.simpleNames

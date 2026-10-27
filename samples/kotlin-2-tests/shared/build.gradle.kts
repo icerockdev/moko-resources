@@ -29,6 +29,8 @@ kotlin {
         }
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         commonMain {
             dependencies {
@@ -59,14 +61,23 @@ kotlin {
         jsMain.dependencies {
             implementation(devNpm("copy-webpack-plugin", "12.0.2"))
         }
-        jsTest.dependencies {
-            implementation(npm("karma-safarinative-launcher", "1.1.0"))
+        val sharedChecks by creating {
+            dependsOn(commonTest.get())
+        }
+        jsTest {
+            dependsOn(sharedChecks)
+            dependencies {
+                implementation(npm("karma-safarinative-launcher", "1.1.0"))
+            }
         }
 
         iosMain.dependencies {
         }
 
         jvmMain.dependencies {
+        }
+        jvmTest {
+            dependsOn(sharedChecks)
         }
     }
 }

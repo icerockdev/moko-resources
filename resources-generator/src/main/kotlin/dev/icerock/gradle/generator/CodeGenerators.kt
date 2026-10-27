@@ -30,9 +30,12 @@ internal fun TypeSpec.Builder.addContentHashProperty(hash: String) {
 
 internal fun TypeSpec.Builder.addAppleContainerBundleInitializerProperty(
     modifier: KModifier? = null,
+    resourceGenerationNamespace: ResourceGenerationNamespace,
 ) {
     addContainerPlatformDetailsProperty(
-        initializer = CodeBlock.of(PlatformDetails.providerReference),
+        initializer = CodeBlock.of(
+            resourceGenerationNamespace.applePlatformDetailsProviderReference
+        ),
         modifier = modifier
     )
 }

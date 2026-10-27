@@ -38,6 +38,7 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
@@ -116,7 +117,12 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         val observedAppleDependencyConfigurations: MutableSet<String> = mutableSetOf()
 
         kmpExtension.sourceSets.configureEach { kotlinSourceSet: KotlinSourceSet ->
-            kotlinSourceSet.getOrRegisterGenerateResourcesTask(mrExtension)
+            val genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask> =
+                kotlinSourceSet.getOrRegisterGenerateResourcesTask(mrExtension)
+
+            // Register generated Kotlin for every source set. Compilation.kotlinSourceSets does
+            // not include all shared source sets (for example commonTest), which caused #651.
+            kotlinSourceSet.kotlin.srcDir(genTaskProvider.flatMap { it.outputSourcesDir })
         }
 
         kmpExtension.targets.configureEach { target ->
@@ -215,6 +221,16 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
                 }
             }
         }
+
+        // Source set names are arbitrary in KMP. Associations and dependsOn edges can also be
+        // configured after their source sets are created, so inspect the completed compilation
+        // graph instead of inferring main/test pairs from naming conventions.
+        project.afterEvaluate {
+            configureTestResourceNamespaceIsolation(
+                kmpExtension = kmpExtension,
+                mrExtension = mrExtension,
+            )
+        }
     }
 
     private fun registerAppleProjectDependencies(
@@ -251,6 +267,66 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         }
     }
 
+    /**
+     * Isolates resources from source sets that participate in associated test compilations.
+     *
+     * Source set names have no semantics in KMP. Each test source set receives metadata from the
+     * default source set of every main compilation associated with a test compilation in which it
+     * participates. Default-source-set metadata already includes its inherited main hierarchy.
+     */
+    private fun configureTestResourceNamespaceIsolation(
+        kmpExtension: KotlinMultiplatformExtension,
+        mrExtension: MultiplatformResourcesPluginExtension,
+    ) {
+        val compilations: List<KotlinCompilation<*>> = kmpExtension.targets
+            .flatMap { it.compilations }
+        val associatedMainCompilationsByTestCompilation:
+            Map<KotlinCompilation<*>, Set<KotlinCompilation<*>>> = compilations
+            .mapNotNull { compilation ->
+                compilation.associatedCompilations
+                    .takeIf(Set<KotlinCompilation<*>>::isNotEmpty)
+                    ?.let { compilation to it }
+            }
+            .toMap()
+        val mainSourceSets: Set<KotlinSourceSet> = associatedMainCompilationsByTestCompilation
+            .values
+            .flatten()
+            .flatMap { it.allKotlinSourceSets }
+            .toSet()
+        val testCompilationsBySourceSet: Map<KotlinSourceSet, Set<KotlinCompilation<*>>> =
+            sourceSetCompilations(associatedMainCompilationsByTestCompilation.keys)
+
+        testCompilationsBySourceSet.forEach { (testSourceSet, testCompilations) ->
+            if (testSourceSet in mainSourceSets) return@forEach
+
+            testCompilations
+                .flatMap { associatedMainCompilationsByTestCompilation.getValue(it) }
+                .map { it.defaultSourceSet }
+                .toSet()
+                .forEach { mainDefaultSourceSet ->
+                    val mainGenerationTask = mainDefaultSourceSet
+                        .getOrRegisterGenerateResourcesTask(mrExtension)
+                    testSourceSet.getOrRegisterGenerateResourcesTask(mrExtension).configure {
+                        // Main metadata is a presence marker, not an input to merge: main classes
+                        // are already compiled into the associated test compilation.
+                        it.mainResourceMetadataFiles.from(
+                            mainGenerationTask.flatMap { task -> task.outputMetadataFile }
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun sourceSetCompilations(
+        compilations: Collection<KotlinCompilation<*>>,
+    ): Map<KotlinSourceSet, Set<KotlinCompilation<*>>> = buildMap {
+        compilations.forEach { compilation ->
+            compilation.allKotlinSourceSets.forEach { sourceSet ->
+                put(sourceSet, getOrElse(sourceSet, ::emptySet) + compilation)
+            }
+        }
+    }
+
     private companion object {
         const val PLUGIN_ID = "dev.icerock.mobile.multiplatform-resources"
         const val APPLE_RESOURCE_BUNDLE_REGISTRY_EXTENSION_NAME =
@@ -263,8 +339,6 @@ open class MultiplatformResourcesPlugin : Plugin<Project> {
         sourceSet: KotlinSourceSet,
         genTaskProvider: TaskProvider<GenerateMultiplatformResourcesTask>,
     ) {
-        sourceSet.kotlin.srcDir(genTaskProvider.map { it.outputSourcesDir })
-
         when (target) {
             is KotlinJsIrTarget, is KotlinJvmTarget -> {
                 sourceSet.resources.srcDir(genTaskProvider.map { it.outputResourcesDir })

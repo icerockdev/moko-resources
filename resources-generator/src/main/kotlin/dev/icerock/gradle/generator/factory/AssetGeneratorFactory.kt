@@ -8,6 +8,7 @@ import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.HierarchyPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -35,7 +36,8 @@ internal class AssetGeneratorFactory(
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
-    private val ownResources: ConfigurableFileCollection
+    private val ownResources: ConfigurableFileCollection,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) {
     fun create(): ResourceTypeGenerator<AssetMetadata> {
         return ResourceTypeGenerator(
@@ -71,7 +73,8 @@ internal class AssetGeneratorFactory(
             },
             createApple = {
                 AppleAssetResourceGenerator(
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             },
             createJvm = {

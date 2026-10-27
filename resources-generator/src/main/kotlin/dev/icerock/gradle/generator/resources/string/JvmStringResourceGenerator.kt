@@ -12,6 +12,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
 import dev.icerock.gradle.generator.localization.LanguageType
@@ -22,6 +23,7 @@ import java.io.File
 internal class JvmStringResourceGenerator(
     private val flattenClassPackage: String,
     private val resourcesGenerationDir: File,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
@@ -91,7 +93,9 @@ internal class JvmStringResourceGenerator(
         stringsFile.writeText(content)
     }
 
-    private fun getBundlePath(): String = "${flattenClassPackage}_$stringsBundleName"
+    private fun getBundlePath(): String =
+        "${flattenClassPackage}_$stringsBundleName" +
+            resourceGenerationNamespace.localizationFileSuffix
 
     private companion object {
         const val stringsBundlePropertyName = "stringsBundle"

@@ -26,6 +26,9 @@ internal object Constants {
         const val providerObjectName = "PlatformDetailsProvider"
         const val providerDetailsPropertyName = "details"
         const val providerReference = "$providerObjectName.$providerDetailsPropertyName"
+
+        fun providerReferenceFor(providerObjectName: String): String =
+            "$providerObjectName.$providerDetailsPropertyName"
     }
 
     object Apple {
@@ -37,7 +40,9 @@ internal object Constants {
         const val resourcesBundlePropertyName = "bundle"
         private const val containerBundlePropertyName = "nsBundle"
         val platformContainerBundlePropertyName = "$platformDetailsPropertyName.$containerBundlePropertyName"
-        val providerBundleReference = "${PlatformDetails.providerReference}.$containerBundlePropertyName"
+
+        fun providerBundleReferenceFor(platformDetailsProviderReference: String): String =
+            "$platformDetailsProviderReference.$containerBundlePropertyName"
     }
 
     object Jvm {

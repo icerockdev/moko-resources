@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <plural name="common_test_plural">
+        <item quantity="one">One common test item</item>
+        <item quantity="other">%d common test items</item>
+    </plural>
+</resources>

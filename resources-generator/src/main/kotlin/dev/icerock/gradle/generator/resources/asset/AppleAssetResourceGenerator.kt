@@ -11,12 +11,14 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.metadata.resource.AssetMetadata
 import java.io.File
 
 internal class AppleAssetResourceGenerator(
     private val resourcesGenerationDir: File,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<AssetMetadata> {
     override fun imports(): List<ClassName> = listOf(
         Constants.Apple.nsBundleName,
@@ -39,7 +41,7 @@ internal class AppleAssetResourceGenerator(
             metadata.pathRelativeToBase.invariantSeparatorsPath,
             processedFilePath(metadata).substringBeforeLast('.'),
             metadata.filePath.extension,
-            Constants.Apple.providerBundleReference
+            resourceGenerationNamespace.appleBundleReference
         )
     }
 
@@ -60,7 +62,10 @@ internal class AppleAssetResourceGenerator(
         metadata: List<AssetMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addAppleContainerBundleInitializerProperty(modifier)
+        builder.addAppleContainerBundleInitializerProperty(
+            modifier = modifier,
+            resourceGenerationNamespace = resourceGenerationNamespace,
+        )
     }
 
     override fun generateAccessorFilePreamble(

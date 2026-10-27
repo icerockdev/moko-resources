@@ -8,6 +8,7 @@ import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
 import dev.icerock.gradle.generator.resources.color.AndroidColorResourceGenerator
@@ -32,6 +33,7 @@ internal class ColorGeneratorFactory(
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) {
     fun create(): ResourceTypeGenerator<ColorMetadata> {
         return ResourceTypeGenerator(
@@ -61,7 +63,8 @@ internal class ColorGeneratorFactory(
             },
             createApple = {
                 AppleColorResourceGenerator(
-                    assetsGenerationDir = outputAssetsDir
+                    assetsGenerationDir = outputAssetsDir,
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             },
             createJvm = {

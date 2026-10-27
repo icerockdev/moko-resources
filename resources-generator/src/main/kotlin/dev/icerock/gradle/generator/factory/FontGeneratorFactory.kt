@@ -8,6 +8,7 @@ import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -32,6 +33,7 @@ internal class FontGeneratorFactory(
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) {
     fun create(): ResourceTypeGenerator<FontMetadata> {
         return ResourceTypeGenerator(
@@ -61,7 +63,8 @@ internal class FontGeneratorFactory(
             },
             createApple = {
                 AppleFontResourceGenerator(
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             },
             createJvm = {

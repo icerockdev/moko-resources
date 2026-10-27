@@ -13,6 +13,7 @@ import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.Constants.Jvm
 import dev.icerock.gradle.generator.Constants.PlatformDetails
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addJvmPlatformResourceBundleProperty
 import dev.icerock.gradle.generator.addJvmPlatformResourceClassLoaderProperty
 import dev.icerock.gradle.generator.localization.LanguageType
@@ -23,6 +24,7 @@ import java.io.File
 internal class JvmPluralResourceGenerator(
     private val flattenClassPackage: String,
     private val resourcesGenerationDir: File,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<PluralMetadata> {
     override fun imports(): List<ClassName> = emptyList()
 
@@ -100,7 +102,9 @@ internal class JvmPluralResourceGenerator(
         stringsFile.writeText(content)
     }
 
-    private fun getBundlePath(): String = "${flattenClassPackage}_$pluralsBundleName"
+    private fun getBundlePath(): String =
+        "${flattenClassPackage}_$pluralsBundleName" +
+            resourceGenerationNamespace.localizationFileSuffix
 
     private companion object {
         const val pluralsBundlePropertyName = "pluralsBundle"

@@ -69,12 +69,20 @@ internal fun setupAndroidTargetSources(
     androidVariants.configureEach { variant: Variant ->
         // Direct variant match (e.g., "debug" == "debug")
         if (variant.name == androidCompilation.name) {
+            genTaskProvider.configure {
+                it.androidRClassPackage.set(variant.namespace)
+            }
             variant.sources.addLegacyAndroidGeneratedSources(genTaskProvider)
         }
 
         // Check nested components (e.g., unit tests associated with the variant)
         variant.nestedComponents.forEach { component ->
             if (component.name == androidCompilation.name) {
+                // Test-only resources are generated into the nested component's R class. Its
+                // namespace can differ from the main namespace through android.testNamespace.
+                genTaskProvider.configure {
+                    it.androidRClassPackage.set(component.namespace)
+                }
                 component.sources.addLegacyAndroidGeneratedSources(genTaskProvider)
             }
         }

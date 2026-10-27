@@ -8,6 +8,7 @@ import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.FlatPropertiesGenerationStrategy
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.ResourceTypeGenerator
 import dev.icerock.gradle.generator.platform.js.JsFilePathMode
 import dev.icerock.gradle.generator.resources.NOPResourceGenerator
@@ -34,7 +35,8 @@ internal class StringGeneratorFactory(
     private val kotlinPlatformType: KotlinPlatformType,
     private val kotlinKonanTarget: () -> KonanTarget,
     private val androidRClassPackage: () -> String,
-    private val iosBaseLocalizationRegion: () -> String
+    private val iosBaseLocalizationRegion: () -> String,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) {
     fun create(): ResourceTypeGenerator<StringMetadata> {
         return ResourceTypeGenerator(
@@ -67,27 +69,31 @@ internal class StringGeneratorFactory(
             createApple = {
                 AppleStringResourceGenerator(
                     baseLocalizationRegion = iosBaseLocalizationRegion(),
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             },
             createJvm = {
                 JvmStringResourceGenerator(
                     flattenClassPackage = resourcesPackageName.flatName,
-                    resourcesGenerationDir = outputResourcesDir
+                    resourcesGenerationDir = outputResourcesDir,
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             },
             createJs = {
                 JsStringResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
                     resourcesGenerationDir = outputResourcesDir,
-                    filePathMode = JsFilePathMode.require
+                    filePathMode = JsFilePathMode.require,
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             },
             createWasm = {
                 JsStringResourceGenerator(
                     resourcesPackageName = resourcesPackageName,
                     resourcesGenerationDir = outputResourcesDir,
-                    filePathMode = JsFilePathMode.rawPath
+                    filePathMode = JsFilePathMode.rawPath,
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             }
         )

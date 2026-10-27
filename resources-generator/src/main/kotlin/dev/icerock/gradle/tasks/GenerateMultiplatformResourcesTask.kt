@@ -6,6 +6,7 @@ package dev.icerock.gradle.tasks
 
 import dev.icerock.gradle.MRVisibility
 import dev.icerock.gradle.generator.PlatformContainerGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.ResourcesFiles
 import dev.icerock.gradle.generator.ResourcesGenerator
 import dev.icerock.gradle.generator.container.AppleContainerGenerator
@@ -45,6 +46,7 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.konan.target.KonanTarget
+import java.io.File
 
 @CacheableTask
 abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
@@ -105,6 +107,18 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     @get:InputFiles
     abstract val inputMetadataFiles: ConfigurableFileCollection
 
+    /**
+     * Metadata produced by the parallel main hierarchy or associated main compilation.
+     *
+     * Its content is not merged into [inputMetadataFiles]. At least one decoded metadata entry
+     * signals that test resources need isolated generated object, file, and Apple provider names
+     * so they do not shadow main resources on the test runtime classpath.
+     */
+    @get:Optional
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:InputFiles
+    abstract val mainResourceMetadataFiles: ConfigurableFileCollection
+
     @get:OutputFile
     abstract val outputMetadataFile: RegularFileProperty
 
@@ -140,8 +154,6 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         val json = Json {
             prettyPrint = true
         }
-        val generator: ResourcesGenerator = createGenerator()
-
         val files = ResourcesFiles(
             ownSourceSet = ResourcesFiles.SourceSetResources(
                 sourceSetName = sourceSetName.get(),
@@ -157,37 +169,81 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
         val serializer: KSerializer<List<ContainerMetadata>> =
             ListSerializer(ContainerMetadata.serializer())
         // Sort for deterministic output.
-        val inputMetadata: List<ContainerMetadata> = inputMetadataFiles.files
-            .sortedBy { it.absolutePath }
-            .flatMap { file ->
-                json.decodeFromString(serializer, file.readText())
-            }
+        val inputMetadata: List<ContainerMetadata> = readMetadata(
+            files = inputMetadataFiles.files,
+            json = json,
+            serializer = serializer,
+        )
+        val requiresResourceNamespaceIsolation: Boolean = readMetadata(
+            files = mainResourceMetadataFiles.files.filter(File::isFile),
+            json = json,
+            serializer = serializer,
+        ).isNotEmpty()
+        val generator: ResourcesGenerator = createGenerator(
+            requiresResourceNamespaceIsolation = requiresResourceNamespaceIsolation,
+        )
 
         val outputMetadata: List<ContainerMetadata> = if (kotlinPlatformType.isCommon) {
-            generator.generateCommonKotlin(files, inputMetadata)
+            generator.generateCommonKotlin(
+                files = files,
+                inputMetadata = inputMetadata,
+            )
         } else {
-            generator.generateTargetKotlin(files, inputMetadata).also { containers ->
-                generator.generateResources(containers)
-            }
+            generator.generateTargetKotlin(
+                files = files,
+                inputMetadata = inputMetadata,
+            )
+                .also { containers ->
+                    generator.generateResources(containers)
+                }
         }
 
         outputMetadataFile.get().asFile.writeText(json.encodeToString(serializer, outputMetadata))
     }
 
-    private fun createGenerator(): ResourcesGenerator {
+    private fun readMetadata(
+        files: Collection<File>,
+        json: Json,
+        serializer: KSerializer<List<ContainerMetadata>>,
+    ): List<ContainerMetadata> = files
+        .sortedBy { it.absolutePath }
+        .flatMap { file ->
+            json.decodeFromString(serializer, file.readText())
+        }
+
+    private fun createGenerator(
+        requiresResourceNamespaceIsolation: Boolean,
+    ): ResourcesGenerator {
+        // Main and test outputs are present in the same test binary. When main has resources, the
+        // test source-set name isolates three otherwise colliding artifacts: the generated MR
+        // object, JVM/JS localization files, and the Apple PlatformDetailsProvider object.
+        val resourceGenerationNamespace: ResourceGenerationNamespace =
+            if (requiresResourceNamespaceIsolation) {
+                ResourceGenerationNamespace.isolated(sourceSetName.get())
+            } else {
+                ResourceGenerationNamespace.unqualified
+            }
+
         return ResourcesGenerator(
-            containerGenerator = createPlatformContainerGenerator(),
-            typesGenerators = createTypeGenerators(),
+            containerGenerator = createPlatformContainerGenerator(
+                resourceGenerationNamespace = resourceGenerationNamespace,
+            ),
+            typesGenerators = createTypeGenerators(
+                resourceGenerationNamespace = resourceGenerationNamespace,
+            ),
             resourcesPackageName = resourcesPackageName.get(),
             resourcesClassName = resourcesClassName.get(),
             sourceSetName = sourceSetName.get(),
+            resourceGenerationNamespace = resourceGenerationNamespace,
             visibilityModifier = resourcesVisibility.get().toModifier(),
             sourcesGenerationDir = outputSourcesDir.get().asFile,
             logger = logger
         )
     }
 
-    private fun createPlatformContainerGenerator(): PlatformContainerGenerator {
+    private fun createPlatformContainerGenerator(
+        resourceGenerationNamespace: ResourceGenerationNamespace,
+    ): PlatformContainerGenerator {
         return createByPlatform(
             kotlinPlatformType = kotlinPlatformType,
             konanTarget = ::kotlinKonanTarget,
@@ -196,7 +252,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             createJs = { JsContainerGenerator() },
             createApple = {
                 AppleContainerGenerator(
-                    bundleIdentifier = appleBundleIdentifier.get()
+                    bundleIdentifier = appleBundleIdentifier.get(),
+                    resourceGenerationNamespace = resourceGenerationNamespace,
                 )
             },
             createJvm = {
@@ -209,7 +266,9 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
     }
 
     @Suppress("LongMethod")
-    private fun createTypeGenerators() = listOf(
+    private fun createTypeGenerators(
+        resourceGenerationNamespace: ResourceGenerationNamespace,
+    ) = listOf(
         StringGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
             resourcesVisibility = resourcesVisibility.get(),
@@ -219,6 +278,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
             iosBaseLocalizationRegion = iosBaseLocalizationRegion::get,
+            resourceGenerationNamespace = resourceGenerationNamespace,
         ).create(),
         PluralGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
@@ -229,6 +289,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
             iosBaseLocalizationRegion = iosBaseLocalizationRegion::get,
+            resourceGenerationNamespace = resourceGenerationNamespace,
         ).create(),
         ImageGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
@@ -238,7 +299,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
-            logger = logger
+            logger = logger,
+            resourceGenerationNamespace = resourceGenerationNamespace,
         ).create(),
         ColorGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
@@ -248,6 +310,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
+            resourceGenerationNamespace = resourceGenerationNamespace,
         ).create(),
         FontGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
@@ -256,6 +319,7 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
+            resourceGenerationNamespace = resourceGenerationNamespace,
         ).create(),
         FileGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
@@ -264,7 +328,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
-            ownResources = ownResources
+            ownResources = ownResources,
+            resourceGenerationNamespace = resourceGenerationNamespace,
         ).create(),
         AssetGeneratorFactory(
             resourcesPackageName = resourcesPackageName.get(),
@@ -274,7 +339,8 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
             kotlinPlatformType = kotlinPlatformType,
             kotlinKonanTarget = ::kotlinKonanTarget,
             androidRClassPackage = androidRClassPackage::get,
-            ownResources = ownResources
+            ownResources = ownResources,
+            resourceGenerationNamespace = resourceGenerationNamespace,
         ).create()
     )
 }

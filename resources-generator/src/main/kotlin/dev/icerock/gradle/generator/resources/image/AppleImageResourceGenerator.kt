@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.metadata.resource.ImageMetadata
 import dev.icerock.gradle.metadata.resource.ImageMetadata.ImageItem
@@ -23,6 +24,7 @@ import java.io.File
 
 internal class AppleImageResourceGenerator(
     private val assetsGenerationDir: File,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<ImageMetadata> {
     override fun imports(): List<ClassName> = listOf(
         Constants.Apple.nsBundleName,
@@ -41,7 +43,7 @@ internal class AppleImageResourceGenerator(
         return CodeBlock.of(
             "ImageResource(assetImageName = %S, bundle = %L)",
             metadata.key,
-            Constants.Apple.providerBundleReference
+            resourceGenerationNamespace.appleBundleReference
         )
     }
 
@@ -84,7 +86,10 @@ internal class AppleImageResourceGenerator(
         metadata: List<ImageMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addAppleContainerBundleInitializerProperty(modifier)
+        builder.addAppleContainerBundleInitializerProperty(
+            modifier = modifier,
+            resourceGenerationNamespace = resourceGenerationNamespace,
+        )
     }
 
     override fun generateAccessorFilePreamble(

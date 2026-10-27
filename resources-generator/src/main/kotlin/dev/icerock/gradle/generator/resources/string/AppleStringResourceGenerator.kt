@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import dev.icerock.gradle.generator.Constants
 import dev.icerock.gradle.generator.PlatformResourceGenerator
+import dev.icerock.gradle.generator.ResourceGenerationNamespace
 import dev.icerock.gradle.generator.addAppleContainerBundleInitializerProperty
 import dev.icerock.gradle.generator.localization.LanguageType
 import dev.icerock.gradle.metadata.resource.StringMetadata
@@ -20,6 +21,7 @@ import java.io.File
 internal class AppleStringResourceGenerator(
     private val baseLocalizationRegion: String,
     private val resourcesGenerationDir: File,
+    private val resourceGenerationNamespace: ResourceGenerationNamespace,
 ) : PlatformResourceGenerator<StringMetadata> {
     override fun imports(): List<ClassName> = listOf(
         Constants.Apple.nsBundleName,
@@ -38,7 +40,7 @@ internal class AppleStringResourceGenerator(
         return CodeBlock.of(
             "StringResource(resourceId = %S, bundle = %L)",
             metadata.key,
-            Constants.Apple.providerBundleReference
+            resourceGenerationNamespace.appleBundleReference
         )
     }
 
@@ -56,7 +58,10 @@ internal class AppleStringResourceGenerator(
         metadata: List<StringMetadata>,
         modifier: KModifier?,
     ) {
-        builder.addAppleContainerBundleInitializerProperty(modifier)
+        builder.addAppleContainerBundleInitializerProperty(
+            modifier = modifier,
+            resourceGenerationNamespace = resourceGenerationNamespace,
+        )
     }
 
     override fun generateAccessorFilePreamble(
