@@ -1,17 +1,16 @@
 [versions]
-# --- Runtime versions ---
-# Minimum compatibility baseline for library modules (resources, compose, etc.).
-# Allows users to use moko-resources WITHOUT forcing them to update their projects.
+# --- Consumer compatibility baselines ---
+# Raising these versions changes the supported consumer matrix; see COMPATIBILITY.md.
 kotlinVersion = "2.1.0"
 androidGradleVersion = "8.3.0"
+
+# --- Library dependencies ---
 androidSdkCommonVersion = "31.13.2"
 
-# --- Plugin versions (Tooling only) ---
-# Used EXCLUSIVELY in the generator plugin module via 'compileOnly'.
-# We use current APIs (available in 8.13.2+) to ensure compatibility with
-# the widest range of AGP versions: from the minimum (8.3)
-# to the current (9.0+ at this time).
-pluginKotlinVersion = "2.3.20"
+# --- Generator compile toolchain ---
+# KGP and AGP are compileOnly host APIs and do not redefine the consumer baselines above.
+pluginKotlinVersion = "2.4.20"
+# Last AGP 8 API. AGP 9 compile APIs are not binary-compatible with AGP 8 runtimes.
 pluginAndroidGradleVersion = "8.13.2"
 
 
@@ -31,7 +30,8 @@ composeJetbrainsVersion = "1.7.0"
 
 # jvm
 apacheCommonsTextVersion = "1.10.0"
-kotlinPoetVersion = "1.13.1"
+# 2.4.0 has no API or fix currently required by the generator; see COMPATIBILITY.md.
+kotlinPoetVersion = "2.3.0"
 detektVersion = "1.22.0"
 icu4jVersion = "73.1"
 commonsCodecVersion = "1.15"

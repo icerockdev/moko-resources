@@ -192,6 +192,8 @@ internal class ResourcesGenerator(
                 .addModifiers(KModifier.EXPECT)
                 .addModifiers(visibilityModifier)
 
+        objectSpec.addResourceContainersKdoc(objects)
+
         // Add generated objects and create metadata of current sourceSet
         objects.forEach { result ->
             objectSpec.addType(result.typeSpec)
@@ -231,6 +233,7 @@ internal class ResourcesGenerator(
             .map { it.contentHash() }
             .calculateHash()
 
+        objectSpec.addResourceContainersKdoc(generatedObjects)
         objectSpec.addContentHashProperty(contentHash)
 
         objectSpec.also { builder ->
@@ -242,5 +245,15 @@ internal class ResourcesGenerator(
         objectSpec.also(containerGenerator::generateAfterTypes)
 
         fileSpec.addType(objectSpec.build())
+    }
+
+    private fun TypeSpec.Builder.addResourceContainersKdoc(
+        generatedObjects: List<GenerationResult>,
+    ) {
+        addKdoc("Entry point for generated resources.\n\n")
+        addKdoc("Available resource containers:\n")
+        generatedObjects.forEach { result ->
+            addKdoc("- [%L]\n", result.metadata.name)
+        }
     }
 }
