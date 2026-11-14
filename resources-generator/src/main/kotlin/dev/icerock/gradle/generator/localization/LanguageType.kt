@@ -4,6 +4,7 @@
 
 package dev.icerock.gradle.generator.localization
 
+import java.util.ResourceBundle
 import java.util.Locale as JvmLocale
 
 internal sealed interface LanguageType {
@@ -31,30 +32,39 @@ internal sealed interface LanguageType {
         override fun language(): String = languageTag
 
         fun toBcpString(): String = jvmLocale.toLanguageTag()
-        private fun toLocaleString(): String = jvmLocale.toString()
 
         override val androidResourcesDir: String = buildString {
             append("values")
             append("-")
-            append(jvmLocale.getISO639Language())
-            if (jvmLocale.country.isNotBlank()) {
-                append("-r")
-                append(jvmLocale.country)
+            if (jvmLocale.script.isBlank()) {
+                append(jvmLocale.getISO639Language())
+                if (jvmLocale.country.isNotBlank()) {
+                    append("-r")
+                    append(jvmLocale.country)
+                }
+            } else {
+                // Only the BCP 47 qualifier supports scripts, eg `values-b+sr+Latn+RS`
+                append("b+")
+                listOf(jvmLocale.getISO639Language(), jvmLocale.script, jvmLocale.country)
+                    .filter { it.isNotBlank() }
+                    .joinTo(this, separator = "+")
             }
         }
 
         override val appleResourcesDir: String = "${toBcpString()}.lproj"
         override val jsResourcesSuffix: String = "_${toBcpString()}"
 
-        // JVM ResourceBundle uses locale format, eg `en_US`, instead of BCP format
+        // JVM ResourceBundle uses locale format, eg `en_US` or `sr_Latn`, instead of BCP format
         // like `en-US`.
-        override val jvmResourcesSuffix: String = "_${toLocaleString()}"
+        override val jvmResourcesSuffix: String = ResourceBundle.Control
+            .getControl(ResourceBundle.Control.FORMAT_DEFAULT)
+            .toBundleName("", jvmLocale)
 
         /**
          * Throw an error here so that we safeguard ourselves from implicitly calling `Local.toString`.
          * You should always use the more explicit methods defined above.
          */
-        override fun toString(): String = error("Use toLocaleString or toBcpString instead!")
+        override fun toString(): String = error("Use toBcpString instead!")
 
         override fun hashCode(): Int = jvmLocale.hashCode()
         override fun equals(other: Any?): Boolean {

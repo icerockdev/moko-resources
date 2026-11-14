@@ -5,6 +5,7 @@
 package dev.icerock.moko.resources.desc
 
 import android.content.Context
+import android.os.Build
 import java.util.Locale
 
 actual interface StringDesc {
@@ -21,22 +22,29 @@ actual interface StringDesc {
             private val locale: String
         ) : LocaleType() {
             override val systemLocale: Locale
-                get() {
-                    val languageTagParts: List<String> = locale.split("-")
-                    return when (languageTagParts.size) {
-                        LANGUAGE -> Locale(languageTagParts[0])
-                        LANGUAGE_AND_COUNTRY -> Locale(languageTagParts[0], languageTagParts[1])
-                        LANGUAGE_AND_COUNTRY_AND_VARIANT -> Locale(
-                            languageTagParts[0],
-                            languageTagParts[1],
-                            languageTagParts[2]
-                        )
-
-                        else -> throw IllegalArgumentException(
-                            "Invalid language tag $locale which has more than three parts."
-                        )
-                    }
+                get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Locale.forLanguageTag(locale)
+                } else {
+                    parseLegacyLocale()
                 }
+
+            // Locale.forLanguageTag is API 21+, and older devices can't load script resources anyway
+            private fun parseLegacyLocale(): Locale {
+                val languageTagParts: List<String> = locale.split("-")
+                return when (languageTagParts.size) {
+                    LANGUAGE -> Locale(languageTagParts[0])
+                    LANGUAGE_AND_COUNTRY -> Locale(languageTagParts[0], languageTagParts[1])
+                    LANGUAGE_AND_COUNTRY_AND_VARIANT -> Locale(
+                        languageTagParts[0],
+                        languageTagParts[1],
+                        languageTagParts[2]
+                    )
+
+                    else -> throw IllegalArgumentException(
+                        "Invalid language tag $locale which has more than three parts."
+                    )
+                }
+            }
 
             private companion object {
                 private const val LANGUAGE = 1

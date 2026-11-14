@@ -377,6 +377,13 @@ creating `commonMain/moko-resources/ru` for a Russian localization:
 </resources>
 ```
 
+The directory name is a BCP 47 language tag, so it can also contain a region or a script,
+e.g. `en-US` (or `en-rUS`), `sr-Latn`, `sr-Latn-RS` or `zh-Hans`. On Android a locale with a script
+is generated into `values-b+sr+Latn` style directories, which use the
+[BCP 47 resource qualifier](https://developer.android.com/guide/topics/resources/providing-resources#LocaleQualifier)
+documented for Android 7.0 (API 24) and above. If you filter locales, use `b+sr+Latn` in Android
+`resourceConfigurations` and `sr-Latn` in `CFBundleLocalizations`.
+
 After adding the resources we can call a gradle sync or execute a gradle
 task `generateMRcommonMain`. This will generate a `MR` class containing `MR.strings.my_string`,
 which we can use in `commonMain`:

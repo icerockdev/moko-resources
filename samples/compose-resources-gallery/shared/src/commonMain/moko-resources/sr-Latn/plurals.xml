@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <plural name="chars_count">
+        <item quantity="one">%d znak</item>
+        <item quantity="few">%d znaka</item>
+        <item quantity="other">%d znakova</item>
+    </plural>
+</resources>

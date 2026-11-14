@@ -59,4 +59,19 @@ class AppleLocalizationBundleTests {
         )
         StringDesc.localeType = StringDesc.LocaleType.System
     }
+
+    @Test
+    fun localizedStringWithScriptLocalizationCaseTest() {
+        val resource = StringResource(
+            resourceId = "noResultsFound",
+            bundle = NSBundle.bundleWithPath(NSBundle.mainBundle.bundlePath + "/tests.bundle")!!
+        )
+        StringDesc.localeType = StringDesc.LocaleType.Custom("sr-Latn")
+        val stringDesc = ResourceStringDesc(resource)
+        assertEquals(
+            expected = "Nisu pronađeni rezultati",
+            actual = stringDesc.localized()
+        )
+        StringDesc.localeType = StringDesc.LocaleType.System
+    }
 }
