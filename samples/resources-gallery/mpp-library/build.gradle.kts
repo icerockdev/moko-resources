@@ -22,6 +22,9 @@ allprojects {
             jvm()
             macosX64()
             macosArm64()
+            tvosX64()
+            tvosArm64()
+            tvosSimulatorArm64()
             js { browser() }
 
             compilerOptions {
