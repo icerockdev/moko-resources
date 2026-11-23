@@ -80,6 +80,7 @@ private fun registerGenerateTask(
         GenerateMultiplatformResourcesTask::class.java
     ) { generateTask ->
         generateTask.sourceSetName.set(kotlinSourceSet.name)
+        generateTask.rootDirectory.set(project.rootDir)
 
         val files: Set<File> = resourcesSourceDirectory.srcDirs
         generateTask.ownResources.setFrom(files)
