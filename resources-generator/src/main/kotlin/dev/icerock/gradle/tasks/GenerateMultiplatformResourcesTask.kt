@@ -21,12 +21,14 @@ import dev.icerock.gradle.generator.factory.ImageGeneratorFactory
 import dev.icerock.gradle.generator.factory.PluralGeneratorFactory
 import dev.icerock.gradle.generator.factory.StringGeneratorFactory
 import dev.icerock.gradle.metadata.container.ContainerMetadata
+import dev.icerock.gradle.serialization.RelativeFileSerializer
 import dev.icerock.gradle.toModifier
 import dev.icerock.gradle.utils.createByPlatform
 import dev.icerock.gradle.utils.isCommon
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
@@ -66,6 +68,11 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
     @get:Internal
     abstract val upperSourceSets: MapProperty<String, FileCollection>
+
+    // Base directory for file paths stored in metadata. Internal because metadata stores paths
+    // relative to it, so the build location must not be part of the cache key.
+    @get:Internal
+    abstract val rootDirectory: DirectoryProperty
 
     @get:Optional
     @get:Input
@@ -153,6 +160,9 @@ abstract class GenerateMultiplatformResourcesTask : DefaultTask() {
 
         val json = Json {
             prettyPrint = true
+            serializersModule = SerializersModule {
+                contextual(File::class, RelativeFileSerializer(rootDirectory.get().asFile))
+            }
         }
         val files = ResourcesFiles(
             ownSourceSet = ResourcesFiles.SourceSetResources(

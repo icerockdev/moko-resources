@@ -2,7 +2,7 @@
  * Copyright 2024 IceRock MAG Inc. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:UseSerializers(FileSerializer::class)
+@file:UseContextualSerialization(File::class)
 
 package dev.icerock.gradle.metadata.resource
 
@@ -11,7 +11,6 @@ import dev.icerock.gradle.metadata.InvalidImageResourceConfiguration
 import dev.icerock.gradle.metadata.InvalidResourceKeyException
 import dev.icerock.gradle.metadata.resource.ImageMetadata.Appearance.LIGHT
 import dev.icerock.gradle.serialization.ColorResourceSerializer
-import dev.icerock.gradle.serialization.FileSerializer
 import dev.icerock.gradle.serialization.ResourceMetadataSerializer
 import dev.icerock.gradle.utils.calculateHash
 import dev.icerock.gradle.utils.calculateResourcesHash
@@ -20,7 +19,7 @@ import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
+import kotlinx.serialization.UseContextualSerialization
 import java.io.File
 
 @Serializable(with = ResourceMetadataSerializer::class)

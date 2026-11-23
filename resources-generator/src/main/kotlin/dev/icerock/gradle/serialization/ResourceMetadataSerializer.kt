@@ -24,62 +24,17 @@ import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.modules.SerializersModule
 
 internal object ResourceMetadataSerializer : KSerializer<ResourceMetadata> {
-    private val json by lazy {
-        Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-            encodeDefaults = true
-            prettyPrint = true
-            coerceInputValues = true
-
-            serializersModule = SerializersModule {
-                polymorphic(
-                    baseClass = ResourceMetadata::class,
-                    actualClass = AssetMetadata::class,
-                    actualSerializer = AssetMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ResourceMetadata::class,
-                    actualClass = ColorMetadata::class,
-                    actualSerializer = ColorMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ResourceMetadata::class,
-                    actualClass = FileMetadata::class,
-                    actualSerializer = FileMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ResourceMetadata::class,
-                    actualClass = FontMetadata::class,
-                    actualSerializer = FontMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ResourceMetadata::class,
-                    actualClass = ImageMetadata::class,
-                    actualSerializer = ImageMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ResourceMetadata::class,
-                    actualClass = PluralMetadata::class,
-                    actualSerializer = PluralMetadata.serializer()
-                )
-                polymorphic(
-                    baseClass = ResourceMetadata::class,
-                    actualClass = StringMetadata::class,
-                    actualSerializer = StringMetadata.serializer()
-                )
-            }
-        }
-    }
-
     override val descriptor: SerialDescriptor =
         PolymorphicSerializer(ResourceMetadata::class).descriptor
 
     override fun deserialize(decoder: Decoder): ResourceMetadata {
-        val jsonElement = (decoder as JsonDecoder).decodeJsonElement()
+        decoder as JsonDecoder
+        // Decode with the caller's Json so its serializers module (e.g. the File serializer
+        // bound to the root directory) applies to nested metadata.
+        val json: Json = decoder.json
+        val jsonElement = decoder.decodeJsonElement()
 
         return when (val type = jsonElement.jsonObject["resourceType"]?.jsonPrimitive?.content) {
             AssetMetadata::class.java.name -> json.decodeFromJsonElement(
